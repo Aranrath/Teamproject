@@ -1,5 +1,5 @@
 package tp.options;
 
-public class ModulsView {
+public class ModulesView {
 
 }

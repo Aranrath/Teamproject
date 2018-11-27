@@ -1,5 +1,5 @@
 package tp.formulars;
 
-public class FormularsView {
+public class FormsView {
 
 }
