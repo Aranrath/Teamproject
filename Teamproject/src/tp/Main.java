@@ -1,8 +1,11 @@
 package tp;
 
 import javafx.application.Application;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
+import tp.model.Model;
 
 public class Main extends Application {
 
@@ -17,8 +20,9 @@ public class Main extends Application {
 			
 			generateMVP();
 			
-			//TODO screen maxen
-			Scene scene = new Scene(mainView, 1200, 800);
+			primaryStage.setMaximized(true);
+			Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
+			Scene scene = new Scene(mainView, primaryScreenBounds.getWidth()*0.9, primaryScreenBounds.getHeight()*0.9);
 			
 			primaryStage.setScene(scene);
 			primaryStage.show();

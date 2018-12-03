@@ -1,5 +1,8 @@
 package tp;
 
+import tp.model.Model;
+import tp.model.Session;
+
 public class Presenter
 {
 	Model model;
@@ -11,6 +14,11 @@ public class Presenter
 		
 		//TODO Hole vom Model die Tabs der letzten Sitzung und öffne diese.
 		
+	}
+
+	public Session getSession() {
+		Session session = model.getSession();
+		return session;
 	}
 
 }
