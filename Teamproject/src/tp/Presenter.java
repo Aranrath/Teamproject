@@ -2,7 +2,7 @@ package tp;
 
 import tp.model.Appointment;
 import tp.model.Model;
-import tp.model.Session;
+import tp.model.TabSession;
 
 public class Presenter
 {
@@ -17,9 +17,9 @@ public class Presenter
 		
 	}
 
-	public Session getSession() {
-		Session session = model.loadSession();
-		return session;
+	public TabSession getTabSession() {
+		TabSession tabSession = model.loadTabSession();
+		return tabSession;
 	}
 
 	public Appointment[] getNext24hourAppointments() {

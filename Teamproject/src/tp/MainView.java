@@ -1,5 +1,7 @@
 package tp;
 
+import com.sun.xml.internal.ws.wsdl.writer.document.OpenAtts;
+
 import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -10,22 +12,20 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import tp.model.Appointment;
-import tp.model.Session;
-import tp.model.UpdateTimer;
+import tp.model.TabSession;
 
 public class MainView extends BorderPane{
 	
-	Presenter presenter;
+	private Presenter presenter;
 	
-	ToolBar leftToolBar;
-	ToolBar	rightToolBar;
-	Session session;
-	UpdateTimer updateTimer;
-	Appointment[] next24hourAppointments;
+	private ToolBar leftToolBar;
+	private ToolBar	rightToolBar;
+	private TabSession tabSession;
+	private Appointment[] next24hourAppointments;
 
 	public MainView(Presenter presenter) {
 		this.presenter = presenter;
-		this.session = presenter.getSession();
+		this.tabSession = presenter.getTabSession();
 		buildView();
 		updateRightToolBar();
 	}
@@ -44,23 +44,25 @@ public class MainView extends BorderPane{
 		//Toolbars
 		leftToolBar = new ToolBar();
 		leftToolBar.setOrientation(Orientation.VERTICAL);
-		
-		ToolBar rightToolBar = new ToolBar();
+		rightToolBar = new ToolBar();
 		rightToolBar.setOrientation(Orientation.VERTICAL);
 
 		leftToolBar.getItems().addAll(optionenButton, new Separator(), alleAnliegenButton, neuesAnliegenButton, new Separator(), alleStudentenButton, neuerStudentButton, new Separator(), formulareButton, statistikenButton );
 		
 
-
-		//Time aktualisierungszeitpunkt; //damit nach Termin seitenleiste aktualisiert
-		//for every Termin des RESTTages (jetzt >= aktualisierungszeitpunkt)
 		
+		
+		//-------------------Zusammenfügen---------------------------------------
 		
 		setLeft(leftToolBar);
 		setRight(rightToolBar);
 		
 		TabPane tabPane = new TabPane();
 		setCenter(tabPane);
+		
+		
+		//-----------------TabSession in TabPane laden-------------------------------
+		
 		Tab tab1 = new Tab("Alle Studenten");
 		Tab tab2 = new Tab("Max Mustermann");
 		tabPane.getTabs().addAll(tab1, tab2);
@@ -84,8 +86,25 @@ public class MainView extends BorderPane{
 		for(Appointment a: next24hourAppointments)
 		{
 			Button newAppointmentButton = new Button(a.getConcern().getTitle());
+			newAppointmentButton.setOnAction((event) -> {
+				openConcern(a.getConcern().getId());
+			});
 			rightToolBar.getItems().addAll(newAppointmentButton);
 		}
 	}
+private void openConcern(int id) {
+	// TODO Auto-generated method stub
+	
+}
+
+private void openAllStudents() {
+	// TODO Auto-generated method stub
+	
+}
+
+private void openStudent(int mtrNr) {
+	// TODO Auto-generated method stub
+	
+}
 
 }

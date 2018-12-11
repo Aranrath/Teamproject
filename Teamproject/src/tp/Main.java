@@ -9,9 +9,9 @@ import tp.model.Model;
 
 public class Main extends Application {
 
-	Model model;
-	Presenter presenter;
-	MainView mainView;
+	private Model model;
+	private Presenter presenter;
+	private MainView mainView;
 
 	
 	@Override
