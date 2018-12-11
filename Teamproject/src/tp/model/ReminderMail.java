@@ -4,9 +4,9 @@ import java.util.Date;
 
 public class ReminderMail {
 	
-	int id;
-	String message;
-	Date date;
+	private int id;
+	private String message;
+	private Date date;
 	
 	public ReminderMail(int id, String message, Date date)
 	{

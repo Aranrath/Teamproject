@@ -2,7 +2,7 @@ package tp.model;
 
 public class Model {
 	
-	Session session;
+	private Session session;
 
 	public Model()
 	{

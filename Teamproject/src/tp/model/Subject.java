@@ -2,9 +2,9 @@ package tp.model;
 
 public class Subject
 {
-	int id;
-	String title;
-	int ects;
+	private int id;
+	private String title;
+	private int ects;
 	
 	public Subject(int id, String title, int ects)
 	{

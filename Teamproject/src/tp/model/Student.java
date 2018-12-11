@@ -4,16 +4,16 @@ import javafx.scene.image.Image;
 
 public class Student{
 	
-	int mtrNr;
-	String name;
-	String firstName;
-	String[] eMailAddresses;
-	int semester;
-	String notes;
-	int ects;
-	Image image;
-	Concern[] concerns;
-	PO po;
+	private int mtrNr;
+	private String name;
+	private String firstName;
+	private String[] eMailAddresses;
+	private int semester;
+	private String notes;
+	private int ects;
+	private Image image;
+	private Concern[] concerns;
+	private PO po;
 	
 	public Student(int mtrNr, String name, String firstName,String[] eMailAddresses, int semester, String notes, int ects, Image image, Concern[] concerns)
 	{

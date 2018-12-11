@@ -2,8 +2,8 @@ package tp.model;
 
 public class PO {
 	
-	String name;
-	Subject[] subjects;
+	private String name;
+	private Subject[] subjects;
 	
 	public PO(String name)
 	{

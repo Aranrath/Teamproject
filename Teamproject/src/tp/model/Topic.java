@@ -2,8 +2,8 @@ package tp.model;
 
 public class Topic {
 	
-	String title;
-	Object [] forms;
+	private String title;
+	private Object [] forms;
 	
 	public Topic(String title)
 	{

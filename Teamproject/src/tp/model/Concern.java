@@ -2,12 +2,12 @@ package tp.model;
 
 public class Concern {
 
-	int id;
-	String title;
-	Object[] data;
-	Topic topic;
-	Appointment[] appointments;
-	ReminderMail[] reminders;
+	private int id;
+	private String title;
+	private Object[] data;
+	private Topic topic;
+	private Appointment[] appointments;
+	private ReminderMail[] reminders;
 	
 	public Concern(int id, String title, Object[] data, Topic topic, Appointment[] appointments, ReminderMail[] reminders)
 	{
