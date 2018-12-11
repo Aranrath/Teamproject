@@ -9,6 +9,7 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import tp.model.Appointment;
 import tp.model.Session;
 import tp.model.UpdateTimer;
 
@@ -20,11 +21,13 @@ public class MainView extends BorderPane{
 	ToolBar	rightToolBar;
 	Session session;
 	UpdateTimer updateTimer;
+	Appointment[] next24hourAppointments;
 
 	public MainView(Presenter presenter) {
 		this.presenter = presenter;
 		this.session = presenter.getSession();
 		buildView();
+		updateRightToolBar();
 	}
 
 	private void buildView() {
@@ -44,15 +47,13 @@ public class MainView extends BorderPane{
 		
 		ToolBar rightToolBar = new ToolBar();
 		rightToolBar.setOrientation(Orientation.VERTICAL);
-		rightToolBar.getItems().addAll(new Label ("Nächste Termine"));
+
 		leftToolBar.getItems().addAll(optionenButton, new Separator(), alleAnliegenButton, neuesAnliegenButton, new Separator(), alleStudentenButton, neuerStudentButton, new Separator(), formulareButton, statistikenButton );
 		
 
 
 		//Time aktualisierungszeitpunkt; //damit nach Termin seitenleiste aktualisiert
 		//for every Termin des RESTTages (jetzt >= aktualisierungszeitpunkt)
-		Button anliegenButton = new Button("Anliegen 1");
-		rightToolBar.getItems().addAll(anliegenButton);
 		
 		
 		setLeft(leftToolBar);
@@ -72,6 +73,19 @@ public class MainView extends BorderPane{
 	
 	
 		
+	}
+	
+	
+	public void updateRightToolBar()
+	{
+		this.next24hourAppointments = presenter.getNext24hourAppointments();
+		rightToolBar.getItems().clear();
+		rightToolBar.getItems().addAll(new Label ("Nächste Termine")); //TODO Zeiten hinzufügen: letzter Aktualisierungszeitpunkt
+		for(Appointment a: next24hourAppointments)
+		{
+			Button newAppointmentButton = new Button(a.getConcern().getTitle());
+			rightToolBar.getItems().addAll(newAppointmentButton);
+		}
 	}
 
 }
