@@ -16,7 +16,7 @@ import tp.model.TabSession;
 
 public class Presenter
 {
-	private static Model model;
+	private Model model;
 	private MainView mainView;
 
 	public Presenter(Model model, MainView mainView) {
@@ -36,7 +36,7 @@ public class Presenter
 		return model.loadNext24hourAppointments();
 	}
 	
-	public static void sendMail(String userID, String name, Student recipient, String subject, String content) {
+	public void sendMail(String userID, String name, Student recipient, String subject, String content) {
 		try {
 			// Create a properties file containing
 			// the host address of your SMTP server
