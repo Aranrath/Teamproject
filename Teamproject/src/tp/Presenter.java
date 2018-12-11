@@ -1,5 +1,6 @@
 package tp;
 
+import tp.model.Appointment;
 import tp.model.Model;
 import tp.model.Session;
 
@@ -17,8 +18,13 @@ public class Presenter
 	}
 
 	public Session getSession() {
-		Session session = model.getSession();
+		Session session = model.loadSession();
 		return session;
+	}
+
+	public Appointment[] getNext24hourAppointments() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
