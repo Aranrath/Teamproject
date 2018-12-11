@@ -20,6 +20,11 @@ public class Model {
 		// TODO Java object out Stream
 
 	}
+	
+	public void saveMail(EMail email) {
+		// TODO Auto-generated method stub
+		
+	}
 
 	public TabSession loadTabSession() {
 		// TODO Java object in stream, wenn da, sonst neue Datei
