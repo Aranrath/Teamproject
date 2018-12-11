@@ -4,19 +4,19 @@ import java.util.Date;
 
 public class Appointment {
 
-	int id;
-	int concernID;
-	Date date;
-	long startTime;
-	long endTime;
-	int roomNmb;
-	Date reminderTime;
-	boolean reminderTimeisActive;
+	private int id;
+	private Concern concern;
+	private Date date;
+	private long startTime;
+	private long endTime;
+	private int roomNmb;
+	private Date reminderTime;
+	private boolean reminderTimeisActive;
 
-	public Appointment(int id, int concernID, Date date, long startTime, long endTime, int roomNmb, Date reminderTime,
+	public Appointment(int id, Concern concern, Date date, long startTime, long endTime, int roomNmb, Date reminderTime,
 			boolean reminderTimeisActive) {
 		this.id = id;
-		this.concernID = concernID;
+		this.concern = concern;
 		this.date = date;
 		this.startTime = startTime;
 		this.endTime = endTime;
@@ -30,8 +30,8 @@ public class Appointment {
 		return id;
 	}
 
-	public int getConcernID() {
-		return concernID;
+	public Concern getConcern() {
+		return concern;
 	}
 
 	public Date getDate() {
@@ -62,8 +62,8 @@ public class Appointment {
 		this.id = id;
 	}
 
-	public void setConcernID(int concernID) {
-		this.concernID = concernID;
+	public void setConcern(Concern concern) {
+		this.concern = concern;
 	}
 
 	public void setDate(Date date) {
