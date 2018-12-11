@@ -2,16 +2,23 @@ package tp.model;
 
 public class Model {
 
-	private TabSession tabSession;
+	private String[] sessionTabs;
 	private Options options;
 
 	public Model() {
-		loadTabSession();
+		loadSessionTabs();
 	}
+	
+	//-------------------Calculations--------------------------------------------------------------
 
+	public Appointment[] loadNext24hourAppointments() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 	//------------------Loader&Saver---------------------------------------------------------------
 	
-	public void saveSession() {
+	public void saveSessionTabs() {
 		// TODO Java object out Stream
 
 	}
@@ -26,10 +33,10 @@ public class Model {
 		
 	}
 
-	public TabSession loadTabSession() {
+	public String[] loadSessionTabs() {
 		// TODO Java object in stream, wenn da, sonst neue Datei
-		// this.session = ...
-		return tabSession;
+		// this.tabSession = ...
+		return sessionTabs;
 
 	}
 
@@ -42,17 +49,15 @@ public class Model {
 
 	// ------------Getter&Setter--------------------------------------------------------------------
 
-	public TabSession getSession() {
-		return tabSession;
+	public String[] getSessionTabs() {
+		return sessionTabs;
 	}
 
-	public void setSession(TabSession tabSession) {
-		this.tabSession = tabSession;
+	public void setSessionTabs(String[] sessionTabs) {
+		this.sessionTabs = sessionTabs;
 	}
+	//----------------------------------------------------------------------------------------------
 
-	public Appointment[] loadNext24hourAppointments() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+
 
 }

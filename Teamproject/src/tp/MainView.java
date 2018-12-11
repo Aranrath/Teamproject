@@ -22,12 +22,12 @@ public class MainView extends BorderPane {
 	private ToolBar leftToolBar;
 	private ToolBar rightToolBar;
 	TabPane tabPane;
-	private TabSession tabSession;
+	private String[] sessionTabs;
 	private Appointment[] next24hourAppointments;
 
 	public MainView(Presenter presenter) {
 		this.presenter = presenter;
-		this.tabSession = presenter.getTabSession();
+		this.sessionTabs = presenter.getSessionTabs();
 		buildView();
 		updateRightToolBar();
 	}
@@ -89,16 +89,17 @@ public class MainView extends BorderPane {
 	}
 
 	private void openConcernView(int id) {
+		SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
 		//wenn Tab bereits existiert
-		if(tabSession.existsTabAlready("c" + id))
-		{
-			SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
-			
-		}
+		if()
+			for(Tab t: tabPane.getTabs())
+			{
+				t.get
+			}
 		//wenn Tab noch nicht existiert
 		else
 		{
-			
+			//TODO
 		}
 	}
 

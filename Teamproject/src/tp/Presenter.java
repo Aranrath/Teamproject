@@ -12,7 +12,6 @@ import tp.model.Appointment;
 import tp.model.EMail;
 import tp.model.Model;
 import tp.model.Student;
-import tp.model.TabSession;
 
 public class Presenter
 {
@@ -27,9 +26,8 @@ public class Presenter
 		
 	}
 
-	public TabSession getTabSession() {
-		TabSession tabSession = model.loadTabSession();
-		return tabSession;
+	public String[] getSessionTabs() {
+		return model.loadSessionTabs();
 	}
 
 	public Appointment[] getNext24hourAppointments() {
