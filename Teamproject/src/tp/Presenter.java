@@ -18,7 +18,7 @@ public class Presenter
 	}
 
 	public Session getSession() {
-		Session session = model.getSession();
+		Session session = model.loadSession();
 		return session;
 	}
 

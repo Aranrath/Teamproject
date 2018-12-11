@@ -2,36 +2,35 @@ package tp.model;
 
 public class Model {
 	
-	private Session session;
-
+	Session session;
+	
 	public Model()
 	{
-		loadLastSession();
-	}
-	
-	private void loadLastSession() {
-		// TODO Java object in Stream
-		generateDummySession();
-		
+
 	}
 
 
-	public void saveLastSession()
+
+	public void saveSession()
 	{
 		//TODO Java object out Stream
 		
 	}
 
-	public Session getSession() {
+	public Session loadSession() {
+		//TODO Java object in stream, wenn nicht da neue Datei
 		return session;
 		
 	}
-
-	//----------------------------------
 	
-	private void generateDummySession() {
-		// TODO Auto-generated method stub
-		
+	public Session getSession()
+	{
+		return session;
 	}
+	public void setSession(Session session)
+	{
+		this.session = session;
+	}
+	
 	
 }
