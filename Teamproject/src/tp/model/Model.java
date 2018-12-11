@@ -31,6 +31,17 @@ public class Model {
 	{
 		this.session = session;
 	}
+
+
+
+	public Appointment[] loadNext24hourAppointments() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+
+
 	
 	
 }

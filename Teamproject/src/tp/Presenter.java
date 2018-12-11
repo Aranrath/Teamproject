@@ -23,8 +23,7 @@ public class Presenter
 	}
 
 	public Appointment[] getNext24hourAppointments() {
-		// TODO Auto-generated method stub
-		return null;
+		return model.loadNext24hourAppointments();
 	}
 
 }
