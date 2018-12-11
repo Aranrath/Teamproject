@@ -12,6 +12,6 @@ public class UpdateTimer {
 
 	
 	public void checkMail() {
-		//TODO empfange E-mails und filter die raus, die noch nicht in der Datenbank sind.
+		//TODO empfange E-mails und filter die raus, die noch nicht in der Datenbank sind. Blala
 	}
 }
