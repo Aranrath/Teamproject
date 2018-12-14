@@ -2,11 +2,11 @@ package tp.model;
 
 public class Model {
 
-	private String[] sessionTabs;
+	private String[] sessionTabsIds;
 	private Options options;
 
 	public Model() {
-		loadSessionTabs();
+		loadSessionTabsIds();
 	}
 	
 	//-------------------Calculations--------------------------------------------------------------
@@ -33,10 +33,10 @@ public class Model {
 		
 	}
 
-	public String[] loadSessionTabs() {
+	public String[] loadSessionTabsIds() {
 		// TODO Java object in stream, wenn da, sonst neue Datei
 		// this.tabSession = ...
-		return sessionTabs;
+		return sessionTabsIds;
 
 	}
 
@@ -50,11 +50,15 @@ public class Model {
 	// ------------Getter&Setter--------------------------------------------------------------------
 
 	public String[] getSessionTabs() {
-		return sessionTabs;
+		if (sessionTabsIds == null)
+		{
+			return loadSessionTabsIds();
+		}
+		return sessionTabsIds;
 	}
 
 	public void setSessionTabs(String[] sessionTabs) {
-		this.sessionTabs = sessionTabs;
+		this.sessionTabsIds = sessionTabs;
 	}
 	//----------------------------------------------------------------------------------------------
 

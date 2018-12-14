@@ -26,8 +26,8 @@ public class Presenter
 		
 	}
 
-	public String[] getSessionTabs() {
-		return model.loadSessionTabs();
+	public String[] getSessionTabsIds() {
+		return model.loadSessionTabsIds();
 	}
 
 	public Appointment[] getNext24hourAppointments() {

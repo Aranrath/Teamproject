@@ -12,4 +12,13 @@ public class MyTab extends Tab{
 		this.viewId = viewId;
 	}
 
+	public String getViewId() {
+		return viewId;
+	}
+
+	public void setViewId(String viewId) {
+		this.viewId = viewId;
+	}
+	
+
 }

@@ -1,7 +1,5 @@
 package tp;
 
-import com.sun.xml.internal.ws.wsdl.writer.document.OpenAtts;
-
 import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -13,7 +11,7 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import tp.model.Appointment;
-import tp.model.TabSession;
+import tp.model.MyTab;
 
 public class MainView extends BorderPane {
 
@@ -22,12 +20,13 @@ public class MainView extends BorderPane {
 	private ToolBar leftToolBar;
 	private ToolBar rightToolBar;
 	TabPane tabPane;
-	private String[] sessionTabs;
+	private MyTab[] sessionTabs;
+	private String[] sessionTabsIds;
 	private Appointment[] next24hourAppointments;
 
 	public MainView(Presenter presenter) {
 		this.presenter = presenter;
-		this.sessionTabs = presenter.getSessionTabs();
+		this.sessionTabsIds = presenter.getSessionTabsIds();
 		buildView();
 		updateRightToolBar();
 	}
@@ -87,20 +86,51 @@ public class MainView extends BorderPane {
 			rightToolBar.getItems().addAll(newAppointmentButton);
 		}
 	}
+	
+	/**
+	 * Prefixes:
+	 * s = student, 
+	 * c = concern, 
+	 * o = options, 
+	 * t = statistic, 
+	 * i = all statistics, 
+	 * a = all students, 
+	 * l = all concerns, 
+	 * f = forms, 
+	 * w = weekly appointment Schedule
+	 */
+	private void openSessionTabs (String[] sessionTabsIds)
+	{
+		if(sessionTabsIds == null)
+		{
+			sessionTabsIds = presenter.getSessionTabsIds();
+		}
+		for (String s: sessionTabsIds)
+		{
+			char firstLetter = s.charAt(0);
+			
+			if(firstLetter == 's')
+			{
+				openStudentTab(Integer.parseInt(s.substring(1)));
+			}
+			//if()
+		}
+			
+	}
 
 	private void openConcernView(int id) {
 		SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
 		//wenn Tab bereits existiert
-		if()
-			for(Tab t: tabPane.getTabs())
-			{
-				t.get
-			}
-		//wenn Tab noch nicht existiert
-		else
-		{
-			//TODO
-		}
+//		if()
+//			for(Tab t: tabPane.getTabs())
+//			{
+//				
+//			}
+//		//wenn Tab noch nicht existiert
+//		else
+//		{
+//			//TODO
+//		}
 	}
 
 	private void openAllStudentView() {
@@ -108,7 +138,7 @@ public class MainView extends BorderPane {
 
 	}
 
-	private void openStudentView(int mtrNr) {
+	private void openStudentTab(int mtrNr) {
 		// TODO Auto-generated method stub
 
 	}
