@@ -1,5 +1,7 @@
 package tp.statistics;
 
-public class StatisticView {
+import javafx.scene.layout.HBox;
+
+public class StatisticView extends HBox{
 
 }

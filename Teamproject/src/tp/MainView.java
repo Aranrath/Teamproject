@@ -4,14 +4,12 @@ import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
-import javafx.scene.control.SingleSelectionModel;
-import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
 import tp.model.Appointment;
 import tp.model.MyTab;
+import tp.students.AllStudentsView;
 
 public class MainView extends BorderPane {
 
@@ -20,7 +18,6 @@ public class MainView extends BorderPane {
 	private ToolBar leftToolBar;
 	private ToolBar rightToolBar;
 	TabPane tabPane;
-	private MyTab[] sessionTabs;
 	private String[] sessionTabsIds;
 	private Appointment[] next24hourAppointments;
 
@@ -34,13 +31,18 @@ public class MainView extends BorderPane {
 	private void buildView() {
 
 		// Buttons
-		Button optionenButton = new Button("Optionen");
-		Button alleAnliegenButton = new Button("Alle Anliegen");
-		Button neuesAnliegenButton = new Button("Neues Anliegen");
-		Button alleStudentenButton = new Button("Alle Studenten");
-		Button neuerStudentButton = new Button("Neuer Student");
-		Button formulareButton = new Button("Formulare");
-		Button statistikenButton = new Button("Statistiken");
+		Button optionsButton = new Button("Optionen");
+		Button allConcernsButton = new Button("Alle Anliegen");
+		Button newConcernButton = new Button("Neues Anliegen");
+		Button allStudentensButton = new Button("Alle Studenten");
+		Button newStudentButton = new Button("Neuer Student");
+		Button formsButton = new Button("Formulare");
+		Button allStatisticsButton = new Button("Statistiken");
+		Button newStatisticButton = new Button("Neue Statistik");
+		
+		optionsButton.setOnAction((event)-> {
+			openOptionsTab();
+		});
 
 		// Toolbars
 		leftToolBar = new ToolBar();
@@ -48,9 +50,9 @@ public class MainView extends BorderPane {
 		rightToolBar = new ToolBar();
 		rightToolBar.setOrientation(Orientation.VERTICAL);
 
-		leftToolBar.getItems().addAll(optionenButton, new Separator(), alleAnliegenButton, neuesAnliegenButton,
-				new Separator(), alleStudentenButton, neuerStudentButton, new Separator(), formulareButton,
-				statistikenButton);
+		leftToolBar.getItems().addAll(optionsButton, new Separator(), allConcernsButton, newConcernButton,
+				new Separator(), allStudentensButton, newStudentButton, new Separator(), 
+				allStatisticsButton, newStatisticButton, new Separator(), formsButton);
 
 		// -------------------Zusammenfügen---------------------------------------
 
@@ -60,16 +62,8 @@ public class MainView extends BorderPane {
 		tabPane = new TabPane();
 		setCenter(tabPane);
 
-		// -----------------TabSession in TabPane laden-------------------------------
-
-		Tab tab1 = new Tab("Alle Studenten");
-		Tab tab2 = new Tab("Max Mustermann");
-		tabPane.getTabs().addAll(tab1, tab2);
-		Pane pane1 = new Pane();
-		Pane pane2 = new Pane();
-		tab1.setContent(pane1);
-		tab2.setContent(pane2);
-		pane1.getChildren().addAll(new Button("hi"));
+		openSessionTabs();
+		
 
 	}
 
@@ -81,64 +75,77 @@ public class MainView extends BorderPane {
 		for (Appointment a : next24hourAppointments) {
 			Button newAppointmentButton = new Button(a.getConcern().getTitle());
 			newAppointmentButton.setOnAction((event) -> {
-				openConcernView(a.getConcern().getId());
+				openConcernTab(a.getConcern().getId());
 			});
 			rightToolBar.getItems().addAll(newAppointmentButton);
 		}
 	}
-	
+
 	/**
-	 * Prefixes:
-	 * s = student, 
-	 * c = concern, 
-	 * o = options, 
-	 * t = statistic, 
-	 * i = all statistics, 
-	 * a = all students, 
-	 * l = all concerns, 
-	 * f = forms, 
-	 * w = weekly appointment Schedule
+	 * Prefixes: s = student, c = concern, o = options, t = statistic, i = all
+	 * statistics, a = all students, l = all concerns, f = forms, w = weekly
+	 * appointment Schedule
 	 */
-	private void openSessionTabs (String[] sessionTabsIds)
-	{
-		if(sessionTabsIds == null)
-		{
+	private void openSessionTabs() {
+		if (sessionTabsIds == null) {
 			sessionTabsIds = presenter.getSessionTabsIds();
 		}
-		for (String s: sessionTabsIds)
-		{
+		for (String s : sessionTabsIds) {
 			char firstLetter = s.charAt(0);
-			
-			if(firstLetter == 's')
-			{
+
+			if (firstLetter == 's') {
 				openStudentTab(Integer.parseInt(s.substring(1)));
 			}
-//			if()
-//			{
-//				
-//			}
+			if (firstLetter == 'c') {
+				openConcernTab(Integer.parseInt(s.substring(1)));
+			}
+			if (firstLetter == 'o') {
+				openOptionsTab();
+			}
+			if (firstLetter == 't') {
+				openStatisticTab(Integer.parseInt(s.substring(1)));
+			}
+			if (firstLetter == 'i') {
+				openAllStatisticsTab();
+			}
+			if (firstLetter == 'a') {
+				openAllStudentsTab();
+			}
+			if (firstLetter == 'l') {
+				openAllConcernsTab();
+			}
+			if (firstLetter == 'f') {
+				openFormsTab();
+			}
+			if (firstLetter == 'w') {
+				opemWeeklyAppointmentSchedule();
+			}
 		}
-			
+
+	}
+	
+
+
+	//----------------------------------------------opening Tabs-----------------------------------
+
+	
+	private void openConcernTab(int id) {
+//		SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
+		
+		//Tab bereits offen?
+		// wenn Tab bereits existiert
+		//wechsel aktiven Tab dahin
+		
+		// //wenn Tab noch nicht existiert
+		//Öffne neuen Tab (im Vordergrund)
 	}
 
-	private void openConcernView(int id) {
-		SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
-		//wenn Tab bereits existiert
-//		if()
-//			for(Tab t: tabPane.getTabs())
-//			{
-//				
-//			}
-//		//wenn Tab noch nicht existiert
-//		else
-//		{
-//			//TODO
-//		}
-	}
-
-	private void openAllStudentView() {
-		// TODO Auto-generated method stub
-
+	private void openAllStudentsTab() {
+		MyTab newTab = new MyTab("a");
+		
+		newTab.setContent(new AllStudentsView());
+		
+		tabPane.getTabs().addAll(newTab);
 	}
 
 	private void openStudentTab(int mtrNr) {
@@ -146,6 +153,33 @@ public class MainView extends BorderPane {
 
 	}
 	
+	private void openOptionsTab() {
+		// TODO Auto-generated method stub
+		
+	}
+	private void opemWeeklyAppointmentSchedule() {
+		// TODO Auto-generated method stub
+		
+	}
 
+	private void openFormsTab() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void openAllConcernsTab() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void openStatisticTab(int parseInt) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void openAllStatisticsTab() {
+		// TODO Auto-generated method stub
+		
+	}
 
 }
