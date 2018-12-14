@@ -66,6 +66,16 @@ public class Model {
 	public void setSessionTabs(String[] sessionTabs) {
 		this.sessionTabsIds = sessionTabs;
 	}
+	
+	
+	
+
+	//------------Boolean Abfragen------------------------------------------------------------------
+	
+	public boolean mailInDb(EMail email) {
+		//TODO sqlabfrage
+		return true;
+	}
 	//----------------------------------------------------------------------------------------------
 
 

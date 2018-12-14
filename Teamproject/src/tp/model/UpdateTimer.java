@@ -73,6 +73,9 @@ public class UpdateTimer {
 					}					
 					EMail mail = new EMail(content, subject, student, true);
 					//TODO if(Mail noch nicht in Datenbank) {model.saveMail(mail);}
+					if (model.mailInDb(mail)) {
+						model.saveMail(mail);
+					}
 				}
 			}
 		} catch (Exception e) {
