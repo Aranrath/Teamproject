@@ -145,6 +145,7 @@ public class MainView extends BorderPane {
 		
 		newTab.setContent(new AllStudentsView());
 		
+		
 		tabPane.getTabs().addAll(newTab);
 	}
 
