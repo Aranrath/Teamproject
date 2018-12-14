@@ -59,7 +59,7 @@ public class UpdateTimer {
 				{
 
 					Address senders[] = msg.getFrom();
-					Student student = model.getStudentWithEmail(senders[0].toString());
+					Student student = model.getStudent(senders[0].toString());
 					String subject = msg.getSubject();
 					// If the message is a MimeMessage (most are)
 					// The content is returned as an Object,

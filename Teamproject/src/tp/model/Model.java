@@ -50,8 +50,13 @@ public class Model {
 	// ------------Getter&Setter--------------------------------------------------------------------
 
 	
-	public Student getStudentWithEmail(String email) {
+	public Student getStudent(String email) {
 		//TODO return Student where email = email
+		return null;
+	}
+	
+	public Student getStudent(int mtrNr) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 	
@@ -77,6 +82,8 @@ public class Model {
 		return true;
 	}
 	//----------------------------------------------------------------------------------------------
+
+
 
 
 

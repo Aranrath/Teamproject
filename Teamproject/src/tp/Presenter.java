@@ -73,4 +73,9 @@ public class Presenter
 		}
 	}
 
+	public Student getStudent(int mtrNr) {
+		return model.getStudent(mtrNr);
+		
+	}
+
 }

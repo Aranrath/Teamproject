@@ -10,6 +10,7 @@ import javafx.scene.layout.BorderPane;
 import tp.model.Appointment;
 import tp.model.MyTab;
 import tp.students.AllStudentsView;
+import tp.students.StudentView;
 
 public class MainView extends BorderPane {
 
@@ -41,7 +42,7 @@ public class MainView extends BorderPane {
 		Button newStatisticButton = new Button("Neue Statistik");
 		
 		optionsButton.setOnAction((event)-> {
-			openOptionsTab();
+			openOptionsTab("o");
 		});
 
 		// Toolbars
@@ -75,7 +76,7 @@ public class MainView extends BorderPane {
 		for (Appointment a : next24hourAppointments) {
 			Button newAppointmentButton = new Button(a.getConcern().getTitle());
 			newAppointmentButton.setOnAction((event) -> {
-				openConcernTab(a.getConcern().getId());
+				openConcernTab("c" + a.getConcern().getId());
 			});
 			rightToolBar.getItems().addAll(newAppointmentButton);
 		}
@@ -94,31 +95,31 @@ public class MainView extends BorderPane {
 			char firstLetter = s.charAt(0);
 
 			if (firstLetter == 's') {
-				openStudentTab(Integer.parseInt(s.substring(1)));
+				openStudentTab(s);
 			}
 			if (firstLetter == 'c') {
-				openConcernTab(Integer.parseInt(s.substring(1)));
+				openConcernTab(s);
 			}
 			if (firstLetter == 'o') {
-				openOptionsTab();
+				openOptionsTab(s);
 			}
 			if (firstLetter == 't') {
-				openStatisticTab(Integer.parseInt(s.substring(1)));
+				openStatisticTab(s);
 			}
 			if (firstLetter == 'i') {
-				openAllStatisticsTab();
+				openAllStatisticsTab(s);
 			}
 			if (firstLetter == 'a') {
-				openAllStudentsTab();
+				openAllStudentsTab(s);
 			}
 			if (firstLetter == 'l') {
-				openAllConcernsTab();
+				openAllConcernsTab(s);
 			}
 			if (firstLetter == 'f') {
-				openFormsTab();
+				openFormsTab(s);
 			}
 			if (firstLetter == 'w') {
-				opemWeeklyAppointmentSchedule();
+				opemWeeklyAppointmentSchedule(s);
 			}
 		}
 
@@ -129,7 +130,9 @@ public class MainView extends BorderPane {
 	//----------------------------------------------opening Tabs-----------------------------------
 
 	
-	private void openConcernTab(int id) {
+	private void openConcernTab(String tabId) {
+		
+		//Integer.parseInt(s.substring(1)
 //		SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
 		
 		//Tab bereits offen?
@@ -140,45 +143,63 @@ public class MainView extends BorderPane {
 		//Öffne neuen Tab (im Vordergrund)
 	}
 
-	private void openAllStudentsTab() {
+	private void openAllStudentsTab(String tabId) {
+		if(!tabAlreadyOpen(tabId))
+		{
+			//switch to Tab mit tabId
+		}
 		MyTab newTab = new MyTab("a");
 		
 		newTab.setContent(new AllStudentsView());
 		
-		
 		tabPane.getTabs().addAll(newTab);
 	}
 
-	private void openStudentTab(int mtrNr) {
+
+	private boolean tabAlreadyOpen(String tabId) {
 		// TODO Auto-generated method stub
+		return false;
+	}
+
+	private void openStudentTab(String tabId) {
+		MyTab newTab = new MyTab("s");
+		
+		newTab.setContent(new StudentView(Integer.parseInt(tabId.substring(1)), presenter));
+		
+		tabPane.getTabs().addAll(newTab);
 
 	}
 	
-	private void openOptionsTab() {
-		// TODO Auto-generated method stub
+	private void openOptionsTab(String tabId) {
+		MyTab newTab = new MyTab("o");
+		
+		newTab.setContent(new AllStudentsView());
+		
+		tabPane.getTabs().addAll(newTab);
 		
 	}
-	private void opemWeeklyAppointmentSchedule() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	private void openFormsTab() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	private void openAllConcernsTab() {
+	private void opemWeeklyAppointmentSchedule(String tabId) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	private void openStatisticTab(int parseInt) {
+	private void openFormsTab(String tabId) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	private void openAllStatisticsTab() {
+	private void openAllConcernsTab(String tabId) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void openStatisticTab(String tabId) {
+		//Integer.parseInt(s.substring(1)
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void openAllStatisticsTab(String tabId) {
 		// TODO Auto-generated method stub
 		
 	}
