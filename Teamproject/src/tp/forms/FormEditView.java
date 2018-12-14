@@ -1,4 +1,4 @@
-package tp.formulars;
+package tp.forms;
 
 public class FormEditView {
 
