@@ -1,5 +1,7 @@
 package tp.concern;
 
-public class ConcernView {
+import javafx.scene.layout.HBox;
+
+public class ConcernView extends HBox{
 
 }

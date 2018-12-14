@@ -1,5 +1,7 @@
 package tp.students;
 
-public class StudentView {
+import javafx.scene.layout.HBox;
+
+public class StudentView extends HBox{
 
 }

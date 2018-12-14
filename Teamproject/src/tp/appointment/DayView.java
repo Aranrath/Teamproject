@@ -1,5 +1,7 @@
 package tp.appointment;
 
-public class DayView {
+import javafx.scene.layout.HBox;
+
+public class DayView extends HBox{
 
 }

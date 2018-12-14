@@ -1,5 +1,7 @@
 package tp.forms;
 
-public class FormEditView {
+import javafx.scene.layout.HBox;
+
+public class FormEditView extends HBox{
 
 }

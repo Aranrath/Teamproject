@@ -1,5 +1,7 @@
 package tp.options;
 
-public class ModuleEditView {
+import javafx.scene.layout.HBox;
+
+public class ModuleEditView extends HBox{
 
 }

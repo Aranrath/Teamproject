@@ -1,5 +1,7 @@
 package tp.students;
 
-public class SelectPassedModulesView {
+import javafx.scene.layout.HBox;
+
+public class SelectPassedModulesView extends HBox{
 
 }

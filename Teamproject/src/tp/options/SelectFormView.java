@@ -1,5 +1,7 @@
 package tp.options;
 
-public class SelectFormView {
+import javafx.scene.layout.HBox;
+
+public class SelectFormView extends HBox{
 
 }

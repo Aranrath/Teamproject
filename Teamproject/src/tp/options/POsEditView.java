@@ -1,5 +1,7 @@
 package tp.options;
 
-public class POsEditView {
+import javafx.scene.layout.HBox;
+
+public class POsEditView extends HBox{
 
 }
