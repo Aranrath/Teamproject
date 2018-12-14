@@ -29,7 +29,7 @@ public class Model {
 	}
 	
 	public void saveMail(EMail email) {
-		// TODO Auto-generated method stub
+		// TODO add EMail to Database
 		
 	}
 
@@ -49,6 +49,12 @@ public class Model {
 
 	// ------------Getter&Setter--------------------------------------------------------------------
 
+	
+	public Student getStudentWithEmail(String email) {
+		//TODO return Student where email = email
+		return null;
+	}
+	
 	public String[] getSessionTabs() {
 		if (sessionTabsIds == null)
 		{
