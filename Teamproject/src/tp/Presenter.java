@@ -65,7 +65,7 @@ public class Presenter
 			transport.close();
 			
 			//save E-mail to Database
-			EMail email = new EMail(content, recipient, false);
+			EMail email = new EMail(content,subject, recipient, false);
 			model.saveMail(email);
 		} catch (Exception e) {
 			//TODO Fehlerbehandlung ohne crash des Programms 
