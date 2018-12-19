@@ -4,6 +4,8 @@ import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
+import javafx.scene.control.SingleSelectionModel;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
@@ -18,7 +20,7 @@ public class MainView extends BorderPane {
 
 	private ToolBar leftToolBar;
 	private ToolBar rightToolBar;
-	TabPane tabPane;
+	private TabPane tabPane;
 	private String[] sessionTabsIds;
 	private Appointment[] next24hourAppointments;
 
@@ -119,10 +121,29 @@ public class MainView extends BorderPane {
 				openFormsTab(s);
 			}
 			if (firstLetter == 'w') {
-				opemWeeklyAppointmentSchedule(s);
+				openWeeklyAppointmentSchedule(s);
 			}
 		}
 
+	}
+	
+	private boolean switchIfTabAlreadyOpen(String tabId) {
+		
+		for(int i = 0; i< tabPane.getTabs().size(); i++)
+		{
+			MyTab t = (MyTab) tabPane.getTabs().get(i);
+			//wenn: Tab gibt es schon
+			if(t.getViewId().equals(tabId))
+			{
+				//switch zu dem
+				SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
+				selectionModel.select(t);
+				return true;
+				
+			}
+		}
+		//Tab gibts noch nich
+		return false;
 	}
 	
 
@@ -133,7 +154,7 @@ public class MainView extends BorderPane {
 	private void openConcernTab(String tabId) {
 		
 		//Integer.parseInt(s.substring(1)
-//		SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
+//		
 		
 		//Tab bereits offen?
 		// wenn Tab bereits existiert
@@ -144,21 +165,14 @@ public class MainView extends BorderPane {
 	}
 
 	private void openAllStudentsTab(String tabId) {
-		if(!tabAlreadyOpen(tabId))
+		if(!switchIfTabAlreadyOpen(tabId))
 		{
-			//switch to Tab mit tabId
+			MyTab newTab = new MyTab("a");
+			
+			newTab.setContent(new AllStudentsView());
+			
+			tabPane.getTabs().addAll(newTab);
 		}
-		MyTab newTab = new MyTab("a");
-		
-		newTab.setContent(new AllStudentsView());
-		
-		tabPane.getTabs().addAll(newTab);
-	}
-
-
-	private boolean tabAlreadyOpen(String tabId) {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 	private void openStudentTab(String tabId) {
@@ -178,7 +192,7 @@ public class MainView extends BorderPane {
 		tabPane.getTabs().addAll(newTab);
 		
 	}
-	private void opemWeeklyAppointmentSchedule(String tabId) {
+	private void openWeeklyAppointmentSchedule(String tabId) {
 		// TODO Auto-generated method stub
 		
 	}
