@@ -174,6 +174,7 @@ public class MainView extends BorderPane {
 			tabPane.getTabs().addAll(newTab);
 		}
 	}
+	
 
 	private void openStudentTab(String tabId) {
 		MyTab newTab = new MyTab("s");
