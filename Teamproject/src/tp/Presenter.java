@@ -9,8 +9,10 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import tp.model.Appointment;
+import tp.model.Concern;
 import tp.model.EMail;
 import tp.model.Model;
+import tp.model.Statistic;
 import tp.model.Student;
 
 public class Presenter
@@ -22,17 +24,28 @@ public class Presenter
 		this.mainView = mainView;
 		this.model = model;
 		
-		//TODO Hole vom Model die Tabs der letzten Sitzung und öffne diese.
-		
 	}
 
-	public String[] getSessionTabsIds() {
-		return model.loadSessionTabsIds();
+	
+	//======================Updater======================
+	public void updateWeekView()
+	{
+		//TODO
 	}
-
-	public Appointment[] getNext24hourAppointments() {
-		return model.loadNext24hourAppointments();
+	
+	public void updateRightToolbar()
+	{
+		mainView.updateRightToolBar();
 	}
+	
+	public void updateTabViews()
+	{
+		//TODO
+	}
+	
+	
+	//=====================Mail==========================
+	
 	
 	public void sendMail(String userID, String name, Student recipient, String subject, String content) {
 		try {
@@ -72,10 +85,32 @@ public class Presenter
 			e.printStackTrace();
 		}
 	}
+	
+	
+	
+	//===============Getter&Setter========================
+	
+	public String[] getSessionTabsIds() {
+		return model.loadSessionTabsIds();
+	}
+
+	public Appointment[] getNext24hourAppointments() {
+		return model.loadNext24hourAppointments();
+	}
+	
+
 
 	public Student getStudent(int mtrNr) {
 		return model.getStudent(mtrNr);
 		
+	}
+
+	public Concern getConcern(int concernId) {
+		return model.getConcern(concernId);
+	}
+
+	public Statistic getStatistic(int statisticId) {
+		return model.getStatistic(statisticId);
 	}
 
 }

@@ -9,9 +9,19 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
+import tp.appointment.WeekScheduleView;
+import tp.concern.AllConcernsView;
+import tp.concern.ConcernView;
+import tp.concern.EditConcernView;
+import tp.forms.FormsView;
 import tp.model.Appointment;
+import tp.model.Concern;
 import tp.model.MyTab;
+import tp.model.Statistic;
+import tp.model.Student;
+import tp.statistics.StatisticView;
 import tp.students.AllStudentsView;
+import tp.students.EditStudentView;
 import tp.students.StudentView;
 
 public class MainView extends BorderPane {
@@ -40,11 +50,32 @@ public class MainView extends BorderPane {
 		Button allStudentensButton = new Button("Alle Studenten");
 		Button newStudentButton = new Button("Neuer Student");
 		Button formsButton = new Button("Formulare");
-		Button allStatisticsButton = new Button("Statistiken");
+		Button allStatisticsButton = new Button("Alle Statistiken");
 		Button newStatisticButton = new Button("Neue Statistik");
-		
-		optionsButton.setOnAction((event)-> {
-			openOptionsTab("o");
+
+		optionsButton.setOnAction((event) -> {
+			openOptionsTab();
+		});
+		allConcernsButton.setOnAction((event) -> {
+			openAllConcernsTab();
+		});
+		newConcernButton.setOnAction((event) -> {
+			openNewConcernTab();
+		});
+		allStudentensButton.setOnAction((event) -> {
+			openAllStudentsTab();
+		});
+		newStudentButton.setOnAction((event) -> {
+			openNewStudentTab();
+		});
+		formsButton.setOnAction((event) -> {
+			openFormsTab();
+		});
+		allStatisticsButton.setOnAction((event) -> {
+			openAllStatisticsTab();
+		});
+		newStatisticButton.setOnAction((event) -> {
+			openNewStatisticTab();
 		});
 
 		// Toolbars
@@ -54,8 +85,8 @@ public class MainView extends BorderPane {
 		rightToolBar.setOrientation(Orientation.VERTICAL);
 
 		leftToolBar.getItems().addAll(optionsButton, new Separator(), allConcernsButton, newConcernButton,
-				new Separator(), allStudentensButton, newStudentButton, new Separator(), 
-				allStatisticsButton, newStatisticButton, new Separator(), formsButton);
+				new Separator(), allStudentensButton, newStudentButton, new Separator(), allStatisticsButton,
+				newStatisticButton, new Separator(), formsButton);
 
 		// -------------------Zusammenfügen---------------------------------------
 
@@ -66,7 +97,6 @@ public class MainView extends BorderPane {
 		setCenter(tabPane);
 
 		openSessionTabs();
-		
 
 	}
 
@@ -75,148 +105,270 @@ public class MainView extends BorderPane {
 		rightToolBar.getItems().clear();
 		rightToolBar.getItems().addAll(new Label("Nächste Termine")); // TODO Zeiten hinzufügen: letzter
 																		// Aktualisierungszeitpunkt
-		for (Appointment a : next24hourAppointments) {
-			Button newAppointmentButton = new Button(a.getConcern().getTitle());
-			newAppointmentButton.setOnAction((event) -> {
-				openConcernTab("c" + a.getConcern().getId());
-			});
-			rightToolBar.getItems().addAll(newAppointmentButton);
+		Button weeklyScheduleButton = new Button("Wochenkalendar");
+		weeklyScheduleButton.setOnAction((event)-> {
+			openWeekScheduleTab();
+		});
+		if (next24hourAppointments != null) {
+			for (Appointment a : next24hourAppointments) {
+				Button newAppointmentButton = new Button(a.getStartTime() + " - " + a.getEndTime() + "\n"
+						+ a.getConcern().getTitle() + "\n" + a.getRoomNmb());
+				newAppointmentButton.setOnAction((event) -> {
+					openConcernTab(a.getConcern());
+				});
+				rightToolBar.getItems().addAll(newAppointmentButton);
+			}
 		}
 	}
 
 	/**
-	 * Prefixes: s = student, c = concern, o = options, t = statistic, i = all
-	 * statistics, a = all students, l = all concerns, f = forms, w = weekly
-	 * appointment Schedule
+	 * naming convention: s<mtrNr> = student, c<id> = concern, o = options, t<id> =
+	 * statistic, i = all statistics, a = all students, l = all concerns, f = forms,
+	 * w = weekly, n<ew> = new(unsaved) appointment Schedule
 	 */
 	private void openSessionTabs() {
 		if (sessionTabsIds == null) {
 			sessionTabsIds = presenter.getSessionTabsIds();
 		}
-		for (String s : sessionTabsIds) {
-			char firstLetter = s.charAt(0);
+		if (sessionTabsIds != null) {
+			for (String s : sessionTabsIds) {
+				char firstLetter = s.charAt(0);
 
-			if (firstLetter == 's') {
-				openStudentTab(s);
-			}
-			if (firstLetter == 'c') {
-				openConcernTab(s);
-			}
-			if (firstLetter == 'o') {
-				openOptionsTab(s);
-			}
-			if (firstLetter == 't') {
-				openStatisticTab(s);
-			}
-			if (firstLetter == 'i') {
-				openAllStatisticsTab(s);
-			}
-			if (firstLetter == 'a') {
-				openAllStudentsTab(s);
-			}
-			if (firstLetter == 'l') {
-				openAllConcernsTab(s);
-			}
-			if (firstLetter == 'f') {
-				openFormsTab(s);
-			}
-			if (firstLetter == 'w') {
-				openWeeklyAppointmentSchedule(s);
+				if (firstLetter == 's') {
+					openStudentTab(presenter.getStudent(Integer.parseInt(s.substring(1))));
+				}
+				if (firstLetter == 'c') {
+					openConcernTab(presenter.getConcern(Integer.parseInt(s.substring(1))));
+				}
+				if (firstLetter == 'o') {
+					openOptionsTab();
+				}
+				if (firstLetter == 't') {
+					openStatisticTab(presenter.getStatistic(Integer.parseInt(s.substring(1))));
+				}
+				if (firstLetter == 'i') {
+					openAllStatisticsTab();
+				}
+				if (firstLetter == 'a') {
+					openAllStudentsTab();
+				}
+				if (firstLetter == 'l') {
+					openAllConcernsTab();
+				}
+				if (firstLetter == 'f') {
+					openFormsTab();
+				}
+				if (firstLetter == 'w') {
+					openWeekScheduleTab();
+				}
 			}
 		}
 
 	}
-	
-	private boolean switchIfTabAlreadyOpen(String tabId) {
-		
-		for(int i = 0; i< tabPane.getTabs().size(); i++)
-		{
+
+	private MyTab tabAlreadyOpen(String tabId) {
+
+		for (int i = 0; i < tabPane.getTabs().size(); i++) {
 			MyTab t = (MyTab) tabPane.getTabs().get(i);
-			//wenn: Tab gibt es schon
-			if(t.getViewId().equals(tabId))
-			{
-				//switch zu dem
-				SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
-				selectionModel.select(t);
-				return true;
-				
+			if (t.getViewId().equals(tabId)) {
+				return t; // Tab already exists
+
 			}
 		}
-		//Tab gibts noch nich
-		return false;
-	}
-	
-
-
-	//----------------------------------------------opening Tabs-----------------------------------
-
-	
-	private void openConcernTab(String tabId) {
-		
-		//Integer.parseInt(s.substring(1)
-//		
-		
-		//Tab bereits offen?
-		// wenn Tab bereits existiert
-		//wechsel aktiven Tab dahin
-		
-		// //wenn Tab noch nicht existiert
-		//Öffne neuen Tab (im Vordergrund)
+		// Tab doesnt exist
+		return null;
 	}
 
-	private void openAllStudentsTab(String tabId) {
-		if(!switchIfTabAlreadyOpen(tabId))
+	//------------------------openingTabs-----------------------------------
+
+	private void openAllStudentsTab() {
+		MyTab newTab = tabAlreadyOpen("a");
+		if (newTab == null)
 		{
-			MyTab newTab = new MyTab("a");
+
+			newTab = new MyTab("a");
 			
+			newTab.setText("Alle Studenten");
+
 			newTab.setContent(new AllStudentsView());
-			
+
 			tabPane.getTabs().addAll(newTab);
 		}
+		SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
+		selectionModel.select(newTab);
 	}
-	
 
-	private void openStudentTab(String tabId) {
-		MyTab newTab = new MyTab("s");
+	private void openStudentTab(Student student) {
+		MyTab newTab = tabAlreadyOpen("a" + student.getMtrNr());
+		if (newTab == null)
+		{
+			newTab = new MyTab("a" + student.getMtrNr());
+			
+			newTab.setText(student.getName() + ", " + student.getFirstName());
+
+			newTab.setContent(new StudentView(student));
+
+			tabPane.getTabs().addAll(newTab);
+		}
+		SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
+		selectionModel.select(newTab);
+
+	}
+
+	private void openOptionsTab() {
+		MyTab newTab = tabAlreadyOpen("o");
+		if (newTab == null) 
+		{
+			newTab = new MyTab("o");
+			
+			newTab.setText("Optionen");
+
+			newTab.setContent(new AllStudentsView());
+
+			tabPane.getTabs().addAll(newTab);
+		}
+		SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
+		selectionModel.select(newTab);
+
+	}
+
+	private void openWeekScheduleTab() {
+		MyTab newTab = tabAlreadyOpen("w");
+		if (newTab == null) {
+
+
+			newTab = new MyTab("w");
+			
+			newTab.setText("Wochenplan");
+
+			newTab.setContent(new WeekScheduleView());
+
+			tabPane.getTabs().addAll(newTab);
+		}
+
+		SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
+		selectionModel.select(newTab);
+	}
+
+	private void openFormsTab() {
+		MyTab newTab = tabAlreadyOpen("f");
+		if (newTab == null) {
+			newTab = new MyTab("f");
+			
+			newTab.setText("Formulare");
+
+			newTab.setContent(new FormsView());
+
+			tabPane.getTabs().addAll(newTab);
+		}
+		SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
+		selectionModel.select(newTab);
+
+	}
+
+	private void openAllConcernsTab() {
+		MyTab newTab = tabAlreadyOpen("l");
+		if (newTab == null) {
+			newTab = new MyTab("l");
+			
+			newTab.setText("Alle Anliegen");
+
+			newTab.setContent(new AllConcernsView());
+
+			tabPane.getTabs().addAll(newTab);
+		}
+		SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
+		selectionModel.select(newTab);
+
+	}
+
+	private void openStatisticTab(Statistic statistic) {
+		MyTab newTab = tabAlreadyOpen("t" + statistic.getId());
+		if (newTab == null) {
+			newTab = new MyTab("t" + statistic.getId());
+			
+			newTab.setText(statistic.getTitle());
+
+			newTab.setContent(new StatisticView(statistic));
+
+			tabPane.getTabs().addAll(newTab);
+		}
+		SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
+		selectionModel.select(newTab);
+
+	}
+
+	private void openAllStatisticsTab() {
+		MyTab newTab = tabAlreadyOpen("i");
+		if (newTab == null) {
+			newTab = new MyTab("i");
+			
+			newTab.setText("Alle Statistiken");
+
+			newTab.setContent(new AllConcernsView());
+
+			tabPane.getTabs().addAll(newTab);
+		}
+		SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
+		selectionModel.select(newTab);
+
+	}
+
+	private void openConcernTab(Concern concern) {
+		MyTab newTab = tabAlreadyOpen("c" + concern.getId());
+		if (newTab == null) {
+			newTab = new MyTab("c" + concern.getId());
+			
+			newTab.setText(concern.getTitle());
+
+			newTab.setContent(new ConcernView(concern));
+
+			tabPane.getTabs().addAll(newTab);
+		}
+		SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
+		selectionModel.select(newTab);
+
+	}
+
+	private void openNewConcernTab() {
+		MyTab newTab = new MyTab("new");
 		
-		newTab.setContent(new StudentView(Integer.parseInt(tabId.substring(1)), presenter));
+		newTab.setText("Neues Anliegen");
+
+		newTab.setContent(new EditConcernView());
+
+		tabPane.getTabs().addAll(newTab);
 		
+		SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
+		selectionModel.select(newTab);
+
+	}
+
+	private void openNewStudentTab() {
+		MyTab newTab = new MyTab("new");
+		
+		newTab.setText("Neuer Student");
+
+		newTab.setContent(new EditStudentView());
+
+		tabPane.getTabs().addAll(newTab);
+		
+		SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
+		selectionModel.select(newTab);
+
+	}
+
+	private void openNewStatisticTab() {
+		MyTab newTab = new MyTab("new");
+		
+		newTab.setText("Neue Statistik");
+
+		newTab.setContent(new EditConcernView());
+
 		tabPane.getTabs().addAll(newTab);
 
-	}
-	
-	private void openOptionsTab(String tabId) {
-		MyTab newTab = new MyTab("o");
-		
-		newTab.setContent(new AllStudentsView());
-		
-		tabPane.getTabs().addAll(newTab);
-		
-	}
-	private void openWeeklyAppointmentSchedule(String tabId) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	private void openFormsTab(String tabId) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	private void openAllConcernsTab(String tabId) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	private void openStatisticTab(String tabId) {
-		//Integer.parseInt(s.substring(1)
-		// TODO Auto-generated method stub
-		
-	}
-
-	private void openAllStatisticsTab(String tabId) {
-		// TODO Auto-generated method stub
-		
+		SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
+		selectionModel.select(newTab);
 	}
 
 }

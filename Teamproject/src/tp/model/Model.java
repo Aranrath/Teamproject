@@ -60,6 +60,16 @@ public class Model {
 		return null;
 	}
 	
+	public Concern getConcern(int concernId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	public Statistic getStatistic(int statisticId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 	public String[] getSessionTabs() {
 		if (sessionTabsIds == null)
 		{
@@ -82,6 +92,8 @@ public class Model {
 		return true;
 	}
 	//----------------------------------------------------------------------------------------------
+
+
 
 
 

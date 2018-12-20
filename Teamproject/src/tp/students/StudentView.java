@@ -8,6 +8,12 @@ public class StudentView extends HBox{
 	
 	Student student;
 	
+	public StudentView(Student student)
+	{
+		this.student = student;
+		
+	}
+	
 	public StudentView(int mtrNr, Presenter presenter)
 	{
 		this.student = presenter.getStudent(mtrNr);
