@@ -1,6 +1,8 @@
 package tp;
 
+import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
@@ -19,6 +21,7 @@ import tp.model.Concern;
 import tp.model.MyTab;
 import tp.model.Statistic;
 import tp.model.Student;
+import tp.options.OptionsView;
 import tp.statistics.StatisticView;
 import tp.students.AllStudentsView;
 import tp.students.EditStudentView;
@@ -52,6 +55,19 @@ public class MainView extends BorderPane {
 		Button formsButton = new Button("Formulare");
 		Button allStatisticsButton = new Button("Alle Statistiken");
 		Button newStatisticButton = new Button("Neue Statistik");
+		
+		//========================================================
+		
+		optionsButton.setMaxWidth(Double.MAX_VALUE);
+		allConcernsButton.setMaxWidth(Double.MAX_VALUE);
+		newConcernButton.setMaxWidth(Double.MAX_VALUE);
+		allStudentensButton.setMaxWidth(Double.MAX_VALUE);
+		newStudentButton.setMaxWidth(Double.MAX_VALUE);
+		formsButton.setMaxWidth(Double.MAX_VALUE);
+		allStatisticsButton.setMaxWidth(Double.MAX_VALUE);
+		newStatisticButton.setMaxWidth(Double.MAX_VALUE);
+		
+		//========================================================
 
 		optionsButton.setOnAction((event) -> {
 			openOptionsTab();
@@ -101,14 +117,19 @@ public class MainView extends BorderPane {
 	}
 
 	public void updateRightToolBar() {
-		this.next24hourAppointments = presenter.getNext24hourAppointments();
 		rightToolBar.getItems().clear();
-		rightToolBar.getItems().addAll(new Label("Nächste Termine")); // TODO Zeiten hinzufügen: letzter
-																		// Aktualisierungszeitpunkt
+		//------------------------------------------------------------
 		Button weeklyScheduleButton = new Button("Wochenkalendar");
-		weeklyScheduleButton.setOnAction((event)-> {
+		weeklyScheduleButton.setMaxWidth(Double.MAX_VALUE);
+		weeklyScheduleButton.setOnAction((event) -> {
 			openWeekScheduleTab();
 		});
+		Label nextAppointmentsLabel = new Label("Nächste Termine");
+		nextAppointmentsLabel.setMaxWidth(Double.MAX_VALUE);;
+		nextAppointmentsLabel.setAlignment(Pos.CENTER);
+		rightToolBar.getItems().addAll(weeklyScheduleButton,nextAppointmentsLabel);
+		// -----------------------------------------------------------
+		this.next24hourAppointments = presenter.getNext24hourAppointments();
 		if (next24hourAppointments != null) {
 			for (Appointment a : next24hourAppointments) {
 				Button newAppointmentButton = new Button(a.getStartTime() + " - " + a.getEndTime() + "\n"
@@ -179,18 +200,17 @@ public class MainView extends BorderPane {
 		return null;
 	}
 
-	//------------------------openingTabs-----------------------------------
+	// ------------------------openingTabs-----------------------------------
 
 	private void openAllStudentsTab() {
 		MyTab newTab = tabAlreadyOpen("a");
-		if (newTab == null)
-		{
+		if (newTab == null) {
 
 			newTab = new MyTab("a");
-			
+
 			newTab.setText("Alle Studenten");
 
-			newTab.setContent(new AllStudentsView());
+			newTab.setContent(new AllStudentsView(presenter));
 
 			tabPane.getTabs().addAll(newTab);
 		}
@@ -200,10 +220,9 @@ public class MainView extends BorderPane {
 
 	private void openStudentTab(Student student) {
 		MyTab newTab = tabAlreadyOpen("a" + student.getMtrNr());
-		if (newTab == null)
-		{
+		if (newTab == null) {
 			newTab = new MyTab("a" + student.getMtrNr());
-			
+
 			newTab.setText(student.getName() + ", " + student.getFirstName());
 
 			newTab.setContent(new StudentView(student));
@@ -217,13 +236,12 @@ public class MainView extends BorderPane {
 
 	private void openOptionsTab() {
 		MyTab newTab = tabAlreadyOpen("o");
-		if (newTab == null) 
-		{
+		if (newTab == null) {
 			newTab = new MyTab("o");
-			
+
 			newTab.setText("Optionen");
 
-			newTab.setContent(new AllStudentsView());
+			newTab.setContent(new OptionsView());
 
 			tabPane.getTabs().addAll(newTab);
 		}
@@ -236,9 +254,8 @@ public class MainView extends BorderPane {
 		MyTab newTab = tabAlreadyOpen("w");
 		if (newTab == null) {
 
-
 			newTab = new MyTab("w");
-			
+
 			newTab.setText("Wochenplan");
 
 			newTab.setContent(new WeekScheduleView());
@@ -254,7 +271,7 @@ public class MainView extends BorderPane {
 		MyTab newTab = tabAlreadyOpen("f");
 		if (newTab == null) {
 			newTab = new MyTab("f");
-			
+
 			newTab.setText("Formulare");
 
 			newTab.setContent(new FormsView());
@@ -270,7 +287,7 @@ public class MainView extends BorderPane {
 		MyTab newTab = tabAlreadyOpen("l");
 		if (newTab == null) {
 			newTab = new MyTab("l");
-			
+
 			newTab.setText("Alle Anliegen");
 
 			newTab.setContent(new AllConcernsView());
@@ -286,7 +303,7 @@ public class MainView extends BorderPane {
 		MyTab newTab = tabAlreadyOpen("t" + statistic.getId());
 		if (newTab == null) {
 			newTab = new MyTab("t" + statistic.getId());
-			
+
 			newTab.setText(statistic.getTitle());
 
 			newTab.setContent(new StatisticView(statistic));
@@ -302,7 +319,7 @@ public class MainView extends BorderPane {
 		MyTab newTab = tabAlreadyOpen("i");
 		if (newTab == null) {
 			newTab = new MyTab("i");
-			
+
 			newTab.setText("Alle Statistiken");
 
 			newTab.setContent(new AllConcernsView());
@@ -318,7 +335,7 @@ public class MainView extends BorderPane {
 		MyTab newTab = tabAlreadyOpen("c" + concern.getId());
 		if (newTab == null) {
 			newTab = new MyTab("c" + concern.getId());
-			
+
 			newTab.setText(concern.getTitle());
 
 			newTab.setContent(new ConcernView(concern));
@@ -332,35 +349,50 @@ public class MainView extends BorderPane {
 
 	private void openNewConcernTab() {
 		MyTab newTab = new MyTab("new");
-		
+
 		newTab.setText("Neues Anliegen");
 
 		newTab.setContent(new EditConcernView());
 
 		tabPane.getTabs().addAll(newTab);
-		
+
+		SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
+		selectionModel.select(newTab);
+
+	}
+	
+	public void openNewConcernTab(ObservableList<Student> students) {
+		MyTab newTab = new MyTab("new");
+
+		newTab.setText("Neues Anliegen");
+
+		newTab.setContent(new EditConcernView(students));
+
+		tabPane.getTabs().addAll(newTab);
+
 		SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
 		selectionModel.select(newTab);
 
 	}
 
-	private void openNewStudentTab() {
+	public void openNewStudentTab() {
 		MyTab newTab = new MyTab("new");
-		
+
 		newTab.setText("Neuer Student");
 
 		newTab.setContent(new EditStudentView());
 
 		tabPane.getTabs().addAll(newTab);
-		
+
 		SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
 		selectionModel.select(newTab);
 
 	}
+	
 
 	private void openNewStatisticTab() {
 		MyTab newTab = new MyTab("new");
-		
+
 		newTab.setText("Neue Statistik");
 
 		newTab.setContent(new EditConcernView());

@@ -92,9 +92,11 @@ public class Model {
 		return true;
 	}
 	//----------------------------------------------------------------------------------------------
-
-
-
+	
+	public void deleteStudent(Student s) {
+		// TODO Auto-generated method stub
+		
+	}
 
 
 

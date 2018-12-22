@@ -1,8 +1,10 @@
 package tp.concern;
 
+import javafx.collections.ObservableList;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import tp.model.Concern;
+import tp.model.Student;
 
 public class EditConcernView extends HBox{
 	
@@ -14,7 +16,16 @@ public class EditConcernView extends HBox{
 		buildView();
 	}
 	
-	//change existing
+	//new with preselected Students
+	public EditConcernView(ObservableList<Student> students)
+	{
+		buildView();
+		fillStudents(students);
+	}
+	
+
+
+	//edit existing Concern
 	public EditConcernView(Concern concern)
 	{
 		this.concern = concern;
@@ -29,6 +40,11 @@ public class EditConcernView extends HBox{
 
 	private void fillView(Concern concern)
 	{
+		fillStudents(concern.getStudents());
+	}
+	
+	private void fillStudents(ObservableList<Student> students) {
+		// TODO Auto-generated method stub
 		
 	}
 }

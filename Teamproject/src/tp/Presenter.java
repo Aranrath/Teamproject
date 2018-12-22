@@ -8,6 +8,7 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import javafx.collections.ObservableList;
 import tp.model.Appointment;
 import tp.model.Concern;
 import tp.model.EMail;
@@ -111,6 +112,25 @@ public class Presenter
 
 	public Statistic getStatistic(int statisticId) {
 		return model.getStatistic(statisticId);
+	}
+
+
+	public void deleteStudent(Student s) {
+		model.deleteStudent(s);
+		
+		
+	}
+
+
+	public void openNewStudentTab() {
+		mainView.openNewStudentTab();
+		
+	}
+
+
+	public void openNewConcernTab(ObservableList<Student> students) {
+		mainView.openNewConcernTab(students);
+		
 	}
 
 }

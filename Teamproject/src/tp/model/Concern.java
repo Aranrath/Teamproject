@@ -1,5 +1,7 @@
 package tp.model;
 
+import javafx.collections.ObservableList;
+
 public class Concern {
 
 	private int id;
@@ -8,8 +10,9 @@ public class Concern {
 	private Topic topic;
 	private Appointment[] appointments;
 	private ReminderMail[] reminders;
+	ObservableList<Student> students;
 	
-	public Concern(int id, String title, Object[] data, Topic topic, Appointment[] appointments, ReminderMail[] reminders)
+	public Concern(int id, String title, Object[] data, Topic topic, Appointment[] appointments, ReminderMail[] reminders,ObservableList<Student> students)
 	{
 		this.id= id;
 		this.title= title ;
@@ -17,6 +20,7 @@ public class Concern {
 		this.topic= topic ;
 		this.appointments = appointments;
 		this.reminders= reminders ;
+		this.students = students;
 	}
 
 	public int getId() {
@@ -66,6 +70,16 @@ public class Concern {
 	public void setReminders(ReminderMail[] reminders) {
 		this.reminders = reminders;
 	}
+
+	public ObservableList<Student> getStudents() {
+		return students;
+	}
+
+	public void setStudents(ObservableList<Student> students) {
+		this.students = students;
+	}
+	
+	
 	
 	
 }
