@@ -21,8 +21,7 @@ public class Presenter
 	private Model model;
 	private MainView mainView;
 
-	public Presenter(Model model, MainView mainView) {
-		this.mainView = mainView;
+	public Presenter(Model model) {
 		this.model = model;
 		
 	}
@@ -90,6 +89,10 @@ public class Presenter
 	
 	
 	//===============Getter&Setter========================
+	
+	public void setMainView(MainView mainView) {
+		this.mainView=mainView;
+	}
 	
 	public String[] getSessionTabsIds() {
 		return model.loadSessionTabsIds();

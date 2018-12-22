@@ -37,9 +37,9 @@ public class Main extends Application {
 	private void generateMVP() {
 		
 		model = new Model();
-		//TODO main  View noch nicht initializiert, d.h. nach new MainView presenter.addMainView(mainView) oda sowas
-		presenter = new Presenter (model, mainView);
+		presenter = new Presenter (model);
 		mainView = new MainView (presenter);
+		presenter.setMainView(mainView);
 		
 	}
 
