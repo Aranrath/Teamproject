@@ -2,20 +2,15 @@ package tp.model;
 
 public class Subject
 {
-	private int id;
 	private String title;
 	private int ects;
 	
 	public Subject(int id, String title, int ects)
 	{
-		this.id = id;
 		this.title = title;
 		this.ects = ects;
 	}
 
-	public int getId() {
-		return id;
-	}
 
 	public String getTitle() {
 		return title;
@@ -23,10 +18,6 @@ public class Subject
 
 	public int getEcts() {
 		return ects;
-	}
-
-	public void setId(int id) {
-		this.id = id;
 	}
 
 	public void setTitle(String title) {

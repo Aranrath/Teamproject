@@ -22,6 +22,8 @@ import tp.model.MyTab;
 import tp.model.Statistic;
 import tp.model.Student;
 import tp.options.OptionsView;
+import tp.statistics.AllStatisticsView;
+import tp.statistics.EditStatisticView;
 import tp.statistics.StatisticView;
 import tp.students.AllStudentsView;
 import tp.students.EditStudentView;
@@ -241,7 +243,7 @@ public class MainView extends BorderPane {
 
 			newTab.setText("Optionen");
 
-			newTab.setContent(new OptionsView());
+			newTab.setContent(new OptionsView(presenter));
 
 			tabPane.getTabs().addAll(newTab);
 		}
@@ -258,7 +260,7 @@ public class MainView extends BorderPane {
 
 			newTab.setText("Wochenplan");
 
-			newTab.setContent(new WeekScheduleView());
+			newTab.setContent(new WeekScheduleView(presenter));
 
 			tabPane.getTabs().addAll(newTab);
 		}
@@ -322,7 +324,7 @@ public class MainView extends BorderPane {
 
 			newTab.setText("Alle Statistiken");
 
-			newTab.setContent(new AllConcernsView());
+			newTab.setContent(new AllStatisticsView());
 
 			tabPane.getTabs().addAll(newTab);
 		}
@@ -395,7 +397,7 @@ public class MainView extends BorderPane {
 
 		newTab.setText("Neue Statistik");
 
-		newTab.setContent(new EditConcernView());
+		newTab.setContent(new EditStatisticView());
 
 		tabPane.getTabs().addAll(newTab);
 

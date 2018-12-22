@@ -1,5 +1,7 @@
 package tp;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.Properties;
 
 import javax.mail.Message;
@@ -13,8 +15,11 @@ import tp.model.Appointment;
 import tp.model.Concern;
 import tp.model.EMail;
 import tp.model.Model;
+import tp.model.PO;
 import tp.model.Statistic;
 import tp.model.Student;
+import tp.model.Subject;
+import tp.model.Topic;
 
 public class Presenter
 {
@@ -134,6 +139,46 @@ public class Presenter
 	public void openNewConcernTab(ObservableList<Student> students) {
 		mainView.openNewConcernTab(students);
 		
+	}
+
+
+	public Date[] getWorkWeekOfDate(Date date) {
+		return model.getWorkWeekOfDate(date);
+	}
+
+
+	public int getKwOfDate(Date date) {
+		return model.getKwOfDate(date);
+	}
+
+
+	public Appointment[] getWeeksAppointments(int shownKw) {
+		return model.getWeeksAppointments(shownKw);
+	}
+
+
+	public Date getStartOfNextWeek(Date date) {
+		return model.getStartOfNextWeek(date);
+	}
+
+
+	public Date getEndOfPreviousWeek(Date date) {
+		return model.getEndOfPreviousWeek(date);
+	}
+
+
+	public ArrayList<PO> getPOs() {
+		return model.getPOs();
+	}
+
+
+	public ArrayList<Topic> getTopics() {
+		return model.getTopics();
+	}
+
+
+	public ArrayList<Subject> getSubjects() {
+		return model.getSubjects();
 	}
 
 }

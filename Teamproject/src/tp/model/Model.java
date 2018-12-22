@@ -1,5 +1,8 @@
 package tp.model;
 
+import java.util.ArrayList;
+import java.util.Date;
+
 public class Model {
 
 	private String[] sessionTabsIds;
@@ -12,6 +15,30 @@ public class Model {
 	//-------------------Calculations--------------------------------------------------------------
 
 	public Appointment[] loadNext24hourAppointments() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	public Date[] getWorkWeekOfDate(Date date) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	public int getKwOfDate(Date date) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	public Appointment[] getWeeksAppointments(int shownKw) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	public Date getStartOfNextWeek(Date date) {
+		// TODO Auto-generated method stub
+		return null;
+		
+	}
+
+	public Date getEndOfPreviousWeek(Date date) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -82,7 +109,21 @@ public class Model {
 		this.sessionTabsIds = sessionTabs;
 	}
 	
-	
+	public ArrayList<PO> getPOs() {
+		// TODO Auto-generated method stub
+		return null;
+		
+		
+	}
+	public ArrayList<Topic> getTopics() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ArrayList<Subject> getSubjects() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 
 	//------------Boolean Abfragen------------------------------------------------------------------
@@ -97,6 +138,14 @@ public class Model {
 		// TODO Auto-generated method stub
 		
 	}
+
+
+
+
+
+
+
+
 
 
 
