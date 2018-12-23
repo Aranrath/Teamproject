@@ -9,7 +9,7 @@ import tp.model.Subject;
 
 public class EditPOView extends HBox{
 
-	public EditPOView(ArrayList<PO> pos, ArrayList<Subject> subjects, OptionsView optionsView, Presenter presenter) {
+	public EditPOView(ArrayList<PO> pos, ArrayList<Subject> subjects, Presenter presenter) {
 		// TODO Auto-generated constructor stub
 	}
 
