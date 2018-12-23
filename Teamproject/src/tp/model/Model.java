@@ -139,6 +139,20 @@ public class Model {
 		
 	}
 
+	public boolean saveNewSubject(String title, int ects) {
+		//TODO
+		//create new Subject with calculated unique id
+		//add the new Subject to the Database;
+		//return true if successfull, otherwise system.out.println("ERROR: Subject '" + title + "' could not be added to database"); return false;
+		return false;
+		
+	}
+
+	public boolean saveEditedSubject(String title, int ects, int id) {
+		// TODO s.o. ähnlich
+		return true;
+	}
+
 
 
 

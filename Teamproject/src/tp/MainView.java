@@ -405,4 +405,9 @@ public class MainView extends BorderPane {
 		selectionModel.select(newTab);
 	}
 
+	public void updateSubjectRelatedTabs() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

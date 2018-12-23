@@ -11,6 +11,9 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import javafx.collections.ObservableList;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Alert.AlertType;
 import tp.model.Appointment;
 import tp.model.Concern;
 import tp.model.EMail;
@@ -21,37 +24,30 @@ import tp.model.Student;
 import tp.model.Subject;
 import tp.model.Topic;
 
-public class Presenter
-{
+public class Presenter {
 	private Model model;
 	private MainView mainView;
 
 	public Presenter(Model model) {
 		this.model = model;
-		
+
 	}
 
-	
-	//======================Updater======================
-	public void updateWeekView()
-	{
-		//TODO
+	// ======================Updater======================
+	public void updateWeekView() {
+		// TODO
 	}
-	
-	public void updateRightToolbar()
-	{
+
+	public void updateRightToolbar() {
 		mainView.updateRightToolBar();
 	}
-	
-	public void updateTabViews()
-	{
-		//TODO
+
+	public void updateTabViews() {
+		// TODO
 	}
-	
-	
-	//=====================Mail==========================
-	
-	
+
+	// =====================Mail==========================
+
 	public void sendMail(String userID, String name, Student recipient, String subject, String content) {
 		try {
 			// Create a properties file containing
@@ -64,8 +60,8 @@ public class Presenter
 			// Create a new mail message
 			MimeMessage message = new MimeMessage(mailSession);
 			// Set the From and the Recipient
-			message.setFrom(new InternetAddress(userID +"@fh-trier.de", name));
-			//TODO get richtige?? E-Mail adresse (wie zugeordnet?)
+			message.setFrom(new InternetAddress(userID + "@fh-trier.de", name));
+			// TODO get richtige?? E-Mail adresse (wie zugeordnet?)
 			message.setRecipient(Message.RecipientType.TO,
 					new InternetAddress(recipient.geteMailAddresses()[0], recipient.getName()));
 			// Set the subject
@@ -81,24 +77,22 @@ public class Presenter
 			transport.connect();
 			transport.sendMessage(message, message.getAllRecipients());
 			transport.close();
-			
-			//save E-mail to Database
-			EMail email = new EMail(content,subject, recipient, false);
+
+			// save E-mail to Database
+			EMail email = new EMail(content, subject, recipient, false);
 			model.saveMail(email);
 		} catch (Exception e) {
-			//TODO Fehlerbehandlung ohne crash des Programms 
+			// TODO Fehlerbehandlung ohne crash des Programms
 			e.printStackTrace();
 		}
 	}
-	
-	
-	
-	//===============Getter&Setter========================
-	
+
+	// ===============Getter&Setter========================
+
 	public void setMainView(MainView mainView) {
-		this.mainView=mainView;
+		this.mainView = mainView;
 	}
-	
+
 	public String[] getSessionTabsIds() {
 		return model.loadSessionTabsIds();
 	}
@@ -106,12 +100,10 @@ public class Presenter
 	public Appointment[] getNext24hourAppointments() {
 		return model.loadNext24hourAppointments();
 	}
-	
-
 
 	public Student getStudent(int mtrNr) {
 		return model.getStudent(mtrNr);
-		
+
 	}
 
 	public Concern getConcern(int concernId) {
@@ -122,63 +114,77 @@ public class Presenter
 		return model.getStatistic(statisticId);
 	}
 
-
 	public void deleteStudent(Student s) {
 		model.deleteStudent(s);
-		
-		
-	}
 
+	}
 
 	public void openNewStudentTab() {
 		mainView.openNewStudentTab();
-		
-	}
 
+	}
 
 	public void openNewConcernTab(ObservableList<Student> students) {
 		mainView.openNewConcernTab(students);
-		
-	}
 
+	}
 
 	public Date[] getWorkWeekOfDate(Date date) {
 		return model.getWorkWeekOfDate(date);
 	}
 
-
 	public int getKwOfDate(Date date) {
 		return model.getKwOfDate(date);
 	}
-
 
 	public Appointment[] getWeeksAppointments(int shownKw) {
 		return model.getWeeksAppointments(shownKw);
 	}
 
-
 	public Date getStartOfNextWeek(Date date) {
 		return model.getStartOfNextWeek(date);
 	}
-
 
 	public Date getEndOfPreviousWeek(Date date) {
 		return model.getEndOfPreviousWeek(date);
 	}
 
-
 	public ArrayList<PO> getPOs() {
 		return model.getPOs();
 	}
-
 
 	public ArrayList<Topic> getTopics() {
 		return model.getTopics();
 	}
 
-
 	public ArrayList<Subject> getSubjects() {
 		return model.getSubjects();
+	}
+
+	public void saveNewSubject(String title, int ects) {
+		if (model.saveNewSubject(title, ects)) {
+			mainView.updateSubjectRelatedTabs();
+		}
+		else
+		{
+			Alert alert = new Alert(AlertType.ERROR, "Neues Modul konnte nicht in der Datenbank gespeichert werden",
+					ButtonType.OK);
+			alert.showAndWait();
+		}
+	}
+
+	public void saveEditedSubject(String title, int ects, int id) {
+
+		if (model.saveEditedSubject(title, ects, id)) {
+			mainView.updateSubjectRelatedTabs();
+		}
+		else
+		{
+			Alert alert = new Alert(AlertType.ERROR, "Modul-Änderungen konnte nicht in der Datenbank gespeichert werden",
+					ButtonType.OK);
+			alert.showAndWait();
+		}
+		
 	}
 
 }

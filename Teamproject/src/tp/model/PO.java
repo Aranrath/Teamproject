@@ -3,14 +3,14 @@ package tp.model;
 public class PO {
 	
 	private String name;
-	private Subject[] subjects;
+	private Subject[] optionalSubjects;
+	private Subject[] mandatorySubjects;
 	
 	public PO(String name)
 	{
 		this.name = name;
 	}
-	
-	
+
 	
 	//---------------------------------------Getter Setter
 
@@ -22,13 +22,29 @@ public class PO {
 		this.name = name;
 	}
 
-	public Subject[] getSubjects() {
-		return subjects;
+
+	public Subject[] getOptionalSubjects() {
+		return optionalSubjects;
 	}
 
-	public void setSubjects(Subject[] subjects) {
-		this.subjects = subjects;
+
+	public Subject[] getMandatorySubjects() {
+		return mandatorySubjects;
 	}
+
+
+	public void setOptionalSubjects(Subject[] optionalSubjects) {
+		this.optionalSubjects = optionalSubjects;
+	}
+
+
+	public void setMandatorySubjects(Subject[] mandatorySubjects) {
+		this.mandatorySubjects = mandatorySubjects;
+	}
+	
+	
+
+	
 	
 	
 

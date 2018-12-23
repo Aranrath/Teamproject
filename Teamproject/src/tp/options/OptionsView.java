@@ -68,19 +68,19 @@ public class OptionsView extends GridPane {
 		addTopicButton.setOnAction((event)-> {
 			Stage stage = new Stage();
             stage.setTitle("Neues Thema");
-            stage.setScene(new Scene(new EditTopicView(topics, presenter), 450, 450));
+            stage.setScene(new Scene(new EditTopicView(topics,stage, presenter), 450, 450));
             stage.show();
 		});
 		addPOButton.setOnAction((event)-> {
 			Stage stage = new Stage();
             stage.setTitle("Neue PO");
-            stage.setScene(new Scene(new EditPOView(pos, subjects, presenter), 450, 450));
+            stage.setScene(new Scene(new EditPOView(pos, subjects,stage, presenter), 450, 450));
             stage.show();
 		});
 		addSubjectButton.setOnAction((event)-> {
 			Stage stage = new Stage();
             stage.setTitle("Neues Modul");
-            stage.setScene(new Scene(new EditSubjectView(subjects, presenter), 450, 450));
+            stage.setScene(new Scene(new EditSubjectView(subjects,stage, presenter), 450, 450));
             stage.show();
 		});
 	}

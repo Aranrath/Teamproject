@@ -4,9 +4,11 @@ public class Subject
 {
 	private String title;
 	private int ects;
+	private int id;
 	
 	public Subject(int id, String title, int ects)
 	{
+		this.id = id;
 		this.title = title;
 		this.ects = ects;
 	}
@@ -26,6 +28,16 @@ public class Subject
 
 	public void setEcts(int ects) {
 		this.ects = ects;
+	}
+
+
+	public int getId() {
+		return id;
+	}
+
+
+	public void setId(int id) {
+		this.id = id;
 	}
 	
 	
