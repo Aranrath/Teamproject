@@ -5,7 +5,8 @@ import java.util.ArrayList;
 public class Topic {
 	
 	private String title;
-	private ArrayList<Object> forms;
+	private ArrayList<Object> linkedForms;
+	int id;
 	
 	public Topic(String title)
 	{
@@ -14,20 +15,34 @@ public class Topic {
 	public Topic(String title, ArrayList<Object> forms)
 	{
 		this.title = title;
-		this.forms = forms;
+		this.linkedForms = forms;
 	}
+	
+	//===========Contructors=====================
+	
 	public String getTitle() {
 		return title;
 	}
-	public ArrayList<Object> getForms() {
-		return forms;
-	}
+	
 	public void setTitle(String title) {
 		this.title = title;
 	}
-	public void setForms(ArrayList<Object> forms) {
-		this.forms = forms;
+	public ArrayList<Object> getLinkedForms() {
+		return linkedForms;
 	}
+	public int getId() {
+		return id;
+	}
+	public void setLinkedForms(ArrayList<Object> linkedForms) {
+		this.linkedForms = linkedForms;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	
+	
+	
 
 	
 

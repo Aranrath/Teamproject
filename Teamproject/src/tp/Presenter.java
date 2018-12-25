@@ -191,4 +191,14 @@ public class Presenter {
 		return model.getForms();
 	}
 
+	public void saveNewTopic(String title, ArrayList<Object> selectedForms) {
+		model.saveNewTopic(title, selectedForms);
+		
+	}
+
+	public void saveEditedTopic(String text, ArrayList<Object> selectedForms, Topic topic) {
+		model.saveEditedTopic(text, selectedForms, topic);
+		
+	}
+
 }

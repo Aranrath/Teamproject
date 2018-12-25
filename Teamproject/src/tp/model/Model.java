@@ -158,6 +158,17 @@ public class Model {
 		return null;
 	}
 
+	public void saveNewTopic(String title, ArrayList<Object> selectedForms) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void saveEditedTopic(String text, ArrayList<Object> selectedForms, Topic topic) {
+//		int id = topic.getId();
+		// TODO Auto-generated method stub
+		
+	}
+
 
 
 
