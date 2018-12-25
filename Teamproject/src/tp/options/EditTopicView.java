@@ -13,8 +13,10 @@ public class EditTopicView extends GridPane{
 	private Stage stage;
 	private ArrayList<Topic> topics;
 	private Presenter presenter;
+	private ArrayList<Object> forms;
 	
 	private TextField title;
+	
 	
 	public EditTopicView(ArrayList<Topic> topics, Stage stage, Presenter presenter) {
 		this.stage = stage;
@@ -36,15 +38,17 @@ public class EditTopicView extends GridPane{
 
 
 	private void buildView() {
-		// TODO Auto-generated method stub
+		forms = presenter.getForms();
 		
 	}
 
+	//new Topic
 	private void fillView() {
-		// TODO Auto-generated method stub
+		forms = presenter.getForms();
 		
 	}
 	
+	//Editing an existing Topic
 	private void fillView(Topic topic) {
 		
 		

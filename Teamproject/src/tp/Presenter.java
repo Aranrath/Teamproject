@@ -187,4 +187,8 @@ public class Presenter {
 		
 	}
 
+	public ArrayList<Object> getForms() {
+		return model.getForms();
+	}
+
 }

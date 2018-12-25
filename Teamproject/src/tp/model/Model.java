@@ -153,6 +153,11 @@ public class Model {
 		return true;
 	}
 
+	public ArrayList<Object> getForms() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 
 

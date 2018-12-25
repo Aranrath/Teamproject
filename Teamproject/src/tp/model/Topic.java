@@ -1,15 +1,17 @@
 package tp.model;
 
+import java.util.ArrayList;
+
 public class Topic {
 	
 	private String title;
-	private Object [] forms;
+	private ArrayList<Object> forms;
 	
 	public Topic(String title)
 	{
 		this.title = title;
 	}
-	public Topic(String title, Object[] forms)
+	public Topic(String title, ArrayList<Object> forms)
 	{
 		this.title = title;
 		this.forms = forms;
@@ -17,13 +19,13 @@ public class Topic {
 	public String getTitle() {
 		return title;
 	}
-	public Object[] getForms() {
+	public ArrayList<Object> getForms() {
 		return forms;
 	}
 	public void setTitle(String title) {
 		this.title = title;
 	}
-	public void setForms(Object[] forms) {
+	public void setForms(ArrayList<Object> forms) {
 		this.forms = forms;
 	}
 
