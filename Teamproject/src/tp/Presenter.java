@@ -48,7 +48,7 @@ public class Presenter {
 
 	// =====================Mail==========================
 
-	public void sendMail(String userID, String name, Student recipient, String subject, String content) {
+	public void sendMail(String userID, String userName, Student recipient, String subject, String content) {
 		try {
 			// Create a properties file containing
 			// the host address of your SMTP server
@@ -60,7 +60,7 @@ public class Presenter {
 			// Create a new mail message
 			MimeMessage message = new MimeMessage(mailSession);
 			// Set the From and the Recipient
-			message.setFrom(new InternetAddress(userID + "@fh-trier.de", name));
+			message.setFrom(new InternetAddress(userID + "@fh-trier.de", userName));
 			// TODO get richtige?? E-Mail adresse (wie zugeordnet?)
 			message.setRecipient(Message.RecipientType.TO,
 					new InternetAddress(recipient.geteMailAddresses()[0], recipient.getName()));
