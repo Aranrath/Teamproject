@@ -181,6 +181,11 @@ public class Model {
 		//TODO save changed PO
 	}
 
+	public void deleteConcern(Concern c) {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 
 

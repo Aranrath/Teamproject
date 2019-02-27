@@ -1,6 +1,7 @@
 package tp.students;
 
 import java.sql.Date;
+import java.util.List;
 
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -35,7 +36,7 @@ public class AllStudentsView extends GridPane {
 	public AllStudentsView(Presenter presenter) {
 		this.presenter = presenter;
 		buildView();
-		updateViewContent();
+		fillView();
 	}
 
 	//TODO ?
@@ -102,7 +103,29 @@ public class AllStudentsView extends GridPane {
 			presenter.openNewStudentTab();
 		});
 		toRightButton.setOnAction((event) -> {
-//			allStudentsTable.getSelectionModel().getSelectedItems();
+			List<Student> selectedStudents = allStudentsTable.getSelectionModel().getSelectedItems();
+			
+			//für jeden Studenten der der Auswahl hinzugefügt werden soll, gleiche mit jedem bereits ausgewählten Studenten ab, ob bereits ausgewählt. Wenn nicht, füge ihn der Auswahl hinzu; wenn ja, überspringe diesen Studenten
+			for (Student unselectedS : selectedStudents)
+			{
+				boolean alreadySelected = false;
+				
+				for(Student selectedS : selectedStudentsTable.getItems())
+				{		
+					if(unselectedS.getMtrNr() == selectedS.getMtrNr())
+					{
+						alreadySelected = true;
+						break;
+					}
+				}
+				
+				if(!alreadySelected)
+				{
+					//Studenten  zur Auswahl (rechts) hinzufügen, NICHT aus linker Auswahl entfernen (?)
+					selectedStudentsTable.getItems().add(unselectedS);
+				}
+					
+			}
 		});
 		toLeftButton.setOnAction((event) -> {
 		});
@@ -119,7 +142,7 @@ public class AllStudentsView extends GridPane {
 				}
 			}
 
-			updateViewContent();
+			updateStudents();
 
 		});
 		studentToNewConcernButton.setOnAction((event) -> {
@@ -128,9 +151,20 @@ public class AllStudentsView extends GridPane {
 
 	}
 
-	private void updateViewContent() {
+
+
+	private void fillView() {
 		//TODO
 
+	}
+	
+	private void updateStudents() {
+		/*TODO Alle Tabs die Studenten betreffen könnten behandel
+		 *  Student in Tab offen -> Tab schließen
+		 *  Student in Anliegen -> löschen? / vermerken???
+		 */
+		
+		
 	}
 
 }

@@ -128,6 +128,10 @@ public class Presenter {
 		mainView.openNewConcernTab(students);
 
 	}
+	public void openNewConcernTab() {
+		mainView.openNewConcernTab();
+
+	}
 
 	public Date[] getWorkWeekOfDate(Date date) {
 		return model.getWorkWeekOfDate(date);
@@ -203,6 +207,11 @@ public class Presenter {
 
 	public void saveEditedPO(String newPOName, ArrayList<Object> selectedOptionalSubjects, ArrayList<Object> selectedMandatorySubjects, PO po) {
 		model.saveEditedPO(newPOName, selectedOptionalSubjects,selectedMandatorySubjects, po);
+		
+	}
+
+	public void deleteConcern(Concern c) {
+		model.deleteConcern(c);
 		
 	}
 

@@ -292,7 +292,7 @@ public class MainView extends BorderPane {
 
 			newTab.setText("Alle Anliegen");
 
-			newTab.setContent(new AllConcernsView());
+			newTab.setContent(new AllConcernsView(presenter));
 
 			tabPane.getTabs().addAll(newTab);
 		}
@@ -349,7 +349,7 @@ public class MainView extends BorderPane {
 
 	}
 
-	private void openNewConcernTab() {
+	public void openNewConcernTab() {
 		MyTab newTab = new MyTab("new");
 
 		newTab.setText("Neues Anliegen");
