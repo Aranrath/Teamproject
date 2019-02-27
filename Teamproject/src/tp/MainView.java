@@ -276,7 +276,7 @@ public class MainView extends BorderPane {
 
 			newTab.setText("Formulare");
 
-			newTab.setContent(new FormsView());
+			newTab.setContent(new FormsView(presenter));
 
 			tabPane.getTabs().addAll(newTab);
 		}
