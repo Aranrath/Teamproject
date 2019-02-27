@@ -195,9 +195,14 @@ public class Presenter {
 		model.saveNewTopic(title, selectedForms);
 		
 	}
-
+	
 	public void saveEditedTopic(String text, ArrayList<Object> selectedForms, Topic topic) {
 		model.saveEditedTopic(text, selectedForms, topic);
+		
+	}
+
+	public void saveEditedPO(String newPOName, ArrayList<Object> selectedOptionalSubjects, ArrayList<Object> selectedMandatorySubjects, PO po) {
+		model.saveEditedPO(newPOName, selectedOptionalSubjects,selectedMandatorySubjects, po);
 		
 	}
 

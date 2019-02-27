@@ -15,4 +15,30 @@ public class ReminderMail {
 		this.date = date;
 	}
 
+	public int getId() {
+		return id;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public Date getDate() {
+		return date;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	public void setDate(Date date) {
+		this.date = date;
+	}
+	
+	
+
 }

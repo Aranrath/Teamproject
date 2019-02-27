@@ -169,6 +169,20 @@ public class Model {
 		
 	}
 
+	public void saveEditedPO(String newPOName, ArrayList<Object> selectedMandatorySubjects,
+			ArrayList<Object> selectedOptionalSubjects, PO po) {
+		//geänderten Namen für po übernehmen
+		po.setName(newPOName);
+		//geänderte mandatory Subjects (als Array) für po übernehmen
+		po.setMandatorySubjects(selectedMandatorySubjects.toArray(new Subject[selectedMandatorySubjects.size()]));
+		//geänderte optional Subjects (als Array) für po übernehmen
+		po.setOptionalSubjects(selectedOptionalSubjects.toArray(new Subject[selectedOptionalSubjects.size()]));
+
+		//TODO save changed PO
+	}
+
+
+
 
 
 

@@ -1,9 +1,7 @@
 package tp.students;
 
 import java.sql.Date;
-import java.util.List;
 
-import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -40,6 +38,8 @@ public class AllStudentsView extends GridPane {
 		updateViewContent();
 	}
 
+	//TODO ?
+	@SuppressWarnings("unchecked")
 	private void buildView() {
 		
 		setPadding(new Insets(20));

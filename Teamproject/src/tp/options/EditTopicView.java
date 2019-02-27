@@ -2,6 +2,8 @@ package tp.options;
 
 import java.util.ArrayList;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
@@ -36,7 +38,6 @@ public class EditTopicView extends GridPane {
 	//new Topic
 	public EditTopicView(Stage stage, Presenter presenter) {
 		this.stage = stage;
-		
 		this.presenter = presenter;
 
 		buildView();
@@ -65,8 +66,17 @@ public class EditTopicView extends GridPane {
 		titleLabel = new Label("Titel:");
 		titleTextField = new TextField();
 		formLabel = new Label("Zugehörige Formulare:");
-		allFormsListView = new ListView<Object>();
 		saveButton = new Button("Speichern");
+		
+		if(allForms != null)
+		{
+			ObservableList<Object> observableAllFormsList = FXCollections.observableArrayList(allForms);
+			allFormsListView = new ListView<Object>(observableAllFormsList);
+		}
+		else
+		{
+			allFormsListView = new ListView<Object>();
+		}
 		
 		add(titleLabel,0,0);
 		add(titleTextField,1,0);
@@ -102,6 +112,7 @@ public class EditTopicView extends GridPane {
 					selectedForms.add(o);
 					//TODO nur alle ausgewählten
 				}
+				//UNTERSCHIED: speicher als neues Thema
 				presenter.saveNewTopic(titleTextField.getText(), selectedForms);
 				stage.close();
 			}
@@ -133,6 +144,7 @@ public class EditTopicView extends GridPane {
 					selectedForms.add(o);
 					//TODO nur alle ausgewählten
 				}
+				//UNTERSCHIED: speicher das geänderte Thema
 				presenter.saveEditedTopic(titleTextField.getText(), selectedForms, topic);
 				stage.close();
 			}

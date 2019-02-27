@@ -23,7 +23,6 @@ public class EditSubjectView extends GridPane {
 	Button minusEctsButton;
 	Button plusEctsButton;
 	Button saveButton;
-
 	TextField titleTextField;
 	Label ectsLabel;
 	Label errorLabel;
