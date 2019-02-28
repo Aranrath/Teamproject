@@ -2,7 +2,6 @@ package tp.options;
 
 import java.util.ArrayList;
 
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -14,6 +13,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import tp.Presenter;
+import tp.model.Form;
 import tp.model.Topic;
 
 public class EditTopicView extends GridPane {
@@ -24,12 +24,12 @@ public class EditTopicView extends GridPane {
 	
 	//from presenter
 	private ArrayList<Topic> allTopics;
-	private ArrayList<Object> allForms;
+	private ObservableList<Form> allForms;
 
 	private Label titleLabel;
 	private TextField titleTextField;
 	private Label formLabel;
-	private ListView<Object> allFormsListView;
+	private ListView<Form> allFormsListView;
 	private Label errorLabel;
 	private Button saveButton;
 
@@ -70,12 +70,11 @@ public class EditTopicView extends GridPane {
 		
 		if(allForms != null)
 		{
-			ObservableList<Object> observableAllFormsList = FXCollections.observableArrayList(allForms);
-			allFormsListView = new ListView<Object>(observableAllFormsList);
+			allFormsListView = new ListView<Form>(allForms);
 		}
 		else
 		{
-			allFormsListView = new ListView<Object>();
+			allFormsListView = new ListView<Form>();
 		}
 		
 		add(titleLabel,0,0);

@@ -78,6 +78,10 @@ public class AllConcernsView extends GridPane
 
 		deleteConcernButton.setOnAction((event) -> {
 			Concern concernToDelete = allConcernsTable.getSelectionModel().getSelectedItem();
+			if (concernToDelete == null)
+			{
+				return;
+			}
 			Alert alert = new Alert(AlertType.WARNING, "Anliegen \"" + concernToDelete.getTitle() + "\" wirklich aus der Datenbank löschen?",
 					ButtonType.YES, ButtonType.CANCEL);
 			alert.showAndWait();

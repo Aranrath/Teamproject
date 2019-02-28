@@ -17,6 +17,7 @@ import javafx.scene.control.Alert.AlertType;
 import tp.model.Appointment;
 import tp.model.Concern;
 import tp.model.EMail;
+import tp.model.Form;
 import tp.model.Model;
 import tp.model.PO;
 import tp.model.Statistic;
@@ -191,7 +192,7 @@ public class Presenter {
 		
 	}
 
-	public ArrayList<Object> getForms() {
+	public ObservableList<Form> getForms() {
 		return model.getForms();
 	}
 
@@ -212,6 +213,16 @@ public class Presenter {
 
 	public void deleteConcern(Concern c) {
 		model.deleteConcern(c);
+		
+	}
+
+	public void saveNewForm(Form form) {
+		model.saveNewForm(form);
+		
+	}
+
+	public void deleteForm(Form f) {
+		model.deleteForm(f);
 		
 	}
 

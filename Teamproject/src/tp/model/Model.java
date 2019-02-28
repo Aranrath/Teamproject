@@ -3,6 +3,8 @@ package tp.model;
 import java.util.ArrayList;
 import java.util.Date;
 
+import javafx.collections.ObservableList;
+
 public class Model {
 
 	private String[] sessionTabsIds;
@@ -153,7 +155,7 @@ public class Model {
 		return true;
 	}
 
-	public ArrayList<Object> getForms() {
+	public ObservableList<Form> getForms() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -182,6 +184,16 @@ public class Model {
 	}
 
 	public void deleteConcern(Concern c) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void saveNewForm(Form form) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void deleteForm(Form f) {
 		// TODO Auto-generated method stub
 		
 	}
