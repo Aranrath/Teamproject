@@ -7,17 +7,9 @@ public class Form {
 	private String name;
 	private File file;
 	
-	public Form (String name, String filePath)
+	public Form (String name, File file)
 	{
-		try
-		{
-			file = new File(filePath);
-		}
-		catch(Exception e)
-		{
-			System.out.println("ERROR: Creating Form-File failed");
-		}
-		
+		this.file = file;
 		this.name = name;
 		
 	}

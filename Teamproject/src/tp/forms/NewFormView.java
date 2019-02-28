@@ -1,5 +1,7 @@
 package tp.forms;
 
+import java.io.File;
+
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -8,6 +10,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import tp.Presenter;
 import tp.model.Form;
@@ -17,6 +20,7 @@ public class NewFormView extends GridPane {
 	private Presenter presenter;
 	private Stage stage;
 	private ObservableList<Form> forms;
+	private File choosenFile;
 
 	// =============== GUI =================
 
@@ -35,84 +39,114 @@ public class NewFormView extends GridPane {
 		buildView();
 	}
 
-	private void buildView() 
-	{
+	private void buildView() {
 		setPadding(new Insets(10, 10, 10, 10));
 		setHgap(10);
 		setVgap(10);
-		
+
 		nameTextField = new TextField("");
 		choosenFilePath = new Label("");
-		nameErrorLabel = new Label("");
-		filePathError = new Label("");
+		nameErrorLabel = new Label("Formular Name muss ausgefüllt sein");
+		nameErrorLabel.setVisible(false);
+		filePathError = new Label("Formular Dateipfad muss gesetzt sein");
+		filePathError.setVisible(false);
 		changeFilePath = new Button("ändern");
-		saveButton = new Button ("Speichern");
-		
-		add(new Label("Formular Name"),0,0);
-		add(nameTextField,1,0,2,1);
-		add(nameErrorLabel,1,1,2,1);
-		add(new Label("Dateipfad"),0,2);
-		add(choosenFilePath,1,2);
-		add(changeFilePath,2,2);
+		saveButton = new Button("Speichern");
+
+		add(new Label("Formular Name"), 0, 0);
+		add(nameTextField, 1, 0, 2, 1);
+		add(nameErrorLabel, 1, 1, 2, 1);
+		add(new Label("Dateipfad"), 0, 2);
+		add(choosenFilePath, 1, 2);
+		add(changeFilePath, 2, 2);
 		GridPane.setHalignment(changeFilePath, HPos.RIGHT);
-		
-		add(filePathError,1,3,2,1);
-		add(saveButton,2,4);
+
+		add(filePathError, 1, 3, 2, 1);
+		add(saveButton, 2, 4);
 		GridPane.setHalignment(saveButton, HPos.RIGHT);
-		
-		saveButton.setOnAction((event)->{
-			if(nameTextField.getText().equals(""))
-			{
+
+		saveButton.setOnAction((event) -> {
+
+			// Name checken
+			if (nameTextField.getText().equals("")) {
 				nameErrorLabel.setText("Formular Name muss ausgefüllt sein");
 				nameErrorLabel.setTextFill(Color.RED);
-				return;
+				nameErrorLabel.setVisible(true);
+			} else {
+				if (nameAlreadyExists(nameTextField.getText())) {
+					nameErrorLabel.setText("Name bereits vorhanden");
+					nameErrorLabel.setTextFill(Color.RED);
+					nameErrorLabel.setVisible(true);
+				} else {
+					nameErrorLabel.setVisible(false);
+				}
+
 			}
-			
-			if(nameAlreadyExists(nameTextField.getText()))
-			{
-				nameErrorLabel.setText("Name bereits vorhanden");
-				nameErrorLabel.setTextFill(Color.RED);
-				return;
-			}
-			
-			if(choosenFilePath.getText().equals(""))
-			{
+
+			// Path check
+			if (choosenFilePath.getText().equals("")) {
 				filePathError.setText("Formular Dateipfad muss gesetzt sein");
 				filePathError.setTextFill(Color.RED);
-				return;
+				filePathError.setVisible(true);
+			} 
+			else {
+				// ob Pfad bereits vergeben
+				Form samePathForm = fileAlreadyUsed(choosenFile);
+				if (samePathForm != null) {
+					filePathError.setText("Datei ist bereits im Formular \"" + samePathForm.getName() + "\" gespeichert");
+					filePathError.setTextFill(Color.RED);
+					filePathError.setVisible(true);
+					System.out.println("eh");
+				}
+
+				else {
+					filePathError.setVisible(false);
+				}
 			}
-			
-			Form samePathForm = pathAlreadyUsed(nameTextField.getText());
-			if(samePathForm != null)
-			{
-				nameErrorLabel.setText("Der Datei mit dem Pfad \'" + choosenFilePath.getText() + "\' ist bereits als Formular unter dem Namen \'" + samePathForm.getName() + "\' gespeichert");
-				nameErrorLabel.setTextFill(Color.RED);
-				return;
-			}
-			
-			else
-			{
-				presenter.saveNewForm(new Form(nameTextField.getText(), choosenFilePath.getText()));
+
+			if (!nameErrorLabel.isVisible() && !filePathError.isVisible()) {
+				presenter.saveNewForm(new Form(nameTextField.getText(), choosenFile));
 				stage.close();
 			}
+
 		});
-		
+
+		changeFilePath.setOnAction((event) -> {
+			FileChooser fileChooser = new FileChooser();
+			fileChooser.setTitle("Open Resource File");
+			choosenFile = fileChooser.showOpenDialog(stage);
+			try
+			{
+			choosenFilePath.setText(choosenFile.getAbsolutePath());
+			}
+			catch(Exception e)
+			{
+				System.out.println("Dateipfad konnte nicht notiert werden");
+			}
+
+		});
+
 	}
 
-	private Form pathAlreadyUsed(String newFormFilePath) {
-		for (Form s : forms) {
-			if (s.getFile().getPath().equals(newFormFilePath)) {
-				return s;
+	private Form fileAlreadyUsed(File choosenFile) {
+		if (forms != null) {
+			for (Form s : forms) {
+				if (s.getFile() == choosenFile) {
+					return s;
+				}
 			}
 		}
 		return null;
 	}
 
 	private boolean nameAlreadyExists(String newFormName) {
-		for (Form s : forms) {
-			if (s.getName().equals(newFormName)) {
-				return true;
+		if (forms != null) {
+			for (Form s : forms) {
+				if (s.getName().equals(newFormName)) {
+					return true;
+				}
 			}
+
 		}
 		return false;
 	}
