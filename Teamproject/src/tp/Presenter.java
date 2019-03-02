@@ -154,15 +154,15 @@ public class Presenter {
 		return model.getEndOfPreviousWeek(date);
 	}
 
-	public ArrayList<PO> getPOs() {
+	public ObservableList<PO> getPOs() {
 		return model.getPOs();
 	}
 
-	public ArrayList<Topic> getTopics() {
+	public ObservableList<Topic> getTopics() {
 		return model.getTopics();
 	}
 
-	public ArrayList<Subject> getSubjects() {
+	public ObservableList<Subject> getSubjects() {
 		return model.getSubjects();
 	}
 
@@ -224,6 +224,10 @@ public class Presenter {
 	public void deleteForm(Form f) {
 		model.deleteForm(f);
 		
+	}
+
+	public ObservableList<Concern> getConcerns(Student student) {
+		return model.getConcerns(student);
 	}
 
 }

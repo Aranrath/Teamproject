@@ -2,6 +2,7 @@ package tp.options;
 
 import java.util.ArrayList;
 
+import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
@@ -17,8 +18,8 @@ import tp.model.Subject;
 
 public class EditPOView extends GridPane{
 
-	ArrayList<PO> allPOs;
-	ArrayList<Subject> allSubjects;
+	ObservableList<PO> allPOs;
+	ObservableList<Subject> allSubjects;
 	Stage stage;
 	Presenter presenter;
 
@@ -28,10 +29,10 @@ public class EditPOView extends GridPane{
 	TextField poNameTextField;
 	ListView<Subject> selectSubjectsListView;
 	
-	public EditPOView(ArrayList<PO> allPOs, ArrayList<Subject> allSubjects, Stage stage, Presenter presenter)
+	public EditPOView(ObservableList<PO> pos, ObservableList<Subject> subjects, Stage stage, Presenter presenter)
 	{
-		this.allPOs = allPOs;
-		this.allSubjects = allSubjects;
+		this.allPOs = pos;
+		this.allSubjects = subjects;
 		this.stage = stage;
 		this.presenter = presenter;
 		
@@ -39,7 +40,7 @@ public class EditPOView extends GridPane{
 		fillView();
 	}
 	
-	public EditPOView(ArrayList<PO> allPOs, ArrayList<Subject> allSubjects, Stage stage, Presenter presenter, PO po)
+	public EditPOView(ObservableList<PO> allPOs, ObservableList<Subject> allSubjects, Stage stage, Presenter presenter, PO po)
 	{
 		this.allPOs = allPOs;
 		this.allSubjects = allSubjects;

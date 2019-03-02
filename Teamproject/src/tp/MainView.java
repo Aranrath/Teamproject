@@ -382,7 +382,7 @@ public class MainView extends BorderPane {
 
 		newTab.setText("Neuer Student");
 
-		newTab.setContent(new EditStudentView());
+		newTab.setContent(new EditStudentView(presenter));
 
 		tabPane.getTabs().addAll(newTab);
 

@@ -1,7 +1,6 @@
 package tp.options;
 
-import java.util.ArrayList;
-
+import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
@@ -15,7 +14,7 @@ import tp.model.Subject;
 
 public class EditSubjectView extends GridPane {
 
-	ArrayList<Subject> subjects;
+	ObservableList<Subject> subjects;
 	Presenter presenter;
 	Stage stage;
 	int ects;
@@ -27,7 +26,7 @@ public class EditSubjectView extends GridPane {
 	Label ectsLabel;
 	Label errorLabel;
 
-	public EditSubjectView(ArrayList<Subject> subjects, Stage stage, Presenter presenter) {
+	public EditSubjectView(ObservableList<Subject> subjects, Stage stage, Presenter presenter) {
 		this.stage = stage;
 		this.subjects = subjects;
 		this.presenter = presenter;
@@ -36,7 +35,7 @@ public class EditSubjectView extends GridPane {
 		fillView();
 	}
 
-	public EditSubjectView(ArrayList<Subject> subjects, Stage stage, Presenter presenter, Subject subjectToEdit) {
+	public EditSubjectView(ObservableList<Subject> subjects, Stage stage, Presenter presenter, Subject subjectToEdit) {
 		this.stage = stage;
 		this.subjects = subjects;
 		this.presenter = presenter;

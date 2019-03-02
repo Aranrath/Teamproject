@@ -23,7 +23,7 @@ public class EditTopicView extends GridPane {
 	private Presenter presenter;
 	
 	//from presenter
-	private ArrayList<Topic> allTopics;
+	private ObservableList<Topic> allTopics;
 	private ObservableList<Form> allForms;
 
 	private Label titleLabel;

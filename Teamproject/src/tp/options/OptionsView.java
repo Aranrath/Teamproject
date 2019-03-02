@@ -1,7 +1,6 @@
 package tp.options;
 
-import java.util.ArrayList;
-
+import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -24,9 +23,9 @@ public class OptionsView extends GridPane {
 	ListView<Topic> topicsList;
 	ListView<Subject> subjectsList;
 
-	ArrayList<PO> pos;
-	ArrayList<Topic> topics;
-	ArrayList<Subject> subjects;
+	ObservableList<PO> pos;
+	ObservableList<Topic> topics;
+	ObservableList<Subject> subjects;
 
 	private Button addTopicButton;
 	private Button addPOButton;

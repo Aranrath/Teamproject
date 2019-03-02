@@ -56,11 +56,6 @@ public class Model {
 		// TODO Java object out Stream
 
 	}
-	
-	public void saveMail(EMail email) {
-		// TODO add EMail to Database
-		
-	}
 
 	public String[] loadSessionTabsIds() {
 		// TODO Java object in stream, wenn da, sonst neue Datei
@@ -75,6 +70,7 @@ public class Model {
 		return options;
 
 	}
+	
 
 	// ------------Getter&Setter--------------------------------------------------------------------
 
@@ -111,18 +107,18 @@ public class Model {
 		this.sessionTabsIds = sessionTabs;
 	}
 	
-	public ArrayList<PO> getPOs() {
+	public ObservableList<PO> getPOs() {
 		// TODO Auto-generated method stub
 		return null;
 		
 		
 	}
-	public ArrayList<Topic> getTopics() {
+	public ObservableList<Topic> getTopics() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public ArrayList<Subject> getSubjects() {
+	public ObservableList<Subject> getSubjects() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -198,7 +194,15 @@ public class Model {
 		
 	}
 
+	public ObservableList<Concern> getConcerns(Student student) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
+	public void saveMail(EMail email) {
+		// TODO add EMail to Database
+		
+	}
 
 
 
