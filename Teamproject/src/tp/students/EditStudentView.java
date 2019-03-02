@@ -2,6 +2,7 @@ package tp.students;
 
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.geometry.VPos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -22,6 +23,7 @@ import tp.Presenter;
 import tp.model.Concern;
 import tp.model.PO;
 import tp.model.Student;
+import tp.options.EditPOView;
 
 public class EditStudentView extends GridPane{
 	
@@ -42,6 +44,7 @@ public class EditStudentView extends GridPane{
 	private TextField studentMtrNr;
 	private Label poLabel;
 	private ComboBox<PO> studentPO;
+	private Button newPOButton;
 	private Label semesterLabel;
 	private TextField studentSemester;
 	private Label ectsLabel;
@@ -92,6 +95,7 @@ public class EditStudentView extends GridPane{
 		studentMtrNr = new TextField();
 		poLabel = new Label ("Studiengang");
 		studentPO = new ComboBox<PO>(presenter.getPOs());
+		newPOButton = new Button("neue PO");
 		ectsLabel = new Label("ECTS");
 		studentECTS = new TextField();
 		semesterLabel = new Label("Semester");
@@ -135,8 +139,10 @@ public class EditStudentView extends GridPane{
 		GridPane.setHalignment(studentMtrNr, HPos.LEFT);
 		add (poLabel,1,1);
 		GridPane.setHalignment(poLabel, HPos.LEFT);
-		add(studentPO,2,1,2,1);
+		add(studentPO,2,1);
 		GridPane.setHalignment(studentPO, HPos.LEFT);
+		add(newPOButton,3,1);
+		GridPane.setHalignment(newPOButton, HPos.LEFT);
 		add(ectsLabel,4,1);
 		GridPane.setHalignment(ectsLabel, HPos.LEFT);
 		add(studentECTS,5,1);
@@ -151,16 +157,17 @@ public class EditStudentView extends GridPane{
 //		add(newConcernButton,5,2);
 //		GridPane.setHalignment(newConcernButton, HPos.LEFT);
 		add(connectedConcernsListView,4,3,2,3);
-		add(errorLabel,1,6,4,1);
+		add(errorLabel,1,6,4,2);
 		GridPane.setHalignment(errorLabel, HPos.RIGHT);
-		add(saveEditedProfileButton,5,6);
+		add(saveEditedProfileButton,5,6,1,2);
+		GridPane.setValignment(saveEditedProfileButton, VPos.CENTER);
+		GridPane.setHalignment(saveEditedProfileButton, HPos.RIGHT);
 		add(notesLabel,0,7);
 		GridPane.setHalignment(notesLabel, HPos.LEFT);
 		add(studentNotes,0,8);
 		add(mailExchangeLabel,1,7);
 		GridPane.setHalignment(mailExchangeLabel, HPos.LEFT);
 		add(mailExchangeBox,1,8,5,1);
-		
 		
 		
 		//=====================================
@@ -178,6 +185,14 @@ public class EditStudentView extends GridPane{
 			//TODO
 		});
 		
+		newPOButton.setOnAction((event)->{
+			Stage stage = new Stage();
+			stage.setAlwaysOnTop(true);
+			stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle("Neue PO");
+            stage.setScene(new Scene(new EditPOView(presenter.getPOs(), presenter.getSubjects(),stage, presenter), 450, 450));
+            stage.show();
+		});
 		
 //		TODO Nur bei Übersicht
 //		newConcernButton.setOnAction((event)->{

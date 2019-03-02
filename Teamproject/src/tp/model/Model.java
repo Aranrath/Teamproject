@@ -71,6 +71,19 @@ public class Model {
 
 	}
 	
+	public Options getOptions()
+	{
+		if(options!=null)
+		{
+			return options;
+		}
+		else
+		{
+			options = loadOptions();
+			return options;
+		}
+	}
+	
 
 	// ------------Getter&Setter--------------------------------------------------------------------
 
@@ -123,7 +136,17 @@ public class Model {
 		return null;
 	}
 	
-
+	public ObservableList<Form> getForms() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	public ObservableList<Concern> getConcerns(Student student) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	
 	//------------Boolean Abfragen------------------------------------------------------------------
 	
 	public boolean mailInDb(EMail email) {
@@ -151,10 +174,6 @@ public class Model {
 		return true;
 	}
 
-	public ObservableList<Form> getForms() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	public void saveNewTopic(String title, ArrayList<Object> selectedForms) {
 		// TODO Auto-generated method stub
@@ -192,11 +211,6 @@ public class Model {
 	public void deleteForm(Form f) {
 		// TODO Auto-generated method stub
 		
-	}
-
-	public ObservableList<Concern> getConcerns(Student student) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	public void saveMail(EMail email) {

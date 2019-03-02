@@ -9,6 +9,7 @@ public class Options implements Serializable{
 	//TODO Sicherheit!!!!!!!!
 	private String userID;
 	private String password;
+	private String lastUsedIP;
 	
 	public Options(String userID, String password)
 	{
@@ -31,5 +32,15 @@ public class Options implements Serializable{
 	public void setPassword(String password) {
 		this.password = password;
 	}
+
+	public String getLastUsedIP() {
+		return lastUsedIP;
+	}
+
+	public void setLastUsedIP(String lastUsedIP) {
+		this.lastUsedIP = lastUsedIP;
+	}
+	
+	
 
 }

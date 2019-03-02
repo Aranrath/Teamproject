@@ -19,6 +19,7 @@ import tp.model.Concern;
 import tp.model.EMail;
 import tp.model.Form;
 import tp.model.Model;
+import tp.model.Options;
 import tp.model.PO;
 import tp.model.Statistic;
 import tp.model.Student;
@@ -228,6 +229,10 @@ public class Presenter {
 
 	public ObservableList<Concern> getConcerns(Student student) {
 		return model.getConcerns(student);
+	}
+
+	public Options getOptions() {
+		return model.getOptions();
 	}
 
 }
