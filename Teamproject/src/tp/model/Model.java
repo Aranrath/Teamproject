@@ -45,7 +45,16 @@ public class Model {
 		return null;
 	}
 	
-	//------------------Loader&Saver---------------------------------------------------------------
+	//------------------File: Loader&Saver + Getter/Setter---------------------------------------------------------------
+	
+	
+	public String[] getSessionTabs() {
+		if (sessionTabsIds == null)
+		{
+			return loadSessionTabsIds();
+		}
+		return sessionTabsIds;
+	}
 	
 	public void saveSessionTabs() {
 		// TODO Java object out Stream
@@ -84,11 +93,15 @@ public class Model {
 		}
 	}
 	
+	public void setSessionTabs(String[] sessionTabs) {
+		this.sessionTabsIds = sessionTabs;
+	}
+	
 
-	// ------------Getter&Setter--------------------------------------------------------------------
+	// ------------Datenbank Abfragen--------------------------------------------------------------------
 
 	
-	public Student getStudent(String email) {
+	public Student getStudent(String emailAdressse) {
 		//TODO return Student where email = email
 		return null;
 	}
@@ -108,22 +121,9 @@ public class Model {
 		return null;
 	}
 	
-	public String[] getSessionTabs() {
-		if (sessionTabsIds == null)
-		{
-			return loadSessionTabsIds();
-		}
-		return sessionTabsIds;
-	}
-
-	public void setSessionTabs(String[] sessionTabs) {
-		this.sessionTabsIds = sessionTabs;
-	}
-	
 	public ObservableList<PO> getPOs() {
 		// TODO Auto-generated method stub
 		return null;
-		
 		
 	}
 	public ObservableList<Topic> getTopics() {
@@ -146,14 +146,10 @@ public class Model {
 		return null;
 	}
 	
-	
-	//------------Boolean Abfragen------------------------------------------------------------------
-	
 	public boolean mailInDb(EMail email) {
 		//TODO sqlabfrage
 		return true;
 	}
-	//----------------------------------------------------------------------------------------------
 	
 	public void deleteStudent(Student s) {
 		// TODO Auto-generated method stub
