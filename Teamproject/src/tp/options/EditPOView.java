@@ -1,7 +1,7 @@
 package tp.options;
 
-import java.util.ArrayList;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -98,9 +98,9 @@ public class EditPOView extends GridPane{
 			}
 			else
 			{
-				ArrayList<Object> selectedOptionalSubjects = new ArrayList<Object>();
-				ArrayList<Object> selectedMandatorySubjects = new ArrayList<Object>();
-				for(Object o : selectSubjectsListView.getItems())
+				ObservableList<Subject> selectedOptionalSubjects = FXCollections.observableArrayList();
+				ObservableList<Subject> selectedMandatorySubjects = FXCollections.observableArrayList();
+				for(Subject o : selectSubjectsListView.getItems())
 				{
 					//TODO wenn ListView korrekt dargestellt mit checkboxen
 					

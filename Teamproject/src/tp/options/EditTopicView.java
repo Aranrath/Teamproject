@@ -1,7 +1,6 @@
 package tp.options;
 
-import java.util.ArrayList;
-
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -105,8 +104,8 @@ public class EditTopicView extends GridPane {
 			}
 			else
 			{
-				ArrayList<Object> selectedForms = new ArrayList<Object>();
-				for(Object o : allFormsListView.getItems())
+				ObservableList<Form> selectedForms = FXCollections.observableArrayList();
+				for(Form o : allFormsListView.getItems())
 				{
 					selectedForms.add(o);
 					//TODO nur alle ausgewählten
@@ -137,8 +136,8 @@ public class EditTopicView extends GridPane {
 			}
 			else
 			{
-				ArrayList<Object> selectedForms = new ArrayList<Object>();
-				for(Object o : allFormsListView.getItems())
+				ObservableList<Form> selectedForms = FXCollections.observableArrayList();
+				for(Form o : allFormsListView.getItems())
 				{
 					selectedForms.add(o);
 					//TODO nur alle ausgewählten

@@ -1,15 +1,12 @@
 package tp;
 
-import java.util.ArrayList;
-import java.util.Date;
+import java.sql.Date;
 import java.util.Properties;
-
 import javax.mail.Message;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -151,7 +148,7 @@ public class Presenter {
 		return model.getStartOfNextWeek(date);
 	}
 
-	public Date getEndOfPreviousWeek(Date date) {
+	public java.sql.Date getEndOfPreviousWeek(Date date) {
 		return model.getEndOfPreviousWeek(date);
 	}
 
@@ -197,17 +194,17 @@ public class Presenter {
 		return model.getForms();
 	}
 
-	public void saveNewTopic(String title, ArrayList<Object> selectedForms) {
+	public void saveNewTopic(String title, ObservableList<Form> selectedForms) {
 		model.saveNewTopic(title, selectedForms);
 		
 	}
 	
-	public void saveEditedTopic(String text, ArrayList<Object> selectedForms, Topic topic) {
+	public void saveEditedTopic(String text, ObservableList<Form> selectedForms, Topic topic) {
 		model.saveEditedTopic(text, selectedForms, topic);
 		
 	}
 
-	public void saveEditedPO(String newPOName, ArrayList<Object> selectedOptionalSubjects, ArrayList<Object> selectedMandatorySubjects, PO po) {
+	public void saveEditedPO(String newPOName, ObservableList<Subject> selectedOptionalSubjects, ObservableList<Subject> selectedMandatorySubjects, PO po) {
 		model.saveEditedPO(newPOName, selectedOptionalSubjects,selectedMandatorySubjects, po);
 		
 	}

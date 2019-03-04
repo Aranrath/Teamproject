@@ -1,6 +1,8 @@
 package tp.appointment;
 
-import java.util.Date;
+
+
+import java.sql.Date;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;

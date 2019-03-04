@@ -1,8 +1,6 @@
 package tp.model;
 
-import java.util.ArrayList;
-import java.util.Date;
-
+import java.sql.Date;
 import javafx.collections.ObservableList;
 
 public class Model {
@@ -40,7 +38,7 @@ public class Model {
 		
 	}
 
-	public Date getEndOfPreviousWeek(Date date) {
+	public java.sql.Date getEndOfPreviousWeek(Date date) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -171,19 +169,19 @@ public class Model {
 	}
 
 
-	public void saveNewTopic(String title, ArrayList<Object> selectedForms) {
+	public void saveNewTopic(String title, ObservableList<Form> selectedForms) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	public void saveEditedTopic(String text, ArrayList<Object> selectedForms, Topic topic) {
+	public void saveEditedTopic(String text, ObservableList<Form> selectedForms, Topic topic) {
 //		int id = topic.getId();
 		// TODO Auto-generated method stub
 		
 	}
 
-	public void saveEditedPO(String newPOName, ArrayList<Object> selectedMandatorySubjects,
-			ArrayList<Object> selectedOptionalSubjects, PO po) {
+	public void saveEditedPO(String newPOName, ObservableList<Subject> selectedMandatorySubjects,
+			ObservableList<Subject> selectedOptionalSubjects, PO po) {
 		//geänderten Namen für po übernehmen
 		po.setName(newPOName);
 		//geänderte mandatory Subjects (als Array) für po übernehmen

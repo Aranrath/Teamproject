@@ -227,7 +227,7 @@ public class MainView extends BorderPane {
 
 			newTab.setText(student.getName() + ", " + student.getFirstName());
 
-			newTab.setContent(new StudentView(student));
+			newTab.setContent(new StudentView(student, presenter));
 
 			tabPane.getTabs().addAll(newTab);
 		}

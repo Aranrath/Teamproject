@@ -1,6 +1,7 @@
 package tp.model;
 
-import java.util.Date;
+
+import java.sql.Date;
 import java.util.Properties;
 
 import javax.mail.Address;
