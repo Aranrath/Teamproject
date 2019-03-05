@@ -32,7 +32,7 @@ public class UpdateTimer {
 	public void checkMail(String userID, String passwd) {
 		try {
 			// get current Date/Time to update the Attribute lastUpdate when finished
-			Date updateDate = new Date();
+			Date updateDate = new Date(new java.util.Date().getTime());
 
 			// Create an empty properties object
 			Properties mailProps = new Properties();
@@ -53,7 +53,7 @@ public class UpdateTimer {
 				// TODO filter
 				Message msg = inbox.getMessage(i + 1);
 				// Filter for new E-Mails (after the date of the last Update)
-				Date mailSend = msg.getSentDate();
+				Date mailSend = (Date) msg.getSentDate();
 				// if mail is not processed yet, add E-Mail to database
 				if (mailSend.compareTo(lastUpdate) >= 0)
 					;

@@ -38,7 +38,7 @@ public class WeekScheduleView extends GridPane
 		this.presenter = presenter;
 		buildView();
 		//fillView with today's date
-		fillView(new Date());
+		fillView(new Date(new java.util.Date().getTime()));
 	}
 
 

@@ -1,3 +1,5 @@
+package tp.model;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -111,6 +113,7 @@ public class Model {
 		ObjectOutputStream oos;
 		try 
 		{
+			//TODO path anpassen, für spätere Installation
 			fout = new FileOutputStream("C:\\Users\\Mephisto\\eclipse-workspace\\Teamproject\\src\\Options.ser");
 			oos = new ObjectOutputStream(fout);
 			oos.writeObject(options);
