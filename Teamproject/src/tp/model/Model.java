@@ -51,35 +51,67 @@ public class Model {
 	//-------------------Calculations--------------------------------------------------------------
 
 	public Appointment[] loadNext24hourAppointments() {
-		String sql = "SELECT * FROM appointment WHERE DATE(startDate) == DATE('now') OR DATE(endDate) == DATE('now')";
-		try(Connection conn = this.connect();
-			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery(sql))
+		String sql = "SELECT * FROM appointment WHERE DATE(startDate) == DATE('now')";		
+		Appointment[] array = {};
+		List<Appointment> list = new ArrayList<Appointment>(Arrays.asList(array));
+		try 	(Connection conn = this.connect();
+				Statement stmt = conn.createStatement();
+				ResultSet rs = stmt.executeQuery(sql))
 		{
 			while(rs.next())
 			{
-				int id = rs.getInt("id");
-				System.out.println("Todays appointments: " + id);
+				Appointment id = rs.getInt("id");
+				int concern = rs.getInt("concern");
+				Date date = rs.getDate("date");
+				long startTime = rs.getLong("startDate");
+				long endTime = rs.getLong("endDate");
+				int roomNmb = rs.getInt("roomNmb");
+				Date reminderTime = rs.getDate("reminderDate");
+				Boolean reminderTimeisActive = rs.getBoolean("reminderDateActive");
+			
+				list.add(0, id);
+				list.add(1, concern);
+				list.add(2, date);
+				list.add(3, startTime);
+				list.add(4, endTime);
+				list.add(5, roomNmb);
+				list.add(6, reminderTime);
+				list.add(7, reminderTimeisActive);
 			}
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
-		return null;
+		return list;
 	}
 	
 	public Date[] getWorkWeekOfDate(Date date) {
+		Date[] d = new Date[5];
 		Calendar cal = Calendar.getInstance();
+		cal.clear();
+		cal.setTime(date);	
+		cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
 		cal.setTime(date);
-		System.out.println(cal.get(Calendar.WEEK_OF_MONTH));
-		return null;
+		d[0] = (Date) cal.getTime();
+		cal.set(Calendar.DAY_OF_WEEK, Calendar.TUESDAY);
+		cal.setTime(date);
+		d[1] = (Date) cal.getTime();
+		cal.set(Calendar.DAY_OF_WEEK, Calendar.WEDNESDAY);
+		cal.setTime(date);
+		d[2] = (Date) cal.getTime();
+		cal.set(Calendar.DAY_OF_WEEK, Calendar.THURSDAY);
+		cal.setTime(date);
+		d[3] = (Date) cal.getTime();
+		cal.set(Calendar.DAY_OF_WEEK, Calendar.FRIDAY);
+		cal.setTime(date);
+		d[4] = (Date) cal.getTime();
+		return d;
 	}
 	
 	public int getKwOfDate(Date date) {
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(date);
-		System.out.println("KW: " + cal.get(Calendar.WEEK_OF_YEAR));
 		return cal.get(Calendar.WEEK_OF_YEAR);
 	}
 	
@@ -106,20 +138,19 @@ public class Model {
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(date);
 		cal.add(Calendar.WEEK_OF_YEAR, +1);
-		cal.set(Calendar.DAY_OF_WEEK, 1);
-		System.out.println(cal.get(Calendar.DAY_OF_WEEK));
-		return null;
+		cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+		cal.setTime(date);
+		return (Date) cal.getTime();
 		
 	}
 
 	public java.sql.Date getEndOfPreviousWeek(Date date) {
 		int day = 6;
 		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
 		cal.add(Calendar.WEEK_OF_YEAR, -1);
 		cal.set(Calendar.DAY_OF_WEEK, day);
-		System.out.println("Last Friday: " + cal.getTime());
-		return null;
-		
+		return (Date) cal.getTime();		
 	}
 	
 	//------------------File: Loader&Saver + Getter/Setter---------------------------------------------------------------
@@ -233,8 +264,10 @@ public class Model {
 	
 	public Student getStudent(String emailAdressse) 
 	{
-		String PATH = ""; //filepath for img
+		Student s = new Student();
+		String PATH = ""; //File path for image
 		String sql = "SELECT * FROM student WHERE eMailAddresses = " + emailAdressse;
+		ArrayList<String> eMail = new ArrayList<String>();
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql))
@@ -244,10 +277,12 @@ public class Model {
 				int matNr = rs.getInt("Matrikelnummer");
 				String name = rs.getString("name");
 				String firstname = rs.getString("firstname");
-				String eMailAddresses = rs.getString("eMailAddresses");
+				eMail.add(rs.getString("eMailAdressess"));
 				int semester = rs.getInt("semester");
 				String notes = rs.getString("notes");
 				int ects = rs.getInt("ects");
+				
+				//Blob start
 				Blob ph = rs.getBlob("img");
 				System.out.println(ph);
 				InputStream in = ph.getBinaryStream();
@@ -262,15 +297,32 @@ public class Model {
 					out.write(buffer, 0, length);
 				}
 				out.writeTo(outputStream);
+			
 				in.close();
+				//Blob end
+				
 				System.out.println("Matrikelnummer: " + matNr + " Name: " + name + " Firstname: " + firstname + " eMail Addresses: " + eMailAddresses + " Semester: " + semester + " Notes: " + notes + " ECTS: " + ects + " Image saved at: " + PATH );
+				
+				String[] eMailArr = new String[eMail.size()];
+				eMailArr = eMail.toArray(eMailArr);
+				
+				s.setMtrNr(matNr);
+				s.setName(name);
+				s.setFirstName(firstname);
+				s.seteMailAddresses(eMailArr);
+				s.setSemester(semester);
+				s.setNotes(notes);
+				s.setEcts(ects);		
 			}
+			
+			
 		}
+		
 		catch(Exception e)
 		{
 			System.out.println(e.getMessage());
 		}
-		return null;
+		return s;
 	}
 	
 	public Student getStudent(int mtrNr) 
