@@ -34,7 +34,7 @@ public class Model {
 	//------------------establish Database connection-----------------------------------------------
 	private Connection connect() 
 	{
-		String url = "jdbc:sqlite:Teamprojekt.db";
+		String url = "jdbc:sqlite:teamprojectDatabase.db";
 		Connection conn = null; 
 		try 
 		{
@@ -51,32 +51,75 @@ public class Model {
 	//-------------------Calculations--------------------------------------------------------------
 
 	public Appointment[] loadNext24hourAppointments() {
-		// TODO Auto-generated method stub
+		String sql = "SELECT * FROM appointment WHERE DATE(startDate) == DATE('now') OR DATE(endDate) == DATE('now')";
+		try(Connection conn = this.connect();
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(sql))
+		{
+			while(rs.next())
+			{
+				int id = rs.getInt("id");
+				System.out.println("Todays appointments: " + id);
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 		return null;
 	}
 	
 	public Date[] getWorkWeekOfDate(Date date) {
-		// TODO Auto-generated method stub
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		System.out.println(cal.get(Calendar.WEEK_OF_MONTH));
 		return null;
 	}
+	
 	public int getKwOfDate(Date date) {
-		// TODO Auto-generated method stub
-		return 0;
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		System.out.println("KW: " + cal.get(Calendar.WEEK_OF_YEAR));
+		return cal.get(Calendar.WEEK_OF_YEAR);
 	}
+	
 	public Appointment[] getWeeksAppointments(int shownKw) {
-		// TODO Auto-generated method stub
+		String sql = "SELECT * FROM appointment WHERE DATE(startDate) >= DATE('now', 'weekday 0', '-7 days') OR DATE(endDate) >= DATE('now', 'weeday 0', '-7 days'))";
+		try (Connection conn = this.connect();
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(sql))
+		{
+			while(rs.next())
+			{
+				int id = rs.getInt("id");
+				System.out.println("Appointments of this week: " + id);
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 		return null;
 	}
 	
 	public Date getStartOfNextWeek(Date date) {
-		// TODO Auto-generated method stub
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		cal.add(Calendar.WEEK_OF_YEAR, +1);
+		cal.set(Calendar.DAY_OF_WEEK, 1);
+		System.out.println(cal.get(Calendar.DAY_OF_WEEK));
 		return null;
 		
 	}
 
 	public java.sql.Date getEndOfPreviousWeek(Date date) {
-		// TODO Auto-generated method stub
+		int day = 6;
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.WEEK_OF_YEAR, -1);
+		cal.set(Calendar.DAY_OF_WEEK, day);
+		System.out.println("Last Friday: " + cal.getTime());
 		return null;
+		
 	}
 	
 	//------------------File: Loader&Saver + Getter/Setter---------------------------------------------------------------
@@ -114,7 +157,7 @@ public class Model {
 		ObjectOutputStream oos;
 		try 
 		{
-			//TODO path anpassen, für spätere Installation
+			//TODO path anpassen, fÃ¼r spÃ¤tere Installation
 			fout = new FileOutputStream("C:\\Users\\Mephisto\\eclipse-workspace\\Teamproject\\src\\Options.ser");
 			oos = new ObjectOutputStream(fout);
 			oos.writeObject(options);
@@ -310,7 +353,7 @@ public class Model {
 			while(rs.next())
 			{
 				String name = rs.getString("name");
-				System.out.println("Po´s: " + name);
+				System.out.println("PoÂ´s: " + name);
 			}
 		}
 		catch(Exception e)
@@ -540,11 +583,11 @@ public class Model {
 	public void saveEditedPO(String newPOName, ObservableList<Subject> selectedMandatorySubjects,
 			ObservableList<Subject> selectedOptionalSubjects, PO po) 
 	{
-		//geänderten Namen für po übernehmen
+		//geÃ¤nderten Namen fÃ¼r po Ã¼bernehmen
 		po.setName(newPOName);
-		//geänderte mandatory Subjects (als Array) für po übernehmen
+		//geÃ¤nderte mandatory Subjects (als Array) fÃ¼r po Ã¼bernehmen
 		po.setMandatorySubjects(selectedMandatorySubjects.toArray(new Subject[selectedMandatorySubjects.size()]));
-		//geänderte optional Subjects (als Array) für po übernehmen
+		//geÃ¤nderte optional Subjects (als Array) fÃ¼r po Ã¼bernehmen
 		po.setOptionalSubjects(selectedOptionalSubjects.toArray(new Subject[selectedOptionalSubjects.size()]));
 
 
