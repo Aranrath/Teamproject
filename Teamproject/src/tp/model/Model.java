@@ -19,6 +19,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javafx.collections.ObservableList;
+import javafx.scene.image.Image;
 
 public class Model {
 
@@ -131,6 +132,7 @@ public class Model {
 		ObjectInputStream ois;
 		try
 		{
+			//TODO hier is ne Error message file not found
 			fis = new FileInputStream(new File("sessionTabsIds.ser"));
 			ois = new ObjectInputStream(fis);
 			ois.readObject();
@@ -150,6 +152,7 @@ public class Model {
 		ObjectInputStream ois;
 		try
 		{
+			//TODO hier is ne Error message, file not found
 			fis = new FileInputStream(new File("Options.ser"));
 			ois = new ObjectInputStream(fis);
 			ois.readObject();
@@ -556,6 +559,7 @@ public class Model {
 			System.out.println(e.getMessage());
 		}
 	}
+	
 
 	public void deleteConcern(Concern c) 
 	{
@@ -635,5 +639,11 @@ public class Model {
 			System.out.println(e.getMessage());
 		}
 		System.out.println("eMail " + ID + " saved.");
+	}
+
+
+	public void saveEditedStudent(Student student) {
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -2,15 +2,18 @@ package tp;
 
 import java.sql.Date;
 import java.util.Properties;
+
 import javax.mail.Message;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
+import javafx.scene.image.Image;
 import tp.model.Appointment;
 import tp.model.Concern;
 import tp.model.EMail;
@@ -85,6 +88,7 @@ public class Presenter {
 			e.printStackTrace();
 		}
 	}
+		
 
 	// ===============Getter&Setter========================
 
@@ -164,6 +168,7 @@ public class Presenter {
 		return model.getSubjects();
 	}
 
+	
 	public void saveNewSubject(String title, int ects) {
 		if (model.saveNewSubject(title, ects)) {
 			mainView.updateSubjectRelatedTabs();
@@ -189,6 +194,7 @@ public class Presenter {
 		}
 		
 	}
+
 
 	public ObservableList<Form> getForms() {
 		return model.getForms();
@@ -230,6 +236,11 @@ public class Presenter {
 
 	public Options getOptions() {
 		return model.getOptions();
+	}
+
+	public void saveEditedStudent(Student student) {
+		model.saveEditedStudent(student);
+		
 	}
 
 }

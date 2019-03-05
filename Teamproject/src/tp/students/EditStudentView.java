@@ -10,6 +10,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -177,7 +178,7 @@ public class EditStudentView extends GridPane{
 			stage.setAlwaysOnTop(true);
 			stage.initModality(Modality.APPLICATION_MODAL);
             stage.setTitle("Foto aufnehmen");
-            stage.setScene(new Scene(new TakeImageView(stage, presenter), 450, 450));
+            stage.setScene(new Scene(new TakeImageView(stage, presenter, this), 450, 450));
             stage.show();
 		});
 		
@@ -220,4 +221,8 @@ public class EditStudentView extends GridPane{
 		studentNotes.setText(student.getNotes());
 	}
 
+	public void updateImage(Image image)
+	{
+		studentImage.setImage(image);
+	}
 }

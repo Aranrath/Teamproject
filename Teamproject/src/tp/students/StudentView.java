@@ -9,6 +9,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -27,6 +28,7 @@ import tp.options.EditPOView;
 public class StudentView extends GridPane{
 	
 	private Presenter presenter;
+	private Student student;
 	
 	//====================================
 	
@@ -60,8 +62,10 @@ public class StudentView extends GridPane{
 	
 	public StudentView(Student student, Presenter presenter)
 	{
+		this.student = student;
+		this.presenter = presenter;
 		buildView();
-		fillView(student);
+		fillView();
 		
 	}
 		
@@ -167,7 +171,7 @@ public class StudentView extends GridPane{
 				stage.setAlwaysOnTop(true);
 				stage.initModality(Modality.APPLICATION_MODAL);
 	            stage.setTitle("Foto aufnehmen");
-	            stage.setScene(new Scene(new TakeImageView(stage, presenter), 450, 450));
+	            stage.setScene(new Scene(new TakeImageView(stage, presenter, this), 450, 450));
 	            stage.show();
 			});
 			
@@ -190,7 +194,7 @@ public class StudentView extends GridPane{
 			
 			
 		}
-		private void fillView(Student student) {
+		private void fillView() {
 			if(student.getImage()!=null)
 			{
 				studentImage.setImage(student.getImage());
@@ -208,7 +212,16 @@ public class StudentView extends GridPane{
 			studentNotes.setText(student.getNotes());
 		}
 
+		public void updateImage(Image image)
+		{
+			studentImage.setImage(image);
+			student.setImage(image);
+			presenter.saveEditedStudent(student);
+		}
+		
 	}
+
+
 
 	
 	
