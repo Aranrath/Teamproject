@@ -1,5 +1,7 @@
 package tp;
 
+import java.util.ArrayList;
+
 import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
@@ -14,7 +16,6 @@ import javafx.scene.layout.BorderPane;
 import tp.appointment.WeekScheduleView;
 import tp.concern.AllConcernsView;
 import tp.concern.ConcernView;
-import tp.concern.EditConcernView;
 import tp.forms.FormsView;
 import tp.model.Appointment;
 import tp.model.Concern;
@@ -32,12 +33,15 @@ import tp.students.StudentView;
 public class MainView extends BorderPane {
 
 	private Presenter presenter;
-
+	private ArrayList<String> sessionTabsIds;
+	private ArrayList<Appointment> next24hourAppointments;
+	
+	//=======================================0
+	
 	private ToolBar leftToolBar;
 	private ToolBar rightToolBar;
 	private TabPane tabPane;
-	private String[] sessionTabsIds;
-	private Appointment[] next24hourAppointments;
+
 
 	public MainView(Presenter presenter) {
 		this.presenter = presenter;
@@ -160,28 +164,28 @@ public class MainView extends BorderPane {
 				if (firstLetter == 's') {
 					openStudentTab(presenter.getStudent(Integer.parseInt(s.substring(1))));
 				}
-				if (firstLetter == 'c') {
+				else if (firstLetter == 'c') {
 					openConcernTab(presenter.getConcern(Integer.parseInt(s.substring(1))));
 				}
-				if (firstLetter == 'o') {
+				else if (firstLetter == 'o') {
 					openOptionsTab();
 				}
-				if (firstLetter == 't') {
+				else if (firstLetter == 't') {
 					openStatisticTab(presenter.getStatistic(Integer.parseInt(s.substring(1))));
 				}
-				if (firstLetter == 'i') {
+				else if (firstLetter == 'i') {
 					openAllStatisticsTab();
 				}
-				if (firstLetter == 'a') {
+				else if (firstLetter == 'a') {
 					openAllStudentsTab();
 				}
-				if (firstLetter == 'l') {
+				else if (firstLetter == 'l') {
 					openAllConcernsTab();
 				}
-				if (firstLetter == 'f') {
+				else if (firstLetter == 'f') {
 					openFormsTab();
 				}
-				if (firstLetter == 'w') {
+				else if (firstLetter == 'w') {
 					openWeekScheduleTab();
 				}
 			}
@@ -340,7 +344,7 @@ public class MainView extends BorderPane {
 
 			newTab.setText(concern.getTitle());
 
-			newTab.setContent(new ConcernView(concern));
+			newTab.setContent(new ConcernView(presenter, concern));
 
 			tabPane.getTabs().addAll(newTab);
 		}
@@ -354,7 +358,7 @@ public class MainView extends BorderPane {
 
 		newTab.setText("Neues Anliegen");
 
-		newTab.setContent(new EditConcernView());
+		newTab.setContent(new ConcernView(presenter));
 
 		tabPane.getTabs().addAll(newTab);
 
@@ -368,7 +372,7 @@ public class MainView extends BorderPane {
 
 		newTab.setText("Neues Anliegen");
 
-		newTab.setContent(new EditConcernView(students));
+		newTab.setContent(new ConcernView(presenter, new Concern(students)));
 
 		tabPane.getTabs().addAll(newTab);
 

@@ -1,6 +1,7 @@
 package tp;
 
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.Properties;
 
 import javax.mail.Message;
@@ -13,7 +14,6 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
-import javafx.scene.image.Image;
 import tp.model.Appointment;
 import tp.model.Concern;
 import tp.model.EMail;
@@ -96,11 +96,11 @@ public class Presenter {
 		this.mainView = mainView;
 	}
 
-	public String[] getSessionTabsIds() {
+	public ArrayList<String> getSessionTabsIds() {
 		return model.loadSessionTabsIds();
 	}
 
-	public Appointment[] getNext24hourAppointments() {
+	public ArrayList<Appointment> getNext24hourAppointments() {
 		return model.loadNext24hourAppointments();
 	}
 
@@ -144,7 +144,7 @@ public class Presenter {
 		return model.getKwOfDate(date);
 	}
 
-	public Appointment[] getWeeksAppointments(int shownKw) {
+	public ObservableList<Appointment> getWeeksAppointments(int shownKw) {
 		return model.getWeeksAppointments(shownKw);
 	}
 

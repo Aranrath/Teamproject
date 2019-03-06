@@ -1,37 +1,54 @@
 package tp.model;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 import javafx.collections.ObservableList;
 
 public class Concern {
 
 	private int id;
 	private String title;
-	private Object[] data;
+	private ObservableList<Form> data;
 	private Topic topic;
-	private Appointment[] appointments;
-	private ReminderMail[] reminders;
-	ObservableList<Student> students;
+	private ObservableList<Appointment> appointments;
+	private ObservableList<Reminder> reminders;
+	private ObservableList<Student> students;
+	private String notes;
 	
-	public Concern(int id, String title, Object[] data, Topic topic, Appointment[] appointments, ReminderMail[] reminders,ObservableList<Student> students)
-	{
-		this.id= id;
-		this.title= title ;
-		this.data= data ;
-		this.topic= topic ;
+
+	public Concern(String title, ObservableList<Form> data, Topic topic, ObservableList<Appointment> appointments, ObservableList<Reminder> reminders,
+			ObservableList<Student> students, String notes) {
+		this.title = title;
+		this.data = data;
+		this.topic = topic;
 		this.appointments = appointments;
-		this.reminders= reminders ;
+		this.reminders = reminders;
+		this.students = students;
+	}
+	
+	public Concern()
+	{
+		this.title = "Unbenannt_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
+		
+	}
+
+	public Concern(ObservableList<Student> students) {
+		this.title = "Unbenannt_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
 		this.students = students;
 	}
 
 	public int getId() {
+
 		return id;
+
 	}
 
 	public String getTitle() {
 		return title;
 	}
 
-	public Object[] getData() {
+	public ObservableList<Form> getData() {
 		return data;
 	}
 
@@ -39,11 +56,11 @@ public class Concern {
 		return topic;
 	}
 
-	public Appointment[] getAppointments() {
+	public ObservableList<Appointment> getAppointments() {
 		return appointments;
 	}
 
-	public ReminderMail[] getReminders() {
+	public ObservableList<Reminder> getReminders() {
 		return reminders;
 	}
 
@@ -55,7 +72,7 @@ public class Concern {
 		this.title = title;
 	}
 
-	public void setData(Object[] data) {
+	public void setData(ObservableList<Form> data) {
 		this.data = data;
 	}
 
@@ -63,11 +80,11 @@ public class Concern {
 		this.topic = topic;
 	}
 
-	public void setAppointments(Appointment[] appointments) {
+	public void setAppointments(ObservableList<Appointment> appointments) {
 		this.appointments = appointments;
 	}
 
-	public void setReminders(ReminderMail[] reminders) {
+	public void setReminders(ObservableList<Reminder> reminders) {
 		this.reminders = reminders;
 	}
 
@@ -78,8 +95,15 @@ public class Concern {
 	public void setStudents(ObservableList<Student> students) {
 		this.students = students;
 	}
+
+	public String getNotes() {
+		return notes;
+	}
+
+	public void setNotes(String notes) {
+		this.notes = notes;
+	}
 	
 	
-	
-	
+
 }

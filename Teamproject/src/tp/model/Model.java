@@ -18,12 +18,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Calendar;
+
 import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
 
 public class Model {
 
-	private String[] sessionTabsIds;
+	private ArrayList<String> sessionTabsIds;
 	private Options options;
 	
 	public Model() {
@@ -50,17 +53,16 @@ public class Model {
 	
 	//-------------------Calculations--------------------------------------------------------------
 
-	public Appointment[] loadNext24hourAppointments() {
+	public ArrayList<Appointment> loadNext24hourAppointments() {
 		String sql = "SELECT * FROM appointment WHERE DATE(startDate) == DATE('now')";		
-		Appointment[] array = {};
-		List<Appointment> list = new ArrayList<Appointment>(Arrays.asList(array));
+		ArrayList<Appointment> list = new ArrayList<Appointment>();
 		try 	(Connection conn = this.connect();
 				Statement stmt = conn.createStatement();
 				ResultSet rs = stmt.executeQuery(sql))
 		{
 			while(rs.next())
 			{
-				Appointment id = rs.getInt("id");
+				int AppointmentId = rs.getInt("id");
 				int concern = rs.getInt("concern");
 				Date date = rs.getDate("date");
 				long startTime = rs.getLong("startDate");
@@ -69,7 +71,8 @@ public class Model {
 				Date reminderTime = rs.getDate("reminderDate");
 				Boolean reminderTimeisActive = rs.getBoolean("reminderDateActive");
 			
-				list.add(0, id);
+				//TODO Mit den Attributen unten ein Appointment erstellen (siehe Konstruktor) und DAS adden
+				list.add(0, AppointmentId);
 				list.add(1, concern);
 				list.add(2, date);
 				list.add(3, startTime);
@@ -115,7 +118,7 @@ public class Model {
 		return cal.get(Calendar.WEEK_OF_YEAR);
 	}
 	
-	public Appointment[] getWeeksAppointments(int shownKw) {
+	public ObservableList<Appointment> getWeeksAppointments(int shownKw) {
 		String sql = "SELECT * FROM appointment WHERE DATE(startDate) >= DATE('now', 'weekday 0', '-7 days') OR DATE(endDate) >= DATE('now', 'weeday 0', '-7 days'))";
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement();
@@ -156,7 +159,7 @@ public class Model {
 	//------------------File: Loader&Saver + Getter/Setter---------------------------------------------------------------
 	
 	
-	public String[] getSessionTabs() {
+	public ArrayList<String> getSessionTabs() {
 		if (sessionTabsIds == null)
 		{
 			return loadSessionTabsIds();
@@ -200,7 +203,7 @@ public class Model {
 		// TODO Java object out Stream
 	}
 
-	public String[] loadSessionTabsIds() 
+	public ArrayList<String> loadSessionTabsIds() 
 	{
 		FileInputStream fis;
 		ObjectInputStream ois;
@@ -254,7 +257,7 @@ public class Model {
 		}
 	}
 	
-	public void setSessionTabs(String[] sessionTabs) {
+	public void setSessionTabs(ArrayList<String> sessionTabs) {
 		this.sessionTabsIds = sessionTabs;
 	}
 	
@@ -264,6 +267,7 @@ public class Model {
 	
 	public Student getStudent(String emailAdressse) 
 	{
+		//TODO Es gibt kein leeren Konstruktor
 		Student s = new Student();
 		String PATH = ""; //File path for image
 		String sql = "SELECT * FROM student WHERE eMailAddresses = " + emailAdressse;
@@ -301,11 +305,13 @@ public class Model {
 				in.close();
 				//Blob end
 				
+				//TODO Die Sachen da müssen gleich in den Konstruktor, guck in die Student-Klasse für die Reihenfolge
 				System.out.println("Matrikelnummer: " + matNr + " Name: " + name + " Firstname: " + firstname + " eMail Addresses: " + eMailAddresses + " Semester: " + semester + " Notes: " + notes + " ECTS: " + ects + " Image saved at: " + PATH );
 				
 				String[] eMailArr = new String[eMail.size()];
 				eMailArr = eMail.toArray(eMailArr);
 				
+				//TODO Wird im Konstruktor gemacht, muss also nicht extra gesettet werden
 				s.setMtrNr(matNr);
 				s.setName(name);
 				s.setFirstName(firstname);
