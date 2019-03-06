@@ -1,3 +1,6 @@
+package tp.model;
+
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,6 +22,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Calendar;
+
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
 
@@ -53,37 +58,33 @@ public class Model {
 
 	public ArrayList<Appointment> loadNext24hourAppointments() {
 		String sql = "SELECT * FROM appointment WHERE DATE(startDate) == DATE('now')";		
-		Appointment ap = new Appointment(0, null, null, 0, 0, 0, null, false);
-		int id;
-		int concern; 
-		Date date;
-		long startTime; 
-		long endTime;
-		int roomNmb;
-		Date reminderTime;
-		Boolean reminderTimeisActive;		
+		
+		ArrayList<Appointment> result = new ArrayList<Appointment>();
+		
 		try 	(Connection conn = this.connect();
 				Statement stmt = conn.createStatement();
 				ResultSet rs = stmt.executeQuery(sql))
 		{
 			while(rs.next())
 			{
-				id = rs.getInt("id");
-				concern = rs.getInt("concern");
-				date = rs.getDate("date");
-				startTime = rs.getLong("startDate");
-				endTime = rs.getLong("endDate");
-				roomNmb = rs.getInt("roomNmb");
-				reminderTime = rs.getDate("reminderDate");
-				reminderTimeisActive = rs.getBoolean("reminderDateActive");
+				int id = rs.getInt("id");
+				Concern concern = getConcern(rs.getInt("concern"));
+				Date date = rs.getDate("date");
+				long startTime = rs.getLong("startDate");
+				long endTime = rs.getLong("endDate");
+				int roomNmb = rs.getInt("roomNmb");
+				Date reminderTime = rs.getDate("reminderDate");
+				Boolean reminderTimeisActive = rs.getBoolean("reminderDateActive");
+				
+				result.add(new Appointment(id, concern, date, startTime, endTime, roomNmb, reminderTime, reminderTimeisActive));
 			}
-			ap = new Appointment(id, concern, date, startTime, endTime, roomNmb, reminderTime, reminderTimeisActive);
+			
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
-		return ap;
+		return result;
 	}
 	
 	public Date[] getWorkWeekOfDate(Date date) {
@@ -266,13 +267,11 @@ public class Model {
 	{
 		String PATH = "C:\\Users\\Mephisto\\eclipse-workspace\\Teamproject\\src\\ExportedData";
 		String sql = "SELECT * FROM student WHERE eMailAddresses = " + emailAdressse;
-		Student s = new Student(0, sql, sql, null, 0, sql, 0, null, null);
 		Image img = null;
 		int mtrNr = 0; 
 		String name = null; 
 		String firstname = null; 
-		ArrayList<String> eMail = new ArrayList<String>();
-		String[] eMailArr = null;
+		ObservableList<String> eMailAddresses = FXCollections.observableArrayList();
 		int semester = 0; 
 		String notes = null; 
 		int ects = 0;
@@ -285,10 +284,11 @@ public class Model {
 		{
 			while(rs.next())
 			{
+				
 				mtrNr = rs.getInt("Matrikelnummer");
 				name = rs.getString("name");
 				firstname = rs.getString("firstname");
-				eMail.add(rs.getString("eMailAddressess"));
+				eMailAddresses.add(rs.getString("eMailAddressess"));
 				semester = rs.getInt("semester");
 				notes = rs.getString("notes");
 				ects = rs.getInt("ects");
@@ -309,11 +309,9 @@ public class Model {
 				out.writeTo(outputStream);
 				in.close();
 				File file = new File(PATH+mtrNr+".png");
-				Image image = new Image(file.toURI().toString());
-				eMailArr = new String[eMail.size()];
-				eMailArr = eMail.toArray(eMailArr);		
+				Image image = new Image(file.toURI().toString());	
 			}
-			s = new Student(mtrNr, name, firstname, eMailArr, semester, notes, ects, img, concerns);
+			s = new Student(mtrNr, name, firstname, eMailAddresses, semester, notes, ects, img, concerns);
 		}
 		
 		catch(Exception e)
@@ -592,7 +590,7 @@ public class Model {
 		System.out.println("Student " + matNr + " deleted.");
 	}
 
-	public boolean saveNewSubject(String title, int ects) 
+	public void saveNewSubject(String title, int ects) 
 	{
 		String t = title;
 		int e  = ects;
@@ -614,7 +612,7 @@ public class Model {
 		
 	}
 
-	public boolean saveEditedSubject(String title, int ects, int id) 
+	public void saveEditedSubject(String title, int ects, int id) 
 	{
 		String sql = "UPDATE subject SET titel = "+title+", ects = "+ects;
 		try (Connection conn = this.connect();
@@ -786,5 +784,18 @@ public class Model {
 		// TODO Auto-generated method stub
 		//TODO Email in chronologischer reihenfolge. Älteste Email zuerst
 		return null;
+	}
+
+
+	public void saveEditedConcern(Concern concern) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	public void saveNewConcern(Concern concern) {
+		// TODO Concern ID zuweisen mit concern.setId(neueId);
+		// TODO Auto-generated method stub
+		
 	}
 }

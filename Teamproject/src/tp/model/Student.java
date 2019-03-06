@@ -1,5 +1,6 @@
 package tp.model;
 
+import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
 
 public class Student{
@@ -7,15 +8,15 @@ public class Student{
 	private int mtrNr;
 	private String name;
 	private String firstName;
-	private String[] eMailAddresses;
+	private ObservableList<String> eMailAddresses;
 	private int semester;
 	private String notes;
 	private int ects;
 	private Image image;
-	private Concern[] concerns;
+	private ObservableList<Concern> concerns;
 	private PO po;
 	
-	public Student(int mtrNr, String name, String firstName,String[] eMailAddresses, int semester, String notes, int ects, Image image, Concern[] concerns)
+	public Student(int mtrNr, String name, String firstName,ObservableList<String> eMailAddresses, int semester, String notes, int ects, Image image, ObservableList<Concern> concerns)
 	{
 		this.mtrNr = mtrNr;
 		this.name = name;
@@ -59,11 +60,11 @@ public class Student{
 		return image;
 	}
 
-	public String[] geteMailAddresses() {
+	public ObservableList<String> geteMailAddresses() {
 		return eMailAddresses;
 	}
 
-	public Concern[] getConcerns() {
+	public ObservableList<Concern> getConcerns() {
 		return concerns;
 	}
 
@@ -83,7 +84,7 @@ public class Student{
 		this.firstName = firstName;
 	}
 
-	public void seteMailAddresses(String[] eMailAddresses) {
+	public void seteMailAddresses(ObservableList<String> eMailAddresses) {
 		this.eMailAddresses = eMailAddresses;
 	}
 
@@ -103,7 +104,7 @@ public class Student{
 		this.image = image;
 	}
 
-	public void setConcerns(Concern[] concerns) {
+	public void setConcerns(ObservableList<Concern> concerns) {
 		this.concerns = concerns;
 	}
 

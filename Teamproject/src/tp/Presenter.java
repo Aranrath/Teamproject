@@ -11,9 +11,6 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import javafx.collections.ObservableList;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonType;
 import tp.model.Appointment;
 import tp.model.Concern;
 import tp.model.EMail;
@@ -65,7 +62,7 @@ public class Presenter {
 			message.setFrom(new InternetAddress(userID + "@fh-trier.de", userName));
 			// TODO get richtige?? E-Mail adresse (wie zugeordnet?)
 			message.setRecipient(Message.RecipientType.TO,
-					new InternetAddress(recipient.geteMailAddresses()[0], recipient.getName()));
+					new InternetAddress(recipient.geteMailAddresses().get(0), recipient.getName()));
 			// Set the subject
 			message.setSubject(subject);
 			// Set the message text
@@ -81,9 +78,9 @@ public class Presenter {
 			transport.close();
 
 			// save E-mail to Database
-			EMail email = new EMail(content, subject, recipient, new Date(System.currentTimeMillis()) ,false);
+			EMail email = new EMail(content, subject, recipient, new Date(System.currentTimeMillis()), false);
 			model.saveMail(email);
-			
+
 			return email;
 		} catch (Exception e) {
 			// TODO Fehlerbehandlung ohne crash des Programms
@@ -91,7 +88,6 @@ public class Presenter {
 			return null;
 		}
 	}
-		
 
 	// ===============Getter&Setter========================
 
@@ -134,6 +130,7 @@ public class Presenter {
 		mainView.openNewConcernTab(students);
 
 	}
+
 	public void openNewConcernTab() {
 		mainView.openNewConcernTab();
 
@@ -142,7 +139,7 @@ public class Presenter {
 	public EMail[] getEMails(Student student) {
 		return model.getEMails(student);
 	}
-	
+
 	public Date[] getWorkWeekOfDate(Date date) {
 		return model.getWorkWeekOfDate(date);
 	}
@@ -175,33 +172,17 @@ public class Presenter {
 		return model.getSubjects();
 	}
 
-	
 	public void saveNewSubject(String title, int ects) {
-		if (model.saveNewSubject(title, ects)) {
-			mainView.updateSubjectRelatedTabs();
-		}
-		else
-		{
-			Alert alert = new Alert(AlertType.ERROR, "Neues Modul konnte nicht in der Datenbank gespeichert werden",
-					ButtonType.OK);
-			alert.showAndWait();
-		}
+		model.saveNewSubject(title, ects);
+		mainView.updateSubjectRelatedTabs();
 	}
 
 	public void saveEditedSubject(String title, int ects, int id) {
 
-		if (model.saveEditedSubject(title, ects, id)) {
-			mainView.updateSubjectRelatedTabs();
-		}
-		else
-		{
-			Alert alert = new Alert(AlertType.ERROR, "Modul-Änderungen konnte nicht in der Datenbank gespeichert werden",
-					ButtonType.OK);
-			alert.showAndWait();
-		}
-		
-	}
+		model.saveEditedSubject(title, ects, id);
+		mainView.updateSubjectRelatedTabs();
 
+	}
 
 	public ObservableList<Form> getForms() {
 		return model.getForms();
@@ -209,32 +190,33 @@ public class Presenter {
 
 	public void saveNewTopic(String title, ObservableList<Form> selectedForms) {
 		model.saveNewTopic(title, selectedForms);
-		
-	}
-	
-	public void saveEditedTopic(String text, ObservableList<Form> selectedForms, Topic topic) {
-		model.saveEditedTopic(text, selectedForms, topic);
-		
+
 	}
 
-	public void saveEditedPO(String newPOName, ObservableList<Subject> selectedOptionalSubjects, ObservableList<Subject> selectedMandatorySubjects, PO po) {
-		model.saveEditedPO(newPOName, selectedOptionalSubjects,selectedMandatorySubjects, po);
-		
+	public void saveEditedTopic(String text, ObservableList<Form> selectedForms, Topic topic) {
+		model.saveEditedTopic(text, selectedForms, topic);
+
+	}
+
+	public void saveEditedPO(String newPOName, ObservableList<Subject> selectedOptionalSubjects,
+			ObservableList<Subject> selectedMandatorySubjects, PO po) {
+		model.saveEditedPO(newPOName, selectedOptionalSubjects, selectedMandatorySubjects, po);
+
 	}
 
 	public void deleteConcern(Concern c) {
 		model.deleteConcern(c);
-		
+
 	}
 
 	public void saveNewForm(Form form) {
 		model.saveNewForm(form);
-		
+
 	}
 
 	public void deleteForm(Form f) {
 		model.deleteForm(f);
-		
+
 	}
 
 	public ObservableList<Concern> getConcerns(Student student) {
@@ -247,9 +229,16 @@ public class Presenter {
 
 	public void saveEditedStudent(Student student) {
 		model.saveEditedStudent(student);
-		
+
 	}
 
-	
+	public void saveEditedConcern(Concern concern) {
+		model.saveEditedConcern(concern);
+	}
+
+	public void saveNewConcern(Concern concern) {
+		model.saveNewConcern(concern);
+
+	}
 
 }

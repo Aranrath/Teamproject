@@ -20,18 +20,20 @@ import tp.model.Student;
 
 public class AllStudentsView extends GridPane {
 
-	Presenter presenter;
+	private Presenter presenter;
 
-	TableView<Student> allStudentsTable;
-	TableView<Student> selectedStudentsTable;
-	Label searchBar;
-	Label selectionLabel;
-	Button newStudentButton;
-	Button toRightButton;
-	Button toLeftButton;
-	Button allToLeftButton;
-	Button deleteStudentButton;
-	Button studentToNewConcernButton;
+	//================================
+	
+	private TableView<Student> allStudentsTable;
+	private TableView<Student> selectedStudentsTable;
+	private Label searchBar;
+	private Label selectionLabel;
+	private Button newStudentButton;
+	private Button toRightButton;
+	private Button toLeftButton;
+	private Button allToLeftButton;
+	private Button deleteStudentButton;
+	private Button studentToNewConcernButton;
 
 	public AllStudentsView(Presenter presenter) {
 		this.presenter = presenter;

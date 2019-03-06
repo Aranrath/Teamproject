@@ -1,6 +1,12 @@
 package tp.concern;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -8,6 +14,8 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import tp.Presenter;
 import tp.model.Appointment;
 import tp.model.Concern;
@@ -15,6 +23,7 @@ import tp.model.Form;
 import tp.model.Reminder;
 import tp.model.Student;
 import tp.model.Topic;
+import tp.options.EditTopicView;
 
 
 public class ConcernView extends GridPane {
@@ -62,6 +71,7 @@ public class ConcernView extends GridPane {
 	public ConcernView(Presenter presenter) {
 		this.presenter = presenter;
 		concern = new Concern();
+		presenter.saveNewConcern(concern);
 		buildView();
 		titleTextField.setText(concern.getTitle());
 	}
@@ -117,15 +127,105 @@ public class ConcernView extends GridPane {
 
 		// ==================================================
 		editTitleButton.setOnAction((event) -> {
-			// TODO
+			
+			//Bearbeitungsmodus zu Anzeigemodus (titleTextField visible und Button "save", Nach Start
+			if(titleTextField.isVisible())
+			{
+				String newTitle = titleTextField.getText();
+				if(newTitle.equals(""))
+				{
+					newTitle = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
+				}
+				//Geänderten Concern speichern
+				concern.setTitle(newTitle);
+				presenter.saveEditedConcern(concern);
+				//Buttonbeschriftung zu "Bearbeiten"
+				editTitleButton.setText("Ändern");
+				//Label Beschriftung aktualisieren
+				concernTitleLabel.setText(newTitle);
+				//Visibilities ändern
+				titleTextField.setVisible(false);
+				concernTitleLabel.setVisible(true);
+			}
+			//Anzeigemodus zu Bearbeitungsmodus
+			else if(concernTitleLabel.isVisible())
+			{
+				String oldTitle = concernTitleLabel.getText();
+				//Buttonbeschriftung zu "Bearbeiten"
+				editTitleButton.setText("Speichern");
+				//TextField Beschriftung aktualisieren
+				titleTextField.setText(oldTitle);
+				//Visibilities ändern
+				titleTextField.setVisible(true);
+				concernTitleLabel.setVisible(false);
+			}
 		});
 
 		newTopicButton.setOnAction((event) -> {
-			// TODO
+			Stage stage = new Stage();
+			stage.setAlwaysOnTop(true);
+			stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle("Neues Thema");
+            stage.setScene(new Scene(new EditTopicView(stage, presenter), 450, 450));
+            stage.show();
 		});
 
 		searchButton.setOnAction((event) -> {
-			// TODO
+			if(searchTextField.getText().equals(""))
+			{
+				
+			}
+			else
+			{
+				ObservableList<Student> students = studentTableView.getItems();
+				String searchTerms[] = searchTextField.getText().toLowerCase().split("");
+				ObservableList<Student> searchResult  = FXCollections.observableArrayList();
+				for(Student student : students)
+				{
+					
+					for(String mail : student.geteMailAddresses())
+					{
+						for(String term : searchTerms)
+						{
+							if(mail.toLowerCase().contains(term))
+							{
+								searchResult.add(student);
+							}
+						}
+						
+						
+					}
+					
+					for(String term : searchTerms)
+					{
+						if(student.getFirstName().toLowerCase().contains(term))
+						{
+							searchResult.add(student);
+						}
+					}
+					
+					for(String term : searchTerms)
+					{
+						if(student.getName().toLowerCase().contains(term))
+						{
+							searchResult.add(student);
+						}
+					}
+					
+					for(String term : searchTerms)
+					{
+						if(("" + student.getMtrNr()).contains(term))
+						{
+							searchResult.add(student);
+						}
+					}
+					
+				}
+				
+				//suchErgebnis anzeigen in TableView
+				studentTableView.setItems(searchResult);
+			}
+			
 		});
 
 		addStudentButton.setOnAction((event) -> {
