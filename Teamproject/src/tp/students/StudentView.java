@@ -233,6 +233,8 @@ public class StudentView extends GridPane {
 			// TODO Karen: Mail senden
 		});
 
+		
+		//TODO Notes müssen beim schließen gespeichert werden!!
 	}
 
 	private void fillView() {

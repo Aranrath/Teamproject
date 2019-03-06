@@ -42,7 +42,6 @@ public class ConcernView extends GridPane {
 
 	private Label notesLabel;
 	private TextArea notesTextArea;
-	private Button saveNotesButton;
 
 	private Label reminderLabel;
 	private Button newReminderButton;
@@ -100,7 +99,6 @@ public class ConcernView extends GridPane {
 
 		notesLabel = new Label("Notizen");
 		notesTextArea = new TextArea();
-		saveNotesButton = new Button("Speichern");
 
 		reminderLabel = new Label("Erinnerungen");
 		newReminderButton = new Button("Neu");
@@ -138,9 +136,6 @@ public class ConcernView extends GridPane {
 			// TODO
 		});
 
-		saveNotesButton.setOnAction((event) -> {
-			// TODO
-		});
 
 		newReminderButton.setOnAction((event) -> {
 			// TODO
@@ -169,6 +164,8 @@ public class ConcernView extends GridPane {
 		topicComboBox.setOnAction((event) -> {
 			// TODO
 		});
+		
+		//TODO Notes müssen beim schließen gespeichert werden!!
 
 		// ==================================================
 
@@ -192,7 +189,6 @@ public class ConcernView extends GridPane {
 		add(studentTableView, 0, 3, 6, 1);
 
 		add(notesLabel, 6, 0);
-		add(saveNotesButton, 8, 0);
 		add(notesTextArea, 6, 1, 3, 3);
 
 		add(reminderLabel, 0, 4);
