@@ -4,6 +4,7 @@ package tp.appointment;
 
 import java.sql.Date;
 
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -22,7 +23,7 @@ public class WeekScheduleView extends GridPane
 
 	int shownKw;
 	Date[] shownWorkWeek;
-	Appointment[] weeksAppointments;
+	ObservableList<Appointment> weeksAppointments;
 
 	
 	Label kwLabel;
