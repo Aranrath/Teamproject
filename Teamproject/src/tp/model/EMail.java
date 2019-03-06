@@ -1,20 +1,24 @@
 package tp.model;
 
+import java.sql.Date;
+
 public class EMail {
 
 	private int id;
-	//TODO Attribute subject to SQL
+	// TODO Attribute date to SQL
+	private Date date;
 	private String subject;
 	private String content;
 	private Student student;
-	//TODO new Attribute, to be integratet in SQL
-	private boolean received;	//true if e-mail was received, false if e-mail was send
-	
-	public EMail(String content, String subject, Student student, boolean received) {
-		//TODO generate ID
+	// TODO new Attribute, to be integratet in SQL
+	private boolean received; // true if e-mail was received, false if e-mail was send
+
+	public EMail(String content, String subject, Student student, Date date, boolean received) {
+		// TODO generate ID
 		this.content = content;
 		this.subject = subject;
 		this.student = student;
+		this.date = date;
 		this.received = received;
 	}
 
@@ -32,6 +36,10 @@ public class EMail {
 
 	public Student getStudent() {
 		return student;
+	}
+
+	public Date getDate() {
+		return date;
 	}
 
 	public boolean isReceived() {
@@ -54,9 +62,12 @@ public class EMail {
 		this.student = student;
 	}
 
+	public void setDate(Date date) {
+		this.date = date;
+	}
+
 	public void setReceived(boolean received) {
 		this.received = received;
 	}
-	
-	
+
 }

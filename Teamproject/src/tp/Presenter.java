@@ -50,7 +50,7 @@ public class Presenter {
 
 	// =====================Mail==========================
 
-	public void sendMail(String userID, String userName, Student recipient, String subject, String content) {
+	public EMail sendMail(String userID, String userName, Student recipient, String subject, String content) {
 		try {
 			// Create a properties file containing
 			// the host address of your SMTP server
@@ -81,11 +81,14 @@ public class Presenter {
 			transport.close();
 
 			// save E-mail to Database
-			EMail email = new EMail(content, subject, recipient, false);
+			EMail email = new EMail(content, subject, recipient, new Date(System.currentTimeMillis()) ,false);
 			model.saveMail(email);
+			
+			return email;
 		} catch (Exception e) {
 			// TODO Fehlerbehandlung ohne crash des Programms
 			e.printStackTrace();
+			return null;
 		}
 	}
 		
@@ -136,6 +139,10 @@ public class Presenter {
 
 	}
 
+	public EMail[] getEMails(Student student) {
+		return model.getEMails(student);
+	}
+	
 	public Date[] getWorkWeekOfDate(Date date) {
 		return model.getWorkWeekOfDate(date);
 	}
@@ -242,5 +249,7 @@ public class Presenter {
 		model.saveEditedStudent(student);
 		
 	}
+
+	
 
 }

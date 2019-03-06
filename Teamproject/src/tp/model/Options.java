@@ -7,16 +7,26 @@ public class Options implements Serializable{
 	private static final long serialVersionUID = 7924155370404919520L;
 	
 	//TODO Sicherheit!!!!!!!!
-	private String userID;
+	private String userName; //Name of the User, send together with E-Mail.
+	private String userID; //Hochschulkennung
 	private String password;
 	private String lastUsedIP;
 	
-	public Options(String userID, String password)
+	public Options(String userName, String userID, String password)
 	{
+		this.userName = userName;
 		this.userID = userID;
 		this.password = password;
 	}
 
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}	
+	
 	public String getUserID() {
 		return userID;
 	}

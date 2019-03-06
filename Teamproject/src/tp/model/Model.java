@@ -747,4 +747,11 @@ public class Model {
 		// TODO Auto-generated method stub
 		
 	}
+
+
+	public EMail[] getEMails(Student student) {
+		// TODO Auto-generated method stub
+		//TODO Email in chronologischer reihenfolge. Älteste Email zuerst
+		return null;
+	}
 }

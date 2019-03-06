@@ -1,9 +1,12 @@
 package tp.students;
 
+import java.sql.Date;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -11,6 +14,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -19,11 +23,14 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import tp.Presenter;
 import tp.model.Concern;
+import tp.model.EMail;
 import tp.model.PO;
 import tp.model.Student;
 import tp.options.EditPOView;
@@ -60,10 +67,11 @@ public class StudentView extends GridPane {
 	private Button editStudentButton;
 	private Label notesLabel;
 	private TextArea studentNotes;
-	
+
 	private Label mailExchangeLabel;
 	private GridPane mailGridPane;
 	private ScrollPane mailExchangeScrollPane;
+	private VBox mailExchangeVBox;
 	private TextField mailCCTextField;
 	private TextArea mailContentTextArea;
 	private Button sendMailButton;
@@ -114,12 +122,18 @@ public class StudentView extends GridPane {
 		notesLabel = new Label("Notizen");
 		studentNotes = new TextArea();
 		studentNotes.setPrefWidth(300);
-		
+
 		mailExchangeLabel = new Label("E-Mail Austausch");
 		mailGridPane = new GridPane();
 		mailGridPane.setBackground(
 				new Background(new BackgroundFill(Color.CORNFLOWERBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
 		mailExchangeScrollPane = new ScrollPane();
+		mailExchangeScrollPane.setHbarPolicy(ScrollBarPolicy.NEVER);
+		mailExchangeScrollPane.setVbarPolicy(ScrollBarPolicy.ALWAYS);
+		mailExchangeVBox = new VBox();
+		mailExchangeVBox.setPadding(new Insets(5, 20, 5, 5));
+		mailExchangeVBox.prefWidthProperty().bind(mailExchangeScrollPane.widthProperty());
+		mailExchangeScrollPane.setContent(mailExchangeVBox);
 		mailCCTextField = new TextField("");
 		mailCCTextField.setPromptText("Betreff");
 		mailCCTextField.getParent().requestFocus();
@@ -128,9 +142,8 @@ public class StudentView extends GridPane {
 		mailContentTextArea.getParent().requestFocus();
 		sendMailButton = new Button("Senden");
 
-		
 		// =====================================
-		
+
 		add(studentImage, 0, 0, 1, 6);
 		add(takePictureButton, 0, 6);
 		GridPane.setHalignment(takePictureButton, HPos.CENTER);
@@ -184,15 +197,14 @@ public class StudentView extends GridPane {
 		add(mailGridPane, 1, 8, 5, 1);
 
 		// ================build mailGridPane====================
-		
-		mailGridPane.add(mailExchangeScrollPane, 0, 0,2,1);
-		mailGridPane.add(mailCCTextField,0,1);
+
+		mailGridPane.add(mailExchangeScrollPane, 0, 0, 2, 1);
+		mailGridPane.add(mailCCTextField, 0, 1);
 		GridPane.setHalignment(mailCCTextField, HPos.LEFT);
-		mailGridPane.add(mailContentTextArea,0,2);
-		mailGridPane.add(sendMailButton,1,1,1,2);
+		mailGridPane.add(mailContentTextArea, 0, 2);
+		mailGridPane.add(sendMailButton, 1, 1, 1, 2);
 		GridPane.setHalignment(sendMailButton, HPos.CENTER);
 		GridPane.setValignment(sendMailButton, VPos.CENTER);
-		
 
 		// =========================================================
 
@@ -221,20 +233,28 @@ public class StudentView extends GridPane {
 			presenter.openNewConcernTab(list);
 
 		});
-		
+
 		editStudentButton.setOnAction((event) -> {
-			// TODO öffne neuen EditStudentView Tab mit student. Oder setze View des Tabs neu??? -> ID ändern!
+			// TODO öffne neuen EditStudentView Tab mit student. Oder setze View des Tabs
+			// neu??? -> ID ändern!
 			// TODO aktuellen Tab schließen
 		});
-		
+
 		sendMailButton.setOnAction((event) -> {
 			String mailCC = mailCCTextField.getText();
 			String mailContent = mailContentTextArea.getText();
-			// TODO Karen: Mail senden
+			String userID = presenter.getOptions().getUserID();
+			String userName = presenter.getOptions().getUserName();
+			EMail mail = presenter.sendMail(userID, userName, student, mailCC, mailContent);
+			//add new EMail to View
+			addMailToView(mail);
+			mailExchangeVBox.layout();
+			mailExchangeScrollPane.setVvalue(1.0d);
+
+			
 		});
 
-		
-		//TODO Notes müssen beim schließen gespeichert werden!!
+		// TODO Notes müssen beim schließen gespeichert werden!!
 	}
 
 	private void fillView() {
@@ -252,10 +272,47 @@ public class StudentView extends GridPane {
 		studentSemester.setText("" + student.getSemester());
 		connectedConcernsListView = new ListView<Concern>(presenter.getConcerns(student));
 		studentNotes.setText(student.getNotes());
-		
-		//TODO Karen E-Mail Verkehr darstellen
+
+		// Fill MailExchange
+		EMail[] mails = presenter.getEMails(student);
+		for (EMail mail : mails) {
+			addMailToView(mail);
+		}
+		mailExchangeVBox.layout();
+		mailExchangeScrollPane.setVvalue(1.0d);
 	}
 
+	public void addMailToView(EMail mail) {
+		if (mail != null) {
+			Label date = new Label();
+			Label subject = new Label();
+			Label content = new Label();
+
+			date.setText(mail.getDate().toString());
+			subject.setText(mail.getSubject());
+			content.setText(mail.getContent());
+
+			date.prefWidthProperty().bind(mailExchangeVBox.widthProperty());
+			subject.prefWidthProperty().bind(mailExchangeVBox.widthProperty());
+			content.prefWidthProperty().bind(mailExchangeVBox.widthProperty());
+
+			date.setAlignment(Pos.BASELINE_CENTER);
+
+			if (!mail.isReceived()) {
+				subject.setAlignment(Pos.BASELINE_RIGHT);
+				content.setAlignment(Pos.BASELINE_RIGHT);
+				subject.setTextAlignment(TextAlignment.RIGHT);
+				content.setTextAlignment(TextAlignment.RIGHT);
+			}
+
+			mailExchangeVBox.getChildren().add(date);
+			mailExchangeVBox.getChildren().add(subject);
+			mailExchangeVBox.getChildren().add(content);
+
+			
+		}
+	}
+	
 	public void updateImage(Image image) {
 		studentImage.setImage(image);
 		student.setImage(image);

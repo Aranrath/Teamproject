@@ -56,7 +56,6 @@ public class UpdateTimer {
 				Date mailSend = (Date) msg.getSentDate();
 				// if mail is not processed yet, add E-Mail to database
 				if (mailSend.compareTo(lastUpdate) >= 0)
-					;
 				{
 
 					Address senders[] = msg.getFrom();
@@ -73,7 +72,8 @@ public class UpdateTimer {
 						MimeMessage mimeMsg = (MimeMessage) msg;
 						content = (String) mimeMsg.getContent();
 					}
-					EMail mail = new EMail(content, subject, student, true);
+					Date date = new Date(msg.getSentDate().getTime());
+					EMail mail = new EMail(content, subject, student, date, true);
 					// TODO if(Mail noch nicht in Datenbank) {model.saveMail(mail);}
 					if (!model.mailInDb(mail)) {
 						model.saveMail(mail);
