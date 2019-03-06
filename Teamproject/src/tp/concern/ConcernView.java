@@ -16,6 +16,7 @@ import tp.model.Reminder;
 import tp.model.Student;
 import tp.model.Topic;
 
+
 public class ConcernView extends GridPane {
 
 	private Presenter presenter;
