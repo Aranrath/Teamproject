@@ -1,6 +1,5 @@
 package tp.concern;
 
-import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -116,103 +115,100 @@ public class ConcernView extends GridPane {
 		newAppointmentButton = new Button("Neu");
 		deleteAppointmentButton = new Button("Löschen");
 		appointmentTableView = new TableView<Appointment>();
-		
-		//==================================================
+
+		// ==================================================
 		editTitleButton.setOnAction((event) -> {
-			//TODO
+			// TODO
 		});
-		
+
 		newTopicButton.setOnAction((event) -> {
-			//TODO
+			// TODO
 		});
-		
+
 		searchButton.setOnAction((event) -> {
-			//TODO
+			// TODO
 		});
-		
+
 		addStudentButton.setOnAction((event) -> {
-			//TODO
+			// TODO
 		});
-		
+
 		removeStudentButton.setOnAction((event) -> {
-			//TODO
+			// TODO
 		});
-		
+
 		saveNotesButton.setOnAction((event) -> {
-			//TODO
+			// TODO
 		});
-		
+
 		newReminderButton.setOnAction((event) -> {
-			//TODO
+			// TODO
 		});
-		
+
 		deleteReminderButton.setOnAction((event) -> {
-			//TODO
+			// TODO
 		});
-		
+
 		addFileButton.setOnAction((event) -> {
-			//TODO
+			// TODO
 		});
-		
+
 		removeFileButton.setOnAction((event) -> {
-			//TODO
+			// TODO
 		});
-		
+
 		newAppointmentButton.setOnAction((event) -> {
-			//TODO
+			// TODO
 		});
-		
+
 		deleteAppointmentButton.setOnAction((event) -> {
-			//TODO
+			// TODO
 		});
-		
+
 		topicComboBox.setOnAction((event) -> {
-			//TODO
+			// TODO
 		});
-		
-		//==================================================
 
-		//TODO remove
-		add(titleTextField,0,0);
-		GridPane.setHalignment(titleTextField, HPos.RIGHT);
-		
-		
-		add(titleLabel,0,0);
-		add(titleTextField,1,0,3,1);
-		add(concernTitleLabel,1,0,3,1);
-		add(editTitleButton,4,0);
-		
-		add(topicLabel,0,1);
-		add(topicComboBox,1,1,3,1);
-		add(newTopicButton,4,1);
-		
-		add(studentLabel,0,2);
-		add(searchTextField,1,2,2,1);
-		add(searchButton,3,2);
-		add(addStudentButton,4,2);
-		add(removeStudentButton,5,2);
-		add(studentTableView,0,3,6,1);
-		
-		add(notesLabel,6,0);
-		add(saveNotesButton,8,0);
-		add(notesTextArea,6,1,3,3);
+		// ==================================================
 
-		add(reminderLabel,0,4);
-		add(newReminderButton,1,4);
-		add(deleteReminderButton,2,4);
-		add(reminderTableView,0,5,3,1);
-		
-		add(fileLabel,3,4);
-		add(addFileButton,4,4);
-		add(removeFileButton,5,4);
-		add(fileTableView,3,5,3,1);
-		
-		add(appointmentLabel,6,4);
-		add(newAppointmentButton,7,4);
-		add(deleteAppointmentButton,8,4);
-		add(appointmentTableView,6,5,3,1);
+//		 TODO use, then remove;
+//		GridPane.setHalignment(titleTextField, HPos.RIGHT);
 
-		
+		add(titleLabel, 0, 0);
+		add(titleTextField, 1, 0, 3, 1);
+		add(concernTitleLabel, 1, 0, 3, 1);
+		add(editTitleButton, 4, 0);
+
+		add(topicLabel, 0, 1);
+		add(topicComboBox, 1, 1, 3, 1);
+		add(newTopicButton, 4, 1);
+
+		add(studentLabel, 0, 2);
+		add(searchTextField, 1, 2, 2, 1);
+		add(searchButton, 3, 2);
+		add(addStudentButton, 4, 2);
+		add(removeStudentButton, 5, 2);
+		add(studentTableView, 0, 3, 6, 1);
+
+		add(notesLabel, 6, 0);
+		add(saveNotesButton, 8, 0);
+		add(notesTextArea, 6, 1, 3, 3);
+
+		add(reminderLabel, 0, 4);
+		add(newReminderButton, 1, 4);
+		add(deleteReminderButton, 2, 4);
+		add(reminderTableView, 0, 5, 3, 1);
+
+		add(fileLabel, 3, 4);
+		add(addFileButton, 4, 4);
+		add(removeFileButton, 5, 4);
+		add(fileTableView, 3, 5, 3, 1);
+
+		add(appointmentLabel, 6, 4);
+		add(newAppointmentButton, 7, 4);
+		add(deleteAppointmentButton, 8, 4);
+		add(appointmentTableView, 6, 5, 3, 1);
+
 	}
 
 	private void fillView() {
@@ -225,8 +221,5 @@ public class ConcernView extends GridPane {
 		appointmentTableView.setItems(concern.getAppointments());
 
 	}
-
-
-
 
 }
