@@ -44,6 +44,7 @@ public class AddStudentToConcernView extends GridPane{
 	}
 
 
+	@SuppressWarnings("unchecked")
 	private void buildView() {
 		setPadding(new Insets(10, 10, 10, 10));
 		setHgap(10);
@@ -144,7 +145,7 @@ public class AddStudentToConcernView extends GridPane{
 						}
 					}
 
-					updateStudents();
+//					updateStudents();
 
 				});
 				studentToConcernButton.setOnAction((event) -> {

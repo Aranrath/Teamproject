@@ -1,17 +1,16 @@
 package tp.model;
 
 
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.net.URL;
 import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.Date;
@@ -23,8 +22,12 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import javax.imageio.ImageIO;
+import javax.sql.rowset.serial.SerialBlob;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 
 public class Model {
@@ -806,7 +809,7 @@ public class Model {
 	}
 
 
-	public EMail[] getEMails(Student student) {
+	public ArrayList<EMail> getEMails(Student student) {
 		ArrayList<EMail> mail = new ArrayList<EMail>();
 		Student s = student;
 		int MtrNr = s.getMtrNr();

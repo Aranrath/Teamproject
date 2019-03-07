@@ -210,9 +210,9 @@ public class EditStudentView extends GridPane{
 		}
 		studentFirstName.setText(student.getFirstName());
 		studentLastName.setText(student.getName());
-		studentMail_1.setText(student.geteMailAddresses()[0]);
-		studentMail_2.setText(student.geteMailAddresses()[1]);
-		studentMail_3.setText(student.geteMailAddresses()[2]);
+		studentMail_1.setText(student.geteMailAddresses().get(0));
+		studentMail_2.setText(student.geteMailAddresses().get(1));
+		studentMail_3.setText(student.geteMailAddresses().get(2));
 		studentMtrNr.setText("" + student.getMtrNr());
 		studentPO.getSelectionModel().select(student.getPo());
 		studentECTS.setText("" + student.getEcts());

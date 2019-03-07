@@ -136,7 +136,7 @@ public class Presenter {
 
 	}
 
-	public EMail[] getEMails(Student student) {
+	public ArrayList<EMail> getEMails(Student student) {
 		return model.getEMails(student);
 	}
 

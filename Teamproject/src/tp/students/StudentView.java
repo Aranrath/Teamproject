@@ -1,6 +1,6 @@
 package tp.students;
 
-import java.sql.Date;
+import java.util.ArrayList;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -263,9 +263,9 @@ public class StudentView extends GridPane {
 		}
 		studentFirstName.setText(student.getFirstName());
 		studentLastName.setText(student.getName());
-		studentMail_1.setText(student.geteMailAddresses()[0]);
-		studentMail_2.setText(student.geteMailAddresses()[1]);
-		studentMail_3.setText(student.geteMailAddresses()[2]);
+		studentMail_1.setText(student.geteMailAddresses().get(0));
+		studentMail_2.setText(student.geteMailAddresses().get(1));
+		studentMail_3.setText(student.geteMailAddresses().get(2));
 		studentMtrNr.setText("" + student.getMtrNr());
 		studentPO.getSelectionModel().select(student.getPo());
 		studentECTS.setText("" + student.getEcts());
@@ -274,7 +274,7 @@ public class StudentView extends GridPane {
 		studentNotes.setText(student.getNotes());
 
 		// Fill MailExchange
-		EMail[] mails = presenter.getEMails(student);
+		ArrayList<EMail> mails = presenter.getEMails(student);
 		for (EMail mail : mails) {
 			addMailToView(mail);
 		}

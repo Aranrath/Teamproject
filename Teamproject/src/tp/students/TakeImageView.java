@@ -18,7 +18,6 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import tp.Presenter;
 import tp.model.Options;
-import tp.model.Student;
 
 public class TakeImageView extends GridPane{
 	
