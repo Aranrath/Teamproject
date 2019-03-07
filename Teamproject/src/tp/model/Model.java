@@ -58,9 +58,7 @@ public class Model {
 
 	public ArrayList<Appointment> loadNext24hourAppointments() {
 		String sql = "SELECT * FROM appointment WHERE DATE(startDate) == DATE('now')";		
-		
 		ArrayList<Appointment> result = new ArrayList<Appointment>();
-		
 		try 	(Connection conn = this.connect();
 				Statement stmt = conn.createStatement();
 				ResultSet rs = stmt.executeQuery(sql))
@@ -75,10 +73,8 @@ public class Model {
 				int roomNmb = rs.getInt("roomNmb");
 				Date reminderTime = rs.getDate("reminderDate");
 				Boolean reminderTimeisActive = rs.getBoolean("reminderDateActive");
-				
 				result.add(new Appointment(id, concern, date, startTime, endTime, roomNmb, reminderTime, reminderTimeisActive));
 			}
-			
 		}
 		catch (Exception e)
 		{
@@ -171,7 +167,7 @@ public class Model {
 		ObjectOutputStream oos;
 		try
 		{
-			fout = new FileOutputStream("");
+			fout = new FileOutputStream("C:\\\\Users\\\\Mephisto\\\\eclipse-workspace\\\\Teamproject\\\\src\\\\sessionTabsIds.ser");
 			oos = new ObjectOutputStream(fout);
 			oos.writeObject(sessionTabsIds);
 		}
@@ -189,7 +185,7 @@ public class Model {
 		ObjectOutputStream oos;
 		try 
 		{
-			//TODO path anpassen, für spätere Installation
+			//TODO path anpassen, fÃ¼r spÃ¤tere Installation
 			fout = new FileOutputStream("C:\\Users\\Mephisto\\eclipse-workspace\\Teamproject\\src\\Options.ser");
 			oos = new ObjectOutputStream(fout);
 			oos.writeObject(options);
@@ -207,8 +203,8 @@ public class Model {
 		ObjectInputStream ois;
 		try
 		{
-			//TODO hier is ne Error message file not found ---Wusste nicht ob die file mit .ser am ende richtig ist da kennt ihr euch besser aus bitte passt das mal an, ansonsten fehlt da natr�lich auch der Filepath da wir den ja noch nicht fix angegeben haben.
-			fis = new FileInputStream(new File("sessionTabsIds.ser"));
+			//Filepath anpassen
+			fis = new FileInputStream(new File("C:\\\\Users\\\\Mephisto\\\\eclipse-workspace\\\\Teamproject\\\\src\\\\sessionTabsIds.ser"));
 			ois = new ObjectInputStream(fis);
 			ois.readObject();
 		}
@@ -227,8 +223,8 @@ public class Model {
 		ObjectInputStream ois;
 		try
 		{
-			//TODO hier is ne Error message, file not found  ---Wusste nicht ob die file mit .ser am ende richtig ist da kennt ihr euch besser aus bitte passt das mal an, ansonsten fehlt da natr�lich auch der Filepath da wir den ja noch nicht fix angegeben haben.
-			fis = new FileInputStream(new File("Options.ser"));
+			//Filepath anpassen
+			fis = new FileInputStream(new File("C:\\Users\\Mephisto\\eclipse-workspace\\Teamproject\\src\\Options.ser"));
 			ois = new ObjectInputStream(fis);
 			ois.readObject();
 		}
@@ -265,18 +261,20 @@ public class Model {
 	
 	public Student getStudent(String emailAdressse) 
 	{
+		Student result = null;
 		String PATH = "C:\\Users\\Mephisto\\eclipse-workspace\\Teamproject\\src\\ExportedData";
 		String sql = "SELECT * FROM student WHERE eMailAddresses = " + emailAdressse;
+		ArrayList<Concern> con = new ArrayList<Concern>();
 		Image img = null;
 		int mtrNr = 0; 
 		String name = null; 
 		String firstname = null; 
-		ObservableList<String> eMailAddresses = FXCollections.observableArrayList();
+		ObservableList<String> eMailAddressess = null;
+		Concern[] concerns = null;
 		int semester = 0; 
 		String notes = null; 
 		int ects = 0;
-		Concern[] concerns = null;
-		
+		Concern concern;
 		
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement();
@@ -284,15 +282,14 @@ public class Model {
 		{
 			while(rs.next())
 			{
-				
 				mtrNr = rs.getInt("Matrikelnummer");
 				name = rs.getString("name");
 				firstname = rs.getString("firstname");
-				eMailAddresses.add(rs.getString("eMailAddressess"));
+				eMailAddressess = FXCollections.observableArrayList(rs.getString("eMailAddressess"));
 				semester = rs.getInt("semester");
 				notes = rs.getString("notes");
 				ects = rs.getInt("ects");
-				concerns = rs.getInt("concerns");
+				concern = getConcern(rs.getInt("concern"));
 				Blob ph = rs.getBlob("img");
 				System.out.println(ph);
 				InputStream in = ph.getBinaryStream();
@@ -309,33 +306,36 @@ public class Model {
 				out.writeTo(outputStream);
 				in.close();
 				File file = new File(PATH+mtrNr+".png");
-				Image image = new Image(file.toURI().toString());	
+				img = new Image(file.toURI().toString());
+				con.add(concern);
+				concerns = new Concern[con.size()];
+				concerns = con.toArray(concerns);	
+				
 			}
-			s = new Student(mtrNr, name, firstname, eMailAddresses, semester, notes, ects, img, concerns);
-		}
-		
+			result = new Student(mtrNr, name, firstname, eMailAddressess, semester, notes, ects, img, concerns);	
+		}		
 		catch(Exception e)
 		{
 			System.out.println(e.getMessage());
-		}		
-		return s;
+		}	
+		return result;
 	}
 	
 	public Student getStudent(int mtrNr) 
 	{
 		String PATH = "C:\\Users\\Mephisto\\eclipse-workspace\\Teamproject\\src\\ExportedData"; 
 		String sql = "SELECT * FROM student WHERE Matrikelnummer = " + mtrNr;
-		Student s = new Student(0, sql, sql, null, 0, sql, 0, null, null);
-		Image img = null;
+		Student result = null;	
+		ArrayList<Concern> con = new ArrayList<Concern>();
+		Image img = null; 
 		String name = null; 
 		String firstname = null; 
-		ArrayList<String> eMail = new ArrayList<String>();
-		String[] eMailArr = null;
+		ObservableList<String> eMailAddressess = null;
+		Concern[] concerns = null;
 		int semester = 0; 
 		String notes = null; 
 		int ects = 0;
-		Concern[] concerns = null;
-		
+		Concern concern;
 		
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement();
@@ -346,11 +346,11 @@ public class Model {
 				mtrNr = rs.getInt("Matrikelnummer");
 				name = rs.getString("name");
 				firstname = rs.getString("firstname");
-				eMail.add(rs.getString("eMailAddressess"));
+				eMailAddressess = FXCollections.observableArrayList(rs.getString("eMailAddressess"));
 				semester = rs.getInt("semester");
 				notes = rs.getString("notes");
 				ects = rs.getInt("ects");
-				concerns = rs.getInt("concerns");
+				concern = getConcern(rs.getInt("concern"));
 				Blob ph = rs.getBlob("img");
 				System.out.println(ph);
 				InputStream in = ph.getBinaryStream();
@@ -367,50 +367,46 @@ public class Model {
 				out.writeTo(outputStream);
 				in.close();
 				File file = new File(PATH+mtrNr+".png");
-				Image image = new Image(file.toURI().toString());
-				eMailArr = new String[eMail.size()];
-				eMailArr = eMail.toArray(eMailArr);		
+				img = new Image(file.toURI().toString());
+				con.add(concern);
+				concerns = new Concern[con.size()];
+				concerns = con.toArray(concerns);	
+				
 			}
-			s = new Student(mtrNr, name, firstname, eMailArr, semester, notes, ects, img, concerns);
-		}
-		
+			result = new Student(mtrNr, name, firstname, eMailAddressess, semester, notes, ects, img, concerns);	
+		}		
 		catch(Exception e)
 		{
 			System.out.println(e.getMessage());
-		}		
-		return s;
+		}	
+		return result;
 	}
 	
 	public Concern getConcern(int concernId) 
 	{
-		Concern c = new Concern();
-		String sql = "SELECT * FROM concern";
-		int id = 0;
+		Concern con = null;
+		Topic topic = null;
 		String title = null;
-		int topic = 0;
 		String notes = null;
+		String sql = "SELECT * FROM concern WHERE id = "+concernId;
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql))
 		{
 			while(rs.next())
 			{
-				id = rs.getInt("id");
-				title = rs.getString("titel");
-				topic = rs.getInt("topic");
-				notes = rs.getString("notes");
+				title = rs.getString("title"); 
+				topic.setId(rs.getInt("topic"));
+				notes = rs.getString("notes");	
 			}
-		c.setId(id);
-		c.setTitle(title);
-		c.setTopic(topic);
-		c.setNotes(notes);
+			con = new Concern (title, null, topic, null, null, null, notes);
 		}
 		catch(Exception e)
 		{
 			System.out.println(e.getMessage());
 		}
 		
-		return c;
+		return con;
 	}
 	
 	public Statistic getStatistic(int statisticId) 
@@ -421,89 +417,84 @@ public class Model {
 	
 	public ObservableList<PO> getPOs() 
 	{
-		PO p = new PO(null);
+		ObservableList<PO> po = FXCollections.observableArrayList();
 		String sql = "SELECT * FROM po";
-		String name = null;
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql))
 		{
 			while(rs.next())
 			{
-				name = rs.getString("name");
+				String name = rs.getString("name");
+				po.add(new PO (name));
 			}
 		}
 		catch(Exception e)
 		{
 			System.out.println(e.getMessage());
 		}
-		p = new PO(name);
-		return (ObservableList<PO>) p;
+		return po;
 		
 	}
 	
 	public ObservableList<Topic> getTopics() 
 	{
-		Topic t = new Topic(null);
+		ObservableList<Topic> topic = FXCollections.observableArrayList();
 		String sql = "SELECT * FROM topic";
-		String title = null;
+		ArrayList<Object> linkedForms = new ArrayList<Object>();
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql))
 		{
 			while(rs.next())
 			{
-				title = rs.getString("titel");
+				String title = rs.getString("titel");
+				linkedForms.add(rs.getString("linkedForms"));
+				topic.add(new Topic (title, linkedForms));
 			}
 		}
 		catch(Exception e)
 		{
 			System.out.println(e.getMessage());
 		}
-		t = new Topic(title);
-		return (ObservableList<Topic>) t;
+		return topic;
 	}
 
 	public ObservableList<Subject> getSubjects() 
 	{
-		Subject s = new Subject(0, null, 0);
+		ObservableList<Subject> subject = FXCollections.observableArrayList();
 		String sql = "SELECT * FROM subject";
-		String title = null;
-		int ects = 0;
-		int id = 0;
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql))
 		{
 			while(rs.next())
 			{
-				id = rs.getInt("id");
-				title = rs.getString("titel");
-				ects = rs.getInt("ects");
+				int id = rs.getInt("id");
+				String title = rs.getString("titel");
+				int ects = rs.getInt("ects");
+				subject.add(new Subject (id, title, ects));
 			}
 		}
 		catch(Exception e)
 		{
 			System.out.println(e.getMessage());
 		}
-		s = new Subject(id, title, ects);
-		return (ObservableList<Subject>) s;
+		return subject;
 	}
 	
 	public ObservableList<Form> getForms() 
 	{
-		Form f = new Form(null, null);
+		ObservableList<Form> form = FXCollections.observableArrayList();
 		String PATH = "C:\\Users\\Mephisto\\eclipse-workspace\\Teamproject\\src\\ExportedData";
 		String sql = "SELECT * FROM form";
-		String name = null;
-		File file = null;
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql))
 		{
 			while(rs.next())
 			{
-				name = rs.getString("name");
+				String name = rs.getString("name");
 				Blob ph = rs.getBlob("file");
 				System.out.println(ph);
 				InputStream in = ph.getBinaryStream();
@@ -518,41 +509,52 @@ public class Model {
 					out.write(buffer, 0, length);
 				}
 				out.writeTo(outputStream);
-				file = new File(PATH+name+".pdf");
+				File file = new File(PATH+name+".pdf");
+				form.add(new Form(name, file));
 			}
 		}
 		catch(Exception e)
 		{
 			System.out.println(e.getMessage());
 		}
-		f = new Form(name, file);
-		return (ObservableList<Form>) f;
+		return form;
 	}
 	
 	public ObservableList<Concern> getConcerns(Student student) 
 	{
-		Concern c = new Concern();
-		Student s = student;
-		int MatNr = s.getMtrNr();
-		String name = s.getName();
-		String sql = "SELECT c.titel FROM concern c, concer_student cs WHERE c.id = cs.concern AND cs.student = " + MatNr;
-		String concern = null;
-		
+		ObservableList<Concern> concerns = FXCollections.observableArrayList();
+		int MtrNr = student.getMtrNr();
+		Form form = null;
+		Topic topic = null;
+		Appointment appointment = null;
+		Reminder reminder = null;
+		String sql = "SELECT c.title, cd.data, c.topic, ca.appointment, cs.student, c.notes "
+				+ "FROM concern c, concer_student cs, concern_appointment ca, concern_dokument cd, concern_reminderMail cr WHERE c.id = cs.concern AND cs.student = " + MtrNr;		
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql))
 		{
 			while(rs.next())
 			{
-				concern = rs.getString("c.titel");
+				String title = rs.getString("c.title");
+				String test2 = rs.getString("f.name");
+				form.setName(rs.getString("dokument"));
+				ObservableList<Form> data = FXCollections.observableArrayList(form);
+				topic.setId(rs.getInt("topic"));
+				appointment.setId(rs.getInt("ca.appointment"));
+				ObservableList<Appointment> appointments = FXCollections.observableArrayList(appointment);
+				student.setMtrNr(rs.getInt("cs.student"));
+				ObservableList<Reminder> reminders = FXCollections.observableArrayList(reminder);
+				ObservableList<Student> students = FXCollections.observableArrayList(student);
+				String notes = rs.getString("notes");
+				concerns.add(new Concern(title, data, topic, appointments, reminders, students, notes));
 			}
 		}
 		catch(Exception e)
 		{
 			System.out.println(e.getMessage());
 		}
-		c = new Concern(concern);
-		return c;
+		return concerns;
 	}
 	
 	public boolean mailInDb(EMail email) 
@@ -590,7 +592,7 @@ public class Model {
 		System.out.println("Student " + matNr + " deleted.");
 	}
 
-	public void saveNewSubject(String title, int ects) 
+	public boolean saveNewSubject(String title, int ects) 
 	{
 		String t = title;
 		int e  = ects;
@@ -612,7 +614,7 @@ public class Model {
 		
 	}
 
-	public void saveEditedSubject(String title, int ects, int id) 
+	public boolean saveEditedSubject(String title, int ects, int id) 
 	{
 		String sql = "UPDATE subject SET titel = "+title+", ects = "+ects;
 		try (Connection conn = this.connect();
@@ -672,11 +674,9 @@ public class Model {
 	public void saveEditedPO(String newPOName, ObservableList<Subject> selectedMandatorySubjects,
 			ObservableList<Subject> selectedOptionalSubjects, PO po) 
 	{
-		//geänderten Namen für po übernehmen
-		po.setName(newPOName);
-		//geänderte mandatory Subjects (als Array) für po übernehmen
-		po.setMandatorySubjects(selectedMandatorySubjects.toArray(new Subject[selectedMandatorySubjects.size()]));
-		//geänderte optional Subjects (als Array) für po übernehmen
+		
+		po.setName(newPOName);		
+		po.setMandatorySubjects(selectedMandatorySubjects.toArray(new Subject[selectedMandatorySubjects.size()]));		
 		po.setOptionalSubjects(selectedOptionalSubjects.toArray(new Subject[selectedOptionalSubjects.size()]));
 
 
@@ -775,25 +775,105 @@ public class Model {
 
 
 	public void saveEditedStudent(Student student) {
-		// TODO Auto-generated method stub
-		
+		Student s = student;
+		String name = s.getName();
+		String firstname = s.getFirstName();
+		String eMailAddresses = s.geteMailAddresses().toString();
+		int semester = s.getSemester();
+		String notes = s.getNotes();
+		int ects = s.getEcts();
+		Image img = s.getImage();
+		Blob blob = null;
+		BufferedImage bi = SwingFXUtils.fromFXImage(img, null);
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		try {
+			ImageIO.write(bi, "png", out);
+			byte[] res = out.toByteArray();
+			blob = new SerialBlob(res);
+		} catch (IOException | SQLException e) {
+			e.printStackTrace();
+		}
+		String sql = "UPDATE Student SET name = "+name+", firstname = "+firstname+", eMailAddresses = "+eMailAddresses+", semester = "+semester+", notes = "+notes+", ects = "+ects+", img = "+blob;
+		try(Connection conn = this.connect();
+			Statement stmt = conn.createStatement())
+		{
+			stmt.executeQuery(sql);
+		}
+		catch(Exception e)
+		{
+			System.out.println(e.getMessage());
+		}
 	}
 
 
 	public EMail[] getEMails(Student student) {
+		ArrayList<EMail> mail = new ArrayList<EMail>();
+		Student s = student;
+		int MtrNr = s.getMtrNr();
+		EMail[] mailArr = null;
+		String sql = "SELECT * FROM eMail WHERE student = "+MtrNr+" ORDER BY date ASC";
+		try (Connection conn = this.connect();
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(sql))
+		{
+			String subject = rs.getString("subject");
+			String content = rs.getString("content");
+			Student student1 = getStudent(rs.getInt("student"));
+			Boolean recieved = rs.getBoolean("received");
+			Date date = rs.getDate("date");
+			mail.add(new EMail(content, subject, student, date, recieved));
+			mailArr = new EMail[mail.size()];
+			mailArr = mail.toArray(mailArr);
+		}
+		catch (Exception e)
+		{
+			System.out.println(e.getMessage());
+		}
 		// TODO Auto-generated method stub
-		//TODO Email in chronologischer reihenfolge. �lteste Email zuerst
-		return null;
+		//TODO Email in chronologischer reihenfolge. Älteste Email zuerst
+		return mailArr;
 	}
-
-
+	
 	public void saveEditedConcern(Concern concern) {
-		// TODO Auto-generated method stub
-		
+		Concern con = concern;
+		String title = con.getTitle();
+		ObservableList<Form> data = FXCollections.observableArrayList(con.getData());
+		Topic topic = con.getTopic();
+		ObservableList<Appointment> appointments = FXCollections.observableArrayList(con.getAppointments());
+		ObservableList<Reminder> reminders = FXCollections.observableArrayList(con.getReminders());
+		ObservableList<Student> students = FXCollections.observableArrayList(con.getStudents());
+		String notes = con.getNotes();
+		String sql = "UPDATE concern SET title = "+title+", data = "+data+", topic = "+topic+", appointments ="+appointments+", reminders = "+reminders+", students = "+students+", notes = "+notes;
+		try (Connection conn = this.connect();
+			Statement stmt = conn.createStatement())
+		{
+			stmt.executeUpdate(sql);
+		}
+		catch(Exception e)
+		{
+			System.out.println(e.getMessage());
+		}
 	}
 
 
 	public void saveNewConcern(Concern concern) {
+		Concern con = concern;
+		String sql = "INSERT INTO Concern (title, topic, notes) VALUES (?,?,?)";
+		String title = con.getTitle();
+		Topic topic = con.getTopic();
+		String notes = con.getNotes();
+		try(Connection conn = this.connect();
+			PreparedStatement pstmt = conn.prepareStatement(sql))
+		{
+			pstmt.setString(2, title);
+			pstmt.setInt(3, topic.getId());
+			pstmt.setString(4, notes);
+			pstmt.executeUpdate();
+		}
+		catch(Exception e)
+		{
+			System.out.println(e.getMessage());
+		}
 		// TODO Concern ID zuweisen mit concern.setId(neueId);
 		// TODO Auto-generated method stub
 		
