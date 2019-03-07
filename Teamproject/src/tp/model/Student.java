@@ -1,5 +1,7 @@
 package tp.model;
 
+import java.util.ArrayList;
+
 import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
 
@@ -8,7 +10,7 @@ public class Student{
 	private int mtrNr;
 	private String name;
 	private String firstName;
-	private ObservableList<String> eMailAddresses;
+	private ArrayList<String> eMailAddresses;
 	private int semester;
 	private String notes;
 	private int ects;
@@ -16,7 +18,7 @@ public class Student{
 	private ObservableList<Concern> concerns;
 	private PO po;
 	
-	public Student(int mtrNr, String name, String firstName,ObservableList<String> eMailAddresses, int semester, String notes, int ects, Image image, ObservableList<Concern> concerns)
+	public Student(int mtrNr, String name, String firstName,ArrayList<String> eMailAddresses, int semester, String notes, int ects, Image image, ObservableList<Concern> concerns)
 	{
 		this.mtrNr = mtrNr;
 		this.name = name;
@@ -60,7 +62,7 @@ public class Student{
 		return image;
 	}
 
-	public ObservableList<String> geteMailAddresses() {
+	public ArrayList<String> geteMailAddresses() {
 		return eMailAddresses;
 	}
 
@@ -84,7 +86,7 @@ public class Student{
 		this.firstName = firstName;
 	}
 
-	public void seteMailAddresses(ObservableList<String> eMailAddresses) {
+	public void seteMailAddresses(ArrayList<String> eMailAddresses) {
 		this.eMailAddresses = eMailAddresses;
 	}
 
