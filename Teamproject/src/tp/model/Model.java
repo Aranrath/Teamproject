@@ -170,7 +170,7 @@ public class Model {
 		ObjectOutputStream oos;
 		try
 		{
-			fout = new FileOutputStream("C:\\\\Users\\\\Mephisto\\\\eclipse-workspace\\\\Teamproject\\\\src\\\\sessionTabsIds.ser");
+			fout = new FileOutputStream("C:\\\\Users\\\\Mephisto\\\\eclipse-workspace\\\\Teamproject\\\\src\\\\sessionTabsIds.ser"); //Path not final, waiting for installation data
 			oos = new ObjectOutputStream(fout);
 			oos.writeObject(sessionTabsIds);
 		}
@@ -189,7 +189,7 @@ public class Model {
 		try 
 		{
 			//TODO path anpassen, fÃ¼r spÃ¤tere Installation
-			fout = new FileOutputStream("C:\\Users\\Mephisto\\eclipse-workspace\\Teamproject\\src\\Options.ser");
+			fout = new FileOutputStream("C:\\Users\\Mephisto\\eclipse-workspace\\Teamproject\\src\\Options.ser"); //Path not final, waiting for installation data
 			oos = new ObjectOutputStream(fout);
 			oos.writeObject(options);
 		} 
@@ -207,7 +207,7 @@ public class Model {
 		try
 		{
 			//Filepath anpassen
-			fis = new FileInputStream(new File("C:\\\\Users\\\\Mephisto\\\\eclipse-workspace\\\\Teamproject\\\\src\\\\sessionTabsIds.ser"));
+			fis = new FileInputStream(new File("C:\\\\Users\\\\Mephisto\\\\eclipse-workspace\\\\Teamproject\\\\src\\\\sessionTabsIds.ser")); //Path not final, waiting for installation data
 			ois = new ObjectInputStream(fis);
 			ois.readObject();
 		}
@@ -227,7 +227,7 @@ public class Model {
 		try
 		{
 			//Filepath anpassen
-			fis = new FileInputStream(new File("C:\\Users\\Mephisto\\eclipse-workspace\\Teamproject\\src\\Options.ser"));
+			fis = new FileInputStream(new File("C:\\Users\\Mephisto\\eclipse-workspace\\Teamproject\\src\\Options.ser")); //Path not final, waiting for installation data
 			ois = new ObjectInputStream(fis);
 			ois.readObject();
 		}
@@ -257,7 +257,6 @@ public class Model {
 	public void setSessionTabs(ArrayList<String> sessionTabs) {
 		this.sessionTabsIds = sessionTabs;
 	}
-	
 
 	// ------------Datenbank Abfragen--------------------------------------------------------------------
 
@@ -265,19 +264,18 @@ public class Model {
 	public Student getStudent(String emailAdressse) 
 	{
 		Student result = null;
-		String PATH = "C:\\Users\\Mephisto\\eclipse-workspace\\Teamproject\\src\\ExportedData";
+		String PATH = "C:\\Users\\Mephisto\\eclipse-workspace\\Teamproject\\src\\ExportedData"; //Path not final, waiting for installation data
 		String sql = "SELECT * FROM student WHERE eMailAddresses = " + emailAdressse;
-		ArrayList<Concern> con = new ArrayList<Concern>();
+		ObservableList<Concern> concerns = null;
 		Image img = null;
 		int mtrNr = 0; 
 		String name = null; 
 		String firstname = null; 
-		ObservableList<String> eMailAddressess = null;
-		Concern[] concerns = null;
+		ArrayList<String> eMailAddressess = null;
 		int semester = 0; 
 		String notes = null; 
 		int ects = 0;
-		Concern concern;
+		Concern con = null;
 		
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement();
@@ -288,11 +286,12 @@ public class Model {
 				mtrNr = rs.getInt("Matrikelnummer");
 				name = rs.getString("name");
 				firstname = rs.getString("firstname");
-				eMailAddressess = FXCollections.observableArrayList(rs.getString("eMailAddressess"));
+				eMailAddressess.add(rs.getString("eMailAddressess"));
 				semester = rs.getInt("semester");
 				notes = rs.getString("notes");
 				ects = rs.getInt("ects");
-				concern = getConcern(rs.getInt("concern"));
+				con.setId(rs.getInt("concern"));
+				concerns = FXCollections.observableArrayList(con);
 				Blob ph = rs.getBlob("img");
 				System.out.println(ph);
 				InputStream in = ph.getBinaryStream();
@@ -309,11 +308,7 @@ public class Model {
 				out.writeTo(outputStream);
 				in.close();
 				File file = new File(PATH+mtrNr+".png");
-				img = new Image(file.toURI().toString());
-				con.add(concern);
-				concerns = new Concern[con.size()];
-				concerns = con.toArray(concerns);	
-				
+				img = new Image(file.toURI().toString());				
 			}
 			result = new Student(mtrNr, name, firstname, eMailAddressess, semester, notes, ects, img, concerns);	
 		}		
@@ -326,19 +321,18 @@ public class Model {
 	
 	public Student getStudent(int mtrNr) 
 	{
-		String PATH = "C:\\Users\\Mephisto\\eclipse-workspace\\Teamproject\\src\\ExportedData"; 
+		String PATH = "C:\\Users\\Mephisto\\eclipse-workspace\\Teamproject\\src\\ExportedData"; //Path not final, waiting for installation data
 		String sql = "SELECT * FROM student WHERE Matrikelnummer = " + mtrNr;
 		Student result = null;	
-		ArrayList<Concern> con = new ArrayList<Concern>();
+		ObservableList<Concern> concerns = null;
 		Image img = null; 
 		String name = null; 
 		String firstname = null; 
-		ObservableList<String> eMailAddressess = null;
-		Concern[] concerns = null;
+		ArrayList<String> eMailAddressess = null;
 		int semester = 0; 
 		String notes = null; 
 		int ects = 0;
-		Concern concern;
+		Concern con = null;
 		
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement();
@@ -346,14 +340,14 @@ public class Model {
 		{
 			while(rs.next())
 			{
-				mtrNr = rs.getInt("Matrikelnummer");
 				name = rs.getString("name");
 				firstname = rs.getString("firstname");
-				eMailAddressess = FXCollections.observableArrayList(rs.getString("eMailAddressess"));
+				eMailAddressess.add(rs.getString("eMailAddressess"));
 				semester = rs.getInt("semester");
 				notes = rs.getString("notes");
 				ects = rs.getInt("ects");
-				concern = getConcern(rs.getInt("concern"));
+				con.setId(rs.getInt("concern"));
+				concerns = FXCollections.observableArrayList(con);
 				Blob ph = rs.getBlob("img");
 				System.out.println(ph);
 				InputStream in = ph.getBinaryStream();
@@ -370,11 +364,7 @@ public class Model {
 				out.writeTo(outputStream);
 				in.close();
 				File file = new File(PATH+mtrNr+".png");
-				img = new Image(file.toURI().toString());
-				con.add(concern);
-				concerns = new Concern[con.size()];
-				concerns = con.toArray(concerns);	
-				
+				img = new Image(file.toURI().toString());				
 			}
 			result = new Student(mtrNr, name, firstname, eMailAddressess, semester, notes, ects, img, concerns);	
 		}		
@@ -489,7 +479,7 @@ public class Model {
 	public ObservableList<Form> getForms() 
 	{
 		ObservableList<Form> form = FXCollections.observableArrayList();
-		String PATH = "C:\\Users\\Mephisto\\eclipse-workspace\\Teamproject\\src\\ExportedData";
+		String PATH = "C:\\Users\\Mephisto\\eclipse-workspace\\Teamproject\\src\\ExportedData"; //PATH not final, waiting for installation data
 		String sql = "SELECT * FROM form";
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement();
@@ -531,8 +521,9 @@ public class Model {
 		Topic topic = null;
 		Appointment appointment = null;
 		Reminder reminder = null;
-		String sql = "SELECT c.title, cd.data, c.topic, ca.appointment, cs.student, c.notes "
-				+ "FROM concern c, concer_student cs, concern_appointment ca, concern_dokument cd, concern_reminderMail cr WHERE c.id = cs.concern AND cs.student = " + MtrNr;		
+		String sql = "SELECT c.title, cd.data, c.topic, ca.appointment, cr.reminders, cs.student, c.notes "
+				+ "FROM concern c, concer_student cs, concern_appointment ca, concern_dokument cd, concern_reminderMail cr "
+				+ "WHERE c.id = cs.concern AND cs.student = " + MtrNr+" AND c.id = ca.concern AND c.id = cd.concern AND c.id = cr.concern";		
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql))
@@ -540,7 +531,6 @@ public class Model {
 			while(rs.next())
 			{
 				String title = rs.getString("c.title");
-				String test2 = rs.getString("f.name");
 				form.setName(rs.getString("dokument"));
 				ObservableList<Form> data = FXCollections.observableArrayList(form);
 				topic.setId(rs.getInt("topic"));
@@ -813,7 +803,6 @@ public class Model {
 		ArrayList<EMail> mail = new ArrayList<EMail>();
 		Student s = student;
 		int MtrNr = s.getMtrNr();
-		EMail[] mailArr = null;
 		String sql = "SELECT * FROM eMail WHERE student = "+MtrNr+" ORDER BY date ASC";
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement();
@@ -821,12 +810,10 @@ public class Model {
 		{
 			String subject = rs.getString("subject");
 			String content = rs.getString("content");
-			Student student1 = getStudent(rs.getInt("student"));
 			Boolean recieved = rs.getBoolean("received");
 			Date date = rs.getDate("date");
 			mail.add(new EMail(content, subject, student, date, recieved));
-			mailArr = new EMail[mail.size()];
-			mailArr = mail.toArray(mailArr);
+			
 		}
 		catch (Exception e)
 		{
@@ -834,7 +821,7 @@ public class Model {
 		}
 		// TODO Auto-generated method stub
 		//TODO Email in chronologischer reihenfolge. Älteste Email zuerst
-		return mailArr;
+		return mail;
 	}
 	
 	public void saveEditedConcern(Concern concern) {
