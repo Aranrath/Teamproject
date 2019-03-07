@@ -679,8 +679,8 @@ public class Model {
 	{
 		
 		po.setName(newPOName);		
-		po.setMandatorySubjects(selectedMandatorySubjects.toArray(new Subject[selectedMandatorySubjects.size()]));		
-		po.setOptionalSubjects(selectedOptionalSubjects.toArray(new Subject[selectedOptionalSubjects.size()]));
+		po.setMandatorySubjects(selectedMandatorySubjects);		
+		po.setOptionalSubjects(selectedOptionalSubjects);
 
 
 		String sql = "UPDATE po SET name = "+newPOName;

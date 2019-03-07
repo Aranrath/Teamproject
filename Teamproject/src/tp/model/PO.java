@@ -1,10 +1,12 @@
 package tp.model;
 
+import javafx.collections.ObservableList;
+
 public class PO {
 	
 	private String name;
-	private Subject[] optionalSubjects;
-	private Subject[] mandatorySubjects;
+	private ObservableList<Subject> optionalSubjects;
+	private ObservableList<Subject> mandatorySubjects;
 	
 	public PO(String name)
 	{
@@ -23,22 +25,22 @@ public class PO {
 	}
 
 
-	public Subject[] getOptionalSubjects() {
+	public ObservableList<Subject> getOptionalSubjects() {
 		return optionalSubjects;
 	}
 
 
-	public Subject[] getMandatorySubjects() {
+	public ObservableList<Subject> getMandatorySubjects() {
 		return mandatorySubjects;
 	}
 
 
-	public void setOptionalSubjects(Subject[] optionalSubjects) {
+	public void setOptionalSubjects(ObservableList<Subject> optionalSubjects) {
 		this.optionalSubjects = optionalSubjects;
 	}
 
 
-	public void setMandatorySubjects(Subject[] mandatorySubjects) {
+	public void setMandatorySubjects(ObservableList<Subject> mandatorySubjects) {
 		this.mandatorySubjects = mandatorySubjects;
 	}
 	
