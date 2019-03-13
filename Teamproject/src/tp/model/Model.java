@@ -1,6 +1,7 @@
 package tp.model;
 
 
+import java.awt.GraphicsConfigTemplate;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -60,6 +61,7 @@ public class Model {
 	//-------------------Calculations--------------------------------------------------------------
 
 	public ArrayList<Appointment> loadNext24hourAppointments() {
+		//TODO abfrage gibt nur 'Heutige' Appointments nich next 24h
 		String sql = "SELECT * FROM appointment WHERE DATE(startDate) == DATE('now')";		
 		ArrayList<Appointment> result = new ArrayList<Appointment>();
 		try 	(Connection conn = this.connect();
@@ -92,20 +94,15 @@ public class Model {
 		cal.clear();
 		cal.setTime(date);	
 		cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-		cal.setTime(date);
-		d[0] = (Date) cal.getTime();
+		d[0] = new Date(cal.getTime().getTime());
 		cal.set(Calendar.DAY_OF_WEEK, Calendar.TUESDAY);
-		cal.setTime(date);
-		d[1] = (Date) cal.getTime();
+		d[1] = new Date(cal.getTime().getTime());
 		cal.set(Calendar.DAY_OF_WEEK, Calendar.WEDNESDAY);
-		cal.setTime(date);
-		d[2] = (Date) cal.getTime();
+		d[2] = new Date(cal.getTime().getTime());
 		cal.set(Calendar.DAY_OF_WEEK, Calendar.THURSDAY);
-		cal.setTime(date);
-		d[3] = (Date) cal.getTime();
+		d[3] = new Date(cal.getTime().getTime());
 		cal.set(Calendar.DAY_OF_WEEK, Calendar.FRIDAY);
-		cal.setTime(date);
-		d[4] = (Date) cal.getTime();
+		d[4] = new Date(cal.getTime().getTime());
 		return d;
 	}
 	
@@ -116,6 +113,8 @@ public class Model {
 	}
 	
 	public ObservableList<Appointment> getWeeksAppointments(int shownKw) {
+		ObservableList<Appointment> appointments = FXCollections.observableArrayList();
+		//TODO sql-abfrage überprüfen, neumachen... macht net viel sinn...
 		String sql = "SELECT * FROM appointment WHERE DATE(startDate) >= DATE('now', 'weekday 0', '-7 days') OR DATE(endDate) >= DATE('now', 'weeday 0', '-7 days'))";
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement();
@@ -123,15 +122,23 @@ public class Model {
 		{
 			while(rs.next())
 			{
-				int id = rs.getInt("id");
-				System.out.println("Appointments of this week: " + id);
+				int id =rs.getInt("id");
+				Concern concern = getConcern(rs.getInt("concern"));
+				Date date = rs.getDate("date");
+				long startTime = rs.getLong("startDate");
+				long endTime = rs.getLong("endDate");
+				int roomNmb = rs.getInt("roomNmb");
+				Date reminderTime = rs.getDate("reminderDate");
+				Boolean reminderTimeisActive = rs.getBoolean("reminderDateActive");
+				Appointment app = new Appointment(id, concern, date, startTime, endTime, roomNmb, reminderTime, reminderTimeisActive);
+				appointments.add(app);
 			}
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
-		return null;
+		return appointments;
 	}
 	
 	public Date getStartOfNextWeek(Date date) {
@@ -145,11 +152,10 @@ public class Model {
 	}
 
 	public java.sql.Date getEndOfPreviousWeek(Date date) {
-		int day = 6;
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(date);
 		cal.add(Calendar.WEEK_OF_YEAR, -1);
-		cal.set(Calendar.DAY_OF_WEEK, day);
+		cal.set(Calendar.DAY_OF_WEEK, Calendar.FRIDAY);
 		return (Date) cal.getTime();		
 	}
 	
@@ -170,7 +176,8 @@ public class Model {
 		ObjectOutputStream oos;
 		try
 		{
-			fout = new FileOutputStream("C:\\\\Users\\\\Mephisto\\\\eclipse-workspace\\\\Teamproject\\\\src\\\\sessionTabsIds.ser"); //Path not final, waiting for installation data
+			//TODO Filepath anpassen wenn installationsdatei unso
+			fout = new FileOutputStream("C:\\\\Users\\\\Mephisto\\\\eclipse-workspace\\\\Teamproject\\\\src\\\\sessionTabsIds.ser"); 
 			oos = new ObjectOutputStream(fout);
 			oos.writeObject(sessionTabsIds);
 		}
@@ -188,7 +195,7 @@ public class Model {
 		ObjectOutputStream oos;
 		try 
 		{
-			//TODO path anpassen, fÃƒÂ¼r spÃƒÂ¤tere Installation
+			//TODO path anpassen, für spätere Installation
 			fout = new FileOutputStream("C:\\Users\\Mephisto\\eclipse-workspace\\Teamproject\\src\\Options.ser"); //Path not final, waiting for installation data
 			oos = new ObjectOutputStream(fout);
 			oos.writeObject(options);
@@ -206,17 +213,19 @@ public class Model {
 		ObjectInputStream ois;
 		try
 		{
-			//Filepath anpassen
+			//Filepath anpassen und in sessionTabs reinlesen??
 			fis = new FileInputStream(new File("C:\\\\Users\\\\Mephisto\\\\eclipse-workspace\\\\Teamproject\\\\src\\\\sessionTabsIds.ser")); //Path not final, waiting for installation data
 			ois = new ObjectInputStream(fis);
 			ois.readObject();
 		}
 		catch (IOException | ClassNotFoundException e)
 		{
-			e.printStackTrace();
+//			e.printStackTrace();
 		}
-		// TODO Java object in stream, wenn da, sonst neue Datei
-		// this.tabSession = ...
+		// TODO mit obigem vweknüpfen (if/else)
+		if(sessionTabsIds == null) {
+			sessionTabsIds = new ArrayList<String>();
+		}
 		return sessionTabsIds;
 	}
 
@@ -235,23 +244,22 @@ public class Model {
 		{
 			e.printStackTrace();
 		}	
-		// TODO Java object in stream, wenn da, sonst neue Datei
-		// this.options = ...
+		// TODO mit obigem verknüpfen (if/else)
+		if (options == null) {
+			//TODO popup zur Eingabe von UserName, StudipKennung und Passwort
+			options = new Options("UserName", "studipKennung", "passwort");
+		}
 		return options;
 
 	}
 	
 	public Options getOptions()
 	{
-		if(options!=null)
+		if(options==null)
 		{
-			return options;
+			return loadOptions();
 		}
-		else
-		{
-			options = loadOptions();
-			return options;
-		}
+		return options;
 	}
 	
 	public void setSessionTabs(ArrayList<String> sessionTabs) {
@@ -263,35 +271,27 @@ public class Model {
 	
 	public Student getStudent(String emailAdressse) 
 	{
-		Student result = null;
-		String PATH = "C:\\Users\\Mephisto\\eclipse-workspace\\Teamproject\\src\\ExportedData"; //Path not final, waiting for installation data
+		//TODO path anpassen
+		String PATH = "C:\\Users\\Mephisto\\eclipse-workspace\\Teamproject\\src\\ExportedData";
 		String sql = "SELECT * FROM student WHERE eMailAddresses = " + emailAdressse;
-		ObservableList<Concern> concerns = null;
-		Image img = null;
-		int mtrNr = 0; 
-		String name = null; 
-		String firstname = null; 
-		ArrayList<String> eMailAddressess = null;
-		int semester = 0; 
-		String notes = null; 
-		int ects = 0;
-		Concern con = null;
+
 		
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql))
 		{
-			while(rs.next())
-			{
-				mtrNr = rs.getInt("Matrikelnummer");
-				name = rs.getString("name");
-				firstname = rs.getString("firstname");
-				eMailAddressess.add(rs.getString("eMailAddressess"));
-				semester = rs.getInt("semester");
-				notes = rs.getString("notes");
-				ects = rs.getInt("ects");
-				con.setId(rs.getInt("concern"));
-				concerns = FXCollections.observableArrayList(con);
+			rs.next();
+			
+			//TODO EmailAdressess and Concerns
+				int mtrNr = rs.getInt("Matrikelnummer");
+				String name = rs.getString("name");
+				String firstname = rs.getString("firstname");
+				//String[] eMailAddressess = new String[3];
+				int semester = rs.getInt("semester");
+				String notes = rs.getString("notes");
+				int ects = rs.getInt("ects");
+				//Concern con = getConcern(rs.getInt("concern"));
+				//concerns = FXCollections.observableArrayList(con);
 				Blob ph = rs.getBlob("img");
 				System.out.println(ph);
 				InputStream in = ph.getBinaryStream();
@@ -308,46 +308,39 @@ public class Model {
 				out.writeTo(outputStream);
 				in.close();
 				File file = new File(PATH+mtrNr+".png");
-				img = new Image(file.toURI().toString());				
-			}
-			result = new Student(mtrNr, name, firstname, eMailAddressess, semester, notes, ects, img, concerns);	
+				Image img = new Image(file.toURI().toString());				
+			
+			return new Student(mtrNr, name, firstname, null, semester, notes, ects, img, null);	
 		}		
 		catch(Exception e)
 		{
 			System.out.println(e.getMessage());
 		}	
-		return result;
+		return new Student(0, null, null, null, 0, null, 0, null, null);
 	}
 	
 	public Student getStudent(int mtrNr) 
 	{
-		String PATH = "C:\\Users\\Mephisto\\eclipse-workspace\\Teamproject\\src\\ExportedData"; //Path not final, waiting for installation data
+		//TODO Path
+		String PATH = "C:\\Users\\Mephisto\\eclipse-workspace\\Teamproject\\src\\ExportedData"; 
 		String sql = "SELECT * FROM student WHERE Matrikelnummer = " + mtrNr;
-		Student result = null;	
-		ObservableList<Concern> concerns = null;
-		Image img = null; 
-		String name = null; 
-		String firstname = null; 
-		ArrayList<String> eMailAddressess = null;
-		int semester = 0; 
-		String notes = null; 
-		int ects = 0;
-		Concern con = null;
 		
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql))
 		{
-			while(rs.next())
-			{
-				name = rs.getString("name");
-				firstname = rs.getString("firstname");
-				eMailAddressess.add(rs.getString("eMailAddressess"));
-				semester = rs.getInt("semester");
-				notes = rs.getString("notes");
-				ects = rs.getInt("ects");
-				con.setId(rs.getInt("concern"));
-				concerns = FXCollections.observableArrayList(con);
+
+			rs.next();
+			
+			//TODO EmailAdressess and Concerns
+				String name = rs.getString("name");
+				String firstname = rs.getString("firstname");
+				//String[] eMailAddressess = new String[3];
+				int semester = rs.getInt("semester");
+				String notes = rs.getString("notes");
+				int ects = rs.getInt("ects");
+				//Concern con = getConcern(rs.getInt("concern"));
+				//concerns = FXCollections.observableArrayList(con);
 				Blob ph = rs.getBlob("img");
 				System.out.println(ph);
 				InputStream in = ph.getBinaryStream();
@@ -364,42 +357,57 @@ public class Model {
 				out.writeTo(outputStream);
 				in.close();
 				File file = new File(PATH+mtrNr+".png");
-				img = new Image(file.toURI().toString());				
-			}
-			result = new Student(mtrNr, name, firstname, eMailAddressess, semester, notes, ects, img, concerns);	
+				Image img = new Image(file.toURI().toString());				
+			
+			return new Student(mtrNr, name, firstname, null, semester, notes, ects, img, null);
 		}		
 		catch(Exception e)
 		{
 			System.out.println(e.getMessage());
 		}	
-		return result;
+		return new Student(0, null, null, null, 0, null, 0, null, null);
 	}
 	
 	public Concern getConcern(int concernId) 
 	{
-		Concern con = null;
-		Topic topic = null;
-		String title = null;
-		String notes = null;
-		String sql = "SELECT * FROM concern WHERE id = "+concernId;
+		String sql = "SELECT * FROM concern WHERE id = " + concernId;
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql))
 		{
-			while(rs.next())
-			{
-				title = rs.getString("title"); 
-				topic.setId(rs.getInt("topic"));
-				notes = rs.getString("notes");	
-			}
-			con = new Concern (title, null, topic, null, null, null, notes);
+			rs.next();
+			
+			String title = rs.getString("title"); 
+			Topic topic =getTopic(rs.getInt("topic"));
+			String notes = rs.getString("notes");	
+			
+			Concern con = new Concern (title, null, topic, null, null, null, notes);
 		}
 		catch(Exception e)
 		{
 			System.out.println(e.getMessage());
 		}
 		
-		return con;
+		return new Concern(null, null, null, null, null, null, null);
+	}
+	
+	public Topic getTopic(int topicId) {
+		String sql = "SELECT * FROM topic WHERE id = " + topicId;
+		try(Connection conn = this.connect();
+				Statement stmt = conn.createStatement();
+				ResultSet rs = stmt.executeQuery(sql)){
+			rs.next();
+			
+			//TODO getForms(concernId)
+			String title = rs.getString("title");
+			ArrayList<Object> forms;
+			
+			return new Topic(title, null);
+			
+		}catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+		return new Topic(null, null);
 	}
 	
 	public Statistic getStatistic(int statisticId) 
@@ -434,7 +442,6 @@ public class Model {
 	{
 		ObservableList<Topic> topic = FXCollections.observableArrayList();
 		String sql = "SELECT * FROM topic";
-		ArrayList<Object> linkedForms = new ArrayList<Object>();
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql))
@@ -442,7 +449,8 @@ public class Model {
 			while(rs.next())
 			{
 				String title = rs.getString("titel");
-				linkedForms.add(rs.getString("linkedForms"));
+				//TODO get linkedForms
+				ArrayList<Object> linkedForms = new ArrayList<Object>();
 				topic.add(new Topic (title, linkedForms));
 			}
 		}
@@ -479,7 +487,8 @@ public class Model {
 	public ObservableList<Form> getForms() 
 	{
 		ObservableList<Form> form = FXCollections.observableArrayList();
-		String PATH = "C:\\Users\\Mephisto\\eclipse-workspace\\Teamproject\\src\\ExportedData"; //PATH not final, waiting for installation data
+		//TODO path
+		String PATH = "C:\\Users\\Mephisto\\eclipse-workspace\\Teamproject\\src\\ExportedData"; 
 		String sql = "SELECT * FROM form";
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement();
@@ -488,10 +497,11 @@ public class Model {
 			while(rs.next())
 			{
 				String name = rs.getString("name");
+				//TODO blob richtig?
 				Blob ph = rs.getBlob("file");
-				System.out.println(ph);
 				InputStream in = ph.getBinaryStream();
 				ByteArrayOutputStream out = new ByteArrayOutputStream();
+				//TODO dafuq file output Stream? Überarbeiten! 
 				OutputStream outputStream = new FileOutputStream(PATH+name+".pdf");
 				int length = (int) ph.length();
 				int bufferSize = 1024;
@@ -516,14 +526,10 @@ public class Model {
 	public ObservableList<Concern> getConcerns(Student student) 
 	{
 		ObservableList<Concern> concerns = FXCollections.observableArrayList();
-		int MtrNr = student.getMtrNr();
-		Form form = null;
-		Topic topic = null;
-		Appointment appointment = null;
-		Reminder reminder = null;
+
 		String sql = "SELECT c.title, cd.data, c.topic, ca.appointment, cr.reminders, cs.student, c.notes "
 				+ "FROM concern c, concer_student cs, concern_appointment ca, concern_dokument cd, concern_reminderMail cr "
-				+ "WHERE c.id = cs.concern AND cs.student = " + MtrNr+" AND c.id = ca.concern AND c.id = cd.concern AND c.id = cr.concern";		
+				+ "WHERE c.id = cs.concern AND cs.student = " + student.getMtrNr()+" AND c.id = ca.concern AND c.id = cd.concern AND c.id = cr.concern";		
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql))
@@ -531,14 +537,14 @@ public class Model {
 			while(rs.next())
 			{
 				String title = rs.getString("c.title");
-				form.setName(rs.getString("dokument"));
-				ObservableList<Form> data = FXCollections.observableArrayList(form);
-				topic.setId(rs.getInt("topic"));
-				appointment.setId(rs.getInt("ca.appointment"));
-				ObservableList<Appointment> appointments = FXCollections.observableArrayList(appointment);
-				student.setMtrNr(rs.getInt("cs.student"));
-				ObservableList<Reminder> reminders = FXCollections.observableArrayList(reminder);
-				ObservableList<Student> students = FXCollections.observableArrayList(student);
+				//form.setName(rs.getString("dokument"));
+				//TODO data füllen
+				ObservableList<Form> data = FXCollections.observableArrayList();
+				Topic topic = getTopic(rs.getInt("topic"));
+				//TODO fill Lists
+				ObservableList<Appointment> appointments = FXCollections.observableArrayList();
+				ObservableList<Reminder> reminders = FXCollections.observableArrayList();
+				ObservableList<Student> students = FXCollections.observableArrayList();
 				String notes = rs.getString("notes");
 				concerns.add(new Concern(title, data, topic, appointments, reminders, students, notes));
 			}
@@ -582,25 +588,19 @@ public class Model {
 		{
 			System.out.println(e.getMessage());
 		}
-		System.out.println("Student " + matNr + " deleted.");
 	}
 
 	public boolean saveNewSubject(String title, int ects) 
 	{
-		String t = title;
-		int e  = ects;
-		String sql = "INSERT INTO subject(titel, ects) VALUES(?,?)";
+		String sql = "INSERT INTO subject(titel, ects) VALUES(" + title +"," + ects +")";
 		try (Connection conn = this.connect();
-			PreparedStatement pstmt = conn.prepareStatement(sql))
+			Statement stmt = conn.createStatement())
 		{
-			pstmt.setString(1, t);
-			pstmt.setInt(2, e);
-			pstmt.executeUpdate();
+			stmt.executeQuery(sql);
 		}
 		catch (Exception ex)
 		{
 			System.out.println(ex.getMessage());
-			System.out.println("ERROR: Subject " + t + " could not be added to database");
 			return false;
 		}	
 		return true;
@@ -618,7 +618,6 @@ public class Model {
 		catch (Exception e)
 		{
 			System.out.println(e.getMessage());
-			System.out.println("ERROR: Subject "+ title + " could not be changed.");
 			return false;
 		}
 		return true;
@@ -627,70 +626,40 @@ public class Model {
 
 	public void saveNewTopic(String title, ObservableList<Form> selectedForms) 
 	{
-		String t = title;
-		String linkedForms = selectedForms.toString();
-		String sql = "INSERT INTO topic(titel, linkedForms) VALUES (?,?)";
-		try (Connection conn = this.connect();
-			PreparedStatement pstmt = conn.prepareStatement(sql))
-		{
-			pstmt.setString(1, t);
-			pstmt.setString(2, linkedForms);
-			pstmt.executeUpdate();
-			
-		}
-		catch (Exception e)
-		{
-			System.out.println(e.getMessage());
-		}
-		System.out.println("Topic " + t + " saved.");
+		//TODO NOOOPE, linked Forms in anderer Tabelle gespeichert....
+//		String linkedForms = selectedForms.toString();
+//		String sql = "INSERT INTO topic(titel, linkedForms) VALUES (?,?)";
+//		try (Connection conn = this.connect();
+//			PreparedStatement pstmt = conn.prepareStatement(sql))
+//		{
+//			pstmt.setString(1, title);
+//			pstmt.setString(2, linkedForms);
+//			pstmt.executeUpdate();
+//			
+//		}
+//		catch (Exception e)
+//		{
+//			System.out.println(e.getMessage());
+//		}
+//		System.out.println("Topic " + title + " saved.");
 		
 	}
 
 	public void saveEditedTopic(String text, ObservableList<Form> selectedForms, Topic topic) 
 	{
-		Topic t = topic;
-		String linkedForms = t.getLinkedForms().toString();
-		String titel = t.getTitle();
-		int id = t.getId();
-		String sql = "UPDATE topic SET titel = "+titel+", linkedForms ="+linkedForms+" WHERE id = "+id; 
-		try (Connection conn = this.connect();
-			Statement stmt = conn.createStatement())
-		{
-			stmt.executeQuery(sql);
-		}
-		catch(Exception e)
-		{
-			System.out.println(e.getMessage());
-		}
+		//TODO
 	}
 
 	public void saveEditedPO(String newPOName, ObservableList<Subject> selectedMandatorySubjects,
 			ObservableList<Subject> selectedOptionalSubjects, PO po) 
 	{
-		
-		po.setName(newPOName);		
-		po.setMandatorySubjects(selectedMandatorySubjects);		
-		po.setOptionalSubjects(selectedOptionalSubjects);
-
-
-		String sql = "UPDATE po SET name = "+newPOName;
-		try (Connection conn = this.connect();
-			Statement stmt = conn.createStatement())
-		{
-			stmt.executeQuery(sql);
-		}
-		catch (Exception e)
-		{
-			System.out.println(e.getMessage());
-		}
+		//TODO
 	}
 	
 
 	public void deleteConcern(Concern c) 
 	{
-		Concern dc = c;
-		int ID = dc.getId();
-		String sql = "DELETE * FROM concern WHERE id = "+ ID;
+		String sql = "DELETE * FROM concern WHERE id = "+ c.getId();
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement())
 		{
@@ -700,36 +669,34 @@ public class Model {
 		{
 			System.out.println(e.getMessage());
 		}
-		System.out.println("Concern " + ID + " deleted.");
 	}
 
 	public void saveNewForm(Form form) 
 	{
-		Form sf = form;
-		String name = sf.getName();
-		FileInputStream fis = null;
-		String sql = "INSERT INTO form (name, file) VALUES (?, ?)";
-		try (Connection conn = this.connect();
-			PreparedStatement pstmt = conn.prepareStatement(sql))
-		{	
-			File file = sf.getFile();
-			fis = new FileInputStream(file);
-			pstmt.setString(1, name);
-			pstmt.setBinaryStream(2,  fis, (int) file.length());
-			pstmt.executeUpdate();
-		}
-		catch (Exception e)
-		{
-			System.out.println(e.getMessage());
-		}
-		System.out.println("Form " + name + " saved.");
+		//TODO ... öhm mal sehen was fürn mist hier rauskommt...
+//		Form sf = form;
+//		String name = sf.getName();
+//		FileInputStream fis = null;
+//		String sql = "INSERT INTO form (name, file) VALUES (?, ?)";
+//		try (Connection conn = this.connect();
+//			PreparedStatement pstmt = conn.prepareStatement(sql))
+//		{	
+//			File file = sf.getFile();
+//			fis = new FileInputStream(file);
+//			pstmt.setString(1, name);
+//			pstmt.setBinaryStream(2,  fis, (int) file.length());
+//			pstmt.executeUpdate();
+////		}
+//		catch (Exception e)
+//		{
+//			System.out.println(e.getMessage());
+//		}
 	}
 
 	public void deleteForm(Form f) 
 	{
-		Form df = f;
-		String formname = df.getName();
-		String sql = "DELETE * FROM form WHERE name = "+formname;
+		//TODO evt file löschen falls iwo gespeichert worden is?? nach überarbeitung saveNewForm
+		String sql = "DELETE * FROM form WHERE name = "+f.getName();
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement())
 		{
@@ -739,43 +706,37 @@ public class Model {
 		{
 			System.out.println(e.getMessage());
 		}
-		System.out.println("Form" + f + " deleted.");
 	}
 
 	public void saveMail(EMail email) 
 	{
-		
-		EMail em = email;
-		int ID = em.getId();
-		String subject = em.getSubject();
-		String content = em.getContent();
-		boolean received = em.isReceived();
 		String sql = "INSERT INTO eMail(subject, content, student, recived) values (?, ?, ?, ?)";
 		try (Connection conn = this.connect();
 			PreparedStatement pstmt = conn.prepareStatement(sql))
 		{
-			pstmt.setString(2, subject);
-			pstmt.setString(3, content);
-			pstmt.setBoolean(4, received);
+			pstmt.setString(1, email.getSubject());
+			pstmt.setString(2, email.getContent());
+			//TODO  verbindung Student
+			pstmt.setBoolean(4, email.isReceived());
 			pstmt.executeUpdate();
 		} 
 		catch(Exception e)
 		{
 			System.out.println(e.getMessage());
 		}
-		System.out.println("eMail " + ID + " saved.");
 	}
 
 
 	public void saveEditedStudent(Student student) {
-		Student s = student;
-		String name = s.getName();
-		String firstname = s.getFirstName();
-		String eMailAddresses = s.geteMailAddresses().toString();
-		int semester = s.getSemester();
-		String notes = s.getNotes();
-		int ects = s.getEcts();
-		Image img = s.getImage();
+		//TODO evt andere sachen die auch geuodatet werden können dadurch...
+		String name = student.getName();
+		String firstname = student.getFirstName();
+		String eMailAddresses = student.geteMailAddresses().toString();
+		int semester = student.getSemester();
+		String notes = student.getNotes();
+		int ects = student.getEcts();
+		Image img = student.getImage();
+		//TODO ...???Blob = null unerwünscht
 		Blob blob = null;
 		BufferedImage bi = SwingFXUtils.fromFXImage(img, null);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -801,9 +762,7 @@ public class Model {
 
 	public ArrayList<EMail> getEMails(Student student) {
 		ArrayList<EMail> mail = new ArrayList<EMail>();
-		Student s = student;
-		int MtrNr = s.getMtrNr();
-		String sql = "SELECT * FROM eMail WHERE student = "+MtrNr+" ORDER BY date ASC";
+		String sql = "SELECT * FROM eMail WHERE student = "+ student.getMtrNr() +" ORDER BY date ASC";
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql))
@@ -819,8 +778,6 @@ public class Model {
 		{
 			System.out.println(e.getMessage());
 		}
-		// TODO Auto-generated method stub
-		//TODO Email in chronologischer reihenfolge. Ã„lteste Email zuerst
 		return mail;
 	}
 	
@@ -833,39 +790,39 @@ public class Model {
 		ObservableList<Reminder> reminders = FXCollections.observableArrayList(con.getReminders());
 		ObservableList<Student> students = FXCollections.observableArrayList(con.getStudents());
 		String notes = con.getNotes();
-		String sql = "UPDATE concern SET title = "+title+", data = "+data+", topic = "+topic+", appointments ="+appointments+", reminders = "+reminders+", students = "+students+", notes = "+notes;
-		try (Connection conn = this.connect();
-			Statement stmt = conn.createStatement())
-		{
-			stmt.executeUpdate(sql);
-		}
-		catch(Exception e)
-		{
-			System.out.println(e.getMessage());
-		}
+		//TODO observable lists in anderen Tabellen gespeichert.....
+//		String sql = "UPDATE concern SET title = "+title+", data = "+data+", topic = "+topic+", appointments ="+appointments+", reminders = "+reminders+", students = "+students+", notes = "+notes;
+//		try (Connection conn = this.connect();
+//			Statement stmt = conn.createStatement())
+//		{
+//			stmt.executeUpdate(sql);
+//		}
+//		catch(Exception e)
+//		{
+//			System.out.println(e.getMessage());
+//		}
 	}
 
 
 	public void saveNewConcern(Concern concern) {
-		Concern con = concern;
-		String sql = "INSERT INTO Concern (title, topic, notes) VALUES (?,?,?)";
-		String title = con.getTitle();
-		Topic topic = con.getTopic();
-		String notes = con.getNotes();
-		try(Connection conn = this.connect();
-			PreparedStatement pstmt = conn.prepareStatement(sql))
-		{
-			pstmt.setString(2, title);
-			pstmt.setInt(3, topic.getId());
-			pstmt.setString(4, notes);
-			pstmt.executeUpdate();
-		}
-		catch(Exception e)
-		{
-			System.out.println(e.getMessage());
-		}
-		// TODO Concern ID zuweisen mit concern.setId(neueId);
-		// TODO Auto-generated method stub
+		//TODO die observable Lists schon wieder vergessen....
+//		String sql = "INSERT INTO Concern (title, topic, notes) VALUES (?,?,?)";
+//		String title = con.getTitle();
+//		Topic topic = con.getTopic();
+//		String notes = con.getNotes();
+//		try(Connection conn = this.connect();
+//			PreparedStatement pstmt = conn.prepareStatement(sql))
+//		{
+//			pstmt.setString(2, title);
+//			pstmt.setInt(3, topic.getId());
+//			pstmt.setString(4, notes);
+//			pstmt.executeUpdate();
+//		}
+//		catch(Exception e)
+//		{
+//			System.out.println(e.getMessage());
+//		}
+//		
 		
 	}
 }
