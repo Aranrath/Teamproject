@@ -1,7 +1,6 @@
 package tp.model;
 
 
-import java.awt.GraphicsConfigTemplate;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -44,11 +43,10 @@ public class Model {
 	//------------------establish Database connection-----------------------------------------------
 	private Connection connect() 
 	{
-		String url = "jdbc:sqlite:teamprojectDatabase.db";
 		Connection conn = null; 
 		try 
 		{
-			conn = DriverManager.getConnection(url);
+			conn = DriverManager.getConnection("jdbc:sqlite:teamprojectDatabase.db");
 		}
 		catch (SQLException e) 
 		{
@@ -62,7 +60,7 @@ public class Model {
 
 	public ArrayList<Appointment> loadNext24hourAppointments() {
 		//TODO abfrage gibt nur 'Heutige' Appointments nich next 24h
-		String sql = "SELECT * FROM appointment WHERE DATE(startDate) == DATE('now')";		
+		String sql = "SELECT * FROM appointment WHERE DATE(startTime) == DATE('now')";		
 		ArrayList<Appointment> result = new ArrayList<Appointment>();
 		try 	(Connection conn = this.connect();
 				Statement stmt = conn.createStatement();
@@ -73,8 +71,8 @@ public class Model {
 				int id = rs.getInt("id");
 				Concern concern = getConcern(rs.getInt("concern"));
 				Date date = rs.getDate("date");
-				long startTime = rs.getLong("startDate");
-				long endTime = rs.getLong("endDate");
+				long startTime = rs.getLong("startTime");
+				long endTime = rs.getLong("endTime");
 				int roomNmb = rs.getInt("roomNmb");
 				Date reminderTime = rs.getDate("reminderDate");
 				Boolean reminderTimeisActive = rs.getBoolean("reminderDateActive");
@@ -115,7 +113,7 @@ public class Model {
 	public ObservableList<Appointment> getWeeksAppointments(int shownKw) {
 		ObservableList<Appointment> appointments = FXCollections.observableArrayList();
 		//TODO sql-abfrage überprüfen, neumachen... macht net viel sinn...
-		String sql = "SELECT * FROM appointment WHERE DATE(startDate) >= DATE('now', 'weekday 0', '-7 days') OR DATE(endDate) >= DATE('now', 'weeday 0', '-7 days'))";
+		String sql = "SELECT * FROM appointment WHERE DATE(date) >= DATE('now', 'weekday 0', '-7 days')";
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql))
@@ -147,7 +145,7 @@ public class Model {
 		cal.add(Calendar.WEEK_OF_YEAR, +1);
 		cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
 		cal.setTime(date);
-		return (Date) cal.getTime();
+		return new Date(cal.getTime().getTime());
 		
 	}
 
@@ -156,7 +154,7 @@ public class Model {
 		cal.setTime(date);
 		cal.add(Calendar.WEEK_OF_YEAR, -1);
 		cal.set(Calendar.DAY_OF_WEEK, Calendar.FRIDAY);
-		return (Date) cal.getTime();		
+		return new Date(cal.getTime().getTime());		
 	}
 	
 	//------------------File: Loader&Saver + Getter/Setter---------------------------------------------------------------
