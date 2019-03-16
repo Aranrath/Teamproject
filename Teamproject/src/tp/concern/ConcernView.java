@@ -101,7 +101,6 @@ public class ConcernView extends GridPane {
 		studentLabel = new Label("Studenten:");
 		searchTextField = new TextField("");
 		searchTextField.setPromptText("Durchsuche Studenten");
-		searchTextField.getParent().requestFocus();
 		searchButton = new Button("Suchen");
 		addStudentButton = new Button("Hinzufügen");
 		removeStudentButton = new Button("Entfernen");

@@ -34,6 +34,8 @@ public class Model {
 
 	private ArrayList<String> sessionTabsIds;
 	private Options options;
+	//TODO Filepath bei Installation anpassen
+	private final String standardDirectory = "..\\..\\Desktop\\";
 	
 	public Model() {
 		loadSessionTabsIds();
@@ -160,94 +162,70 @@ public class Model {
 	//------------------File: Loader&Saver + Getter/Setter---------------------------------------------------------------
 	
 	
-	public ArrayList<String> getSessionTabs() {
+	public ArrayList<String> getSessionTabsIds() {
 		if (sessionTabsIds == null)
 		{
-			return loadSessionTabsIds();
+			loadSessionTabsIds();
 		}
 		return sessionTabsIds;
 	}
 	
-	public void saveSessionTabs() 
+	public void saveSessionTabsIds() 
 	{
-		FileOutputStream fout;
-		ObjectOutputStream oos;
-		try
+		try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(standardDirectory +"SessionTabsIds.ser")))
 		{
-			//TODO Filepath anpassen wenn installationsdatei unso
-			fout = new FileOutputStream("C:\\\\Users\\\\Mephisto\\\\eclipse-workspace\\\\Teamproject\\\\src\\\\sessionTabsIds.ser"); 
-			oos = new ObjectOutputStream(fout);
 			oos.writeObject(sessionTabsIds);
 		}
-		catch (IOException e)
+		catch (Exception e)
 		{
-			e.printStackTrace();
+			System.out.println("saving sessionTabsIds failed");
 		}
-		// TODO Java object out Stream
 
 	}
 
 	public void saveOptions() 
 	{
-		FileOutputStream fout;
-		ObjectOutputStream oos;
-		try 
+
+		try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(standardDirectory + "Options.ser")))
 		{
-			//TODO path anpassen, für spätere Installation
-			fout = new FileOutputStream("C:\\Users\\Mephisto\\eclipse-workspace\\Teamproject\\src\\Options.ser"); //Path not final, waiting for installation data
-			oos = new ObjectOutputStream(fout);
 			oos.writeObject(options);
 		} 
 		catch (IOException e) 
 		{
-			e.printStackTrace();
+			System.out.println("saving options failed");
 		}
-		// TODO Java object out Stream
 	}
 
-	public ArrayList<String> loadSessionTabsIds() 
+	@SuppressWarnings("unchecked")
+	public void loadSessionTabsIds() 
 	{
-		FileInputStream fis;
-		ObjectInputStream ois;
-		try
+
+		try(ObjectInputStream ois = new ObjectInputStream(new FileInputStream(standardDirectory + "SessionTabsIds.ser")))
 		{
-			//Filepath anpassen und in sessionTabs reinlesen??
-			fis = new FileInputStream(new File("C:\\\\Users\\\\Mephisto\\\\eclipse-workspace\\\\Teamproject\\\\src\\\\sessionTabsIds.ser")); //Path not final, waiting for installation data
-			ois = new ObjectInputStream(fis);
-			ois.readObject();
+			sessionTabsIds = (ArrayList<String>) ois.readObject();
 		}
-		catch (IOException | ClassNotFoundException e)
+		catch (Exception e)
 		{
-//			e.printStackTrace();
 		}
-		// TODO mit obigem vweknüpfen (if/else)
 		if(sessionTabsIds == null) {
 			sessionTabsIds = new ArrayList<String>();
+			saveSessionTabsIds();
 		}
-		return sessionTabsIds;
 	}
 
-	public Options loadOptions() {
+	public void loadOptions() {
 		
-		FileInputStream fis;
-		ObjectInputStream ois;
-		try
+		try(ObjectInputStream ois = new ObjectInputStream(new FileInputStream(standardDirectory + "Options.ser")))
 		{
-			//Filepath anpassen
-			fis = new FileInputStream(new File("C:\\Users\\Mephisto\\eclipse-workspace\\Teamproject\\src\\Options.ser")); //Path not final, waiting for installation data
-			ois = new ObjectInputStream(fis);
-			ois.readObject();
+			options = (Options) ois.readObject();
 		}
-		catch (IOException | ClassNotFoundException e)
+		catch (Exception e)
 		{
-			e.printStackTrace();
 		}	
-		// TODO mit obigem verknüpfen (if/else)
 		if (options == null) {
-			//TODO popup zur Eingabe von UserName, StudipKennung und Passwort
-			options = new Options("UserName", "studipKennung", "passwort");
+			options = new Options(null, null, null);
+			saveOptions();
 		}
-		return options;
 
 	}
 	
@@ -255,13 +233,9 @@ public class Model {
 	{
 		if(options==null)
 		{
-			return loadOptions();
+			loadOptions();
 		}
 		return options;
-	}
-	
-	public void setSessionTabs(ArrayList<String> sessionTabs) {
-		this.sessionTabsIds = sessionTabs;
 	}
 
 	// ------------Datenbank Abfragen--------------------------------------------------------------------
@@ -821,6 +795,12 @@ public class Model {
 //			System.out.println(e.getMessage());
 //		}
 //		
+		
+	}
+
+
+	public void saveEditedOptions(Options changedOptions) {
+		// TODO Auto-generated method stub
 		
 	}
 }

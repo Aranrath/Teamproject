@@ -18,14 +18,16 @@ import tp.model.Topic;
 public class OptionsView extends GridPane {
 
 	private Presenter presenter;
+	
+	//============================================
 
-	ListView<PO> posList;
-	ListView<Topic> topicsList;
-	ListView<Subject> subjectsList;
+	private ListView<PO> posList;
+	private ListView<Topic> topicsList;
+	private ListView<Subject> subjectsList;
 
-	ObservableList<PO> pos;
-	ObservableList<Topic> topics;
-	ObservableList<Subject> subjects;
+	private ObservableList<PO> pos;
+	private ObservableList<Topic> topics;
+	private ObservableList<Subject> subjects;
 
 	private Button addTopicButton;
 	private Button addPOButton;
@@ -49,6 +51,8 @@ public class OptionsView extends GridPane {
 		addTopicButton = new Button("+");
 		addPOButton = new Button("+");
 		addSubjectButton = new Button("+");
+		
+		//============================================
 
 		add(topicsList, 0, 1, 2, 2);
 		add(addTopicButton, 1, 0);
@@ -64,6 +68,8 @@ public class OptionsView extends GridPane {
 		add(new Label("Module"), 4, 0);
 		add(addSubjectButton, 5, 0);
 		GridPane.setHalignment(addSubjectButton, HPos.RIGHT);
+		
+		//============================================
 
 		addTopicButton.setOnAction((event)-> {
 			Stage stage = new Stage();
@@ -95,6 +101,10 @@ public class OptionsView extends GridPane {
 		pos = presenter.getPOs();
 		topics = presenter.getTopics();
 		subjects = presenter.getSubjects();
+		
+		posList.setItems(pos);
+		topicsList.setItems(topics);
+		subjectsList.setItems(subjects);
 
 		//TODO Jedes Listenelement soll ein 'x' und ein 'edit' hinter haben zum bearbeiten/löschen
 	}

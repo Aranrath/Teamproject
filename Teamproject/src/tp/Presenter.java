@@ -96,7 +96,7 @@ public class Presenter {
 	}
 
 	public ArrayList<String> getSessionTabsIds() {
-		return model.loadSessionTabsIds();
+		return model.getSessionTabsIds();
 	}
 
 	public ArrayList<Appointment> getNext24hourAppointments() {
@@ -240,5 +240,12 @@ public class Presenter {
 		model.saveNewConcern(concern);
 
 	}
+
+	public void saveEditedOptions(Options changedOptions) {
+		model.saveEditedOptions(changedOptions);
+		
+		
+	}
+
 
 }
