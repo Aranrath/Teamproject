@@ -53,18 +53,7 @@ public class MainView extends BorderPane {
 		this.sessionTabsIds = presenter.getSessionTabsIds();
 		buildView();
 		updateRightToolBar();
-		Options options = presenter.getOptions();
-		if(options.getUserName() == null || options.getUserID() == null || options.getPassword()== null)
-		{
-            
-			Stage stage = new Stage();
-			//TODO Motherfucker doesnt do Application_Modal. Alle Fenster immernoch anklickbar :((((
-			stage.initModality(Modality.APPLICATION_MODAL);
-			stage.setAlwaysOnTop(true);
-            stage.setTitle("Nutzerdaten");
-            stage.setScene(new Scene(new EditUserDataView(presenter, stage, options), 450, 450));
-            stage.show();
-		}
+		
 	}
 
 	private void buildView() {

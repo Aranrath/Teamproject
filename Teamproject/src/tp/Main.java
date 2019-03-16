@@ -3,9 +3,12 @@ package tp;
 import javafx.application.Application;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
+import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import tp.model.Model;
+import tp.model.Options;
+import tp.options.EditUserDataView;
 
 public class Main extends Application {
 
@@ -26,6 +29,18 @@ public class Main extends Application {
 			
 			primaryStage.setScene(scene);
 			primaryStage.show();
+			Options options = presenter.getOptions();
+			if(options.getUserName() == null || options.getUserID() == null || options.getPassword()== null)
+			{
+	            
+				Stage stage = new Stage();
+				//TODO Motherfucker doesnt do Application_Modal. Alle Fenster immernoch anklickbar :((((
+				stage.initModality(Modality.APPLICATION_MODAL);
+				stage.setAlwaysOnTop(true);
+	            stage.setTitle("Nutzerdaten");
+	            stage.setScene(new Scene(new EditUserDataView(presenter, stage, options), 450, 450));
+	            stage.show();
+			}
 		}
 		catch (Exception e) {
 			e.printStackTrace();
