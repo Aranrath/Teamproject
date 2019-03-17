@@ -4,20 +4,20 @@ import javafx.scene.control.Tab;
 
 public class MyTab extends Tab{
 	
-	String viewId;
+	String tabId;
 	
 	public MyTab(String viewId)
 	{
 		super();
-		this.viewId = viewId;
+		this.tabId = viewId;
 	}
 
-	public String getViewId() {
-		return viewId;
+	public String getTabId() {
+		return tabId;
 	}
 
-	public void setViewId(String viewId) {
-		this.viewId = viewId;
+	public void setTabId(String viewId) {
+		this.tabId = viewId;
 	}
 	
 

@@ -10,14 +10,17 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import tp.model.Appointment;
 import tp.model.Concern;
 import tp.model.EMail;
 import tp.model.Form;
 import tp.model.Model;
+import tp.model.MyTab;
 import tp.model.Options;
 import tp.model.PO;
+import tp.model.Reminder;
 import tp.model.Statistic;
 import tp.model.Student;
 import tp.model.Subject;
@@ -125,6 +128,10 @@ public class Presenter {
 		mainView.openNewStudentTab();
 
 	}
+	
+	public void openRemindersTab() {
+		mainView.openRemindersTab();
+	}
 
 	public void openNewConcernTab(ObservableList<Student> students) {
 		mainView.openNewConcernTab(students);
@@ -134,6 +141,11 @@ public class Presenter {
 	public void openNewConcernTab() {
 		mainView.openNewConcernTab();
 
+	}
+	
+	public void openNewStatisticTab() {
+		mainView.openNewStatisticTab();
+		
 	}
 
 	public ArrayList<EMail> getEMails(Student student) {
@@ -243,9 +255,52 @@ public class Presenter {
 
 	public void saveEditedOptions(Options changedOptions) {
 		model.saveEditedOptions(changedOptions);
-		
+	}
+
+	public void handleUnsavedTabs() {
+		//TODO Tabs durchgehen nach ungespeicherten Tabs und dann nacheinander mit Alerts abfragen -> boolean unsafed bei Views einfügen?
+		Platform.exit();
+	}
+
+
+	public ObservableList<Reminder> getDueReminders() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void deleteStatistic(Statistic statisticToDelete) {
+		model.deleteStatistic(statisticToDelete);
 		
 	}
+
+	public boolean saveNewStatistic(Statistic statistic) {
+		return model.saveNewStatistic(statistic);
+	}
+
+	public void showEditUserDataView(Options options) {
+		mainView.showEditUserDataView(options);
+		
+	}
+
+	public void showNewReminderView(Options options) {
+		mainView.showNewReminderView(options);
+		
+	}
+
+	public ObservableList<Reminder> getNewReminders(java.util.Date lastReminderCheck) {
+		return model.getNewReminders(lastReminderCheck);
+	}
+
+	public void openStatisticTab(Statistic newStatistic) {
+		mainView.openStatisticTab(newStatistic);
+		
+	}
+
+	public void closeThisTab(MyTab tab) {
+		mainView.closeThisTab(tab);
+	}
+
+
 
 
 }

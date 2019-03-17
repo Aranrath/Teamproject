@@ -1,6 +1,7 @@
 package tp;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
@@ -16,6 +17,7 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import tp.appointment.WeekScheduleView;
 import tp.concern.AllConcernsView;
 import tp.concern.ConcernView;
@@ -24,10 +26,13 @@ import tp.model.Appointment;
 import tp.model.Concern;
 import tp.model.MyTab;
 import tp.model.Options;
+import tp.model.Reminder;
 import tp.model.Statistic;
 import tp.model.Student;
 import tp.options.EditUserDataView;
 import tp.options.OptionsView;
+import tp.reminders.NewReminderAlertView;
+import tp.reminders.RemindersView;
 import tp.statistics.AllStatisticsView;
 import tp.statistics.EditStatisticView;
 import tp.statistics.StatisticView;
@@ -67,6 +72,7 @@ public class MainView extends BorderPane {
 		Button formsButton = new Button("Formulare");
 		Button allStatisticsButton = new Button("Alle Statistiken");
 		Button newStatisticButton = new Button("Neue Statistik");
+		Button remindersButton = new Button("Erinnerungen");
 		
 		//========================================================
 		
@@ -78,6 +84,7 @@ public class MainView extends BorderPane {
 		formsButton.setMaxWidth(Double.MAX_VALUE);
 		allStatisticsButton.setMaxWidth(Double.MAX_VALUE);
 		newStatisticButton.setMaxWidth(Double.MAX_VALUE);
+		remindersButton.setMaxWidth(Double.MAX_VALUE);
 		
 		//========================================================
 
@@ -105,6 +112,9 @@ public class MainView extends BorderPane {
 		newStatisticButton.setOnAction((event) -> {
 			openNewStatisticTab();
 		});
+		remindersButton.setOnAction((event) -> {
+			openRemindersTab();
+		});
 
 		// Toolbars
 		leftToolBar = new ToolBar();
@@ -114,7 +124,7 @@ public class MainView extends BorderPane {
 
 		leftToolBar.getItems().addAll(optionsButton, new Separator(), allConcernsButton, newConcernButton,
 				new Separator(), allStudentensButton, newStudentButton, new Separator(), allStatisticsButton,
-				newStatisticButton, new Separator(), formsButton);
+				newStatisticButton, new Separator(), formsButton, new Separator(), remindersButton);
 
 		// -------------------Zusammenfügen---------------------------------------
 
@@ -127,6 +137,7 @@ public class MainView extends BorderPane {
 		openSessionTabs();
 
 	}
+
 
 	public void updateRightToolBar() {
 		rightToolBar.getItems().clear();
@@ -157,7 +168,7 @@ public class MainView extends BorderPane {
 	/**
 	 * naming convention: s<mtrNr> = student, c<id> = concern, o = options, t<id> =
 	 * statistic, i = all statistics, a = all students, l = all concerns, f = forms,
-	 * w = weekly, n<ew> = new(unsaved) appointment Schedule
+	 * w = weekly, r = all reminders, n<ew> = new(unsaved)ObjectViews //diese Tabs werden nicht gespeichert
 	 */
 	private void openSessionTabs() {
 		if (sessionTabsIds == null) {
@@ -194,6 +205,9 @@ public class MainView extends BorderPane {
 				else if (firstLetter == 'w') {
 					openWeekScheduleTab();
 				}
+				else if (firstLetter == 'r') {
+					openRemindersTab();
+				}
 			}
 		}
 
@@ -203,7 +217,7 @@ public class MainView extends BorderPane {
 
 		for (int i = 0; i < tabPane.getTabs().size(); i++) {
 			MyTab t = (MyTab) tabPane.getTabs().get(i);
-			if (t.getViewId().equals(tabId)) {
+			if (t.getTabId().equals(tabId)) {
 				return t; // Tab already exists
 
 			}
@@ -214,7 +228,7 @@ public class MainView extends BorderPane {
 
 	// ------------------------openingTabs-----------------------------------
 
-	private void openAllStudentsTab() {
+	public void openAllStudentsTab() {
 		MyTab newTab = tabAlreadyOpen("a");
 		if (newTab == null) {
 
@@ -230,7 +244,7 @@ public class MainView extends BorderPane {
 		selectionModel.select(newTab);
 	}
 
-	private void openStudentTab(Student student) {
+	public void openStudentTab(Student student) {
 		MyTab newTab = tabAlreadyOpen("a" + student.getMtrNr());
 		if (newTab == null) {
 			newTab = new MyTab("a" + student.getMtrNr());
@@ -246,7 +260,7 @@ public class MainView extends BorderPane {
 
 	}
 
-	private void openOptionsTab() {
+	public void openOptionsTab() {
 		MyTab newTab = tabAlreadyOpen("o");
 		if (newTab == null) {
 			newTab = new MyTab("o");
@@ -262,7 +276,7 @@ public class MainView extends BorderPane {
 
 	}
 
-	private void openWeekScheduleTab() {
+	public void openWeekScheduleTab() {
 		MyTab newTab = tabAlreadyOpen("w");
 		if (newTab == null) {
 
@@ -279,7 +293,7 @@ public class MainView extends BorderPane {
 		selectionModel.select(newTab);
 	}
 
-	private void openFormsTab() {
+	public void openFormsTab() {
 		MyTab newTab = tabAlreadyOpen("f");
 		if (newTab == null) {
 			newTab = new MyTab("f");
@@ -295,7 +309,7 @@ public class MainView extends BorderPane {
 
 	}
 
-	private void openAllConcernsTab() {
+	public void openAllConcernsTab() {
 		MyTab newTab = tabAlreadyOpen("l");
 		if (newTab == null) {
 			newTab = new MyTab("l");
@@ -311,7 +325,7 @@ public class MainView extends BorderPane {
 
 	}
 
-	private void openStatisticTab(Statistic statistic) {
+	public void openStatisticTab(Statistic statistic) {
 		MyTab newTab = tabAlreadyOpen("t" + statistic.getId());
 		if (newTab == null) {
 			newTab = new MyTab("t" + statistic.getId());
@@ -327,14 +341,14 @@ public class MainView extends BorderPane {
 
 	}
 
-	private void openAllStatisticsTab() {
+	public void openAllStatisticsTab() {
 		MyTab newTab = tabAlreadyOpen("i");
 		if (newTab == null) {
 			newTab = new MyTab("i");
 
 			newTab.setText("Alle Statistiken");
 
-			newTab.setContent(new AllStatisticsView());
+			newTab.setContent(new AllStatisticsView(presenter));
 
 			tabPane.getTabs().addAll(newTab);
 		}
@@ -343,7 +357,7 @@ public class MainView extends BorderPane {
 
 	}
 
-	private void openConcernTab(Concern concern) {
+	public void openConcernTab(Concern concern) {
 		MyTab newTab = tabAlreadyOpen("c" + concern.getId());
 		if (newTab == null) {
 			newTab = new MyTab("c" + concern.getId());
@@ -356,8 +370,24 @@ public class MainView extends BorderPane {
 		}
 		SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
 		selectionModel.select(newTab);
-
 	}
+	
+	public void openRemindersTab() {
+		MyTab newTab = tabAlreadyOpen("r");
+		if (newTab == null) {
+			newTab = new MyTab("r");
+
+			newTab.setText("Erinnerungen");
+
+			newTab.setContent(new RemindersView(presenter));
+
+			tabPane.getTabs().addAll(newTab);
+		}
+		SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
+		selectionModel.select(newTab);
+	}
+	
+	//--------------------Tabs für die Eingabe neuer(!!!) Objekte. Diese Tabs werden nicht gemerkt für die nächste Sitzung
 
 	public void openNewConcernTab() {
 		MyTab newTab = new MyTab("new");
@@ -402,12 +432,12 @@ public class MainView extends BorderPane {
 	}
 	
 
-	private void openNewStatisticTab() {
+	public void openNewStatisticTab() {
 		MyTab newTab = new MyTab("new");
 
 		newTab.setText("Neue Statistik");
 
-		newTab.setContent(new EditStatisticView());
+		newTab.setContent(new EditStatisticView(presenter, newTab));
 
 		tabPane.getTabs().addAll(newTab);
 
@@ -415,9 +445,43 @@ public class MainView extends BorderPane {
 		selectionModel.select(newTab);
 	}
 
+	//=========================================================================00
+	
 	public void updateSubjectRelatedTabs() {
 		// TODO Auto-generated method stub
 		
 	}
+
+	public void showEditUserDataView(Options options) {
+		Stage stage = new Stage();
+		stage.initModality(Modality.APPLICATION_MODAL);
+		stage.setAlwaysOnTop(true);
+		stage.initStyle(StageStyle.UNDECORATED);
+        stage.setTitle("Nutzerdaten");
+        stage.setScene(new Scene(new EditUserDataView(presenter, stage, options), 450, 450));
+        stage.show();
+		
+	}
+
+	public void showNewReminderView(Options options) {
+		ObservableList<Reminder> newReminders = presenter.getNewReminders(options.getLastReminderCheck());
+		if(newReminders!= null)
+		{
+			Stage stage = new Stage();
+			stage.initModality(Modality.APPLICATION_MODAL);
+			stage.setAlwaysOnTop(true);
+	        stage.setTitle("Neue Erinnerungen");
+	        stage.setScene(new Scene(new NewReminderAlertView(presenter,stage, newReminders), 450, 450));
+	        stage.show();
+		}
+		options.setLastReminderCheck(new Date());
+		presenter.saveEditedOptions(options);
+	}
+
+	public void closeThisTab(MyTab tab) {
+		tabPane.getTabs().remove(tab);
+	}
+	
+	
 
 }

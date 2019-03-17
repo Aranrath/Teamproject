@@ -1,14 +1,13 @@
 package tp;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
-import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import tp.model.Model;
 import tp.model.Options;
-import tp.options.EditUserDataView;
 
 public class Main extends Application {
 
@@ -24,6 +23,14 @@ public class Main extends Application {
 			generateMVP();
 			
 			primaryStage.setMaximized(true);
+			
+			Platform.setImplicitExit(false);
+
+			primaryStage.setOnCloseRequest(e -> {
+				e.consume();
+				presenter.handleUnsavedTabs();
+			});
+	
 			Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
 			Scene scene = new Scene(mainView, primaryScreenBounds.getWidth()*0.9, primaryScreenBounds.getHeight()*0.9);
 			
@@ -33,13 +40,13 @@ public class Main extends Application {
 			if(options.getUserName() == null || options.getUserID() == null || options.getPassword()== null)
 			{
 	            
-				Stage stage = new Stage();
-				//TODO Motherfucker doesnt do Application_Modal. Alle Fenster immernoch anklickbar :((((
-				stage.initModality(Modality.APPLICATION_MODAL);
-				stage.setAlwaysOnTop(true);
-	            stage.setTitle("Nutzerdaten");
-	            stage.setScene(new Scene(new EditUserDataView(presenter, stage, options), 450, 450));
-	            stage.show();
+				presenter.showEditUserDataView(options);
+				
+				
+			}
+			else
+			{
+				presenter.showNewReminderView(options);
 			}
 		}
 		catch (Exception e) {
@@ -49,7 +56,7 @@ public class Main extends Application {
 	}
 	
 	
-	private void generateMVP() {
+private void generateMVP() {
 		
 		model = new Model();
 		presenter = new Presenter (model);

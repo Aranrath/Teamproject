@@ -1,6 +1,8 @@
 package tp.model;
 
 import java.io.Serializable;
+import java.util.Date;
+
 
 public class Options implements Serializable{
 
@@ -11,12 +13,22 @@ public class Options implements Serializable{
 	private String userID; //Hochschulkennung
 	private String password;
 	private String lastUsedIP;
+	private Date lastReminderCheck;
 	
 	public Options(String userName, String userID, String password)
 	{
 		this.userName = userName;
 		this.userID = userID;
 		this.password = password;
+		lastReminderCheck = new Date();
+	}
+
+	public Date getLastReminderCheck() {
+		return lastReminderCheck;
+	}
+
+	public void setLastReminderCheck(Date lastReminderCheck) {
+		this.lastReminderCheck = lastReminderCheck;
 	}
 
 	public String getUserName() {

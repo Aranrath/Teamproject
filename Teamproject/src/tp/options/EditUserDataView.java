@@ -114,6 +114,8 @@ public class EditUserDataView extends GridPane
 					presenter.saveEditedOptions(options);
 				}
 				stage.close();
+				
+				presenter.showNewReminderView(options);
 			});
 		 
 		 

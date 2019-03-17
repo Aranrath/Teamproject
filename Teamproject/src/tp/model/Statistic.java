@@ -2,12 +2,11 @@ package tp.model;
 
 public class Statistic {
 	
-	int id;
-	String title;
+	private int id;
+	private String title;
 	
-	public Statistic(int id, String title)
+	public Statistic(String title)
 	{
-		this.id = id;
 		this.title = title;
 	}
 

@@ -106,6 +106,11 @@ public class Model {
 		return d;
 	}
 	
+	public ObservableList<Reminder> getDueReminders() {
+		//TODO Reminder aller Anliegen (erledigte werden gelöscht) durchgucken und rausgeben wenn fällig ist;
+		return null;
+	}
+	
 	public int getKwOfDate(Date date) {
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(date);
@@ -194,6 +199,11 @@ public class Model {
 		{
 			System.out.println("saving options failed");
 		}
+	}
+	
+	public void saveEditedOptions(Options changedOptions) {
+		options = changedOptions;
+		saveOptions();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -799,8 +809,35 @@ public class Model {
 	}
 
 
-	public void saveEditedOptions(Options changedOptions) {
+	public void deleteStatistic(Statistic statisticToDelete) {
 		// TODO Auto-generated method stub
 		
 	}
+
+
+	public boolean saveNewStatistic(Statistic statistic) {
+		boolean successful;
+		try
+		{
+			//TODO Gib Statistic eine id!!
+			//TODO Save Statistic
+			successful = true;
+		}
+		catch(Exception e)
+		{
+			successful = false;
+		}
+		return successful;
+	}
+
+
+	public ObservableList<Reminder> getNewReminders(java.util.Date lastReminderCheck) {
+		// TODO Auto-generated method stub
+		
+		//Return null wenn keine neuen Reminder!
+		return null;
+	}
+
+
+	
 }
