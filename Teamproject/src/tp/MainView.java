@@ -156,9 +156,9 @@ public class MainView extends BorderPane {
 		if (next24hourAppointments != null) {
 			for (Appointment a : next24hourAppointments) {
 				Button newAppointmentButton = new Button(a.getStartTime() + " - " + a.getEndTime() + "\n"
-						+ a.getConcern().getTitle() + "\n" + a.getRoomNmb());
+						+ presenter.getConcern(a.getConcernId()).getTitle() + "\n" + a.getRoomNmb());
 				newAppointmentButton.setOnAction((event) -> {
-					openConcernTab(a.getConcern());
+					openConcernTab(presenter.getConcern(a.getConcernId()));
 				});
 				rightToolBar.getItems().addAll(newAppointmentButton);
 			}

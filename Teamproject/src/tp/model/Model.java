@@ -421,7 +421,7 @@ public class Model {
 	}
 	
 	public Appointment getAppointment(int id) {
-		Appointment result = new Appointment(null, null, 0, 0, null, null, false);
+		Appointment result = new Appointment(0, null, 0, 0, null, null, false);
 		String sql = "SELECT * FROM appointment WHERE id = " + id;
 		try 	(Connection conn = this.connect();
 				Statement stmt = conn.createStatement();
@@ -429,7 +429,7 @@ public class Model {
 		{
 			rs.next();
 			
-			Concern concern = getConcern(rs.getInt("concern"));
+			int concernId = rs.getInt("concern");
 			Date date = rs.getDate("date");
 			long startTime = rs.getLong("startTime");
 			long endTime = rs.getLong("endTime");
@@ -439,7 +439,7 @@ public class Model {
 			if (reminderTime!=null) {
 				reminderTimeisActive = true;
 			}
-			result = new Appointment(concern, date, startTime, endTime, roomNmb, reminderTime, reminderTimeisActive);
+			result = new Appointment(concernId, date, startTime, endTime, roomNmb, reminderTime, reminderTimeisActive);
 			result.setId(id);
 		}catch(Exception e) {
 			e.printStackTrace();

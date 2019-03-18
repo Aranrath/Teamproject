@@ -5,7 +5,7 @@ import java.sql.Date;
 public class Appointment {
 
 	private int id;
-	private Concern concern;
+	private int concernId;
 	private Date date;
 	private long startTime;
 	private long endTime;
@@ -14,9 +14,9 @@ public class Appointment {
 	//TODO isActive -> Abfrage ob reminderTime == null??
 	private boolean reminderTimeisActive;
 
-	public Appointment(Concern concern, Date date, long startTime, long endTime, String roomNmb, Date reminderTime,
+	public Appointment(int concernId, Date date, long startTime, long endTime, String roomNmb, Date reminderTime,
 			boolean reminderTimeisActive) {
-		this.concern = concern;
+		this.concernId = concernId;
 		this.date = date;
 		this.startTime = startTime;
 		this.endTime = endTime;
@@ -30,8 +30,8 @@ public class Appointment {
 		return id;
 	}
 
-	public Concern getConcern() {
-		return concern;
+	public int getConcernId() {
+		return concernId;
 	}
 
 	public Date getDate() {
@@ -62,8 +62,8 @@ public class Appointment {
 		this.id = id;
 	}
 
-	public void setConcern(Concern concern) {
-		this.concern = concern;
+	public void setConcernId(int concernId) {
+		this.concernId = concernId;
 	}
 
 	public void setDate(Date date) {
