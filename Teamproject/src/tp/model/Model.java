@@ -1,16 +1,11 @@
 package tp.model;
 
 
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.Date;
@@ -22,12 +17,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import javax.imageio.ImageIO;
-import javax.sql.rowset.serial.SerialBlob;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 
 public class Model {
@@ -428,26 +419,7 @@ public class Model {
 		}
 		return result;
 	}
-
-
-	//TODO Klärungsbedarf Forms, Data, Dokuments.....
-	private ObservableList<Form> getForms(int concernId) {
-		ObservableList<Form>  result = FXCollections.observableArrayList();
-		String sql = "SELECT * FROM forms WHERE concern = " + concernId;
-		try (Connection conn = this.connect();
-			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery(sql))
-		{
-			while(rs.next()) {
-				int id = rs.getInt("id");
-			}
-			
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
-		return result;
-	}
-
+	
 	public Appointment getAppointment(int id) {
 		Appointment result = new Appointment(null, null, 0, 0, null, null, false);
 		String sql = "SELECT * FROM appointment WHERE id = " + id;
@@ -473,6 +445,25 @@ public class Model {
 			e.printStackTrace();
 		}
 			return result;
+	}
+
+
+	//TODO Klärungsbedarf Forms, Data, Dokuments.....
+	private ObservableList<Form> getForms(int concernId) {
+		ObservableList<Form>  result = FXCollections.observableArrayList();
+		String sql = "SELECT * FROM forms WHERE concern = " + concernId;
+		try (Connection conn = this.connect();
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(sql))
+		{
+			while(rs.next()) {
+				int id = rs.getInt("id");
+			}
+			
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return result;
 	}
 
 	public Reminder getReminder(int id) {

@@ -51,9 +51,7 @@ public class EditStudentView extends GridPane{
 	private Label ectsLabel;
 	private TextField studentECTS;
 	private Label concernsLabel;
-//	TODO Nur in Übersicht
-//	private Button newConcernButton;
-	private ListView<Concern> connectedConcernsListView;
+	private ListView<Concern> concernsListView;
 	private Label errorLabel;
 	private Button saveEditedProfileButton;
 	private Label notesLabel;
@@ -88,7 +86,7 @@ public class EditStudentView extends GridPane{
 		nameLabel = new Label ("Name");
 		studentFirstName = new TextField();
 		studentLastName = new TextField();
-		mailLabel = new Label("E-Mail Adresse");
+		mailLabel = new Label("E-Mail Adressen");
 		studentMail_1 = new TextField();
 		studentMail_2 = new TextField();
 		studentMail_3 = new TextField();
@@ -102,9 +100,9 @@ public class EditStudentView extends GridPane{
 		semesterLabel = new Label("Semester");
 		studentSemester = new TextField();
 		concernsLabel = new Label("Anliegen");
-//		TODO Nur in Übersicht
-//		newConcernButton = new Button("Neues Anliegen");
-		connectedConcernsListView = new ListView<Concern>();
+		concernsLabel.setVisible(false);
+		concernsListView = new ListView<Concern>();
+		concernsListView.setVisible(false);
 		errorLabel = new Label("Ich bin ein Error-Label, bitch");
 		errorLabel.setVisible(false);
 		saveEditedProfileButton = new Button("Profil speichern");
@@ -112,7 +110,9 @@ public class EditStudentView extends GridPane{
 		studentNotes = new TextArea();
 		studentNotes.setPrefWidth(300);
 		mailExchangeLabel = new Label("E-Mail Austausch");
+		mailExchangeLabel.setVisible(false);
 		mailExchangeBox = new VBox();
+		mailExchangeBox.setVisible(false);
 		mailExchangeBox.setBackground(new Background(new BackgroundFill(Color.CORNFLOWERBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
 		
 		
@@ -154,10 +154,7 @@ public class EditStudentView extends GridPane{
 		GridPane.setHalignment(studentSemester, HPos.LEFT);
 		add(concernsLabel,4,2);
 		GridPane.setHalignment(concernsLabel, HPos.LEFT);
-//		TODO nur in Übersicht
-//		add(newConcernButton,5,2);
-//		GridPane.setHalignment(newConcernButton, HPos.LEFT);
-		add(connectedConcernsListView,4,3,2,3);
+		add(concernsListView,4,3,2,3);
 		add(errorLabel,1,6,4,2);
 		GridPane.setHalignment(errorLabel, HPos.RIGHT);
 		add(saveEditedProfileButton,5,6,1,2);
@@ -194,16 +191,14 @@ public class EditStudentView extends GridPane{
             stage.setScene(new Scene(new EditPOView(presenter.getPOs(), presenter.getSubjects(),stage, presenter), 450, 450));
             stage.show();
 		});
-		
-//		TODO Nur bei Übersicht
-//		newConcernButton.setOnAction((event)->{
-//			//TODO
-//		});
-		
-		
-		
 	}
+	
 	private void fillView(Student student) {
+		mailExchangeBox.setVisible(true);
+		mailExchangeBox.setVisible(true);
+		concernsLabel.setVisible(true);
+		concernsListView.setVisible(true);
+		
 		if(student.getImage()!=null)
 		{
 			studentImage.setImage(student.getImage());
@@ -217,7 +212,7 @@ public class EditStudentView extends GridPane{
 		studentPO.getSelectionModel().select(student.getPo());
 		studentECTS.setText("" + student.getEcts());
 		studentSemester.setText("" + student.getSemester());
-		connectedConcernsListView = new ListView<Concern>(presenter.getConcerns(student));
+		concernsListView = new ListView<Concern>(presenter.getConcerns(student));
 		studentNotes.setText(student.getNotes());
 	}
 

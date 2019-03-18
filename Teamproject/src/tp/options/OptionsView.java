@@ -99,6 +99,10 @@ public class OptionsView extends GridPane {
 		
 		//------------------------------------
 		
+		userDataGridPane.setPadding(new Insets(10, 10, 10, 10));
+		userDataGridPane.setHgap(10);
+		userDataGridPane.setVgap(10);
+		
 		userDataGridPane.add(userDataLabel,0,0,2,1);
 		userDataGridPane.add(userNameLabel,0,1);
 		userDataGridPane.add(currentUserNameLabel,1,1);

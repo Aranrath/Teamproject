@@ -100,7 +100,7 @@ public class StudentView extends GridPane {
 		nameLabel = new Label("Name");
 		studentFirstName = new Label();
 		studentLastName = new Label();
-		mailLabel = new Label("E-Mail Adresse");
+		mailLabel = new Label("E-Mail Adressen");
 		studentMail_1 = new Label();
 		studentMail_2 = new Label();
 		studentMail_3 = new Label();
