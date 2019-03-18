@@ -196,8 +196,8 @@ public class Presenter {
 
 	}
 
-	public ObservableList<Form> getForms() {
-		return model.getForms();
+	public ObservableList<Form> getTopicForms() {
+		return model.getTopicForms();
 	}
 
 	public void saveNewTopic(String title, ObservableList<Form> selectedForms) {

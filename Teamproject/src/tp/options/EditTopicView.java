@@ -58,7 +58,7 @@ public class EditTopicView extends GridPane {
 		setHgap(10);
 		setVgap(10);
 		
-		this.allForms = presenter.getForms();
+		this.allForms = presenter.getTopicForms();
 		this.allTopics = presenter.getTopics();
 		
 		errorLabel = new Label("");

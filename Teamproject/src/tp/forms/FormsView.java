@@ -30,7 +30,7 @@ public class FormsView extends GridPane {
 
 	public FormsView(Presenter presenter) {
 		this.presenter = presenter;
-		this.forms = presenter.getForms();
+		this.forms = presenter.getTopicForms();
 		buildView();
 		fillView();
 	}

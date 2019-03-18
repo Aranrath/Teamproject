@@ -4,6 +4,7 @@ import java.io.File;
 
 public class Form {
 	
+	private int id;
 	private String name;
 	private File file;
 	
@@ -11,6 +12,14 @@ public class Form {
 	{
 		this.file = file;
 		this.name = name;
+	}
+	
+	public int getId() {
+		return id;
+	}
+	
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	public String getName() {

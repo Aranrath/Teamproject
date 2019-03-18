@@ -1,24 +1,24 @@
 package tp.model;
 
-import java.util.ArrayList;
+import javafx.collections.ObservableList;
 
 public class Topic {
 	
 	private String title;
-	private ArrayList<Form> linkedForms;
+	private ObservableList<Form> forms;
 	int id;
 	
 	public Topic(String title)
 	{
 		this.title = title;
 	}
-	public Topic(String title, ArrayList<Form> forms)
+	public Topic(String title, ObservableList<Form> forms)
 	{
 		this.title = title;
-		this.linkedForms = forms;
+		this.forms = forms;
 	}
 	
-	//===========Contructors=====================
+	//===========Getter/Setter=====================
 	
 	public String getTitle() {
 		return title;
@@ -27,14 +27,14 @@ public class Topic {
 	public void setTitle(String title) {
 		this.title = title;
 	}
-	public ArrayList<Form> getLinkedForms() {
-		return linkedForms;
+	public ObservableList<Form> getForms() {
+		return forms;
 	}
 	public int getId() {
 		return id;
 	}
-	public void setLinkedForms(ArrayList<Form> linkedForms) {
-		this.linkedForms = linkedForms;
+	public void setLinkedForms(ObservableList<Form> forms) {
+		this.forms = forms;
 	}
 	public void setId(int id) {
 		this.id = id;
