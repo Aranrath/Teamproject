@@ -1,13 +1,15 @@
 package tp.model;
 
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
@@ -18,8 +20,11 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import javax.imageio.ImageIO;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 
 public class Model {
@@ -44,7 +49,7 @@ public class Model {
 		}
 		catch (SQLException e) 
 		{
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 		return conn;
 	}
@@ -264,7 +269,7 @@ public class Model {
 		}		
 		catch(Exception e)
 		{
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}	
 		//not possible to get here
 		return null;
@@ -292,8 +297,6 @@ public class Model {
 	public Student getStudent(int mtrNr) 
 	{
 		Student result = new Student(0, null, null, null, 0, null, 0, null, null);
-		//TODO Path
-//		String PATH = "C:\\Users\\Mephisto\\eclipse-workspace\\Teamproject\\src\\ExportedData"; 
 		String sql = "SELECT * FROM student WHERE Matrikelnummer = " + mtrNr;
 		
 		try (Connection conn = this.connect();
@@ -309,31 +312,18 @@ public class Model {
 				String notes = rs.getString("notes");
 				int ects = rs.getInt("ects");
 				ObservableList<Concern> concerns = getConcerns(mtrNr);
-				
-				//TODO Image
-//				Blob ph = rs.getBlob("img");
-//				System.out.println(ph);
-//				InputStream in = ph.getBinaryStream();
-//				ByteArrayOutputStream out = new ByteArrayOutputStream();
-//				OutputStream outputStream = new FileOutputStream(PATH+mtrNr+".png");
-//				int length = (int) ph.length();
-//				int bufferSize = 1024;
-//				byte[] buffer = new byte[bufferSize];
-//				while((length = in.read(buffer)) != -1)
-//				{
-//					System.out.println("writing " + length + " bytes");
-//					out.write(buffer, 0, length);
-//				}
-//				out.writeTo(outputStream);
-//				in.close();
-//				File file = new File(PATH+mtrNr+".png");
-				Image img = null;				
+				Image img = null;
+				try(InputStream is= rs.getBinaryStream("image")){
+					img = new Image(is);				
+				}catch(Exception e) {
+					e.printStackTrace();
+				}
 				
 				result = new Student(mtrNr, name, firstname, eMailAddressess, semester, notes, ects, img, concerns);	
 			}		
 			catch(Exception e)
 			{
-				System.out.println(e.getMessage());
+				e.printStackTrace();
 			}	
 			return result;
 	}
@@ -361,7 +351,7 @@ public class Model {
 		}
 		catch(Exception e)
 		{
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 		return result;
 	}
@@ -484,6 +474,7 @@ public class Model {
 	}
 	
 	private Form getForm(int id) {
+		//TODO Teest
 		Form result = new Form(null, null);
 		String sql = "SELECT * FROM form WHERE id = 0 " + id;
 		try 	(Connection conn = this.connect();
@@ -493,10 +484,20 @@ public class Model {
 			rs.next();
 		
 			String title = rs.getString("title");
-			//TODO file
-			File file = null;
+			
+			File file = File.createTempFile(title, ".tmp");
+			try(FileOutputStream out = new FileOutputStream(file);
+					InputStream in = rs.getBinaryStream("image")){
+				byte[] buffer = new byte[1024];
+				while(in.read(buffer)>0) {
+					out.write(buffer);
+				}
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
 			result = new Form(title, file);
 			result.setId(id);
+			file.deleteOnExit();
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -505,7 +506,7 @@ public class Model {
 
 	public Reminder getReminder(int id) {
 		Reminder result = new Reminder(null, null);
-		String sql = "SELECT * FROM reminder WHERE id = 0 " + id;
+		String sql = "SELECT * FROM reminder WHERE id = " + id;
 		try 	(Connection conn = this.connect();
 				Statement stmt = conn.createStatement();
 				ResultSet rs = stmt.executeQuery(sql))
@@ -535,7 +536,7 @@ public class Model {
 			
 			result = new Topic(title, forms);	
 		}catch(Exception e) {
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 		return result;
 	}
@@ -622,14 +623,14 @@ public class Model {
 			while(rs.next())
 			{
 				int id = rs.getInt("id");
-				String title = rs.getString("titel");
+				String title = rs.getString("title");
 				ObservableList<Form> forms = getTopicForms(id);
 				topic.add(new Topic (title, forms));
 			}
 		}
 		catch(Exception e)
 		{
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 		return topic;
 	}
@@ -650,7 +651,7 @@ public class Model {
 		}
 		catch(Exception e)
 		{
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 		return subject;
 	}
@@ -673,7 +674,7 @@ public class Model {
 		}
 		catch(Exception e)
 		{
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 		return result;
 	}
@@ -699,7 +700,7 @@ public class Model {
 		}
 		catch(Exception e)
 		{
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 		return concerns;
 	}
@@ -736,7 +737,7 @@ public class Model {
 		}
 		catch(Exception e)
 		{
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
@@ -892,10 +893,13 @@ public class Model {
 		try (Connection conn = this.connect();
 			PreparedStatement pstmt = conn.prepareStatement(sql))
 		{	
-//			File file = null;
+			File file = form.getFile();
 			pstmt.setString(1, form.getName());
-			//TODO File
-			//pstmt.setBlob(2, (Blob) file);
+			try(InputStream is = new FileInputStream(file)){
+				pstmt.setBinaryStream(2, is);
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
 			pstmt.executeUpdate();
 		}
 		catch (Exception e)
@@ -906,7 +910,6 @@ public class Model {
 
 	public void deleteForm(Form f) 
 	{
-		//TODO evt file löschen falls iwo gespeichert worden is?? nach überarbeitung saveNewForm
 		String sql = "DELETE * FROM form WHERE name = "+ f.getId();
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement())
@@ -939,27 +942,34 @@ public class Model {
 
 
 	public void saveEditedStudent(Student student) {
-		//TODO Blob
-		Blob blob = null;
-
-		String sql1 = "UPDATE student SET name = "+student.getName()+", firstname = "+student.getFirstName()+", semester = "+student.getSemester()+
-				", notes = "+student.getNotes()+", ects = "+student.getEcts()+", img = "+blob + 
+		//TODO Test..
+		Image img = student.getImage();
+		try(ByteArrayOutputStream os = new ByteArrayOutputStream();
+		   InputStream is = new ByteArrayInputStream(os.toByteArray())){
+			ImageIO.write(SwingFXUtils.fromFXImage(img, null),"png", os); 
+		
+			String sql1 = "UPDATE student SET name = "+student.getName()+", firstname = "+student.getFirstName()+", semester = "+student.getSemester()+
+				", notes = "+student.getNotes()+", ects = "+student.getEcts()+", img = " +is + 
 				"WHERE matrNr = " + student.getMtrNr();
-		String sql2 = "DELETE * FROM student_emailAddress WHERE student = " + student.getMtrNr();
-		String sql3 = "DELETE * FROM concern_student WHERE student = " + student.getMtrNr();
-		try(Connection conn = this.connect();
-			Statement stmt = conn.createStatement())
-		{
-			stmt.executeQuery(sql1);
-			stmt.executeQuery(sql2);
-			stmt.executeQuery(sql3);
-			addStudentEmail(student.getMtrNr(), student.geteMailAddresses());
-			addConcernsStudent(student.getConcerns(), student.getMtrNr());			
-		}
-		catch(Exception e)
-		{
+			String sql2 = "DELETE * FROM student_emailAddress WHERE student = " + student.getMtrNr();
+			String sql3 = "DELETE * FROM concern_student WHERE student = " + student.getMtrNr();
+			try(Connection conn = this.connect();
+					Statement stmt = conn.createStatement())
+			{
+				stmt.executeQuery(sql1);
+				stmt.executeQuery(sql2);
+				stmt.executeQuery(sql3);
+				addStudentEmail(student.getMtrNr(), student.geteMailAddresses());
+				addConcernsStudent(student.getConcerns(), student.getMtrNr());			
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+		}catch (Exception e) {
 			e.printStackTrace();
 		}
+		
 	}
 
 

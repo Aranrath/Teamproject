@@ -10,8 +10,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import tp.Presenter;
@@ -105,13 +107,19 @@ public class OptionsView extends GridPane {
 		
 		userDataGridPane.add(userDataLabel,0,0,2,1);
 		userDataGridPane.add(userNameLabel,0,1);
-		userDataGridPane.add(currentUserNameLabel,1,1);
 		GridPane.setHalignment(currentUserNameLabel, HPos.RIGHT);
+		userDataGridPane.add(currentUserNameLabel,1,1);
 		userDataGridPane.add(userIDLabel,0,2);
-		userDataGridPane.add(currentUserIDLabel,1,2);
 		GridPane.setHalignment(currentUserIDLabel, HPos.RIGHT);
+		userDataGridPane.add(currentUserIDLabel,1,2);
+		GridPane.setHalignment(editUserDataButton, HPos.RIGHT);
 		userDataGridPane.add(editUserDataButton,0,3,2,1);
-		editUserDataButton.setAlignment(Pos.BASELINE_RIGHT);
+		
+		
+		ColumnConstraints column = new ColumnConstraints();
+		column.setPercentWidth(50);
+		userDataGridPane.getColumnConstraints().add(column);
+		userDataGridPane.getColumnConstraints().add(column);
 		
 		userDataGridPane.setBackground(new Background(new BackgroundFill(Color.BISQUE, null, null)));
 		add(userDataGridPane,0,2,2,1);
