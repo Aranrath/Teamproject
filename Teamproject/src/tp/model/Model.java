@@ -61,8 +61,8 @@ public class Model {
 	//-------------------Calculations--------------------------------------------------------------
 
 	public ArrayList<Appointment> loadNext24hourAppointments() {
-		//TODO abfrage gibt nur 'Heutige' Appointments nich next 24h
-		String sql = "SELECT * FROM appointment WHERE DATE(startTime) == DATE('now')";		
+		//TODO Test
+		String sql = "SELECT id FROM appointment WHERE (date == date() AND endTime >= DATE('now')) OR (date == DATE('now', '+1 day') AND startTime<= date())";		
 		ArrayList<Appointment> result = new ArrayList<Appointment>();
 		try 	(Connection conn = this.connect();
 				Statement stmt = conn.createStatement();
@@ -71,14 +71,7 @@ public class Model {
 			while(rs.next())
 			{
 				int id = rs.getInt("id");
-				Concern concern = getConcern(rs.getInt("concern"));
-				Date date = rs.getDate("date");
-				long startTime = rs.getLong("startTime");
-				long endTime = rs.getLong("endTime");
-				int roomNmb = rs.getInt("roomNmb");
-				Date reminderTime = rs.getDate("reminderDate");
-				Boolean reminderTimeisActive = rs.getBoolean("reminderDateActive");
-				result.add(new Appointment(id, concern, date, startTime, endTime, roomNmb, reminderTime, reminderTimeisActive));
+				result.add(getAppointment(id));
 			}
 		}
 		catch (Exception e)
@@ -107,8 +100,22 @@ public class Model {
 	}
 	
 	public ObservableList<Reminder> getDueReminders() {
-		//TODO Reminder aller Anliegen (erledigte werden gelöscht) durchgucken und rausgeben wenn fällig ist;
-		return null;
+		ObservableList<Reminder> result = FXCollections.observableArrayList();
+		String sql ="SELECT id FROM reminder WHERE date <= date()";
+		try(Connection conn = this.connect();
+				Statement stmt = conn.createStatement();
+				ResultSet rs = stmt.executeQuery(sql))
+		{
+			while(rs.next()) 
+			{
+				int id = rs.getInt("id");
+				result.add(getReminder(id));
+			}
+			
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return result;
 	}
 	
 	public int getKwOfDate(Date date) {
@@ -117,10 +124,18 @@ public class Model {
 		return cal.get(Calendar.WEEK_OF_YEAR);
 	}
 	
+	//TODO Jahr mit übergeben?
 	public ObservableList<Appointment> getWeeksAppointments(int shownKw) {
-		ObservableList<Appointment> appointments = FXCollections.observableArrayList();
-		//TODO sql-abfrage überprüfen, neumachen... macht net viel sinn...
-		String sql = "SELECT * FROM appointment WHERE DATE(date) >= DATE('now', 'weekday 0', '-7 days')";
+		Calendar cal = Calendar.getInstance();
+		cal.clear();
+		cal.set(Calendar.DAY_OF_YEAR, shownKw);
+		cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+		Date weekStart = new Date(cal.getTime().getTime());
+		cal.set(Calendar.DAY_OF_WEEK, Calendar.FRIDAY);
+		Date weekEnd = new Date(cal.getTime().getTime());
+		
+		ObservableList<Appointment> result = FXCollections.observableArrayList();
+		String sql = "SELECT * FROM appointment WHERE date >= " + weekStart + " AND date <= " + weekEnd;
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql))
@@ -128,22 +143,14 @@ public class Model {
 			while(rs.next())
 			{
 				int id =rs.getInt("id");
-				Concern concern = getConcern(rs.getInt("concern"));
-				Date date = rs.getDate("date");
-				long startTime = rs.getLong("startDate");
-				long endTime = rs.getLong("endDate");
-				int roomNmb = rs.getInt("roomNmb");
-				Date reminderTime = rs.getDate("reminderDate");
-				Boolean reminderTimeisActive = rs.getBoolean("reminderDateActive");
-				Appointment app = new Appointment(id, concern, date, startTime, endTime, roomNmb, reminderTime, reminderTimeisActive);
-				appointments.add(app);
+				result.add(getAppointment(id));
 			}
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
-		return appointments;
+		return result;
 	}
 	
 	public Date getStartOfNextWeek(Date date) {
@@ -251,107 +258,97 @@ public class Model {
 	// ------------Datenbank Abfragen--------------------------------------------------------------------
 
 	
-	public Student getStudent(String emailAdressse) 
+	public Student getStudent(String emailAdresse) 
 	{
-		//TODO path anpassen
-		String PATH = "C:\\Users\\Mephisto\\eclipse-workspace\\Teamproject\\src\\ExportedData";
-		String sql = "SELECT * FROM student WHERE eMailAddresses = " + emailAdressse;
-
-		
+		String sql = "SELECT matrNr"
+				+ "FROM student, student_emailAddress "
+				+ "WHERE matrNr = student and eMailAddress = " + emailAdresse;
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql))
 		{
 			rs.next();
-			
-			//TODO EmailAdressess and Concerns
-				int mtrNr = rs.getInt("Matrikelnummer");
-				String name = rs.getString("name");
-				String firstname = rs.getString("firstname");
-				//String[] eMailAddressess = new String[3];
-				int semester = rs.getInt("semester");
-				String notes = rs.getString("notes");
-				int ects = rs.getInt("ects");
-				//Concern con = getConcern(rs.getInt("concern"));
-				//concerns = FXCollections.observableArrayList(con);
-				Blob ph = rs.getBlob("img");
-				System.out.println(ph);
-				InputStream in = ph.getBinaryStream();
-				ByteArrayOutputStream out = new ByteArrayOutputStream();
-				OutputStream outputStream = new FileOutputStream(PATH+mtrNr+".png");
-				int length = (int) ph.length();
-				int bufferSize = 1024;
-				byte[] buffer = new byte[bufferSize];
-				while((length = in.read(buffer)) != -1)
-				{
-					System.out.println("writing " + length + " bytes");
-					out.write(buffer, 0, length);
-				}
-				out.writeTo(outputStream);
-				in.close();
-				File file = new File(PATH+mtrNr+".png");
-				Image img = new Image(file.toURI().toString());				
-			
-			return new Student(mtrNr, name, firstname, null, semester, notes, ects, img, null);	
+			return getStudent(rs.getInt("matrNr"));
 		}		
 		catch(Exception e)
 		{
 			System.out.println(e.getMessage());
 		}	
-		return new Student(0, null, null, null, 0, null, 0, null, null);
+		//not possible to get here
+		return null;
 	}
-	
+
+
+	private ArrayList<String> getEMailAddressess(int mtrNr) {
+		ArrayList<String> result = new ArrayList<String>();
+		String sql ="SELECT emailAddress FROM student_emailAddress WHERE student = " + mtrNr;
+		
+		try (Connection conn = this.connect();
+				Statement stmt = conn.createStatement();
+				ResultSet rs = stmt.executeQuery(sql))
+			{
+			while (rs.next()) {
+				result.add(rs.getString("emailAddress"));
+			}
+			}catch (Exception e) {
+				e.printStackTrace();
+			}
+		return result;
+	}
+
+
 	public Student getStudent(int mtrNr) 
 	{
+		Student result = new Student(0, null, null, null, 0, null, 0, null, null);
 		//TODO Path
-		String PATH = "C:\\Users\\Mephisto\\eclipse-workspace\\Teamproject\\src\\ExportedData"; 
+//		String PATH = "C:\\Users\\Mephisto\\eclipse-workspace\\Teamproject\\src\\ExportedData"; 
 		String sql = "SELECT * FROM student WHERE Matrikelnummer = " + mtrNr;
 		
 		try (Connection conn = this.connect();
-			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery(sql))
-		{
-
-			rs.next();
-			
-			//TODO EmailAdressess and Concerns
+				Statement stmt = conn.createStatement();
+				ResultSet rs = stmt.executeQuery(sql))
+			{
+				rs.next();
+				
 				String name = rs.getString("name");
 				String firstname = rs.getString("firstname");
-				//String[] eMailAddressess = new String[3];
+				ArrayList<String> eMailAddressess = getEMailAddressess(mtrNr);
 				int semester = rs.getInt("semester");
 				String notes = rs.getString("notes");
 				int ects = rs.getInt("ects");
-				//Concern con = getConcern(rs.getInt("concern"));
-				//concerns = FXCollections.observableArrayList(con);
-				Blob ph = rs.getBlob("img");
-				System.out.println(ph);
-				InputStream in = ph.getBinaryStream();
-				ByteArrayOutputStream out = new ByteArrayOutputStream();
-				OutputStream outputStream = new FileOutputStream(PATH+mtrNr+".png");
-				int length = (int) ph.length();
-				int bufferSize = 1024;
-				byte[] buffer = new byte[bufferSize];
-				while((length = in.read(buffer)) != -1)
-				{
-					System.out.println("writing " + length + " bytes");
-					out.write(buffer, 0, length);
-				}
-				out.writeTo(outputStream);
-				in.close();
-				File file = new File(PATH+mtrNr+".png");
-				Image img = new Image(file.toURI().toString());				
-			
-			return new Student(mtrNr, name, firstname, null, semester, notes, ects, img, null);
-		}		
-		catch(Exception e)
-		{
-			System.out.println(e.getMessage());
-		}	
-		return new Student(0, null, null, null, 0, null, 0, null, null);
+				ObservableList<Concern> concerns = getConcerns(mtrNr);
+				
+				//TODO Image
+//				Blob ph = rs.getBlob("img");
+//				System.out.println(ph);
+//				InputStream in = ph.getBinaryStream();
+//				ByteArrayOutputStream out = new ByteArrayOutputStream();
+//				OutputStream outputStream = new FileOutputStream(PATH+mtrNr+".png");
+//				int length = (int) ph.length();
+//				int bufferSize = 1024;
+//				byte[] buffer = new byte[bufferSize];
+//				while((length = in.read(buffer)) != -1)
+//				{
+//					System.out.println("writing " + length + " bytes");
+//					out.write(buffer, 0, length);
+//				}
+//				out.writeTo(outputStream);
+//				in.close();
+//				File file = new File(PATH+mtrNr+".png");
+				Image img = null;				
+				
+				result = new Student(mtrNr, name, firstname, eMailAddressess, semester, notes, ects, img, concerns);	
+			}		
+			catch(Exception e)
+			{
+				System.out.println(e.getMessage());
+			}	
+			return result;
 	}
 	
 	public Concern getConcern(int concernId) 
 	{
+		Concern result = new Concern(null, null, null, null, null, null, null);
 		String sql = "SELECT * FROM concern WHERE id = " + concernId;
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement();
@@ -360,17 +357,141 @@ public class Model {
 			rs.next();
 			
 			String title = rs.getString("title"); 
+			ObservableList<Form> forms = getForms(concernId);
 			Topic topic =getTopic(rs.getInt("topic"));
+			ObservableList<Appointment> appointments = getAppointments(concernId);
+			ObservableList<Reminder> reminders = getReminders(concernId);
+			ObservableList<Student> students = getStudents(concernId);
 			String notes = rs.getString("notes");	
 			
-			Concern con = new Concern (title, null, topic, null, null, null, notes);
+			result = new Concern (title, forms, topic, appointments, reminders, students, notes);
+			result.setId(concernId);
 		}
 		catch(Exception e)
 		{
 			System.out.println(e.getMessage());
 		}
+		return result;
+	}
+	
+	private ObservableList<Student> getStudents(int concernId) {
+		ObservableList<Student>  result = FXCollections.observableArrayList();
+		String sql = "SELECT student FROM concern_student WHERE concern = " + concernId;
+		try (Connection conn = this.connect();
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(sql))
+		{
+			while(rs.next()) {
+				result.add(getStudent(rs.getInt("student")));
+			}
+			
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+
+	private ObservableList<Reminder> getReminders(int concernId) {
+		ObservableList<Reminder>  result = FXCollections.observableArrayList();
+		String sql = "SELECT id FROM reminder WHERE concern = " + concernId;
+		try (Connection conn = this.connect();
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(sql))
+		{
+			while(rs.next()) {
+				int id = rs.getInt("id");
+				result.add(getReminder(id));
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+
+	//TODO endlosschleife....
+	private ObservableList<Appointment> getAppointments(int concernId) {
+		ObservableList<Appointment>  result = FXCollections.observableArrayList();
+		String sql = "SELECT id FROM appointment WHERE concern = " + concernId;
+		try (Connection conn = this.connect();
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(sql))
+		{
+			while(rs.next()) {
+				int id = rs.getInt("id");
+				//result.add(getAppointment(id));
+			}
+			
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+
+	//TODO Klärungsbedarf Forms, Data, Dokuments.....
+	private ObservableList<Form> getForms(int concernId) {
+		ObservableList<Form>  result = FXCollections.observableArrayList();
+		String sql = "SELECT * FROM forms WHERE concern = " + concernId;
+		try (Connection conn = this.connect();
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(sql))
+		{
+			while(rs.next()) {
+				int id = rs.getInt("id");
+			}
+			
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	public Appointment getAppointment(int id) {
+		Appointment result = new Appointment(null, null, 0, 0, null, null, false);
+		String sql = "SELECT * FROM appointment WHERE id = " + id;
+		try 	(Connection conn = this.connect();
+				Statement stmt = conn.createStatement();
+				ResultSet rs = stmt.executeQuery(sql))
+		{
+			rs.next();
+			
+			Concern concern = getConcern(rs.getInt("concern"));
+			Date date = rs.getDate("date");
+			long startTime = rs.getLong("startTime");
+			long endTime = rs.getLong("endTime");
+			String roomNmb = rs.getString("roomNmb");
+			Date reminderTime = rs.getDate("reminderDate");
+			Boolean reminderTimeisActive = false;
+			if (reminderTime!=null) {
+				reminderTimeisActive = true;
+			}
+			result = new Appointment(concern, date, startTime, endTime, roomNmb, reminderTime, reminderTimeisActive);
+			result.setId(id);
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+			return result;
+	}
+
+	public Reminder getReminder(int id) {
+		Reminder result = new Reminder(null, null);
+		String sql = "SELECT * FROM reminder WHERE id = 0 " + id;
+		try 	(Connection conn = this.connect();
+				Statement stmt = conn.createStatement();
+				ResultSet rs = stmt.executeQuery(sql))
+		{
+			rs.next();
 		
-		return new Concern(null, null, null, null, null, null, null);
+			String message = rs.getString("message");
+			Date date = rs.getDate("date");
+			Reminder reminder = new Reminder(message, date);
+			reminder.setId(id);
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return result;
 	}
 	
 	public Topic getTopic(int topicId) {
@@ -380,7 +501,7 @@ public class Model {
 				ResultSet rs = stmt.executeQuery(sql)){
 			rs.next();
 			
-			//TODO getForms(concernId)
+			//TODO Klärungsbedarf getForms(topicId)
 			String title = rs.getString("title");
 			ArrayList<Object> forms;
 			
@@ -400,7 +521,7 @@ public class Model {
 	
 	public ObservableList<PO> getPOs() 
 	{
-		ObservableList<PO> po = FXCollections.observableArrayList();
+		ObservableList<PO> result = FXCollections.observableArrayList();
 		String sql = "SELECT * FROM po";
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement();
@@ -408,18 +529,59 @@ public class Model {
 		{
 			while(rs.next())
 			{
+				int id = rs.getInt("id");
 				String name = rs.getString("name");
-				po.add(new PO (name));
+				ObservableList<Subject> optional = getSubjects(id, true);
+				ObservableList<Subject> mandatory = getSubjects(id, false);
+				PO po = new PO(name);
+				po.setId(id);
+				result.add(po);
 			}
 		}
 		catch(Exception e)
 		{
 			System.out.println(e.getMessage());
 		}
-		return po;
+		return result;
 		
 	}
 	
+	private ObservableList<Subject> getSubjects(int poId, boolean optional) {
+		ObservableList<Subject> result = FXCollections.observableArrayList();
+		String sql = "SELECT subject FROM po_subject WHERE po = " + poId + " AND optional = " + optional;
+		try (Connection conn = this.connect();
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(sql))
+		{
+			while(rs.next()) {
+				result.add(getSubject(rs.getInt("subject")));
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+		
+		private Subject getSubject(int id) {
+			Subject result = new Subject(null, 0);
+			String sql = "SELECT * FROM subject WHERE id = " + id;
+			try (Connection conn = this.connect();
+					Statement stmt = conn.createStatement();
+					ResultSet rs = stmt.executeQuery(sql))
+				{
+					rs.next();
+					String title = rs.getString("title");
+					int ects = rs.getInt("ects");
+					
+					result = new Subject(title, ects);
+					result.setId(id);
+				}catch (Exception e) {
+					e.printStackTrace();
+				}
+			return result;
+		}
+
+
 	public ObservableList<Topic> getTopics() 
 	{
 		ObservableList<Topic> topic = FXCollections.observableArrayList();
@@ -454,9 +616,7 @@ public class Model {
 			while(rs.next())
 			{
 				int id = rs.getInt("id");
-				String title = rs.getString("titel");
-				int ects = rs.getInt("ects");
-				subject.add(new Subject (id, title, ects));
+				subject.add(getSubject(id));
 			}
 		}
 		catch(Exception e)
@@ -466,11 +626,11 @@ public class Model {
 		return subject;
 	}
 	
+	//TODO Klärungsbedarf... unso...
 	public ObservableList<Form> getForms() 
 	{
 		ObservableList<Form> form = FXCollections.observableArrayList();
-		//TODO path
-		String PATH = "C:\\Users\\Mephisto\\eclipse-workspace\\Teamproject\\src\\ExportedData"; 
+//		String PATH = "C:\\Users\\Mephisto\\eclipse-workspace\\Teamproject\\src\\ExportedData"; 
 		String sql = "SELECT * FROM form";
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement();
@@ -479,23 +639,23 @@ public class Model {
 			while(rs.next())
 			{
 				String name = rs.getString("name");
-				//TODO blob richtig?
-				Blob ph = rs.getBlob("file");
-				InputStream in = ph.getBinaryStream();
-				ByteArrayOutputStream out = new ByteArrayOutputStream();
-				//TODO dafuq file output Stream? Überarbeiten! 
-				OutputStream outputStream = new FileOutputStream(PATH+name+".pdf");
-				int length = (int) ph.length();
-				int bufferSize = 1024;
-				byte[] buffer = new byte[bufferSize];
-				while ((length = in.read(buffer)) != -1)
-				{
-					System.out.println("writing " + length + " bytes");
-					out.write(buffer, 0, length);
-				}
-				out.writeTo(outputStream);
-				File file = new File(PATH+name+".pdf");
-				form.add(new Form(name, file));
+				//TODO blobs
+//				Blob ph = rs.getBlob("file");
+//				InputStream in = ph.getBinaryStream();
+//				ByteArrayOutputStream out = new ByteArrayOutputStream();
+//				//TODO dafuq file output Stream? Überarbeiten! 
+//				OutputStream outputStream = new FileOutputStream(PATH+name+".pdf");
+//				int length = (int) ph.length();
+//				int bufferSize = 1024;
+//				byte[] buffer = new byte[bufferSize];
+//				while ((length = in.read(buffer)) != -1)
+//				{
+//					System.out.println("writing " + length + " bytes");
+//					out.write(buffer, 0, length);
+//				}
+//				out.writeTo(outputStream);
+//				File file = new File(PATH+name+".pdf");
+//				form.add(new Form(name, file));
 			}
 		}
 		catch(Exception e)
@@ -507,28 +667,21 @@ public class Model {
 	
 	public ObservableList<Concern> getConcerns(Student student) 
 	{
+		return getConcerns(student.getMtrNr());
+	}
+	
+	private ObservableList<Concern> getConcerns(int mtrNr) {
 		ObservableList<Concern> concerns = FXCollections.observableArrayList();
 
-		String sql = "SELECT c.title, cd.data, c.topic, ca.appointment, cr.reminders, cs.student, c.notes "
-				+ "FROM concern c, concer_student cs, concern_appointment ca, concern_dokument cd, concern_reminderMail cr "
-				+ "WHERE c.id = cs.concern AND cs.student = " + student.getMtrNr()+" AND c.id = ca.concern AND c.id = cd.concern AND c.id = cr.concern";		
+		String sql = "SELECT concern FROM concern_student WHERE student = " + mtrNr;
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql))
 		{
 			while(rs.next())
 			{
-				String title = rs.getString("c.title");
-				//form.setName(rs.getString("dokument"));
-				//TODO data füllen
-				ObservableList<Form> data = FXCollections.observableArrayList();
-				Topic topic = getTopic(rs.getInt("topic"));
-				//TODO fill Lists
-				ObservableList<Appointment> appointments = FXCollections.observableArrayList();
-				ObservableList<Reminder> reminders = FXCollections.observableArrayList();
-				ObservableList<Student> students = FXCollections.observableArrayList();
-				String notes = rs.getString("notes");
-				concerns.add(new Concern(title, data, topic, appointments, reminders, students, notes));
+				int id = rs.getInt("concern");
+				concerns.add(getConcern(id));
 			}
 		}
 		catch(Exception e)
@@ -540,20 +693,23 @@ public class Model {
 	
 	public boolean mailInDb(EMail email) 
 	{
-		EMail em = email;
-		int ID = em.getId();
-		String sql = "SELECT FROM eMail WHERE id = " + ID;
-		try (Connection conn = this.connect();
-			Statement stmt = conn.createStatement())
-			{
-				stmt.executeQuery(sql);
-			}
-			catch(Exception e)
-			{
-				System.out.println(e.getMessage());
-				return false;
-			}
-		return true;
+		//TODO man hat alles außer die ID.... Neu Machen!
+//		EMail em = email;
+//		int ID = em.getId();
+//		String sql = "SELECT FROM eMail WHERE id = " + ID;
+//		try (Connection conn = this.connect();
+//					Statement stmt = conn.createStatement();
+//					ResultSet rs = stmt.executeQuery(sql))
+//			{
+//				if (rs.next()) {
+//					return true;
+//				}
+//			}
+//			catch(Exception e)
+//			{
+//				e.printStackTrace();
+//			}
+		return false;
 	}
 	
 	public void deleteStudent(Student s) 
@@ -574,7 +730,7 @@ public class Model {
 
 	public boolean saveNewSubject(String title, int ects) 
 	{
-		String sql = "INSERT INTO subject(titel, ects) VALUES(" + title +"," + ects +")";
+		String sql = "INSERT INTO subject(title, ects) VALUES(" + title +"," + ects +")";
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement())
 		{
@@ -591,7 +747,7 @@ public class Model {
 
 	public boolean saveEditedSubject(String title, int ects, int id) 
 	{
-		String sql = "UPDATE subject SET titel = "+title+", ects = "+ects;
+		String sql = "UPDATE subject SET titel = "+title+", ects = "+ects + "WHERE id = " + id;
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement())
 		{
@@ -606,6 +762,7 @@ public class Model {
 	}
 
 
+	//TODO Klärung FORMS...
 	public void saveNewTopic(String title, ObservableList<Form> selectedForms) 
 	{
 		//TODO NOOOPE, linked Forms in anderer Tabelle gespeichert....
@@ -627,6 +784,7 @@ public class Model {
 		
 	}
 
+	//TODO KLÄRUNG FORMS
 	public void saveEditedTopic(String text, ObservableList<Form> selectedForms, Topic topic) 
 	{
 		//TODO
@@ -635,8 +793,46 @@ public class Model {
 	public void saveEditedPO(String newPOName, ObservableList<Subject> selectedMandatorySubjects,
 			ObservableList<Subject> selectedOptionalSubjects, PO po) 
 	{
-		//TODO
+		String sql1 = "UPDATE po SET name = "+ newPOName +" WHERE id = " + po.getId();
+		String sql2 = "DELETE FROM po_subject WHERE po = " + po.getId();
+		try (Connection conn = this.connect();
+			Statement stmt = conn.createStatement())
+		{
+			stmt.executeQuery(sql1);
+			stmt.executeQuery(sql2);
+			for (Subject optional: selectedOptionalSubjects ) {
+				int id = optional.getId();
+				addSubjectToPo(id, po.getId(), true);
+			}
+			for (Subject mandatory: selectedMandatorySubjects ) {
+				int id = mandatory.getId();
+				addSubjectToPo(id, po.getId(), false);
+			}
+		}
+		catch (Exception e)
+		{
+			System.out.println(e.getMessage());
+		}
 	}
+	
+		private void addSubjectToPo(int subjectId, int poId, boolean optional) {
+			String sql = "INSERT INTO po_subject (subject, po, optional) VALUES (?, ?, ?)";
+			try (Connection conn = this.connect();
+				PreparedStatement pstmt = conn.prepareStatement(sql))
+			{
+				pstmt.setInt(1, subjectId);
+				pstmt.setInt(2, poId);
+				if(optional) {
+					pstmt.setString(3, "x");
+				}else {
+					pstmt.setString(3, null);
+				}
+				pstmt.executeUpdate();
+			}catch (Exception e)
+			{
+				System.out.println(e.getMessage());
+			}
+		}
 	
 
 	public void deleteConcern(Concern c) 
@@ -653,6 +849,7 @@ public class Model {
 		}
 	}
 
+	//TODO KLÄRUNGSBEDARF
 	public void saveNewForm(Form form) 
 	{
 		//TODO ... öhm mal sehen was fürn mist hier rauskommt...
@@ -678,7 +875,7 @@ public class Model {
 	public void deleteForm(Form f) 
 	{
 		//TODO evt file löschen falls iwo gespeichert worden is?? nach überarbeitung saveNewForm
-		String sql = "DELETE * FROM form WHERE name = "+f.getName();
+		String sql = "DELETE * FROM form WHERE name = "+f.getName(); //TODO 
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement())
 		{
@@ -698,7 +895,7 @@ public class Model {
 		{
 			pstmt.setString(1, email.getSubject());
 			pstmt.setString(2, email.getContent());
-			//TODO  verbindung Student
+			pstmt.setInt(3, email.getStudent().getMtrNr());
 			pstmt.setBoolean(4, email.isReceived());
 			pstmt.executeUpdate();
 		} 
@@ -710,26 +907,27 @@ public class Model {
 
 
 	public void saveEditedStudent(Student student) {
-		//TODO evt andere sachen die auch geuodatet werden können dadurch...
+		//TODO student_emailAddress und concern_student werden auch geändert
 		String name = student.getName();
 		String firstname = student.getFirstName();
-		String eMailAddresses = student.geteMailAddresses().toString();
 		int semester = student.getSemester();
 		String notes = student.getNotes();
 		int ects = student.getEcts();
 		Image img = student.getImage();
 		//TODO ...???Blob = null unerwünscht
 		Blob blob = null;
-		BufferedImage bi = SwingFXUtils.fromFXImage(img, null);
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		try {
-			ImageIO.write(bi, "png", out);
-			byte[] res = out.toByteArray();
-			blob = new SerialBlob(res);
-		} catch (IOException | SQLException e) {
-			e.printStackTrace();
-		}
-		String sql = "UPDATE Student SET name = "+name+", firstname = "+firstname+", eMailAddresses = "+eMailAddresses+", semester = "+semester+", notes = "+notes+", ects = "+ects+", img = "+blob;
+//		BufferedImage bi = SwingFXUtils.fromFXImage(img, null);
+//		ByteArrayOutputStream out = new ByteArrayOutputStream();
+//		try {
+//			ImageIO.write(bi, "png", out);
+//			byte[] res = out.toByteArray();
+//			blob = new SerialBlob(res);
+//		} catch (IOException | SQLException e) {
+//			e.printStackTrace();
+//		}
+		String sql = "UPDATE Student SET name = "+name+", firstname = "+firstname+", semester = "+semester+
+				", notes = "+notes+", ects = "+ects+", img = "+blob + 
+				"WHERE matrNr = " + student.getMtrNr();
 		try(Connection conn = this.connect();
 			Statement stmt = conn.createStatement())
 		{
@@ -764,6 +962,7 @@ public class Model {
 	}
 	
 	public void saveEditedConcern(Concern concern) {
+		//TODO Lots to Update with one Concern...
 		Concern con = concern;
 		String title = con.getTitle();
 		ObservableList<Form> data = FXCollections.observableArrayList(con.getData());
@@ -787,7 +986,7 @@ public class Model {
 
 
 	public void saveNewConcern(Concern concern) {
-		//TODO die observable Lists schon wieder vergessen....
+		//TODO die observable Lists schon wieder vergessen.... Lots to insert with new Concern
 //		String sql = "INSERT INTO Concern (title, topic, notes) VALUES (?,?,?)";
 //		String title = con.getTitle();
 //		Topic topic = con.getTopic();

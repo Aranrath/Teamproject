@@ -9,13 +9,13 @@ public class Appointment {
 	private Date date;
 	private long startTime;
 	private long endTime;
-	private int roomNmb;
+	private String roomNmb;
 	private Date reminderTime;
+	//TODO isActive -> Abfrage ob reminderTime == null??
 	private boolean reminderTimeisActive;
 
-	public Appointment(int id, Concern concern, Date date, long startTime, long endTime, int roomNmb, Date reminderTime,
+	public Appointment(Concern concern, Date date, long startTime, long endTime, String roomNmb, Date reminderTime,
 			boolean reminderTimeisActive) {
-		this.id = id;
 		this.concern = concern;
 		this.date = date;
 		this.startTime = startTime;
@@ -46,7 +46,7 @@ public class Appointment {
 		return endTime;
 	}
 
-	public int getRoomNmb() {
+	public String getRoomNmb() {
 		return roomNmb;
 	}
 
@@ -78,7 +78,7 @@ public class Appointment {
 		this.endTime = endTime;
 	}
 
-	public void setRoomNmb(int roomNmb) {
+	public void setRoomNmb(String roomNmb) {
 		this.roomNmb = roomNmb;
 	}
 

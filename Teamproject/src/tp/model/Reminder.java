@@ -8,9 +8,8 @@ public class Reminder {
 	private String message;
 	private Date date;
 	
-	public Reminder(int id, String message, Date date)
+	public Reminder(String message, Date date)
 	{
-		this.id = id;
 		this.message = message;
 		this.date = date;
 	}

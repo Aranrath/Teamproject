@@ -5,16 +5,13 @@ import java.sql.Date;
 public class EMail {
 
 	private int id;
-	// TODO Attribute date to SQL
 	private Date date;
 	private String subject;
 	private String content;
 	private Student student;
-	// TODO new Attribute, to be integratet in SQL
 	private boolean received; // true if e-mail was received, false if e-mail was send
 
 	public EMail(String content, String subject, Student student, Date date, boolean received) {
-		// TODO generate ID
 		this.content = content;
 		this.subject = subject;
 		this.student = student;

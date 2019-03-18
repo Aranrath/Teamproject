@@ -6,9 +6,8 @@ public class Subject
 	private int ects;
 	private int id;
 	
-	public Subject(int id, String title, int ects)
+	public Subject(String title, int ects)
 	{
-		this.id = id;
 		this.title = title;
 		this.ects = ects;
 	}

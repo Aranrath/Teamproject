@@ -47,13 +47,14 @@ public class UpdateTimer {
 			Folder inbox = store.getFolder("INBOX");
 			// Open the folder
 			inbox.open(Folder.READ_ONLY);
-
+			
 			// Get all messages
 			for (int i = inbox.getMessageCount(); i >= 0; i--) {
 				// TODO filter
 				Message msg = inbox.getMessage(i + 1);
 				// Filter for new E-Mails (after the date of the last Update)
-				Date mailSend = (Date) msg.getSentDate();
+				//TODO NOOPE EXCEPTION
+				Date mailSend = new Date(msg.getSentDate().getTime());
 				// if mail is not processed yet, add E-Mail to database
 				if (mailSend.compareTo(lastUpdate) >= 0)
 				{
