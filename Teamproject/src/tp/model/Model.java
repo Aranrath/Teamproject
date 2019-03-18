@@ -400,8 +400,6 @@ public class Model {
 		return result;
 	}
 
-
-	//TODO endlosschleife....
 	private ObservableList<Appointment> getAppointments(int concernId) {
 		ObservableList<Appointment>  result = FXCollections.observableArrayList();
 		String sql = "SELECT id FROM appointment WHERE concern = " + concernId;
@@ -411,7 +409,7 @@ public class Model {
 		{
 			while(rs.next()) {
 				int id = rs.getInt("id");
-				//result.add(getAppointment(id));
+				result.add(getAppointment(id));
 			}
 			
 		}catch(Exception e) {
