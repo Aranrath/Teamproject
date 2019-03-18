@@ -160,8 +160,8 @@ public class Presenter {
 		return model.getKwOfDate(date);
 	}
 
-	public ObservableList<Appointment> getWeeksAppointments(int shownKw) {
-		return model.getWeeksAppointments(shownKw);
+	public ObservableList<Appointment> getWeeksAppointments(Date date) {
+		return model.getWeeksAppointments(date);
 	}
 
 	public Date getStartOfNextWeek(Date date) {

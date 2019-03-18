@@ -116,10 +116,10 @@ public class Model {
 	}
 	
 	//TODO Jahr mit übergeben?
-	public ObservableList<Appointment> getWeeksAppointments(int shownKw) {
+	public ObservableList<Appointment> getWeeksAppointments(Date date) {
 		Calendar cal = Calendar.getInstance();
 		cal.clear();
-		cal.set(Calendar.DAY_OF_YEAR, shownKw);
+		cal.set(Calendar.DAY_OF_YEAR, date);
 		cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
 		Date weekStart = new Date(cal.getTime().getTime());
 		cal.set(Calendar.DAY_OF_WEEK, Calendar.FRIDAY);
@@ -583,7 +583,7 @@ public class Model {
 			{
 				String title = rs.getString("titel");
 				//TODO get linkedForms
-				ArrayList<Object> linkedForms = new ArrayList<Object>();
+				ArrayList<Form> linkedForms = new ArrayList<Form>();
 				topic.add(new Topic (title, linkedForms));
 			}
 		}

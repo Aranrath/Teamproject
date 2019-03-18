@@ -1,7 +1,5 @@
 package tp.appointment;
 
-
-
 import java.sql.Date;
 
 import javafx.collections.ObservableList;
@@ -19,12 +17,10 @@ import tp.model.Appointment;
 public class WeekScheduleView extends GridPane
 {
 	Presenter presenter;
-	
 
 	int shownKw;
 	Date[] shownWorkWeek;
 	ObservableList<Appointment> weeksAppointments;
-
 	
 	Label kwLabel;
 	Button leftButton;
@@ -41,8 +37,6 @@ public class WeekScheduleView extends GridPane
 		//fillView with today's date
 		fillView(new Date(new java.util.Date().getTime()));
 	}
-
-
 
 	private void buildView()
 	{
@@ -86,7 +80,7 @@ public class WeekScheduleView extends GridPane
 	{
 		shownKw = presenter.getKwOfDate(date);
 		shownWorkWeek = presenter.getWorkWeekOfDate(date);
-		weeksAppointments = presenter.getWeeksAppointments(shownKw);
+		weeksAppointments = presenter.getWeeksAppointments(date);
 
 		
 	}

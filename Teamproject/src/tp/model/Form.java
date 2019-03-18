@@ -11,7 +11,6 @@ public class Form {
 	{
 		this.file = file;
 		this.name = name;
-		
 	}
 
 	public String getName() {
