@@ -5,7 +5,9 @@ import java.util.Calendar;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -14,6 +16,8 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import tp.Presenter;
@@ -36,15 +40,18 @@ public class ConcernView extends GridPane {
 	private Label titleLabel;
 	private Label concernTitleLabel;
 	private TextField titleTextField;
-	private Button editTitleButton;
-
+	private Label errorLabel;
+	private Button saveButton;
+	private HBox topicHBox;
 	private Label topicLabel;
 	private ComboBox<Topic> topicComboBox;
 	private Button newTopicButton;
 
 	private Label studentLabel;
+	private HBox searchHBox;
 	private TextField searchTextField;
 	private Button searchButton;
+	private HBox studentHBox;
 	private Button addStudentButton;
 	private Button removeStudentButton;
 	private TableView<Student> studentTableView;
@@ -53,27 +60,28 @@ public class ConcernView extends GridPane {
 	private TextArea notesTextArea;
 
 	private Label reminderLabel;
+	private HBox reminderHBox;
 	private Button newReminderButton;
 	private Button deleteReminderButton;
 	private TableView<Reminder> reminderTableView;
 
 	private Label fileLabel;
+	private HBox fileHBox;
 	private Button addFileButton;
 	private Button removeFileButton;
 	private TableView<Form> fileTableView;
 
 	private Label appointmentLabel;
+	private HBox appointmentHBox;
 	private Button newAppointmentButton;
 	private Button deleteAppointmentButton;
 	private TableView<Appointment> appointmentTableView;
 
-	// neu
+	// neue ConcernView
 	public ConcernView(Presenter presenter) {
 		this.presenter = presenter;
-		concern = new Concern();
-		presenter.saveNewConcern(concern);
 		buildView();
-		titleTextField.setText(concern.getTitle());
+		titleTextField.setText(new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime()));
 	}
 
 	public ConcernView(Presenter presenter, Concern concern) {
@@ -90,20 +98,33 @@ public class ConcernView extends GridPane {
 
 		titleLabel = new Label("Titel:");
 		titleTextField = new TextField("");
-		concernTitleLabel = new Label("");
-		concernTitleLabel.setVisible(false);
-		editTitleButton = new Button("Speichern");
-
+		errorLabel = new Label ("eror :D");
+		if(concern == null)
+		{
+			saveButton = new Button("Concern erstellen");
+		}
+		else
+		{
+			saveButton = new Button("Concern speichern");
+		}
 		topicLabel = new Label("Thema:");
 		topicComboBox = new ComboBox<Topic>(presenter.getTopics());
-		newTopicButton = new Button("Neues Thema");
-
+		newTopicButton = new Button("+");
+		newTopicButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
+		topicHBox = new HBox(topicComboBox, newTopicButton);
+		topicComboBox.setMaxWidth(Double.MAX_VALUE);
+		HBox.setHgrow(topicComboBox, Priority.ALWAYS);
+		
 		studentLabel = new Label("Studenten:");
 		searchTextField = new TextField("");
 		searchTextField.setPromptText("Durchsuche Studenten");
+		HBox.setHgrow(searchTextField, Priority.ALWAYS);
 		searchButton = new Button("Suchen");
+		searchButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
+		searchHBox = new HBox(searchTextField, searchButton);
 		addStudentButton = new Button("Hinzufügen");
 		removeStudentButton = new Button("Entfernen");
+		studentHBox = new HBox(addStudentButton, removeStudentButton);
 		studentTableView = new TableView<Student>();
 
 		notesLabel = new Label("Notizen");
@@ -113,33 +134,47 @@ public class ConcernView extends GridPane {
 		newReminderButton = new Button("Neu");
 		deleteReminderButton = new Button("Löschen");
 		reminderTableView = new TableView<Reminder>();
+		reminderHBox = new HBox(newReminderButton, deleteReminderButton);
 
 		fileLabel = new Label("Dateien");
 		addFileButton = new Button("Hinzufügen");
 		removeFileButton = new Button("Entfernen");
+		fileHBox = new HBox(addFileButton, removeFileButton);
 		fileTableView = new TableView<Form>();
 
 		appointmentLabel = new Label("Termine");
 		newAppointmentButton = new Button("Neu");
 		deleteAppointmentButton = new Button("Löschen");
+		appointmentHBox = new HBox(newAppointmentButton,deleteAppointmentButton);
 		appointmentTableView = new TableView<Appointment>();
 
 		// ==================================================
-		editTitleButton.setOnAction((event) -> {
+		saveButton.setOnAction((event) -> {
 			
 			//Bearbeitungsmodus zu Anzeigemodus (titleTextField visible und Button "save", Nach Start
 			if(titleTextField.isVisible())
 			{
 				String newTitle = titleTextField.getText();
+				
 				if(newTitle.equals(""))
 				{
 					newTitle = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
 				}
-				//Geänderten Concern speichern
-				concern.setTitle(newTitle);
-				presenter.saveEditedConcern(concern);
+				if(concern==null)
+				{
+					//Concern mit angegebenen Titel erstellen
+					concern = new Concern(newTitle);
+					presenter.saveNewConcern(concern);
+				}
+				else
+				{
+					//Geänderten Concern speichern
+					concern.setTitle(newTitle);
+					presenter.saveEditedConcern(concern);
+				}
+				
 				//Buttonbeschriftung zu "Bearbeiten"
-				editTitleButton.setText("Ändern");
+				saveButton.setText("Titel bearbeiten");
 				//Label Beschriftung aktualisieren
 				concernTitleLabel.setText(newTitle);
 				//Visibilities ändern
@@ -151,7 +186,7 @@ public class ConcernView extends GridPane {
 			{
 				String oldTitle = concernTitleLabel.getText();
 				//Buttonbeschriftung zu "Bearbeiten"
-				editTitleButton.setText("Speichern");
+				saveButton.setText("Speichern");
 				//TextField Beschriftung aktualisieren
 				titleTextField.setText(oldTitle);
 				//Visibilities ändern
@@ -268,41 +303,41 @@ public class ConcernView extends GridPane {
 
 		// ==================================================
 
-//		 TODO use, then remove;
-//		GridPane.setHalignment(titleTextField, HPos.RIGHT);
-
 		add(titleLabel, 0, 0);
 		add(titleTextField, 1, 0, 3, 1);
-		add(concernTitleLabel, 1, 0, 3, 1);
-		add(editTitleButton, 4, 0);
-
+		add(errorLabel,4,1,2,1);
+		GridPane.setHalignment(errorLabel, HPos.RIGHT);
+		add(saveButton, 4, 0,2,1);
+		GridPane.setHalignment(saveButton, HPos.RIGHT);
 		add(topicLabel, 0, 1);
-		add(topicComboBox, 1, 1, 3, 1);
-		add(newTopicButton, 4, 1);
+		add(topicHBox, 1, 1, 3, 1);
 
 		add(studentLabel, 0, 2);
-		add(searchTextField, 1, 2, 2, 1);
-		add(searchButton, 3, 2);
-		add(addStudentButton, 4, 2);
-		add(removeStudentButton, 5, 2);
+		add(searchHBox,1,2,3,1);
+		add(studentHBox,4,2,2,1);
+		studentHBox.setSpacing(5);
+		studentHBox.setAlignment(Pos.CENTER_RIGHT);
 		add(studentTableView, 0, 3, 6, 1);
 
 		add(notesLabel, 6, 0);
 		add(notesTextArea, 6, 1, 3, 3);
 
 		add(reminderLabel, 0, 4);
-		add(newReminderButton, 1, 4);
-		add(deleteReminderButton, 2, 4);
+		add(reminderHBox, 1, 4,2,1);
 		add(reminderTableView, 0, 5, 3, 1);
+		reminderHBox.setSpacing(5);
+		reminderHBox.setAlignment(Pos.CENTER_RIGHT);
 
 		add(fileLabel, 3, 4);
-		add(addFileButton, 4, 4);
-		add(removeFileButton, 5, 4);
+		add(fileHBox, 4, 4,2,1);
+		fileHBox.setSpacing(5);
+		fileHBox.setAlignment(Pos.CENTER_RIGHT);
 		add(fileTableView, 3, 5, 3, 1);
 
 		add(appointmentLabel, 6, 4);
-		add(newAppointmentButton, 7, 4);
-		add(deleteAppointmentButton, 8, 4);
+		add(appointmentHBox, 7, 4,2,1);
+		appointmentHBox.setSpacing(5);
+		appointmentHBox.setAlignment(Pos.CENTER_RIGHT);
 		add(appointmentTableView, 6, 5, 3, 1);
 
 	}

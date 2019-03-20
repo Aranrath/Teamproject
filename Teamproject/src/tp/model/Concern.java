@@ -27,10 +27,9 @@ public class Concern {
 		this.students = students;
 	}
 	
-	public Concern()
+	public Concern(String title)
 	{
-		this.title = "Unbenannt_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
-		
+		this.title = title;
 	}
 
 	public Concern(ObservableList<Student> students) {
