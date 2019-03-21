@@ -1207,5 +1207,11 @@ public class Model {
 	}
 
 
+	public ObservableList<Student> getStudents() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
 	
 }

@@ -301,6 +301,10 @@ public class Presenter {
 		return model.getConcerns();
 	}
 
+	public ObservableList<Student> getStudents() {
+		return model.getStudents();
+	}
+
 
 
 

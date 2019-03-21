@@ -1,5 +1,6 @@
 package tp.concern;
 
+import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -12,9 +13,11 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -30,6 +33,7 @@ import tp.model.Reminder;
 import tp.model.Student;
 import tp.model.Topic;
 import tp.options.EditTopicView;
+import tp.reminders.NewReminderView;
 
 public class ConcernView extends GridPane {
 
@@ -104,11 +108,11 @@ public class ConcernView extends GridPane {
 		fillView();
 	}
 
+	@SuppressWarnings("unchecked")
 	private void buildView() {
 		setPadding(new Insets(20));
 		setHgap(20);
 		setVgap(20);
-		setMinWidth(getPrefWidth());
 
 		titleLabel = new Label("Titel:");
 		titleTextField = new TextField("");
@@ -159,6 +163,24 @@ public class ConcernView extends GridPane {
 		appointmentHBox = new HBox(newAppointmentButton, deleteAppointmentButton);
 		appointmentTableView = new TableView<Appointment>();
 
+		// ==================================================
+		
+		TableColumn<Reminder, Date> dateCol = new TableColumn<Reminder, Date>("Datum");
+		dateCol.setCellValueFactory(new PropertyValueFactory<>("date"));
+		
+		TableColumn<Reminder, String> messageCol = new TableColumn<Reminder, String>("Nachricht");
+		messageCol.setCellValueFactory(new PropertyValueFactory<>("message"));
+		
+		dateCol.setResizable(false);
+		messageCol.setResizable(false);
+		
+		double width = dateCol.widthProperty().get();
+		messageCol.prefWidthProperty().bind(reminderTableView.widthProperty().subtract(width));
+		
+
+        reminderTableView.getColumns().addAll(dateCol, messageCol);
+		
+		
 		// ==================================================
 
 		add(titleLabel, 0, 0);
@@ -304,15 +326,25 @@ public class ConcernView extends GridPane {
 		});
 
 		addStudentButton.setOnAction((event) -> {
-			// TODO
+			Stage stage = new Stage();
+			stage.setAlwaysOnTop(true);
+			stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle("Studenten hinzufügen");
+            stage.setScene(new Scene(new AddStudentToConcernView(presenter, stage, this, studentTableView.getItems()), 450, 450));
+            stage.show();
 		});
 
 		removeStudentButton.setOnAction((event) -> {
-			// TODO
+			studentTableView.getItems().remove(studentTableView.getSelectionModel().getSelectedItem());
 		});
 
 		newReminderButton.setOnAction((event) -> {
-			// TODO
+			Stage stage = new Stage();
+			stage.setAlwaysOnTop(true);
+			stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle("Neue Erinnerung");
+            stage.setScene(new Scene(new NewReminderView(stage, reminderTableView.getItems()), 450, 450));
+            stage.show();
 		});
 
 		deleteReminderButton.setOnAction((event) -> {
@@ -365,6 +397,11 @@ public class ConcernView extends GridPane {
 		notesTextArea.setText(concern.getNotes());
 		appointmentTableView.setItems(concern.getAppointments());
 
+	}
+
+	public void addStudentsToConcern(ObservableList<Student> students) {
+		studentTableView.setItems(students);
+		
 	}
 
 }
