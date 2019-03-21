@@ -6,10 +6,10 @@ public class MyTab extends Tab{
 	
 	String tabId;
 	
-	public MyTab(String viewId)
+	public MyTab(String tabId)
 	{
 		super();
-		this.tabId = viewId;
+		this.tabId = tabId;
 	}
 
 	public String getTabId() {

@@ -231,9 +231,6 @@ public class Presenter {
 
 	}
 
-	public ObservableList<Concern> getConcerns(Student student) {
-		return model.getConcerns(student);
-	}
 
 	public Options getOptions() {
 		return model.getOptions();
@@ -248,8 +245,8 @@ public class Presenter {
 		model.saveEditedConcern(concern);
 	}
 
-	public void saveNewConcern(Concern concern) {
-		model.saveNewConcern(concern);
+	public int saveNewConcern(Concern concern) {
+		return model.saveNewConcern(concern);
 
 	}
 
@@ -298,6 +295,10 @@ public class Presenter {
 
 	public void closeThisTab(MyTab tab) {
 		mainView.closeThisTab(tab);
+	}
+
+	public ObservableList<Concern> getConcerns() {
+		return model.getConcerns();
 	}
 
 

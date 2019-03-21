@@ -330,7 +330,7 @@ public class Model {
 	
 	public Concern getConcern(int concernId) 
 	{
-		Concern result = new Concern(null, null, null, null, null, null, null);
+		Concern result = new Concern(null, null);
 		String sql = "SELECT * FROM concern WHERE id = " + concernId;
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement();
@@ -346,8 +346,8 @@ public class Model {
 			ObservableList<Student> students = getStudents(concernId);
 			String notes = rs.getString("notes");	
 			
-			result = new Concern (title, forms, topic, appointments, reminders, students, notes);
-			result.setId(concernId);
+			result = new Concern (concernId, title, forms, topic, appointments, reminders, students, notes);
+
 		}
 		catch(Exception e)
 		{
@@ -677,11 +677,6 @@ public class Model {
 			e.printStackTrace();
 		}
 		return result;
-	}
-	
-	public ObservableList<Concern> getConcerns(Student student) 
-	{
-		return getConcerns(student.getMtrNr());
 	}
 	
 	private ObservableList<Concern> getConcerns(int mtrNr) {
@@ -1042,7 +1037,7 @@ public class Model {
 			stmt.executeQuery(sql3);
 			stmt.executeQuery(sql4);
 			stmt.executeQuery(sql5);
-			addConcernForms(concern.getId(), concern.getData());
+			addConcernForms(concern.getId(), concern.getFiles());
 			addConcernStudents(concern.getId(), concern.getStudents());
 			addAppointments(concern.getAppointments());
 			addReminders(concern.getId(), concern.getReminders());
@@ -1135,7 +1130,10 @@ public class Model {
 	}
 
 
-	public void saveNewConcern(Concern concern) {
+	public int saveNewConcern(Concern concern) {
+		
+		//TODO return die zugewisene id des neuen concerns
+		
 		String sql = "INSERT INTO concern (title, topic, notes) values (?, ?, ?)";
 		try (Connection conn = this.connect();
 			PreparedStatement pstmt = conn.prepareStatement(sql))
@@ -1144,7 +1142,7 @@ public class Model {
 			pstmt.setInt(2, concern.getTopic().getId());
 			pstmt.setString(3, concern.getNotes());
 			pstmt.executeUpdate();
-			addConcernForms(concern.getId(), concern.getData());
+			addConcernForms(concern.getId(), concern.getFiles());
 			addConcernStudents(concern.getId(), concern.getStudents());
 			addAppointments(concern.getAppointments());
 			addReminders(concern.getId(), concern.getReminders());
@@ -1153,7 +1151,6 @@ public class Model {
 		{
 			e.printStackTrace();
 		}
-//		
 		
 	}
 
@@ -1199,6 +1196,14 @@ public class Model {
 			return null;
 		}
 		return result;
+	}
+
+
+	public ObservableList<Concern> getConcerns() {
+		// TODO Auto-generated method stub
+		return null;
+		
+		//return leere liste wenn keine vorhanden
 	}
 
 

@@ -15,6 +15,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -24,21 +25,21 @@ import tp.Presenter;
 import tp.model.Appointment;
 import tp.model.Concern;
 import tp.model.Form;
+import tp.model.MyTab;
 import tp.model.Reminder;
 import tp.model.Student;
 import tp.model.Topic;
 import tp.options.EditTopicView;
 
-
 public class ConcernView extends GridPane {
 
 	private Presenter presenter;
 	private Concern concern;
+	private MyTab tab;
 
 	// ==================================
 
 	private Label titleLabel;
-	private Label concernTitleLabel;
 	private TextField titleTextField;
 	private Label errorLabel;
 	private Button saveButton;
@@ -78,14 +79,26 @@ public class ConcernView extends GridPane {
 	private TableView<Appointment> appointmentTableView;
 
 	// neue ConcernView
-	public ConcernView(Presenter presenter) {
+	public ConcernView(Presenter presenter, MyTab tab) {
 		this.presenter = presenter;
+		this.tab = tab;
 		buildView();
 		titleTextField.setText(new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime()));
 	}
 
-	public ConcernView(Presenter presenter, Concern concern) {
+	public ConcernView(Presenter presenter, MyTab tab, ObservableList<Student> students) {
 		this.presenter = presenter;
+		this.tab = tab;
+		buildView();
+		titleTextField.setText(new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime()));
+
+		// Studenten einsetzen
+		studentTableView.setItems(students);
+	}
+
+	public ConcernView(Presenter presenter, MyTab tab, Concern concern) {
+		this.presenter = presenter;
+		this.tab = tab;
 		this.concern = concern;
 		buildView();
 		fillView();
@@ -95,17 +108,15 @@ public class ConcernView extends GridPane {
 		setPadding(new Insets(20));
 		setHgap(20);
 		setVgap(20);
+		setMinWidth(getPrefWidth());
 
 		titleLabel = new Label("Titel:");
 		titleTextField = new TextField("");
-		errorLabel = new Label ("eror :D");
-		if(concern == null)
-		{
-			saveButton = new Button("Concern erstellen");
-		}
-		else
-		{
-			saveButton = new Button("Concern speichern");
+		errorLabel = new Label("eror :D");
+		if (concern == null) {
+			saveButton = new Button("Anliegen erstellen");
+		} else {
+			saveButton = new Button("Änderungen speichern");
 		}
 		topicLabel = new Label("Thema:");
 		topicComboBox = new ComboBox<Topic>(presenter.getTopics());
@@ -114,7 +125,7 @@ public class ConcernView extends GridPane {
 		topicHBox = new HBox(topicComboBox, newTopicButton);
 		topicComboBox.setMaxWidth(Double.MAX_VALUE);
 		HBox.setHgrow(topicComboBox, Priority.ALWAYS);
-		
+
 		studentLabel = new Label("Studenten:");
 		searchTextField = new TextField("");
 		searchTextField.setPromptText("Durchsuche Studenten");
@@ -145,121 +156,151 @@ public class ConcernView extends GridPane {
 		appointmentLabel = new Label("Termine");
 		newAppointmentButton = new Button("Neu");
 		deleteAppointmentButton = new Button("Löschen");
-		appointmentHBox = new HBox(newAppointmentButton,deleteAppointmentButton);
+		appointmentHBox = new HBox(newAppointmentButton, deleteAppointmentButton);
 		appointmentTableView = new TableView<Appointment>();
 
 		// ==================================================
+
+		add(titleLabel, 0, 0);
+		add(titleTextField, 1, 0, 3, 1);
+		add(errorLabel, 4, 1, 2, 1);
+		GridPane.setHalignment(errorLabel, HPos.LEFT);
+		add(saveButton, 4, 0, 2, 1);
+		GridPane.setHalignment(saveButton, HPos.LEFT);
+		add(topicLabel, 0, 1);
+		add(topicHBox, 1, 1, 3, 1);
+
+		add(studentLabel, 0, 2);
+		add(searchHBox, 1, 2, 3, 1);
+		add(studentHBox, 4, 2, 2, 1);
+		studentHBox.setSpacing(5);
+		studentHBox.setAlignment(Pos.CENTER_RIGHT);
+		add(studentTableView, 0, 3, 6, 1);
+
+		add(notesLabel, 6, 0);
+		add(notesTextArea, 6, 1, 3, 3);
+
+		add(reminderLabel, 0, 4);
+		add(reminderHBox, 1, 4, 2, 1);
+		add(reminderTableView, 0, 5, 3, 1);
+		reminderHBox.setSpacing(5);
+		reminderHBox.setAlignment(Pos.CENTER_RIGHT);
+
+		add(fileLabel, 3, 4);
+		add(fileHBox, 4, 4, 2, 1);
+		fileHBox.setSpacing(5);
+		fileHBox.setAlignment(Pos.CENTER_RIGHT);
+		add(fileTableView, 3, 5, 3, 1);
+
+		add(appointmentLabel, 6, 4);
+		add(appointmentHBox, 7, 4, 2, 1);
+		appointmentHBox.setSpacing(5);
+		appointmentHBox.setAlignment(Pos.CENTER_RIGHT);
+		add(appointmentTableView, 6, 5, 3, 1);
+
+		// ==================================================
+
+		ColumnConstraints column = new ColumnConstraints();
+		column.setPercentWidth(100 / 9);
+		getColumnConstraints().add(column);
+		getColumnConstraints().add(column);
+		getColumnConstraints().add(column);
+		getColumnConstraints().add(column);
+		getColumnConstraints().add(column);
+		getColumnConstraints().add(column);
+		getColumnConstraints().add(column);
+		getColumnConstraints().add(column);
+		getColumnConstraints().add(column);
+
+		// ==================================================
 		saveButton.setOnAction((event) -> {
-			
-			//Bearbeitungsmodus zu Anzeigemodus (titleTextField visible und Button "save", Nach Start
-			if(titleTextField.isVisible())
-			{
-				String newTitle = titleTextField.getText();
-				
-				if(newTitle.equals(""))
-				{
-					newTitle = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
-				}
-				if(concern==null)
-				{
-					//Concern mit angegebenen Titel erstellen
-					concern = new Concern(newTitle);
-					presenter.saveNewConcern(concern);
-				}
-				else
-				{
-					//Geänderten Concern speichern
-					concern.setTitle(newTitle);
-					presenter.saveEditedConcern(concern);
-				}
-				
-				//Buttonbeschriftung zu "Bearbeiten"
-				saveButton.setText("Titel bearbeiten");
-				//Label Beschriftung aktualisieren
-				concernTitleLabel.setText(newTitle);
-				//Visibilities ändern
-				titleTextField.setVisible(false);
-				concernTitleLabel.setVisible(true);
+
+			String newTitle = titleTextField.getText();
+			Topic newTopic = topicComboBox.getSelectionModel().getSelectedItem();
+
+			if (newTitle.equals("") || newTopic == null) {
+				errorLabel.setText("Titel und Thema müssen gesetzt sein");
+				return;
+			} else if (concernTitleAlreadyExists(newTitle)) {
+				errorLabel.setText("Titel bereits vergeben");
+				return;
+			} else if (concern == null) {
+				// Concern mit angegebenen Titel erstellen
+				concern = new Concern(newTitle, newTopic);
+
+				// TODO Andere Attribute auslesen und setten
+
+				int newConcernId = presenter.saveNewConcern(concern);
+				saveButton.setText("Änderungen speichern");
+
+				// Tabbeschriftung anpassen
+				tab.setText(newTitle);
+				tab.setTabId("c" + newConcernId);
+			} else {
+				// Geänderten Concern speichern
+
+				concern.setTitle(newTitle);
+				// TODO Andere Attribute auslesen und setten
+
+				presenter.saveEditedConcern(concern);
+
+				// Tabbeschriftung anpassen
+				tab.setText(newTitle);
 			}
-			//Anzeigemodus zu Bearbeitungsmodus
-			else if(concernTitleLabel.isVisible())
-			{
-				String oldTitle = concernTitleLabel.getText();
-				//Buttonbeschriftung zu "Bearbeiten"
-				saveButton.setText("Speichern");
-				//TextField Beschriftung aktualisieren
-				titleTextField.setText(oldTitle);
-				//Visibilities ändern
-				titleTextField.setVisible(true);
-				concernTitleLabel.setVisible(false);
-			}
+
 		});
 
 		newTopicButton.setOnAction((event) -> {
 			Stage stage = new Stage();
 			stage.setAlwaysOnTop(true);
 			stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setTitle("Neues Thema");
-            stage.setScene(new Scene(new EditTopicView(stage, presenter), 450, 450));
-            stage.show();
+			stage.setTitle("Neues Thema");
+			stage.setScene(new Scene(new EditTopicView(stage, presenter), 450, 450));
+			stage.show();
 		});
 
 		searchButton.setOnAction((event) -> {
-			if(searchTextField.getText().equals(""))
-			{
-				
-			}
-			else
-			{
+			if (searchTextField.getText().equals("")) {
+
+			} else {
 				ObservableList<Student> students = studentTableView.getItems();
 				String searchTerms[] = searchTextField.getText().toLowerCase().split("");
-				ObservableList<Student> searchResult  = FXCollections.observableArrayList();
-				for(Student student : students)
-				{
-					
-					for(String mail : student.geteMailAddresses())
-					{
-						for(String term : searchTerms)
-						{
-							if(mail.toLowerCase().contains(term))
-							{
+				ObservableList<Student> searchResult = FXCollections.observableArrayList();
+				for (Student student : students) {
+
+					for (String mail : student.geteMailAddresses()) {
+						for (String term : searchTerms) {
+							if (mail.toLowerCase().contains(term)) {
 								searchResult.add(student);
 							}
 						}
-						
-						
+
 					}
-					
-					for(String term : searchTerms)
-					{
-						if(student.getFirstName().toLowerCase().contains(term))
-						{
+
+					for (String term : searchTerms) {
+						if (student.getFirstName().toLowerCase().contains(term)) {
 							searchResult.add(student);
 						}
 					}
-					
-					for(String term : searchTerms)
-					{
-						if(student.getName().toLowerCase().contains(term))
-						{
+
+					for (String term : searchTerms) {
+						if (student.getName().toLowerCase().contains(term)) {
 							searchResult.add(student);
 						}
 					}
-					
-					for(String term : searchTerms)
-					{
-						if(("" + student.getMtrNr()).contains(term))
-						{
+
+					for (String term : searchTerms) {
+						if (("" + student.getMtrNr()).contains(term)) {
 							searchResult.add(student);
 						}
 					}
-					
+
 				}
-				
-				//suchErgebnis anzeigen in TableView
+
+				// suchErgebnis anzeigen in TableView
 				studentTableView.setItems(searchResult);
 			}
-			
+
 		});
 
 		addStudentButton.setOnAction((event) -> {
@@ -269,7 +310,6 @@ public class ConcernView extends GridPane {
 		removeStudentButton.setOnAction((event) -> {
 			// TODO
 		});
-
 
 		newReminderButton.setOnAction((event) -> {
 			// TODO
@@ -298,48 +338,22 @@ public class ConcernView extends GridPane {
 		topicComboBox.setOnAction((event) -> {
 			// TODO
 		});
-		
-		//TODO Notes müssen beim schließen gespeichert werden!!
 
-		// ==================================================
+		// TODO Notes müssen beim schließen gespeichert werden!!
 
-		add(titleLabel, 0, 0);
-		add(titleTextField, 1, 0, 3, 1);
-		add(errorLabel,4,1,2,1);
-		GridPane.setHalignment(errorLabel, HPos.RIGHT);
-		add(saveButton, 4, 0,2,1);
-		GridPane.setHalignment(saveButton, HPos.RIGHT);
-		add(topicLabel, 0, 1);
-		add(topicHBox, 1, 1, 3, 1);
+	}
 
-		add(studentLabel, 0, 2);
-		add(searchHBox,1,2,3,1);
-		add(studentHBox,4,2,2,1);
-		studentHBox.setSpacing(5);
-		studentHBox.setAlignment(Pos.CENTER_RIGHT);
-		add(studentTableView, 0, 3, 6, 1);
+	private boolean concernTitleAlreadyExists(String newTitle) {
+		ObservableList<Concern> allConcerns = presenter.getConcerns();
 
-		add(notesLabel, 6, 0);
-		add(notesTextArea, 6, 1, 3, 3);
+		for (Concern c : allConcerns) {
+			if (c.getTitle().equals(newTitle)) {
+				return true;
+			}
 
-		add(reminderLabel, 0, 4);
-		add(reminderHBox, 1, 4,2,1);
-		add(reminderTableView, 0, 5, 3, 1);
-		reminderHBox.setSpacing(5);
-		reminderHBox.setAlignment(Pos.CENTER_RIGHT);
+		}
 
-		add(fileLabel, 3, 4);
-		add(fileHBox, 4, 4,2,1);
-		fileHBox.setSpacing(5);
-		fileHBox.setAlignment(Pos.CENTER_RIGHT);
-		add(fileTableView, 3, 5, 3, 1);
-
-		add(appointmentLabel, 6, 4);
-		add(appointmentHBox, 7, 4,2,1);
-		appointmentHBox.setSpacing(5);
-		appointmentHBox.setAlignment(Pos.CENTER_RIGHT);
-		add(appointmentTableView, 6, 5, 3, 1);
-
+		return false;
 	}
 
 	private void fillView() {
@@ -347,7 +361,7 @@ public class ConcernView extends GridPane {
 		topicComboBox.getSelectionModel().select(concern.getTopic());
 		studentTableView.setItems(concern.getStudents());
 		reminderTableView.setItems(concern.getReminders());
-		fileTableView.setItems(concern.getData());
+		fileTableView.setItems(concern.getFiles());
 		notesTextArea.setText(concern.getNotes());
 		appointmentTableView.setItems(concern.getAppointments());
 

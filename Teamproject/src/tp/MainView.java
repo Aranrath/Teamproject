@@ -364,7 +364,7 @@ public class MainView extends BorderPane {
 
 			newTab.setText(concern.getTitle());
 
-			newTab.setContent(new ConcernView(presenter, concern));
+			newTab.setContent(new ConcernView(presenter, newTab, concern));
 
 			tabPane.getTabs().addAll(newTab);
 		}
@@ -394,7 +394,7 @@ public class MainView extends BorderPane {
 
 		newTab.setText("Neues Anliegen");
 
-		newTab.setContent(new ConcernView(presenter));
+		newTab.setContent(new ConcernView(presenter, newTab));
 
 		tabPane.getTabs().addAll(newTab);
 
@@ -408,7 +408,7 @@ public class MainView extends BorderPane {
 
 		newTab.setText("Neues Anliegen");
 
-		newTab.setContent(new ConcernView(presenter, new Concern(students)));
+		newTab.setContent(new ConcernView(presenter, newTab, students));
 
 		tabPane.getTabs().addAll(newTab);
 

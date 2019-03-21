@@ -1,40 +1,36 @@
 package tp.model;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-
 import javafx.collections.ObservableList;
 
 public class Concern {
 
 	private int id;
 	private String title;
-	private ObservableList<Form> data;
+	private ObservableList<Form> files;
 	private Topic topic;
 	private ObservableList<Appointment> appointments;
 	private ObservableList<Reminder> reminders;
 	private ObservableList<Student> students;
 	private String notes;
 	
-
-	public Concern(String title, ObservableList<Form> data, Topic topic, ObservableList<Appointment> appointments, ObservableList<Reminder> reminders,
-			ObservableList<Student> students, String notes) {
-		this.title = title;
-		this.data = data;
-		this.topic = topic;
-		this.appointments = appointments;
-		this.reminders = reminders;
-		this.students = students;
-	}
 	
-	public Concern(String title)
+	public Concern(String title, Topic topic)
 	{
 		this.title = title;
+		this.topic = topic;
 	}
 
-	public Concern(ObservableList<Student> students) {
-		this.title = "Unbenannt_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
-		this.students = students;
+	public Concern(int id, String title, ObservableList<Form> files, Topic topic, ObservableList<Appointment> appointments,
+			ObservableList<Reminder> reminders, ObservableList<Student> students, String notes) 
+	{
+		this.id = id;
+		this.title= title;
+		this.files= files;
+		this.topic= topic;
+		this.appointments = appointments;
+		this.reminders= reminders;
+		this.students= students;
+		this.notes= notes;
 	}
 
 	public int getId() {
@@ -47,8 +43,8 @@ public class Concern {
 		return title;
 	}
 
-	public ObservableList<Form> getData() {
-		return data;
+	public ObservableList<Form> getFiles() {
+		return files;
 	}
 
 	public Topic getTopic() {
@@ -71,8 +67,8 @@ public class Concern {
 		this.title = title;
 	}
 
-	public void setData(ObservableList<Form> data) {
-		this.data = data;
+	public void setFiles(ObservableList<Form> files) {
+		this.files = files;
 	}
 
 	public void setTopic(Topic topic) {

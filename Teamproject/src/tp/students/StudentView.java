@@ -270,7 +270,7 @@ public class StudentView extends GridPane {
 		studentPO.getSelectionModel().select(student.getPo());
 		studentECTS.setText("" + student.getEcts());
 		studentSemester.setText("" + student.getSemester());
-		connectedConcernsListView = new ListView<Concern>(presenter.getConcerns(student));
+		connectedConcernsListView = new ListView<Concern>(student.getConcerns());
 		studentNotes.setText(student.getNotes());
 
 		// Fill MailExchange

@@ -17,8 +17,15 @@ public class Student{
 	private Image image;
 	private ObservableList<Concern> concerns;
 	private PO po;
+	private String gender;
 	
-	public Student(int mtrNr, String name, String firstName,ArrayList<String> eMailAddresses, int semester, String notes, int ects, Image image, ObservableList<Concern> concerns)
+	public Student(int mtrNr, String name)
+	{
+		this.mtrNr = mtrNr;
+		this.name = name;
+	}
+	
+	public Student(int mtrNr, String name, String firstName,ArrayList<String> eMailAddresses, int semester, String notes, int ects, Image image, ObservableList<Concern> concerns, String gender)
 	{
 		this.mtrNr = mtrNr;
 		this.name = name;
@@ -29,6 +36,7 @@ public class Student{
 		this.ects = ects;
 		this.image = image;
 		this.concerns =  concerns;
+		this.gender = gender;
 		
 	}
 	
@@ -112,6 +120,14 @@ public class Student{
 
 	public void setPo(PO po) {
 		this.po = po;
+	}
+
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
 	}
 	
 	

@@ -38,7 +38,7 @@ public class AllConcernsView extends GridPane
 		setHgap(20);
 		setVgap(20);
 
-		allConcernsTable = new TableView<Concern>();
+		allConcernsTable = new TableView<Concern>(presenter.getConcerns());
 		searchBar = new Label("Hier sollte die SearchBar sein");
 		newConcernButton = new Button("Neues Anliegen hinzufügen");
 		deleteConcernButton = new Button("Anliegen löschen");

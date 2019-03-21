@@ -29,6 +29,7 @@ import tp.options.EditPOView;
 public class EditStudentView extends GridPane{
 	
 	private Presenter presenter;
+	private Student student;
 	
 	//====================================
 	
@@ -67,7 +68,7 @@ public class EditStudentView extends GridPane{
 	public EditStudentView(Presenter presenter, Student student) {
 		this.presenter = presenter;
 		buildView();
-		fillView(student);
+		fillView();
 	}
 	
 	private void buildView() {
@@ -193,7 +194,7 @@ public class EditStudentView extends GridPane{
 		});
 	}
 	
-	private void fillView(Student student) {
+	private void fillView() {
 		mailExchangeBox.setVisible(true);
 		mailExchangeBox.setVisible(true);
 		concernsLabel.setVisible(true);
@@ -212,7 +213,7 @@ public class EditStudentView extends GridPane{
 		studentPO.getSelectionModel().select(student.getPo());
 		studentECTS.setText("" + student.getEcts());
 		studentSemester.setText("" + student.getSemester());
-		concernsListView = new ListView<Concern>(presenter.getConcerns(student));
+		concernsListView = new ListView<Concern>(student.getConcerns());
 		studentNotes.setText(student.getNotes());
 	}
 
