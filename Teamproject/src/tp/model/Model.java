@@ -296,7 +296,7 @@ public class Model {
 
 	public Student getStudent(int mtrNr) 
 	{
-		Student result = new Student(0, null, null, null, 0, null, 0, null, null);
+		Student result = new Student(0, null, null, null, 0, null, 0, null, null, null);
 		String sql = "SELECT * FROM student WHERE Matrikelnummer = " + mtrNr;
 		
 		try (Connection conn = this.connect();
@@ -318,8 +318,9 @@ public class Model {
 				}catch(Exception e) {
 					e.printStackTrace();
 				}
+				String gender = rs.getString("gender");
 				
-				result = new Student(mtrNr, name, firstname, eMailAddressess, semester, notes, ects, img, concerns);	
+				result = new Student(mtrNr, name, firstname, eMailAddressess, semester, notes, ects, img, concerns, gender);	
 			}		
 			catch(Exception e)
 			{
@@ -670,6 +671,47 @@ public class Model {
 				int id = rs.getInt("id");
 				Form form = getForm(id);
 				result.add(form);
+			}
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	public ObservableList<Concern> getConcerns() {
+		ObservableList<Concern> result = FXCollections.observableArrayList();
+		String sql = "SELECT * FROM result";
+		try (Connection conn = this.connect();
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(sql))
+		{
+			while(rs.next())
+			{
+				int id = rs.getInt("id");
+				result.add(getConcern(id));
+			}
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+
+	public ObservableList<Student> getStudents() {
+		ObservableList<Student> result = FXCollections.observableArrayList();
+		String sql = "SELECT * FROM student";
+		try (Connection conn = this.connect();
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(sql))
+		{
+			while(rs.next())
+			{
+				int id = rs.getInt("id");
+				result.add(getStudent(id));
 			}
 		}
 		catch(Exception e)
@@ -1132,11 +1174,14 @@ public class Model {
 
 	public int saveNewConcern(Concern concern) {
 		
-		//TODO return die zugewisene id des neuen concerns
-		
-		String sql = "INSERT INTO concern (title, topic, notes) values (?, ?, ?)";
+		//TODO id testen..
+		int id = 0; 
+		String sql1 = "INSERT INTO concern (title, topic, notes) values (?, ?, ?)";
+		String sql2 = "SELECT last_insert_rowid()";
 		try (Connection conn = this.connect();
-			PreparedStatement pstmt = conn.prepareStatement(sql))
+			PreparedStatement pstmt = conn.prepareStatement(sql1);
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(sql2))
 		{
 			pstmt.setString(1, concern.getTitle());
 			pstmt.setInt(2, concern.getTopic().getId());
@@ -1146,12 +1191,15 @@ public class Model {
 			addConcernStudents(concern.getId(), concern.getStudents());
 			addAppointments(concern.getAppointments());
 			addReminders(concern.getId(), concern.getReminders());
+			
+			rs.next();
+			id = rs.getInt("id");
 		}
 		catch(Exception e)
 		{
 			e.printStackTrace();
 		}
-		
+		return id;
 	}
 
 
@@ -1197,21 +1245,5 @@ public class Model {
 		}
 		return result;
 	}
-
-
-	public ObservableList<Concern> getConcerns() {
-		// TODO Auto-generated method stub
-		return null;
-		
-		//return leere liste wenn keine vorhanden
-	}
-
-
-	public ObservableList<Student> getStudents() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
 	
 }
