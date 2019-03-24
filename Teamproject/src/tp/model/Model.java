@@ -517,7 +517,6 @@ public class Model {
 
 	public Student getStudent(int mtrNr) 
 	{
-		//TODO checkMail
 		Student result = new Student(0, null, null, null, 0, null, 0, null, null, null);
 		String sql = "SELECT * FROM student WHERE Matrikelnummer = " + mtrNr;
 		
@@ -1125,12 +1124,10 @@ public class Model {
 
 	public void saveNewStudent(Student student) {
 		//TODO
-		//TODO checkMail
 	}
 
 
 	public void saveEditedStudent(Student student) {
-		//TODO checkMail, if New E-Mail Address
 		//TODO Test..
 		Image img = student.getImage();
 		try(ByteArrayOutputStream os = new ByteArrayOutputStream();
