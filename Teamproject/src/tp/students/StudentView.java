@@ -272,7 +272,12 @@ public class StudentView extends GridPane {
 		studentSemester.setText("" + student.getSemester());
 		connectedConcernsListView = new ListView<Concern>(student.getConcerns());
 		studentNotes.setText(student.getNotes());
+		//TODO für Mail nen loading label oder sowas
 
+		
+	}
+
+	public void fillMailView() {
 		// Fill MailExchange
 		ArrayList<EMail> mails = presenter.getEMails(student);
 		for (EMail mail : mails) {
@@ -280,8 +285,9 @@ public class StudentView extends GridPane {
 		}
 		mailExchangeVBox.layout();
 		mailExchangeScrollPane.setVvalue(1.0d);
+		//TODO mail loading label 'ausschalten'
 	}
-
+	
 	public void addMailToView(EMail mail) {
 		if (mail != null) {
 			Label date = new Label();
