@@ -1,5 +1,7 @@
 package tp.students;
 
+import java.util.ArrayList;
+
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.VPos;
@@ -22,6 +24,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import tp.Presenter;
 import tp.model.Concern;
+import tp.model.MyTab;
 import tp.model.PO;
 import tp.model.Student;
 import tp.options.EditPOView;
@@ -30,6 +33,7 @@ public class EditStudentView extends GridPane{
 	
 	private Presenter presenter;
 	private Student student;
+	private MyTab tab;
 	
 	//====================================
 	
@@ -60,13 +64,15 @@ public class EditStudentView extends GridPane{
 	private Label mailExchangeLabel;
 	private VBox mailExchangeBox;
 
-	public EditStudentView(Presenter presenter) {
+	public EditStudentView(Presenter presenter, MyTab tab) {
 		this.presenter = presenter;
+		this.tab = tab;
 		buildView();
 	}
 
-	public EditStudentView(Presenter presenter, Student student) {
+	public EditStudentView(Presenter presenter, Student student, MyTab tab) {
 		this.presenter = presenter;
+		this.tab = tab;
 		buildView();
 		fillView();
 	}
@@ -181,7 +187,68 @@ public class EditStudentView extends GridPane{
 		});
 		
 		saveEditedProfileButton.setOnAction((event)->{
-			//TODO
+			
+			//TODO Oberfläche auslesen
+//			mtr + name auslesen (Pflichtfelder)
+			
+
+			
+//			if()
+//			{
+				//TODO error
+//				return;
+//			}
+			
+			ArrayList<String> eMailAddresses = new ArrayList<String>();
+			
+			String mail1 = studentMail_1.getText();
+			if(mail1 != null)
+			{
+				eMailAddresses.add(mail1);
+			}
+			String mail2 = studentMail_2.getText();
+			if(mail2 != null)
+			{
+				eMailAddresses.add(mail2);
+			}
+			String mail3 = studentMail_3.getText();
+			if(mail3 != null)
+			{
+				eMailAddresses.add(mail3);
+			}
+			
+			ArrayList<String> changedMailAddresses;
+//					
+				if (student == null)
+				{
+//					Student newStudent = new Student(mtrNr, name);
+//					newStudent.setMail...
+					
+//					restliche Flächen auslesen + setzen falls nicht leer
+					//TODO setStuff
+					
+					changedMailAddresses = new ArrayList<String>();
+					presenter.saveNewStudent(student);
+			
+				}
+				else
+				{
+					changedMailAddresses = eMailAddresses;
+					changedMailAddresses.removeAll(student.geteMailAddresses());
+	
+//					restliche Flächen auslesen + setzen falls nicht leer
+					//TODO setStuff
+					student.seteMailAddresses(eMailAddresses);
+					
+					presenter.saveEditedStudent(student);
+				}
+				
+				presenter.openStudenTab(student, changedMailAddresses);
+				presenter.closeThisTab(tab);
+				
+				
+//			
+			
 		});
 		
 		newPOButton.setOnAction((event)->{

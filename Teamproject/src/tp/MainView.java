@@ -46,7 +46,7 @@ public class MainView extends BorderPane {
 	private ArrayList<String> sessionTabsIds;
 	private ArrayList<Appointment> next24hourAppointments;
 	
-	//=======================================0
+	//=======================================
 	
 	private ToolBar leftToolBar;
 	private ToolBar rightToolBar;
@@ -251,13 +251,29 @@ public class MainView extends BorderPane {
 
 			newTab.setText(student.getName() + ", " + student.getFirstName());
 
-			newTab.setContent(new StudentView(student, presenter));
+			newTab.setContent(new StudentView(student, presenter, newTab));
 
 			tabPane.getTabs().addAll(newTab);
 		}
 		SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
 		selectionModel.select(newTab);
+		
+	}
+	
+	public void openStudentTabFromEditStudentView(Student student, ArrayList<String> changedMailAddresses) {
+		MyTab newTab = tabAlreadyOpen("a" + student.getMtrNr());
+		if (newTab == null) {
+			newTab = new MyTab("a" + student.getMtrNr());
 
+			newTab.setText(student.getName() + ", " + student.getFirstName());
+
+			newTab.setContent(new StudentView(student, presenter, newTab, changedMailAddresses));
+
+			tabPane.getTabs().addAll(newTab);
+		}
+		SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
+		selectionModel.select(newTab);
+		
 	}
 
 	public void openOptionsTab() {
@@ -422,7 +438,7 @@ public class MainView extends BorderPane {
 
 		newTab.setText("Neuer Student");
 
-		newTab.setContent(new EditStudentView(presenter));
+		newTab.setContent(new EditStudentView(presenter, newTab));
 
 		tabPane.getTabs().addAll(newTab);
 
@@ -430,6 +446,22 @@ public class MainView extends BorderPane {
 		selectionModel.select(newTab);
 
 	}
+	
+	public void openEditStudentTab(Student student) {
+		MyTab newTab = new MyTab("s" + student.getMtrNr());
+
+		newTab.setText(student.getFirstName().charAt(0) + "" + student.getName());
+
+		newTab.setContent(new EditStudentView(presenter, student, newTab));
+
+		tabPane.getTabs().addAll(newTab);
+
+		SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
+		selectionModel.select(newTab);
+
+	}
+	
+	
 	
 
 	public void openNewStatisticTab() {
@@ -481,6 +513,8 @@ public class MainView extends BorderPane {
 	public void closeThisTab(MyTab tab) {
 		tabPane.getTabs().remove(tab);
 	}
+
+
 	
 	
 

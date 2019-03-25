@@ -31,6 +31,7 @@ import javafx.stage.Stage;
 import tp.Presenter;
 import tp.model.Concern;
 import tp.model.EMail;
+import tp.model.MyTab;
 import tp.model.PO;
 import tp.model.Student;
 import tp.options.EditPOView;
@@ -39,6 +40,7 @@ public class StudentView extends GridPane {
 
 	private Presenter presenter;
 	private Student student;
+	private MyTab tab;
 
 	// ====================================
 
@@ -76,12 +78,22 @@ public class StudentView extends GridPane {
 	private TextArea mailContentTextArea;
 	private Button sendMailButton;
 
-	public StudentView(Student student, Presenter presenter) {
+	public StudentView(Student student, Presenter presenter, MyTab tab) {
 		this.student = student;
 		this.presenter = presenter;
+		this.tab = tab;
 		buildView();
 		fillView();
-
+		fillMailView();
+	}
+	
+	public StudentView(Student student, Presenter presenter, MyTab tab, ArrayList<String> changedMailAddresses) {
+		this.student = student;
+		this.presenter = presenter;
+		this.tab = tab;
+		buildView();
+		fillView();
+		fillMailView(changedMailAddresses);
 	}
 
 	private void buildView() {
@@ -235,9 +247,8 @@ public class StudentView extends GridPane {
 		});
 
 		editStudentButton.setOnAction((event) -> {
-			// TODO öffne neuen EditStudentView Tab mit student. Oder setze View des Tabs
-			// neu??? -> ID ändern!
-			// TODO aktuellen Tab schließen
+			presenter.openEditStudentView(student);
+			presenter.closeThisTab(tab);
 		});
 
 		sendMailButton.setOnAction((event) -> {
@@ -276,8 +287,12 @@ public class StudentView extends GridPane {
 
 		
 	}
+	
+//	================================================================================================
+//							Mail Stuff
+//	================================================================================================
 
-	public void fillMailView() {
+	public void fillMailView(ArrayList<String> changedMailAddresses) {
 		// Fill MailExchange
 		ArrayList<EMail> mails = presenter.getEMails(student);
 		for (EMail mail : mails) {
@@ -287,6 +302,17 @@ public class StudentView extends GridPane {
 		mailExchangeScrollPane.setVvalue(1.0d);
 		//TODO mail loading label 'ausschalten'
 	}
+	
+	public void fillMailView() {
+		// Fill MailExchange
+		ArrayList<EMail> mails = presenter.getEMails(student);
+		for (EMail mail : mails) {
+			addMailToView(mail);
+		}
+		mailExchangeVBox.layout();
+		mailExchangeScrollPane.setVvalue(1.0d);
+		//TODO mail loading label 'ausschalten'
+	}	
 	
 	public void addMailToView(EMail mail) {
 		if (mail != null) {

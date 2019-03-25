@@ -305,6 +305,26 @@ public class Presenter {
 		return model.getStudents();
 	}
 
+	public void openEditStudentView(Student student) {
+		mainView.openEditStudentTab(student);
+		
+	}
+
+	public void saveNewStudent(Student student) {
+		model.saveNewStudent(student);
+		
+	}
+
+	public void openStudenTab(Student student) {
+		mainView.openStudentTab(student);
+		
+	}
+
+	public void openStudenTab(Student student, ArrayList<String> changedMailAddresses) {
+		mainView.openStudentTabFromEditStudentView(student,changedMailAddresses);
+		
+	}
+
 
 
 
