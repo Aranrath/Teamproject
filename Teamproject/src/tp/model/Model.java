@@ -1358,4 +1358,22 @@ public static String getEmailContent(Part message) throws Exception {
 	      return result;
 
 	   }
+
+
+public void deleteReminder(Reminder reminderToDelete) {
+	// TODO Auto-generated method stub
+	
+}
+
+
+public void deleteAppointment(Appointment appointmentToDelete) {
+	// TODO Auto-generated method stub
+	
+}
+
+
+public void saveNewAppointment(Appointment newAppointment) {
+	// TODO Auto-generated method stub
+	
+}
 }

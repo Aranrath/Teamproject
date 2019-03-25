@@ -325,6 +325,21 @@ public class Presenter {
 		
 	}
 
+	public void deleteReminder(Reminder reminderToDelete) {
+		model.deleteReminder(reminderToDelete);
+		
+	}
+
+	public void deleteAppointment(Appointment appointmentToDelete) {
+		model.deleteAppointment(appointmentToDelete);
+		
+	}
+
+	public void saveNewAppointment(Appointment newAppointment) {
+		model.saveNewAppointment(newAppointment);
+		
+	}
+
 
 
 

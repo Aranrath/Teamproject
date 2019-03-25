@@ -22,9 +22,12 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import tp.Presenter;
+import tp.appointment.NewAppointmentView;
+import tp.forms.FormsView;
 import tp.model.Appointment;
 import tp.model.Concern;
 import tp.model.Form;
@@ -73,7 +76,7 @@ public class ConcernView extends GridPane {
 	private Label fileLabel;
 	private HBox fileHBox;
 	private Button addFileButton;
-	private Button removeFileButton;
+	private Button deleteFileButton;
 	private TableView<Form> fileTableView;
 
 	private Label appointmentLabel;
@@ -90,6 +93,7 @@ public class ConcernView extends GridPane {
 		titleTextField.setText(new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime()));
 	}
 
+	// neue Concern View mit bereits gewählten Studenten
 	public ConcernView(Presenter presenter, MyTab tab, ObservableList<Student> students) {
 		this.presenter = presenter;
 		this.tab = tab;
@@ -153,8 +157,8 @@ public class ConcernView extends GridPane {
 
 		fileLabel = new Label("Dateien");
 		addFileButton = new Button("Hinzufügen");
-		removeFileButton = new Button("Entfernen");
-		fileHBox = new HBox(addFileButton, removeFileButton);
+		deleteFileButton = new Button("Löschen");
+		fileHBox = new HBox(addFileButton, deleteFileButton);
 		fileTableView = new TableView<Form>();
 
 		appointmentLabel = new Label("Termine");
@@ -164,23 +168,21 @@ public class ConcernView extends GridPane {
 		appointmentTableView = new TableView<Appointment>();
 
 		// ==================================================
-		
+
 		TableColumn<Reminder, Date> dateCol = new TableColumn<Reminder, Date>("Datum");
 		dateCol.setCellValueFactory(new PropertyValueFactory<>("date"));
-		
+
 		TableColumn<Reminder, String> messageCol = new TableColumn<Reminder, String>("Nachricht");
 		messageCol.setCellValueFactory(new PropertyValueFactory<>("message"));
-		
+
 		dateCol.setResizable(false);
 		messageCol.setResizable(false);
-		
+
 		double width = dateCol.widthProperty().get();
 		messageCol.prefWidthProperty().bind(reminderTableView.widthProperty().subtract(width));
-		
 
-        reminderTableView.getColumns().addAll(dateCol, messageCol);
-		
-		
+		reminderTableView.getColumns().addAll(dateCol, messageCol);
+
 		// ==================================================
 
 		add(titleLabel, 0, 0);
@@ -240,17 +242,34 @@ public class ConcernView extends GridPane {
 			String newTitle = titleTextField.getText();
 			Topic newTopic = topicComboBox.getSelectionModel().getSelectedItem();
 
-			if (newTitle.equals("") || newTopic == null) {
+			if (newTitle.equals("") || newTopic == null)
+			{
 				errorLabel.setText("Titel und Thema müssen gesetzt sein");
+				errorLabel.setTextFill(Color.RED);
 				return;
-			} else if (concernTitleAlreadyExists(newTitle)) {
+			}
+			else if (concernTitleAlreadyExists(newTitle))
+			{
 				errorLabel.setText("Titel bereits vergeben");
+				errorLabel.setTextFill(Color.RED);
 				return;
-			} else if (concern == null) {
+			}
+			else if (concern == null)
+			{
 				// Concern mit angegebenen Titel erstellen
 				concern = new Concern(newTitle, newTopic);
-
-				// TODO Andere Attribute auslesen und setten
+				
+				//übrige Attribute auslesen uns setzen
+				concern.setStudents(studentTableView.getItems());
+				concern.setNotes(notesTextArea.getText());
+				concern.setReminders(reminderTableView.getItems());
+				concern.setAppointments(appointmentTableView.getItems());
+				
+				//Speicher nur Files die nicht zum Topic gehören
+				ObservableList<Form> newFiles = fileTableView.getItems();
+				newFiles.removeAll(newTopic.getForms());
+				concern.setFiles(newFiles);
+				
 
 				int newConcernId = presenter.saveNewConcern(concern);
 				saveButton.setText("Änderungen speichern");
@@ -258,11 +277,22 @@ public class ConcernView extends GridPane {
 				// Tabbeschriftung anpassen
 				tab.setText(newTitle);
 				tab.setTabId("c" + newConcernId);
-			} else {
-				// Geänderten Concern speichern
-
+			} 
+			else
+			{
+				// Attribute speichern
 				concern.setTitle(newTitle);
-				// TODO Andere Attribute auslesen und setten
+				concern.setTopic(newTopic);
+				
+				concern.setStudents(studentTableView.getItems());
+				concern.setNotes(notesTextArea.getText());
+				concern.setReminders(reminderTableView.getItems());
+				concern.setAppointments(appointmentTableView.getItems());
+				
+				//Speicher nur Files die nicht zum Topic gehören
+				ObservableList<Form> newFiles = fileTableView.getItems();
+				newFiles.removeAll(newTopic.getForms());
+				concern.setFiles(newFiles);
 
 				presenter.saveEditedConcern(concern);
 
@@ -329,9 +359,10 @@ public class ConcernView extends GridPane {
 			Stage stage = new Stage();
 			stage.setAlwaysOnTop(true);
 			stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setTitle("Studenten hinzufügen");
-            stage.setScene(new Scene(new AddStudentToConcernView(presenter, stage, this, studentTableView.getItems()), 450, 450));
-            stage.show();
+			stage.setTitle("Studenten hinzufügen");
+			stage.setScene(new Scene(new AddStudentToConcernView(presenter, stage, this, studentTableView.getItems()),
+					450, 450));
+			stage.show();
 		});
 
 		removeStudentButton.setOnAction((event) -> {
@@ -342,36 +373,59 @@ public class ConcernView extends GridPane {
 			Stage stage = new Stage();
 			stage.setAlwaysOnTop(true);
 			stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setTitle("Neue Erinnerung");
-            stage.setScene(new Scene(new NewReminderView(stage, reminderTableView.getItems()), 450, 450));
-            stage.show();
+			stage.setTitle("Neue Erinnerung");
+			stage.setScene(new Scene(new NewReminderView(stage, reminderTableView.getItems()), 450, 450));
+			stage.show();
 		});
 
 		deleteReminderButton.setOnAction((event) -> {
-			// TODO
+			Reminder reminderToDelete = reminderTableView.getSelectionModel().getSelectedItem();
+			reminderTableView.getItems().remove(reminderToDelete);
+			presenter.deleteReminder(reminderToDelete);
 		});
 
 		addFileButton.setOnAction((event) -> {
-			// TODO
+			Stage stage = new Stage();
+			stage.setAlwaysOnTop(true);
+			stage.initModality(Modality.APPLICATION_MODAL);
+			stage.setTitle("Datei zum Concern hinzufügen");
+			stage.setScene(new Scene(new FormsView(presenter, stage, this, fileTableView.getItems()), 450, 450));
+			stage.show();
 		});
 
-		removeFileButton.setOnAction((event) -> {
-			// TODO
+		
+		deleteFileButton.setOnAction((event) -> {
+			Form fileToDelete = fileTableView.getSelectionModel().getSelectedItem();
+			
+			//Wenn die Datei nicht zum ausgewählten Topic gehört
+			if(!topicComboBox.getSelectionModel().getSelectedItem().getForms().contains(fileToDelete))
+			{
+				presenter.deleteForm(fileToDelete);
+			}	
+			
+			fileTableView.getItems().remove(fileToDelete);
+
 		});
 
 		newAppointmentButton.setOnAction((event) -> {
-			// TODO
+			Stage stage = new Stage();
+			stage.setAlwaysOnTop(true);
+			stage.initModality(Modality.APPLICATION_MODAL);
+			stage.setTitle("Datei zum Concern hinzufügen");
+			stage.setScene(new Scene(new NewAppointmentView(stage, presenter, this), 450, 450));
+			stage.show();
 		});
 
 		deleteAppointmentButton.setOnAction((event) -> {
-			// TODO
+			Appointment appointmentToDelete = appointmentTableView.getSelectionModel().getSelectedItem();
+			appointmentTableView.getItems().remove(appointmentToDelete);
+			presenter.deleteAppointment(appointmentToDelete);
 		});
 
-		topicComboBox.setOnAction((event) -> {
-			// TODO
+		topicComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal)->{
+		    fileTableView.getItems().removeAll(oldVal.getForms());
+		    fileTableView.getItems().addAll(newVal.getForms());
 		});
-
-		// TODO Notes müssen beim schließen gespeichert werden!!
 
 	}
 
@@ -394,6 +448,7 @@ public class ConcernView extends GridPane {
 		studentTableView.setItems(concern.getStudents());
 		reminderTableView.setItems(concern.getReminders());
 		fileTableView.setItems(concern.getFiles());
+		fileTableView.getItems().addAll(concern.getTopic().getForms());
 		notesTextArea.setText(concern.getNotes());
 		appointmentTableView.setItems(concern.getAppointments());
 
@@ -401,7 +456,16 @@ public class ConcernView extends GridPane {
 
 	public void addStudentsToConcern(ObservableList<Student> students) {
 		studentTableView.setItems(students);
-		
+	}
+	
+	public void addFilesToConcern(ObservableList<Form> files)
+	{
+		fileTableView.setItems(files);
+	}
+	
+	public void addAppointment(Appointment appointment)
+	{
+		appointmentTableView.getItems().add(appointment);
 	}
 
 }
