@@ -293,24 +293,37 @@ public class StudentView extends GridPane {
 //	================================================================================================
 
 	public void fillMailView(ArrayList<String> changedMailAddresses) {
-		// Fill MailExchange
-		ArrayList<EMail> mails = presenter.getEMails(student);
-		for (EMail mail : mails) {
-			addMailToView(mail);
+		for (String address: changedMailAddresses) {
+			try {
+				Thread t = new Thread(()->presenter.checkMail(student, address));
+				t.start();
+				t.join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
-		mailExchangeVBox.layout();
-		mailExchangeScrollPane.setVvalue(1.0d);
-		//TODO mail loading label 'ausschalten'
+		fillMailView();
 	}
 	
 	public void fillMailView() {
-		// Fill MailExchange
-		ArrayList<EMail> mails = presenter.getEMails(student);
-		for (EMail mail : mails) {
-			addMailToView(mail);
+		if(!student.geteMailAddresses().isEmpty()) {
+			try {
+				Thread t = new Thread(()->presenter.checkMail(student));
+				t.start();
+				t.join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			// Fill MailExchange
+			ArrayList<EMail> mails = presenter.getEMails(student);
+			for (EMail mail : mails) {
+				addMailToView(mail);
+			}
+			mailExchangeVBox.layout();
+			mailExchangeScrollPane.setVvalue(1.0d);
+		}else {
+			//TODO in loading label: keine E-Mailaddresse vorhanden.
 		}
-		mailExchangeVBox.layout();
-		mailExchangeScrollPane.setVvalue(1.0d);
 		//TODO mail loading label 'ausschalten'
 	}	
 	

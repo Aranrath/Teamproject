@@ -63,9 +63,10 @@ public class Presenter {
 			MimeMessage message = new MimeMessage(mailSession);
 			// Set the From and the Recipient
 			message.setFrom(new InternetAddress(userID + "@fh-trier.de", userName));
-			// TODO get richtige?? E-Mail adresse (wie zugeordnet?)
+			// Send to eMailAddress where last received
+			String mailAddress = model.getLastEmail(recipient).getMailAddress();
 			message.setRecipient(Message.RecipientType.TO,
-					new InternetAddress(recipient.geteMailAddresses().get(0), recipient.getName()));
+					new InternetAddress(mailAddress, recipient.getName()));
 			// Set the subject
 			message.setSubject(subject);
 			// Set the message text
@@ -81,12 +82,11 @@ public class Presenter {
 			transport.close();
 
 			// save E-mail to Database
-			EMail email = new EMail(content, subject, recipient, new Date(System.currentTimeMillis()), false);
+			EMail email = new EMail(content, subject, mailAddress, new Date(System.currentTimeMillis()), false);
 			model.saveMail(email);
 
 			return email;
 		} catch (Exception e) {
-			// TODO Fehlerbehandlung ohne crash des Programms
 			e.printStackTrace();
 			return null;
 		}
@@ -338,6 +338,14 @@ public class Presenter {
 	public void saveNewAppointment(Appointment newAppointment) {
 		model.saveNewAppointment(newAppointment);
 		
+	}
+
+	public void checkMail(Student student, String address) {
+		model.checkMail(student, address);
+	}
+
+	public void checkMail(Student student) {
+		model.checkMail(student);
 	}
 
 

@@ -8,13 +8,13 @@ public class EMail {
 	private Date date;
 	private String subject;
 	private String content;
-	private Student student;
+	private String mailAddress;
 	private boolean received; // true if e-mail was received, false if e-mail was send
 
-	public EMail(String content, String subject, Student student, Date date, boolean received) {
+	public EMail(String content, String subject, String mailAddress, Date date, boolean received) {
 		this.content = content;
 		this.subject = subject;
-		this.student = student;
+		this.mailAddress = mailAddress;
 		this.date = date;
 		this.received = received;
 	}
@@ -31,8 +31,8 @@ public class EMail {
 		return content;
 	}
 
-	public Student getStudent() {
-		return student;
+	public String getMailAddress() {
+		return mailAddress;
 	}
 
 	public Date getDate() {
@@ -55,8 +55,8 @@ public class EMail {
 		this.content = content;
 	}
 
-	public void setStudent(Student student) {
-		this.student = student;
+	public void setmailAddress(String mailAddress) {
+		this.mailAddress = mailAddress;
 	}
 
 	public void setDate(Date date) {

@@ -268,7 +268,7 @@ public class Model {
 
 	
 	public Appointment getAppointment(int id) {
-		Appointment result = new Appointment(0, null, 0, 0, null, null, false);
+		Appointment result = new Appointment(0, null, 0, 0, null);
 		String sql = "SELECT * FROM appointment WHERE id = " + id;
 		try 	(Connection conn = this.connect();
 				Statement stmt = conn.createStatement();
@@ -281,12 +281,7 @@ public class Model {
 			long startTime = rs.getLong("startTime");
 			long endTime = rs.getLong("endTime");
 			String roomNmb = rs.getString("roomNmb");
-			Date reminderTime = rs.getDate("reminderDate");
-			Boolean reminderTimeisActive = false;
-			if (reminderTime!=null) {
-				reminderTimeisActive = true;
-			}
-			result = new Appointment(concernId, date, startTime, endTime, roomNmb, reminderTime, reminderTimeisActive);
+			result = new Appointment(concernId, date, startTime, endTime, roomNmb);
 			result.setId(id);
 		}catch(Exception e) {
 			e.printStackTrace();
@@ -407,16 +402,29 @@ public class Model {
 
 	public ArrayList<EMail> getEMails(Student student) {
 		ArrayList<EMail> mail = new ArrayList<EMail>();
-		String sql = "SELECT * FROM eMail WHERE student = "+ student.getMtrNr() +" ORDER BY date ASC";
+		ArrayList<String> mailAddress = student.geteMailAddresses();
+		String sql = null;
+		if(mailAddress.size()==3) {
+			sql = "SELECT * FROM eMail WHERE eMailAddress = "+ mailAddress.get(0) + " OR eMailAddress = " 
+					+ mailAddress.get(1) + " OR eMailAddress = "+ mailAddress.get(2) + "ORDER BY date ASC";
+		}else if(mailAddress.size()==2) {
+			sql = "SELECT * FROM eMail WHERE eMailAddress = "+ mailAddress.get(0) + " OR eMailAddress = " 
+					+mailAddress.get(1) + "ORDER BY date ASC";
+		}else if (mailAddress.size()==1) {
+			sql = "SELECT * FROM eMail WHERE eMailAddress = "+ mailAddress.get(0) +" ORDER BY date ASC";
+		}else {
+			return mail;
+		}
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql))
 		{
 			String subject = rs.getString("subject");
 			String content = rs.getString("content");
+			String eMailAddress = rs.getString("eMailAddress");
 			Boolean recieved = rs.getBoolean("received");
 			Date date = rs.getDate("date");
-			mail.add(new EMail(content, subject, student, date, recieved));
+			mail.add(new EMail(content, subject, eMailAddress, date, recieved));
 			
 		}
 		catch (Exception e)
@@ -426,10 +434,10 @@ public class Model {
 		return mail;
 	}
 	
-	public Date getLastEmail(Student student) {
+	public EMail getLastEmail(Student student) {
 		ArrayList<EMail> mails = getEMails(student);
 		if(!mails.isEmpty()) {
-			return mails.get(mails.size() - 1).getDate();
+			return mails.get(mails.size() - 1);
 		}
 		return null;
 	}
@@ -802,7 +810,7 @@ public class Model {
 	// ------------Datenbank Datenännderungen------------------------------------------------------------
 	
 	private void addAppointment(Appointment appointment) {
-		String sql = "INSERT INTO appointment(concern, date, startTime, endTime, roomNmb, reminderTime) values (?, ?, ?, ?, ?, ?)";
+		String sql = "INSERT INTO appointment(concern, date, startTime, endTime, roomNmb) values (?, ?, ?, ?, ?)";
 		try (Connection conn = this.connect();
 			PreparedStatement pstmt = conn.prepareStatement(sql))
 		{
@@ -811,7 +819,6 @@ public class Model {
 			pstmt.setLong(3, appointment.getStartTime());
 			pstmt.setLong(4, appointment.getEndTime());
 			pstmt.setString(5, appointment.getRoomNmb());
-			pstmt.setDate(6, appointment.getReminderTime());
 			pstmt.executeUpdate();
 		} 
 		catch(Exception e)
@@ -986,13 +993,13 @@ public class Model {
 
 	public void saveMail(EMail email) 
 	{
-		String sql = "INSERT INTO eMail(subject, content, student, recived) values (?, ?, ?, ?)";
+		String sql = "INSERT INTO eMail(subject, content, eMailAddress, recived) values (?, ?, ?, ?)";
 		try (Connection conn = this.connect();
 			PreparedStatement pstmt = conn.prepareStatement(sql))
 		{
 			pstmt.setString(1, email.getSubject());
 			pstmt.setString(2, email.getContent());
-			pstmt.setInt(3, email.getStudent().getMtrNr());
+			pstmt.setString(3, email.getMailAddress());
 			pstmt.setBoolean(4, email.isReceived());
 			pstmt.executeUpdate();
 		} 
@@ -1129,6 +1136,8 @@ public class Model {
 
 	public void saveEditedStudent(Student student) {
 		//TODO Test..
+		
+		
 		Image img = student.getImage();
 		try(ByteArrayOutputStream os = new ByteArrayOutputStream();
 		   InputStream is = new ByteArrayInputStream(os.toByteArray())){
@@ -1137,15 +1146,25 @@ public class Model {
 			String sql1 = "UPDATE student SET name = "+student.getName()+", firstname = "+student.getFirstName()+", semester = "+student.getSemester()+
 				", notes = "+student.getNotes()+", ects = "+student.getEcts()+", img = " +is + 
 				"WHERE matrNr = " + student.getMtrNr();
-			String sql2 = "DELETE * FROM student_emailAddress WHERE student = " + student.getMtrNr();
-			String sql3 = "DELETE * FROM concern_student WHERE student = " + student.getMtrNr();
+			String sql2 = "DELETE * FROM concern_student WHERE student = " + student.getMtrNr();
+			
+			Student oldStudent = getStudent(student.getMtrNr());
+			//get MailAddresses to be added
+			ArrayList<String> newMailAddresses = student.geteMailAddresses();
+			newMailAddresses.removeAll(oldStudent.geteMailAddresses());
+			//get MailAddresses to be deleted
+			ArrayList<String> oldMailAddresses = oldStudent.geteMailAddresses();
+			oldMailAddresses.removeAll(student.geteMailAddresses());
 			try(Connection conn = this.connect();
 					Statement stmt = conn.createStatement())
 			{
 				stmt.executeQuery(sql1);
 				stmt.executeQuery(sql2);
-				stmt.executeQuery(sql3);
-				addStudentEmail(student.getMtrNr(), student.geteMailAddresses());
+				for (String address: oldMailAddresses) {
+					String sql = "DELETE * FROM student_emailAddress WHERE emailAddress = " + address;
+					stmt.executeQuery(sql);
+				}
+				addStudentEmail(student.getMtrNr(), newMailAddresses);
 				addConcernsStudent(student.getConcerns(), student.getMtrNr());			
 			}
 			catch(Exception e)
@@ -1260,7 +1279,7 @@ public class Model {
 	
 	public void checkMail(Student student) {
 		// For filtering the eMails
-		Date lastEmail = getLastEmail(student);
+		Date lastEmail = getLastEmail(student).getDate();
 		if (lastEmail == null) {
 			lastEmail = new Date(Long.MIN_VALUE);
 		}
@@ -1287,11 +1306,17 @@ public class Model {
 					    fromAddresses.add(((InternetAddress)address).getAddress());
 					}
 					// If a MailAddress of sender and student are the same 
-					if (!Collections.disjoint(fromAddresses, student.geteMailAddresses())) {
+					String mailAddress = null;
+					for (String address: student.geteMailAddresses()) {
+						if (fromAddresses.contains(address)){
+							mailAddress = address;
+						}
+					}
+					if (mailAddress != null) {
 						String subject = msg.getSubject();
 						String content = getEmailContent(msg);
 						// save eMail into Database
-						EMail email = new EMail(content, subject, student, sendDate, true);
+						EMail email = new EMail(content, subject, mailAddress, sendDate, true);
 						saveMail(email);
 					}					
 				}else {
@@ -1312,10 +1337,76 @@ public class Model {
 					for (Address address : recipients) {
 					    toAddresses.add(((InternetAddress)address).getAddress());
 					}
-					if(!Collections.disjoint(toAddresses, student.geteMailAddresses())){
+					String mailAddress = null;
+					for (String address: student.geteMailAddresses()) {
+						if (toAddresses.contains(address)){
+							mailAddress = address;
+						}
+					}
+					if (mailAddress != null){
 						String subject = msg.getSubject();
 						String content = getEmailContent(msg);
-						EMail email = new EMail(content, subject, student, sendDate, false);
+						EMail email = new EMail(content, subject, mailAddress, sendDate, false);
+						saveMail(email);
+					}
+				}else {
+					break;
+				}
+				
+			}
+		}catch(Exception e) {
+			
+		}
+	}
+	
+	//does the same as checkMail(Sudent) just for retrieving eMails from a specific eMailadress before the last known eMail
+	public void checkMail(Student student, String mailAddress) {
+		Date lastEmail = getLastEmail(student).getDate();
+		if (lastEmail == null) {
+			lastEmail = new Date(System.currentTimeMillis());
+		}
+		try {
+			Properties mailProps = new Properties();
+			Session mailSession = Session.getDefaultInstance(mailProps);
+			Store store = mailSession.getStore("imaps");
+			store.connect("mail.fh-trier.de", options.getUserID(), options.getPassword());
+			Folder inbox = store.getFolder("INBOX");
+			inbox.open(Folder.READ_ONLY);
+			for (int i = inbox.getMessageCount(); i>0; i--) {
+				Message msg = inbox.getMessage(i);
+				Date sendDate = new Date(msg.getSentDate().getTime());
+				if (sendDate.compareTo(lastEmail) < 0 ) {
+					ArrayList<String> fromAddresses = new ArrayList<String>();
+					Address senders[] = msg.getFrom();
+					for (Address address : senders) {
+					    fromAddresses.add(((InternetAddress)address).getAddress());
+					}
+					if (fromAddresses.contains(mailAddress)) {
+						String subject = msg.getSubject();
+						String content = getEmailContent(msg);
+						EMail email = new EMail(content, subject, mailAddress, sendDate, true);
+						saveMail(email);
+					}					
+				}else {
+					break;
+				}
+			}
+			
+			Folder outbox = store.getFolder("sent-mail");
+			outbox.open(Folder.READ_ONLY);
+			for (int i = outbox.getMessageCount(); i>0; i--) {
+				Message msg = outbox.getMessage(i);
+				Date sendDate = new Date(msg.getSentDate().getTime());
+				if (sendDate.compareTo(lastEmail) < 0 ) {
+					ArrayList<String> toAddresses = new ArrayList<String>();
+					Address[] recipients = msg.getAllRecipients();
+					for (Address address : recipients) {
+					    toAddresses.add(((InternetAddress)address).getAddress());
+					}
+					if(toAddresses.contains(mailAddress)){
+						String subject = msg.getSubject();
+						String content = getEmailContent(msg);
+						EMail email = new EMail(content, subject, mailAddress, sendDate, false);
 						saveMail(email);
 					}
 				}else {
