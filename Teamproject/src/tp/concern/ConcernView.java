@@ -145,7 +145,7 @@ public class ConcernView extends GridPane {
 		removeStudentButton = new Button("Entfernen");
 		studentHBox = new HBox(addStudentButton, removeStudentButton);
 		studentTableView = new TableView<Student>();
-
+	
 		notesLabel = new Label("Notizen");
 		notesTextArea = new TextArea();
 
@@ -166,8 +166,17 @@ public class ConcernView extends GridPane {
 		deleteAppointmentButton = new Button("Löschen");
 		appointmentHBox = new HBox(newAppointmentButton, deleteAppointmentButton);
 		appointmentTableView = new TableView<Appointment>();
+		
+		// ======================================================================
+		
+		TableColumn<Student, String> nameCol = new TableColumn<Student, String>("Name");
+		nameCol.setCellValueFactory(new PropertyValueFactory<Student, String>("name"));
+		
+		TableColumn<Student, String> firstNameCol = new TableColumn<Student, String>("Vorname");
+		firstNameCol.setCellValueFactory(new PropertyValueFactory<Student, String>("firstName"));
 
-		// ==================================================
+		studentTableView.getColumns().addAll(nameCol, firstNameCol);
+
 
 		TableColumn<Reminder, Date> dateCol = new TableColumn<Reminder, Date>("Datum");
 		dateCol.setCellValueFactory(new PropertyValueFactory<>("date"));
@@ -182,8 +191,28 @@ public class ConcernView extends GridPane {
 		messageCol.prefWidthProperty().bind(reminderTableView.widthProperty().subtract(width));
 
 		reminderTableView.getColumns().addAll(dateCol, messageCol);
+		
+		
+		TableColumn<Form, String> fileNameCol = new TableColumn<Form, String>("Dateiname");
+		fileNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
+		fileTableView.getColumns().add(fileNameCol);
+		
+		
+		TableColumn<Appointment, Date> appDateCol = new TableColumn<Appointment, Date>("Datum");
+		appDateCol.setCellValueFactory(new PropertyValueFactory<>("date"));
+		
+		TableColumn<Appointment, Long> startTimeCol = new TableColumn<Appointment, Long>("Von");
+		startTimeCol.setCellValueFactory(new PropertyValueFactory<>("startTime"));
+		
+		TableColumn<Appointment, Long> endTimeCol = new TableColumn<Appointment, Long>("Bis");
+		endTimeCol.setCellValueFactory(new PropertyValueFactory<>("endTime"));
+		
+		TableColumn<Appointment, String> roomNmbCol = new TableColumn<Appointment, String>("Raum");
+		roomNmbCol.setCellValueFactory(new PropertyValueFactory<>("roomNmb"));
+		
+		appointmentTableView.getColumns().addAll(appDateCol, startTimeCol, endTimeCol, roomNmbCol);
 
-		// ==================================================
+		// ======================================================================
 
 		add(titleLabel, 0, 0);
 		add(titleTextField, 1, 0, 3, 1);
@@ -423,7 +452,9 @@ public class ConcernView extends GridPane {
 		});
 
 		topicComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal)->{
-		    fileTableView.getItems().removeAll(oldVal.getForms());
+			if(oldVal != null) {
+				fileTableView.getItems().removeAll(oldVal.getForms());
+			}
 		    fileTableView.getItems().addAll(newVal.getForms());
 		});
 

@@ -1,5 +1,7 @@
 package tp.model;
 
+import java.sql.Date;
+
 import javafx.collections.ObservableList;
 
 public class Concern {
@@ -12,6 +14,10 @@ public class Concern {
 	private ObservableList<Reminder> reminders;
 	private ObservableList<Student> students;
 	private String notes;
+	
+	//for Tables
+	private Date nextAppointment;
+	private String studentsString;
 	
 	
 	public Concern(String title, Topic topic)
@@ -31,6 +37,27 @@ public class Concern {
 		this.reminders= reminders;
 		this.students= students;
 		this.notes= notes;
+		
+		nextAppointment = null;
+		for (Appointment a: appointments) {
+			if (nextAppointment == null) {
+				nextAppointment = a.getDate();
+			}else if (a.getDate().after(new Date(System.currentTimeMillis())) && nextAppointment.before(a.getDate())){
+				nextAppointment = a.getDate();
+			}
+		}
+		
+		for (Student s: students) {
+			studentsString += s.getFirstName().charAt(0) + ". " + s.getName() + ", ";
+		}
+	}
+
+	public Date getNextAppointment() {
+		return nextAppointment;
+	}
+
+	public String getStudentsString() {
+		return studentsString;
 	}
 
 	public int getId() {

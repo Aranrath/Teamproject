@@ -4,6 +4,7 @@ import javafx.collections.ObservableList;
 
 public class PO {
 	
+	
 	private int id;
 	private String name;
 	private ObservableList<Subject> optionalSubjects;
@@ -53,7 +54,10 @@ public class PO {
 		this.mandatorySubjects = mandatorySubjects;
 	}
 	
-	
+	@Override
+	public String toString() {
+		return name;
+	}
 
 	
 	

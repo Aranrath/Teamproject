@@ -273,15 +273,16 @@ public class Model {
 				Statement stmt = conn.createStatement();
 				ResultSet rs = stmt.executeQuery(sql))
 		{
-			rs.next();
+			if (rs.next()) {
 			
-			int concernId = rs.getInt("concern");
-			Date date = rs.getDate("date");
-			long startTime = rs.getLong("startTime");
-			long endTime = rs.getLong("endTime");
-			String roomNmb = rs.getString("roomNmb");
-			result = new Appointment(concernId, date, startTime, endTime, roomNmb);
-			result.setId(id);
+				int concernId = rs.getInt("concern");
+				Date date = rs.getDate("date");
+				long startTime = rs.getLong("startTime");
+				long endTime = rs.getLong("endTime");
+				String roomNmb = rs.getString("roomNmb");
+				result = new Appointment(concernId, date, startTime, endTime, roomNmb);
+				result.setId(id);
+			}
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -316,17 +317,20 @@ public class Model {
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql))
 		{
-			rs.next();
+			if (rs.next()) {
 			
-			String title = rs.getString("title"); 
-			ObservableList<Form> forms = getConcernForms(concernId);
-			Topic topic =getTopic(rs.getInt("topic"));
-			ObservableList<Appointment> appointments = getAppointments(concernId);
-			ObservableList<Reminder> reminders = getReminders(concernId);
-			ObservableList<Student> students = getStudents(concernId);
-			String notes = rs.getString("notes");	
+				String title = rs.getString("title"); 
+				ObservableList<Form> forms = getConcernForms(concernId);
+				Topic topic =getTopic(rs.getInt("topic"));
+				ObservableList<Appointment> appointments = getAppointments(concernId);
+				ObservableList<Reminder> reminders = getReminders(concernId);
+				//TODO endlosschleife!!
+//				ObservableList<Student> students = getStudents(concernId);
+				ObservableList<Student> students = FXCollections.observableArrayList();
+				String notes = rs.getString("notes");	
 			
-			result = new Concern (concernId, title, forms, topic, appointments, reminders, students, notes);
+				result = new Concern (concernId, title, forms, topic, appointments, reminders, students, notes);
+			}
 	
 		}
 		catch(Exception e)
@@ -339,7 +343,7 @@ public class Model {
 
 	public ObservableList<Concern> getConcerns() {
 		ObservableList<Concern> result = FXCollections.observableArrayList();
-		String sql = "SELECT * FROM result";
+		String sql = "SELECT * FROM concern";
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql))
@@ -418,12 +422,14 @@ public class Model {
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql))
 		{
-			String subject = rs.getString("subject");
-			String content = rs.getString("content");
-			String eMailAddress = rs.getString("eMailAddress");
-			Boolean recieved = rs.getBoolean("received");
-			Date date = rs.getDate("date");
-			mail.add(new EMail(content, subject, eMailAddress, date, recieved));
+			while(rs.next()) {
+				String subject = rs.getString("subject");
+				String content = rs.getString("content");
+				String eMailAddress = rs.getString("eMailAddress");
+				Boolean recieved = rs.getBoolean("received");
+				Date date = rs.getDate("date");
+				mail.add(new EMail(content, subject, eMailAddress, date, recieved));
+			}
 			
 		}
 		catch (Exception e)
@@ -468,23 +474,24 @@ public class Model {
 				Statement stmt = conn.createStatement();
 				ResultSet rs = stmt.executeQuery(sql))
 		{
-			rs.next();
+			if (rs.next()) {
 		
-			String title = rs.getString("title");
+				String title = rs.getString("title");
 			
-			File file = File.createTempFile(title, ".tmp");
-			try(FileOutputStream out = new FileOutputStream(file);
-					InputStream in = rs.getBinaryStream("image")){
-				byte[] buffer = new byte[1024];
-				while(in.read(buffer)>0) {
-					out.write(buffer);
+				File file = File.createTempFile(title, ".tmp");
+				try(FileOutputStream out = new FileOutputStream(file);
+						InputStream in = rs.getBinaryStream("image")){
+					byte[] buffer = new byte[1024];
+					while(in.read(buffer)>0) {
+						out.write(buffer);
+					}
+				}catch(Exception e) {
+					e.printStackTrace();
 				}
-			}catch(Exception e) {
-				e.printStackTrace();
+				result = new Form(title, file);
+				result.setId(id);
+				file.deleteOnExit();
 			}
-			result = new Form(title, file);
-			result.setId(id);
-			file.deleteOnExit();
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -525,30 +532,33 @@ public class Model {
 	public Student getStudent(int mtrNr) 
 	{
 		Student result = new Student(0, null, null, null, 0, null, 0, null, null, null);
-		String sql = "SELECT * FROM student WHERE Matrikelnummer = " + mtrNr;
+		String sql = "SELECT * FROM student WHERE matrNr = " + mtrNr;
 		
 		try (Connection conn = this.connect();
 				Statement stmt = conn.createStatement();
 				ResultSet rs = stmt.executeQuery(sql))
 			{
-				rs.next();
+				if (rs.next()) {
 				
-				String name = rs.getString("name");
-				String firstname = rs.getString("firstname");
-				ArrayList<String> eMailAddressess = getEMailAddressess(mtrNr);
-				int semester = rs.getInt("semester");
-				String notes = rs.getString("notes");
-				int ects = rs.getInt("ects");
-				ObservableList<Concern> concerns = getConcerns(mtrNr);
-				Image img = null;
-				try(InputStream is= rs.getBinaryStream("image")){
-					img = new Image(is);				
-				}catch(Exception e) {
-					e.printStackTrace();
+					String name = rs.getString("name");
+					String firstname = rs.getString("firstname");
+					ArrayList<String> eMailAddressess = getEMailAddressess(mtrNr);
+					int semester = rs.getInt("semester");
+					String notes = rs.getString("notes");
+					int ects = rs.getInt("ects");
+					ObservableList<Concern> concerns = getConcerns(mtrNr);
+					Image img = null;
+					try(InputStream is= rs.getBinaryStream("image")){
+						if (is!=null) {
+							img = new Image(is);		
+						}
+					}catch(Exception e) {
+						e.printStackTrace();
+					}
+					String gender = rs.getString("gender");
+				
+					result = new Student(mtrNr, name, firstname, eMailAddressess, semester, notes, ects, img, concerns, gender);	
 				}
-				String gender = rs.getString("gender");
-				
-				result = new Student(mtrNr, name, firstname, eMailAddressess, semester, notes, ects, img, concerns, gender);	
 			}		
 			catch(Exception e)
 			{
@@ -582,12 +592,13 @@ public class Model {
 				Statement stmt = conn.createStatement();
 				ResultSet rs = stmt.executeQuery(sql))
 		{
-			rs.next();
+			if (rs.next()) {
 		
-			String message = rs.getString("message");
-			Date date = rs.getDate("date");
-			result = new Reminder(message, date);
-			result.setId(id);
+				String message = rs.getString("message");
+				Date date = rs.getDate("date");
+				result = new Reminder(message, date);
+				result.setId(id);
+			}
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -651,8 +662,8 @@ public class Model {
 		{
 			while(rs.next())
 			{
-				int id = rs.getInt("id");
-				result.add(getStudent(id));
+				int mtrNr = rs.getInt("matrNr");
+				result.add(getStudent(mtrNr));
 			}
 		}
 		catch(Exception e)
@@ -670,12 +681,13 @@ public class Model {
 				Statement stmt = conn.createStatement();
 				ResultSet rs = stmt.executeQuery(sql))
 			{
-				rs.next();
-				String title = rs.getString("title");
-				int ects = rs.getInt("ects");
+					if (rs.next()) {
+					String title = rs.getString("title");
+					int ects = rs.getInt("ects");
 				
-				result = new Subject(title, ects);
-				result.setId(id);
+					result = new Subject(title, ects);
+					result.setId(id);
+				}
 			}catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -728,12 +740,12 @@ public class Model {
 		try(Connection conn = this.connect();
 				Statement stmt = conn.createStatement();
 				ResultSet rs = stmt.executeQuery(sql)){
-			rs.next();
+			if (rs.next()) {
+				String title = rs.getString("title");
 			
-			String title = rs.getString("title");
-			ObservableList<Form> forms = getTopicForms(topicId);
-			
-			result = new Topic(title, forms);	
+				ObservableList<Form> forms = getTopicForms(topicId);
+				result = new Topic(title, forms);	
+			}
 		}catch(Exception e) {
 			e.printStackTrace();
 		}

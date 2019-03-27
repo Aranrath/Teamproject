@@ -11,6 +11,8 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import tp.Presenter;
 import tp.model.Concern;
@@ -58,17 +60,36 @@ public class AllConcernsView extends GridPane
 		GridPane.setHalignment(deleteConcernButton, HPos.LEFT);
 
 
+		//===================================================================
 
+		ColumnConstraints col0 = new ColumnConstraints();
+		col0.setPercentWidth(30);
+		ColumnConstraints col1 = new ColumnConstraints();
+		col1.setPercentWidth(30);
+		     
+		getColumnConstraints().addAll(col0,col1);
+
+				
+		
+		
 		// ======================================================================
 		
 		TableColumn<Concern, String> titleCol = new TableColumn<Concern, String>("Titel");
-		TableColumn<Concern, String> topicNameCol = new TableColumn<Concern, String>("Thema");
-		TableColumn<Concern, Date> nextAppointmentDateAndTimeCol = new TableColumn<Concern, Date>("Nächster Termin");
-		TableColumn<Concern, String> students = new TableColumn<Concern, String>("Studenten");
-	
-
-		allConcernsTable.getColumns().addAll(titleCol, topicNameCol,nextAppointmentDateAndTimeCol, students);
+		titleCol.setCellValueFactory(new PropertyValueFactory<Concern, String>("title"));
 		
+		TableColumn<Concern, String> topicNameCol = new TableColumn<Concern, String>("Thema");
+		topicNameCol.setCellValueFactory(new PropertyValueFactory<Concern, String>("topic"));
+		
+		TableColumn<Concern, Date> nextAppointmentDateAndTimeCol = new TableColumn<Concern, Date>("Nächster Termin");
+		nextAppointmentDateAndTimeCol.setCellValueFactory(new PropertyValueFactory<Concern, Date>("nextAppointment"));
+		
+		TableColumn<Concern, String> students = new TableColumn<Concern, String>("Studenten");
+		students.setCellValueFactory(new PropertyValueFactory<Concern, String>("studentsString"));
+		
+		double width = titleCol.widthProperty().get() + topicNameCol.widthProperty().get() + nextAppointmentDateAndTimeCol.widthProperty().get();
+		students.prefWidthProperty().bind(allConcernsTable.widthProperty().subtract(width));
+		
+		allConcernsTable.getColumns().addAll(titleCol, topicNameCol, nextAppointmentDateAndTimeCol, students);
 
 		// =====================================================================
 
@@ -98,7 +119,7 @@ public class AllConcernsView extends GridPane
 	
 
 	private void fillView() {
-		// TODO Auto-generated method stub
+		allConcernsTable.setItems(presenter.getConcerns());
 		
 	}
 	
