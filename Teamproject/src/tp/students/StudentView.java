@@ -155,7 +155,7 @@ public class StudentView extends GridPane {
 		sendMailButton = new Button("Senden");
 
 		// =====================================
-
+		
 		add(studentImage, 0, 0, 1, 6);
 		add(takePictureButton, 0, 6);
 		GridPane.setHalignment(takePictureButton, HPos.CENTER);

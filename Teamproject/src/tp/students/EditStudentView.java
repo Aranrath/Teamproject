@@ -230,7 +230,8 @@ public class EditStudentView extends GridPane{
 			//TODO Oberfläche auslesen
 //			mtr + name auslesen (Pflichtfelder)
 			
-
+			int mtrNr = Integer.valueOf(studentMtrNr.getText());
+			
 			
 //			if()
 //			{
