@@ -19,7 +19,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Properties;
 
 import javax.imageio.ImageIO;
@@ -1465,6 +1464,15 @@ public void deleteAppointment(Appointment appointmentToDelete) {
 
 public void saveNewAppointment(Appointment newAppointment) {
 	// TODO Auto-generated method stub
+	
+}
+
+
+public Image getDefaultStudentImage() {
+	// TODO Auto-generated method stub
+	return new Image("https://pm1.narvii.com/6465/c52bdf1da2ba398aafba0322fd11983fe9286550_hq.jpg");
+//	return new Image("https://i.pinimg.com/originals/e2/69/8e/e2698e465dbf3f13844e896e00f0ea30.jpg");
+//	return null;
 	
 }
 }

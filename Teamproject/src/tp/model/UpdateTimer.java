@@ -3,7 +3,7 @@ package tp.model;
 public class UpdateTimer {
 
 	// TODO to be initialized
-	private Model model;
+//	private Model model;
 
 	public UpdateTimer() {
 		// TODO

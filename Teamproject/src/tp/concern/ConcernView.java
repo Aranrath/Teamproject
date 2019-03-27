@@ -129,8 +129,8 @@ public class ConcernView extends GridPane {
 		topicLabel = new Label("Thema:");
 		topicComboBox = new ComboBox<Topic>(presenter.getTopics());
 		newTopicButton = new Button("+");
-		newTopicButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
 		topicHBox = new HBox(topicComboBox, newTopicButton);
+		newTopicButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
 		topicComboBox.setMaxWidth(Double.MAX_VALUE);
 		HBox.setHgrow(topicComboBox, Priority.ALWAYS);
 

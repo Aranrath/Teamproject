@@ -12,6 +12,7 @@ import javax.mail.internet.MimeMessage;
 
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
+import javafx.scene.image.Image;
 import tp.model.Appointment;
 import tp.model.Concern;
 import tp.model.EMail;
@@ -346,6 +347,10 @@ public class Presenter {
 
 	public void checkMail(Student student) {
 		model.checkMail(student);
+	}
+
+	public Image getDefaultStudentImage() {
+		return model.getDefaultStudentImage();
 	}
 
 
