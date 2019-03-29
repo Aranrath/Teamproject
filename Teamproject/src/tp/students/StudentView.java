@@ -9,7 +9,6 @@ import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.geometry.VPos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -25,6 +24,7 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
@@ -47,8 +47,7 @@ public class StudentView extends GridPane {
 	private ImageView studentImage;
 	private Button takePictureButton;
 	private Label nameLabel;
-	private Label studentFirstName;
-	private Label studentLastName;
+	private Label studentName;
 	private Label mailLabel;
 	private Label studentMail_1;
 	private Label studentMail_2;
@@ -103,17 +102,22 @@ public class StudentView extends GridPane {
 		setPadding(new Insets(10, 10, 10, 10));
 		setHgap(10);
 		setVgap(10);
-
 		studentImage = new ImageView();
+		
+		//TODO
 		studentImage.setFitWidth(300);
+		
 		studentImage.setPreserveRatio(true);
 		studentImage.setSmooth(true);
 		studentImage.setCache(true);
-
+		
 		takePictureButton = new Button("Bild aufnehmen");
+		
+		takePictureButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
+		studentImage.minHeight(studentImage.prefHeight(USE_COMPUTED_SIZE));
+		
 		nameLabel = new Label("Name");
-		studentFirstName = new Label();
-		studentLastName = new Label();
+		studentName = new Label();
 		mailLabel = new Label("E-Mail Adressen");
 		studentMail_1 = new Label();
 		studentMail_2 = new Label();
@@ -135,10 +139,17 @@ public class StudentView extends GridPane {
 		editStudentButton = new Button("Profil bearbeiten");
 		notesLabel = new Label("Notizen");
 		studentNotes = new TextArea();
-		studentNotes.setPrefWidth(300);
 
+		//----------------------------------------------------
+		
 		mailExchangeLabel = new Label("E-Mail Austausch");
 		mailGridPane = new GridPane();
+		
+		mailGridPane.setMaxHeight(Double.MAX_VALUE);
+		
+		//TODO
+//		GridPane.setVgrow(mailGridPane, Priority.SOMETIMES);
+		
 		mailGridPane.setBackground(
 				new Background(new BackgroundFill(Color.CORNFLOWERBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
 		mailExchangeScrollPane = new ScrollPane();
@@ -148,20 +159,32 @@ public class StudentView extends GridPane {
 		mailExchangeVBox.setPadding(new Insets(5, 20, 5, 5));
 		mailExchangeVBox.prefWidthProperty().bind(mailExchangeScrollPane.widthProperty());
 		mailExchangeScrollPane.setContent(mailExchangeVBox);
+		
+		mailExchangeScrollPane.setMaxWidth(Double.MAX_VALUE);
+		GridPane.setHgrow(mailExchangeScrollPane, Priority.ALWAYS);
+		
 		mailCCTextField = new TextField("");
 		mailCCTextField.setPromptText("Betreff");
+		
 		mailContentTextArea = new TextArea("");
 		mailContentTextArea.setPromptText("Inhalt");
 		sendMailButton = new Button("Senden");
+		
 
+		mailContentTextArea.prefWidthProperty().bind(mailGridPane.widthProperty().divide(2));
+		mailContentTextArea.prefHeightProperty().bind(mailGridPane.heightProperty());
+		
+		
+		sendMailButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
+		sendMailButton.setMaxWidth(Double.MAX_VALUE);
+		
 		// =====================================
 		
 		add(studentImage, 0, 0, 1, 8);
 		add(takePictureButton, 0, 8);
 		GridPane.setHalignment(takePictureButton, HPos.CENTER);
 		add(nameLabel, 1, 0);
-		add(studentFirstName, 2, 0);
-		add(studentLastName, 3, 0);
+		add(studentName, 2, 0,2,1);
 		add(mailLabel, 1, 3);
 		add(studentMail_1, 2, 3, 2, 1);
 		add(studentMail_2, 2, 4, 2, 1);
@@ -177,6 +200,7 @@ public class StudentView extends GridPane {
 		add(concernsLabel, 4, 2,2,1);
 		GridPane.setHalignment(concernsLabel, HPos.LEFT);
 		add(newConcernButton, 5, 8);
+		GridPane.setHalignment(newConcernButton, HPos.RIGHT);
 		add(deleteConcernButton,4,8);
 		add(connectedConcernsListView, 4, 3, 2, 5);
 		add(errorLabel, 3, 1, 3, 1);
@@ -192,13 +216,11 @@ public class StudentView extends GridPane {
 
 		// ================build mailGridPane====================
 
-		mailGridPane.add(mailExchangeScrollPane, 0, 0, 2, 1);
-		mailGridPane.add(mailCCTextField, 0, 1);
-		GridPane.setHalignment(mailCCTextField, HPos.LEFT);
-		mailGridPane.add(mailContentTextArea, 0, 2);
-		mailGridPane.add(sendMailButton, 1, 1, 1, 2);
+		mailGridPane.add(mailExchangeScrollPane, 0, 0, 1, 3);
+		mailGridPane.add(mailCCTextField, 1, 0);
+		mailGridPane.add(mailContentTextArea, 1, 1);
+		mailGridPane.add(sendMailButton, 1, 2);
 		GridPane.setHalignment(sendMailButton, HPos.CENTER);
-		GridPane.setValignment(sendMailButton, VPos.CENTER);
 
 
 		// ===================================================================
@@ -217,7 +239,7 @@ public class StudentView extends GridPane {
 		col5.setPercentWidth(15);
 
 		getColumnConstraints().addAll(col0, col1, col2, col3, col4, col5);
-
+		
 		// ===================================================================
 
 		takePictureButton.setOnAction((event) -> {
@@ -278,8 +300,8 @@ public class StudentView extends GridPane {
 		if (student.getImage() != null) {
 			studentImage.setImage(student.getImage());
 		}
-		studentFirstName.setText(student.getFirstName());
-		studentLastName.setText(student.getName());
+		studentName.setText(student.getFirstName() + " " + student.getName());
+
 		
 		ArrayList<String> mail = student.geteMailAddresses();
 		
@@ -301,7 +323,7 @@ public class StudentView extends GridPane {
 
 		studentMtrNr.setText("" + student.getMtrNr());
 		
-		if(student.getPo() != null);
+		if(student.getPo() != null)
 		{
 			studentPO.setText(student.getPo().getName());
 		}

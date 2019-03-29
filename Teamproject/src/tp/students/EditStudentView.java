@@ -120,7 +120,7 @@ public class EditStudentView extends GridPane {
 		newPOButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
 		studentPO.setMaxWidth(Double.MAX_VALUE);
 		HBox.setHgrow(studentPO, Priority.ALWAYS);
-
+		
 		ectsLabel = new Label("ECTS");
 		studentECTS = new TextField();
 		studentECTS.setPromptText("0");
