@@ -328,7 +328,7 @@ public class Presenter {
 
 	public void deleteReminder(Reminder reminderToDelete) {
 		model.deleteReminder(reminderToDelete);
-		
+	
 	}
 
 	public void deleteAppointment(Appointment appointmentToDelete) {
@@ -351,6 +351,15 @@ public class Presenter {
 
 	public Image getDefaultStudentImage() {
 		return model.getDefaultStudentImage();
+	}
+
+	public boolean mtrAlreadyExists(int mtrNr) {
+		return model.mtrAlreadyExists(mtrNr);
+	}
+
+	public void changeStudentMtrNr(int oldMtrNr, int newMtrNr) {
+		model.changeStudentMtrNr( oldMtrNr,  newMtrNr);
+		
 	}
 
 

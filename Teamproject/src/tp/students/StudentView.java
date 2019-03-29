@@ -2,6 +2,8 @@ package tp.students;
 
 import java.util.ArrayList;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
@@ -10,7 +12,6 @@ import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
@@ -21,6 +22,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
@@ -32,9 +34,7 @@ import tp.Presenter;
 import tp.model.Concern;
 import tp.model.EMail;
 import tp.model.MyTab;
-import tp.model.PO;
 import tp.model.Student;
-import tp.options.EditPOView;
 
 public class StudentView extends GridPane {
 
@@ -42,7 +42,7 @@ public class StudentView extends GridPane {
 	private Student student;
 	private MyTab tab;
 
-	// ====================================
+	// ====================================GUI
 
 	private ImageView studentImage;
 	private Button takePictureButton;
@@ -56,19 +56,21 @@ public class StudentView extends GridPane {
 	private Label mtrNrLabel;
 	private Label studentMtrNr;
 	private Label poLabel;
-	private ComboBox<PO> studentPO;
-	private Button newPOButton;
+	private Label studentPO;
 	private Label semesterLabel;
 	private Label studentSemester;
 	private Label ectsLabel;
 	private Label studentECTS;
 	private Label concernsLabel;
 	private Button newConcernButton;
+	private Button deleteConcernButton;
 	private ListView<Concern> connectedConcernsListView;
 	private Label errorLabel;
 	private Button editStudentButton;
 	private Label notesLabel;
 	private TextArea studentNotes;
+	
+	//-----------------------------GUI: mailExchange Box
 
 	private Label mailExchangeLabel;
 	private GridPane mailGridPane;
@@ -119,18 +121,18 @@ public class StudentView extends GridPane {
 		mtrNrLabel = new Label("Mtr.Nr");
 		studentMtrNr = new Label();
 		poLabel = new Label("Studiengang");
-		studentPO = new ComboBox<PO>(presenter.getPOs());
-		newPOButton = new Button("neue PO");
+		studentPO = new Label();
 		ectsLabel = new Label("ECTS");
 		studentECTS = new Label();
 		semesterLabel = new Label("Semester");
 		studentSemester = new Label();
 		concernsLabel = new Label("Anliegen");
 		newConcernButton = new Button("Neues Anliegen");
+		deleteConcernButton = new Button("Student aus Anliegen entfernen");
 		connectedConcernsListView = new ListView<Concern>();
 		errorLabel = new Label("Ich bin ein Error-Label, bitch");
 		errorLabel.setVisible(false);
-		editStudentButton = new Button("Profil speichern");
+		editStudentButton = new Button("Profil bearbeiten");
 		notesLabel = new Label("Notizen");
 		studentNotes = new TextArea();
 		studentNotes.setPrefWidth(300);
@@ -148,65 +150,45 @@ public class StudentView extends GridPane {
 		mailExchangeScrollPane.setContent(mailExchangeVBox);
 		mailCCTextField = new TextField("");
 		mailCCTextField.setPromptText("Betreff");
-		mailCCTextField.getParent().requestFocus();
 		mailContentTextArea = new TextArea("");
 		mailContentTextArea.setPromptText("Inhalt");
-		mailContentTextArea.getParent().requestFocus();
 		sendMailButton = new Button("Senden");
 
 		// =====================================
 		
-		add(studentImage, 0, 0, 1, 6);
-		add(takePictureButton, 0, 6);
+		add(studentImage, 0, 0, 1, 8);
+		add(takePictureButton, 0, 8);
 		GridPane.setHalignment(takePictureButton, HPos.CENTER);
 		add(nameLabel, 1, 0);
-		GridPane.setHalignment(nameLabel, HPos.LEFT);
 		add(studentFirstName, 2, 0);
-		GridPane.setHalignment(studentFirstName, HPos.LEFT);
 		add(studentLastName, 3, 0);
-		GridPane.setHalignment(studentLastName, HPos.LEFT);
 		add(mailLabel, 1, 3);
-		GridPane.setHalignment(mailLabel, HPos.LEFT);
 		add(studentMail_1, 2, 3, 2, 1);
-		GridPane.setHalignment(studentMail_1, HPos.LEFT);
 		add(studentMail_2, 2, 4, 2, 1);
-		GridPane.setHalignment(studentMail_2, HPos.LEFT);
 		add(studentMail_3, 2, 5, 2, 1);
-		GridPane.setHalignment(studentMail_3, HPos.LEFT);
-		add(mtrNrLabel, 1, 2);
-		GridPane.setHalignment(mtrNrLabel, HPos.LEFT);
-		add(studentMtrNr, 2, 2, 2, 1);
-		GridPane.setHalignment(studentMtrNr, HPos.LEFT);
-		add(poLabel, 1, 1);
-		GridPane.setHalignment(poLabel, HPos.LEFT);
-		add(studentPO, 2, 1);
-		GridPane.setHalignment(studentPO, HPos.LEFT);
-		add(newPOButton, 3, 1);
-		GridPane.setHalignment(newPOButton, HPos.LEFT);
-		add(ectsLabel, 4, 1);
-		GridPane.setHalignment(ectsLabel, HPos.LEFT);
-		add(studentECTS, 5, 1);
-		GridPane.setHalignment(studentECTS, HPos.LEFT);
-		add(semesterLabel, 4, 0);
-		GridPane.setHalignment(semesterLabel, HPos.LEFT);
-		add(studentSemester, 5, 0);
-		GridPane.setHalignment(studentSemester, HPos.LEFT);
-		add(concernsLabel, 4, 2);
+		add(mtrNrLabel, 1, 1);
+		add(studentMtrNr, 2, 1);
+		add(poLabel, 1, 2);
+		add(studentPO, 2, 2,2,1);
+		add(ectsLabel, 1, 6);
+		add(studentECTS, 2, 6);
+		add(semesterLabel, 1, 7);
+		add(studentSemester, 2, 7);
+		add(concernsLabel, 4, 2,2,1);
 		GridPane.setHalignment(concernsLabel, HPos.LEFT);
-		add(newConcernButton, 5, 2);
-		GridPane.setHalignment(newConcernButton, HPos.LEFT);
-		add(connectedConcernsListView, 4, 3, 2, 3);
-		add(errorLabel, 1, 6, 4, 2);
+		add(newConcernButton, 5, 8);
+		add(deleteConcernButton,4,8);
+		add(connectedConcernsListView, 4, 3, 2, 5);
+		add(errorLabel, 3, 1, 3, 1);
 		GridPane.setHalignment(errorLabel, HPos.RIGHT);
-		add(editStudentButton, 5, 6, 1, 2);
-		GridPane.setValignment(editStudentButton, VPos.CENTER);
+		add(editStudentButton, 5, 0);
 		GridPane.setHalignment(editStudentButton, HPos.RIGHT);
-		add(notesLabel, 0, 7);
+		add(notesLabel, 0, 9);
 		GridPane.setHalignment(notesLabel, HPos.LEFT);
-		add(studentNotes, 0, 8);
-		add(mailExchangeLabel, 1, 7);
+		add(studentNotes, 0, 10);
+		add(mailExchangeLabel, 1, 9);
 		GridPane.setHalignment(mailExchangeLabel, HPos.LEFT);
-		add(mailGridPane, 1, 8, 5, 1);
+		add(mailGridPane, 1, 10, 5, 1);
 
 		// ================build mailGridPane====================
 
@@ -218,7 +200,25 @@ public class StudentView extends GridPane {
 		GridPane.setHalignment(sendMailButton, HPos.CENTER);
 		GridPane.setValignment(sendMailButton, VPos.CENTER);
 
-		// =========================================================
+
+		// ===================================================================
+
+		ColumnConstraints col0 = new ColumnConstraints();
+		col0.setPercentWidth(30);
+		ColumnConstraints col1 = new ColumnConstraints();
+		col1.setPercentWidth(10);
+		ColumnConstraints col2 = new ColumnConstraints();
+		col2.setPercentWidth(15);
+		ColumnConstraints col3 = new ColumnConstraints();
+		col3.setPercentWidth(15);
+		ColumnConstraints col4 = new ColumnConstraints();
+		col4.setPercentWidth(15);
+		ColumnConstraints col5 = new ColumnConstraints();
+		col5.setPercentWidth(15);
+
+		getColumnConstraints().addAll(col0, col1, col2, col3, col4, col5);
+
+		// ===================================================================
 
 		takePictureButton.setOnAction((event) -> {
 			Stage stage = new Stage();
@@ -229,21 +229,19 @@ public class StudentView extends GridPane {
 			stage.show();
 		});
 
-		newPOButton.setOnAction((event) -> {
-			Stage stage = new Stage();
-			stage.setAlwaysOnTop(true);
-			stage.initModality(Modality.APPLICATION_MODAL);
-			stage.setTitle("Neue PO");
-			stage.setScene(
-					new Scene(new EditPOView(presenter.getPOs(), presenter.getSubjects(), stage, presenter), 450, 450));
-			stage.show();
-		});
 
 		newConcernButton.setOnAction((event) -> {
 			ObservableList<Student> list = FXCollections.observableArrayList();
 			list.add(student);
 			presenter.openNewConcernTab(list);
 
+		});
+		
+		deleteConcernButton.setOnAction((event) -> {
+			Concern selectedConcern = connectedConcernsListView.getSelectionModel().getSelectedItem();
+			selectedConcern.getStudents().remove(student);
+			connectedConcernsListView.getItems().remove(selectedConcern);
+			
 		});
 
 		editStudentButton.setOnAction((event) -> {
@@ -265,7 +263,15 @@ public class StudentView extends GridPane {
 			
 		});
 
-		// TODO Notes müssen beim schließen gespeichert werden!!
+		studentNotes.textProperty().addListener(new ChangeListener<String>() {
+
+			@Override
+			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+				student.setNotes(newValue);
+				presenter.saveEditedStudent(student);
+				
+			}
+		});
 	}
 
 	private void fillView() {
@@ -274,11 +280,32 @@ public class StudentView extends GridPane {
 		}
 		studentFirstName.setText(student.getFirstName());
 		studentLastName.setText(student.getName());
-		studentMail_1.setText(student.geteMailAddresses().get(0));
-		studentMail_2.setText(student.geteMailAddresses().get(1));
-		studentMail_3.setText(student.geteMailAddresses().get(2));
+		
+		ArrayList<String> mail = student.geteMailAddresses();
+		
+		if(mail.size()==1)
+		{
+			studentMail_1.setText(student.geteMailAddresses().get(0));
+		}
+		else if(mail.size()==2)
+		{
+			studentMail_1.setText(student.geteMailAddresses().get(0));
+			studentMail_2.setText(student.geteMailAddresses().get(1));
+		}
+		else if(mail.size()==3)
+		{
+			studentMail_1.setText(student.geteMailAddresses().get(0));
+			studentMail_2.setText(student.geteMailAddresses().get(1));
+			studentMail_3.setText(student.geteMailAddresses().get(2));
+		}	
+
 		studentMtrNr.setText("" + student.getMtrNr());
-		studentPO.getSelectionModel().select(student.getPo());
+		
+		if(student.getPo() != null);
+		{
+			studentPO.setText(student.getPo().getName());
+		}
+	
 		studentECTS.setText("" + student.getEcts());
 		studentSemester.setText("" + student.getSemester());
 		connectedConcernsListView = new ListView<Concern>(student.getConcerns());

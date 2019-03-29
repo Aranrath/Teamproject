@@ -33,14 +33,14 @@ import tp.model.PO;
 import tp.model.Student;
 import tp.options.EditPOView;
 
-public class EditStudentView extends GridPane{
-	
+public class EditStudentView extends GridPane {
+
 	private Presenter presenter;
 	private Student student;
 	private MyTab tab;
-	
-	//====================================
-	
+
+	// ====================================
+
 	private ImageView studentImage;
 	private Button takePictureButton;
 	private Label nameLabel;
@@ -67,7 +67,7 @@ public class EditStudentView extends GridPane{
 	private TextArea studentNotes;
 	private Label mailExchangeLabel;
 	private VBox mailExchangeBox;
-	
+
 	private Label genderLabel;
 	private ComboBox<String> genderComboBox;
 
@@ -83,236 +83,327 @@ public class EditStudentView extends GridPane{
 		buildView();
 		fillView();
 	}
-	
+
 	private void buildView() {
-		
+
 		setPadding(new Insets(10, 10, 10, 10));
 		setHgap(10);
 		setVgap(10);
-		
+
 		studentImage = new ImageView();
 		studentImage.setFitWidth(300);
 		studentImage.setPreserveRatio(true);
 		studentImage.setSmooth(true);
 		studentImage.setCache(true);
-		
+
 		takePictureButton = new Button("Bild aufnehmen");
-		nameLabel = new Label ("Name");
+		nameLabel = new Label("Name");
 		studentFirstName = new TextField();
+		studentFirstName.setPromptText("Vorname");
 		studentLastName = new TextField();
+		studentLastName.setPromptText("Nachname");
 		mailLabel = new Label("E-Mail Adressen");
 		studentMail_1 = new TextField();
+		studentMail_1.setPromptText("mustermann@fh-trier.de");
 		studentMail_2 = new TextField();
+		studentMail_2.setPromptText("mustermann@gmail.com");
 		studentMail_3 = new TextField();
+		studentMail_3.setPromptText("musterteam@gmail.com");
 		mtrNrLabel = new Label("Mtr.Nr");
 		studentMtrNr = new TextField();
-		
-		poLabel = new Label ("Studiengang");
+		studentMtrNr.setPromptText("000000");
+
+		poLabel = new Label("Studiengang");
 		studentPO = new ComboBox<PO>(presenter.getPOs());
 		newPOButton = new Button("+");
 		HBox poHBox = new HBox(studentPO, newPOButton);
 		newPOButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
 		studentPO.setMaxWidth(Double.MAX_VALUE);
 		HBox.setHgrow(studentPO, Priority.ALWAYS);
-		
+
 		ectsLabel = new Label("ECTS");
 		studentECTS = new TextField();
+		studentECTS.setPromptText("0");
 		semesterLabel = new Label("Semester");
 		studentSemester = new TextField();
+		studentSemester.setPromptText("0");
 		concernsLabel = new Label("Anliegen");
 		concernsLabel.setVisible(false);
 		concernsListView = new ListView<Concern>();
 		concernsListView.setVisible(false);
-		errorLabel = new Label("Ich bin ein Error-Label, bitch");
+		errorLabel = new Label("MatrikelNr und Name müssen gesetzt sein");
+		errorLabel.setTextFill(Color.RED);
 		errorLabel.setVisible(false);
 		saveButton = new Button("Profil speichern");
 		notesLabel = new Label("Notizen");
 		studentNotes = new TextArea();
-		studentNotes.setPrefWidth(300);
+		studentNotes.setPromptText("Ein Student.");
 		mailExchangeLabel = new Label("E-Mail Austausch");
 		mailExchangeLabel.setVisible(false);
 		mailExchangeBox = new VBox();
 		mailExchangeBox.setVisible(false);
 		mailExchangeBox.setBackground(new Background(new BackgroundFill(Color.CORNFLOWERBLUE, null, null)));
 		genderLabel = new Label("Geschlecht");
-		ObservableList<String> genderOptions = 
-			    FXCollections.observableArrayList(
-			    	"unbekannt",
-			        "männlich",
-			        "weiblich",
-			        "divers"
-			    );
+		ObservableList<String> genderOptions = FXCollections.observableArrayList("unbekannt", "männlich", "weiblich",
+				"divers");
 		genderComboBox = new ComboBox<String>(genderOptions);
 		genderComboBox.setValue("unbekannt");
 		genderComboBox.setMaxWidth(Double.MAX_VALUE);
-		
-		//=====================================
-		add(studentImage,0,0,1,8);
+
+		// =====================================
+		add(studentImage, 0, 0, 1, 8);
 		GridPane.setValignment(studentImage, VPos.TOP);
-		add(takePictureButton,0,8);
+		add(takePictureButton, 0, 8);
 		GridPane.setHalignment(takePictureButton, HPos.CENTER);
 		studentImage.setPreserveRatio(true);
-		if(student == null)
-		{
+		if (student == null) {
 			studentImage.setImage(presenter.getDefaultStudentImage());
 		}
-		
-		add(nameLabel,1,0);
-		add(studentFirstName,2,0);
-		add(studentLastName,3,0);
-		
-		add(mtrNrLabel,1,1);
-		add(studentMtrNr, 2,1);
-		
-		add(poLabel,1,2);
-		add(poHBox,2,2,2,1);
-		
-		add(mailLabel,1,3);
-		add(studentMail_1,2,3,2,1);
-		add(studentMail_2,2,4,2,1);
-		add(studentMail_3,2,5,2,1);
 
-		add(ectsLabel,1,6);
-		add(studentECTS,2,6);
-		add(semesterLabel,1,7);
-		add(studentSemester,2,7);
-		add(genderLabel,1,8);
-		add(genderComboBox,2,8);
-		
-		add(concernsLabel,4,2,2,1);
-		add(concernsListView,4,3,2,5);
-		
-		add(errorLabel,3,1,3,1);
+		add(nameLabel, 1, 0);
+		add(studentFirstName, 2, 0);
+		add(studentLastName, 3, 0);
+
+		add(mtrNrLabel, 1, 1);
+		add(studentMtrNr, 2, 1);
+
+		add(poLabel, 1, 2);
+		add(poHBox, 2, 2, 2, 1);
+
+		add(mailLabel, 1, 3);
+		add(studentMail_1, 2, 3, 2, 1);
+		add(studentMail_2, 2, 4, 2, 1);
+		add(studentMail_3, 2, 5, 2, 1);
+
+		add(ectsLabel, 1, 6);
+		add(studentECTS, 2, 6);
+		add(semesterLabel, 1, 7);
+		add(studentSemester, 2, 7);
+		add(genderLabel, 1, 8);
+		add(genderComboBox, 2, 8);
+
+		add(concernsLabel, 4, 2, 2, 1);
+		add(concernsListView, 4, 3, 2, 5);
+
+		add(errorLabel, 3, 1, 3, 1);
 		GridPane.setHalignment(errorLabel, HPos.RIGHT);
-		add(saveButton,5,0);
+		add(saveButton, 5, 0);
 		GridPane.setHalignment(saveButton, HPos.RIGHT);
-		
-		add(notesLabel,0,9);
+
+		add(notesLabel, 0, 9);
 		GridPane.setHalignment(notesLabel, HPos.LEFT);
-		add(studentNotes,0,10);
-		
-		add(mailExchangeLabel,1,9);
+		add(studentNotes, 0, 10);
+
+		add(mailExchangeLabel, 1, 9);
 		GridPane.setHalignment(mailExchangeLabel, HPos.LEFT);
-		add(mailExchangeBox,1,10,5,1);
-		
-		
-		//===================================================================
+		add(mailExchangeBox, 1, 10, 5, 1);
+
+		// ===================================================================
 
 		ColumnConstraints col0 = new ColumnConstraints();
-	     col0.setPercentWidth(30);
-	     ColumnConstraints col1 = new ColumnConstraints();
-	     col1.setPercentWidth(10);
-	     ColumnConstraints col2 = new ColumnConstraints();
-	     col2.setPercentWidth(15);
-	     ColumnConstraints col3 = new ColumnConstraints();
-		 col3.setPercentWidth(15);
-		 ColumnConstraints col4 = new ColumnConstraints();
-		 col4.setPercentWidth(15);
-		 ColumnConstraints col5 = new ColumnConstraints();
-		 col5.setPercentWidth(15);
-	     
-	     getColumnConstraints().addAll(col0,col1,col2,col3,col4,col5);
+		col0.setPercentWidth(30);
+		ColumnConstraints col1 = new ColumnConstraints();
+		col1.setPercentWidth(10);
+		ColumnConstraints col2 = new ColumnConstraints();
+		col2.setPercentWidth(15);
+		ColumnConstraints col3 = new ColumnConstraints();
+		col3.setPercentWidth(15);
+		ColumnConstraints col4 = new ColumnConstraints();
+		col4.setPercentWidth(15);
+		ColumnConstraints col5 = new ColumnConstraints();
+		col5.setPercentWidth(15);
 
-		
-		//===================================================================
-		
-		takePictureButton.setOnAction((event)->{
+		getColumnConstraints().addAll(col0, col1, col2, col3, col4, col5);
+
+		// ===================================================================
+
+		takePictureButton.setOnAction((event) -> {
 			Stage stage = new Stage();
 			stage.setAlwaysOnTop(true);
 			stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setTitle("Foto aufnehmen");
-            stage.setScene(new Scene(new TakeImageView(stage, presenter, this), 450, 450));
-            stage.show();
+			stage.setTitle("Foto aufnehmen");
+			stage.setScene(new Scene(new TakeImageView(stage, presenter, this), 450, 450));
+			stage.show();
 		});
-		
-		saveButton.setOnAction((event)->{
+
+		saveButton.setOnAction((event) -> {
 			
-			//TODO Oberfläche auslesen
-//			mtr + name auslesen (Pflichtfelder)
+			//-----------------------------Auszulesende Attribute
+
+			String name;
+			int mtrNr;
+			ArrayList<String> eMailAddresses;
+			String firstName;
+			Image image;
+			PO po;
+			int semester;
+			int ects;
+			ObservableList<Concern> concerns;
+			String notes;
 			
-			int mtrNr = Integer.valueOf(studentMtrNr.getText());
 			
-			
-//			if()
-//			{
-				//TODO error
-//				return;
-//			}
-			
-			ArrayList<String> eMailAddresses = new ArrayList<String>();
-			
-			String mail1 = studentMail_1.getText();
-			if(mail1 != null)
-			{
-				eMailAddresses.add(mail1);
-			}
-			String mail2 = studentMail_2.getText();
-			if(mail2 != null)
-			{
-				eMailAddresses.add(mail2);
-			}
-			String mail3 = studentMail_3.getText();
-			if(mail3 != null)
-			{
-				eMailAddresses.add(mail3);
-			}
+			//-----------------------------Auslesen (und evtl. Werte checken)
 			
 			ArrayList<String> changedMailAddresses;
-//					
-				if (student == null)
+
+			//Pflichtfelder auslesen:
+			if (studentMtrNr.getText().isEmpty() || studentLastName.getText().isEmpty())
+			{
+				errorLabel.setText("MatrikelNr und Name müssen gesetzt sein");
+				errorLabel.setVisible(true);
+				return;
+				
+			}
+			else
+			{
+				try
 				{
-//					Student newStudent = new Student(mtrNr, name);
-//					newStudent.setMail...
-					
-//					restliche Flächen auslesen + setzen falls nicht leer
-					//TODO setStuff
-					
-					changedMailAddresses = new ArrayList<String>();
-					presenter.saveNewStudent(student);
-			
+					mtrNr = Integer.parseInt(studentMtrNr.getText());
+					name = studentLastName.getText();
 				}
-				else
+				catch (Exception e) {
+					errorLabel.setText("MatrikelNr nicht zulässig");
+					errorLabel.setVisible(true);
+					return;
+				}
+			}
+			
+			if((student == null && presenter.mtrAlreadyExists(mtrNr)) || (student != null && student.getMtrNr() != mtrNr && presenter.mtrAlreadyExists(mtrNr)) )
+			{
+				errorLabel.setText("Matrikelnummer bereits vergeben");
+				errorLabel.setVisible(true);
+			}
+			
+			//EMail Adressen auslesen
+			eMailAddresses = new ArrayList<String>();
+			if (!studentMail_1.getText().isEmpty()) {
+				eMailAddresses.add(studentMail_1.getText());
+			}
+			if (!studentMail_2.getText().isEmpty()) {
+				eMailAddresses.add(studentMail_2.getText());
+			}
+			if (!studentMail_3.getText().isEmpty()) {
+				eMailAddresses.add(studentMail_3.getText());
+			}
+			
+			firstName = studentFirstName.getText().trim();
+			if(studentImage.getImage() != presenter.getDefaultStudentImage())
+			{
+				image = studentImage.getImage();
+			}
+			else
+			{
+				image = null;
+			}
+			po = studentPO.getSelectionModel().getSelectedItem();
+			if(!studentSemester.getText().isEmpty())
+			{
+				try
 				{
-					changedMailAddresses = eMailAddresses;
-					changedMailAddresses.removeAll(student.geteMailAddresses());
-	
-//					restliche Flächen auslesen + setzen falls nicht leer
-					//TODO setStuff
-					student.seteMailAddresses(eMailAddresses);
-					
-					presenter.saveEditedStudent(student);
+					semester = Integer.parseInt(studentSemester.getText());
 				}
-				
-				presenter.openStudenTab(student, changedMailAddresses);
-				presenter.closeThisTab(tab);
-				
-				
-//			
+				catch(Exception e)
+				{
+					errorLabel.setText("Semesterangabe ungültig");
+					errorLabel.setVisible(true);
+					return;
+				}
+			}
+			else
+			{
+				semester = 0;
+			}
+
+			if(!studentECTS.getText().isEmpty())
+			{
+				try
+				{
+					ects = Integer.parseInt(studentECTS.getText());
+				}
+				catch(Exception e)
+				{
+					errorLabel.setText("ECTS-Angabe ungültig");
+					errorLabel.setVisible(true);
+					return;
+				}
+			}
+			else
+			{
+				ects = 0;
+			}
+
 			
+			concerns = concernsListView.getItems();
+			notes = studentNotes.getText();
+			
+			//----------------------------Speichern
+			
+			//Speichern wenn noch kein Student exisitert
+			if (student == null)
+			{
+				changedMailAddresses = new ArrayList<String>();
+				
+				student = new Student(mtrNr, name);
+				student.seteMailAddresses(eMailAddresses);
+				student.setFirstName(firstName);
+				student.setImage(image);
+				student.setPo(po);
+				student.setSemester(semester);
+				student.setEcts(ects);
+				student.setNotes(notes);
+				
+				presenter.saveNewStudent(student);
+				
+			}
+			//Bestehenden Studenten ändern und speichern
+			else
+			{
+				changedMailAddresses = eMailAddresses;
+				changedMailAddresses.removeAll(student.geteMailAddresses());
+				
+				if(student.getMtrNr() != mtrNr)
+				{
+					presenter.changeStudentMtrNr(student.getMtrNr(), mtrNr);
+					student.setMtrNr(mtrNr);
+				}
+				student.setName(name);
+				student.seteMailAddresses(eMailAddresses);
+				student.setFirstName(firstName);
+				student.setImage(image);
+				student.setPo(po);
+				student.setSemester(semester);
+				student.setEcts(ects);
+				student.setConcerns(concerns);
+				student.setNotes(notes);
+
+				presenter.saveEditedStudent(student);
+			}
+
+			presenter.openStudenTab(student, changedMailAddresses);
+			presenter.closeThisTab(tab);
+
 		});
-		
-		newPOButton.setOnAction((event)->{
+
+		newPOButton.setOnAction((event) -> {
 			Stage stage = new Stage();
 			stage.setAlwaysOnTop(true);
 			stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setTitle("Neue PO");
-            stage.setScene(new Scene(new EditPOView(presenter.getPOs(), presenter.getSubjects(),stage, presenter), 450, 450));
-            stage.show();
+			stage.setTitle("Neue PO");
+			stage.setScene(
+					new Scene(new EditPOView(presenter.getPOs(), presenter.getSubjects(), stage, presenter), 450, 450));
+			stage.show();
 		});
 	}
-	
+
 	private void fillView() {
 		mailExchangeBox.setVisible(true);
 		mailExchangeBox.setVisible(true);
 		concernsLabel.setVisible(true);
 		concernsListView.setVisible(true);
-		
-		if(student.getImage()!=null)
-		{
+
+		if (student.getImage() != null) {
 			studentImage.setImage(student.getImage());
-		}
-		else
-		{
+		} else {
 			studentImage.setImage(presenter.getDefaultStudentImage());
 		}
 		studentFirstName.setText(student.getFirstName());
@@ -326,10 +417,12 @@ public class EditStudentView extends GridPane{
 		studentSemester.setText("" + student.getSemester());
 		concernsListView = new ListView<Concern>(student.getConcerns());
 		studentNotes.setText(student.getNotes());
+		genderComboBox.setValue(student.getGender());
 	}
+	
 
-	public void updateImage(Image image)
-	{
+
+	public void updateImage(Image image) {
 		studentImage.setImage(image);
 	}
 }
