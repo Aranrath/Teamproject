@@ -20,7 +20,6 @@ import tp.model.Student;
 
 public class AddStudentToConcernView extends GridPane{
 	
-	private Presenter presenter;
 	private Stage stage;
 	private ConcernView concernView;
 	private ObservableList<Student> selectedStudents;
@@ -32,7 +31,6 @@ public class AddStudentToConcernView extends GridPane{
 	TableView<Student> selectedStudentsTable;
 	Label searchBar;
 	Label selectionLabel;
-	Button newStudentButton;
 	Button toRightButton;
 	Button toLeftButton;
 	Button allToLeftButton;
@@ -40,7 +38,6 @@ public class AddStudentToConcernView extends GridPane{
 	
 	public AddStudentToConcernView(Presenter presenter, Stage stage, ConcernView concernView, ObservableList<Student> alreadyInConcernStudents)
 	{
-		this.presenter = presenter;
 		this.stage = stage;
 		this.concernView = concernView;
 		this.selectedStudents = alreadyInConcernStudents;
@@ -60,7 +57,6 @@ public class AddStudentToConcernView extends GridPane{
 		selectedStudentsTable = new TableView<Student>(selectedStudents);
 		searchBar = new Label("Hier sollte die SearchBar sein");
 		selectionLabel = new Label("Auswahl");
-		newStudentButton = new Button("Neuen Studenten hinzufügen");
 		toRightButton = new Button(">");
 		toLeftButton = new Button("<");
 		allToLeftButton = new Button("<<");
@@ -70,9 +66,6 @@ public class AddStudentToConcernView extends GridPane{
 
 				add(searchBar, 0, 0);
 				GridPane.setHalignment(searchBar, HPos.LEFT);
-
-				add(newStudentButton, 1, 0);
-				GridPane.setHalignment(newStudentButton, HPos.RIGHT);
 
 				add(selectionLabel, 3, 0);
 
@@ -120,11 +113,6 @@ public class AddStudentToConcernView extends GridPane{
 				selectedStudentsTable.getColumns().addAll(mtrNrCol2, lastNameCol2, firstNameCol2);
 
 				// =====================================================================
-
-				newStudentButton.setOnAction((event) -> {
-					//TODO Student is immernoch im Hintergrnd, kann nicht drauf zugegriffen werden
-					presenter.openNewStudentTab();
-				});
 				
 				toRightButton.setOnAction((event) -> {
 					List<Student> studentsToMove = allStudentsTable.getSelectionModel().getSelectedItems();

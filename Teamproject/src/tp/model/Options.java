@@ -1,7 +1,7 @@
 package tp.model;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.sql.Date;
 
 
 public class Options implements Serializable{
@@ -20,7 +20,7 @@ public class Options implements Serializable{
 		this.userName = userName;
 		this.userID = userID;
 		this.password = password;
-		lastReminderCheck = new Date();
+		lastReminderCheck = new Date(System.currentTimeMillis());
 	}
 
 	public Date getLastReminderCheck() {

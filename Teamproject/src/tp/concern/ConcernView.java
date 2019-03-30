@@ -6,6 +6,7 @@ import java.util.Calendar;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -18,6 +19,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -405,7 +407,7 @@ public class ConcernView extends GridPane {
 			Stage stage = new Stage();
 			stage.setAlwaysOnTop(true);
 			stage.initModality(Modality.APPLICATION_MODAL);
-			stage.setTitle("Neue Erinnerung");
+			stage.setTitle("Neue Erinnerung hinzufügen");
 			stage.setScene(new Scene(new NewReminderView(stage, reminderTableView.getItems()), 450, 450));
 			stage.show();
 		});
@@ -420,7 +422,7 @@ public class ConcernView extends GridPane {
 			Stage stage = new Stage();
 			stage.setAlwaysOnTop(true);
 			stage.initModality(Modality.APPLICATION_MODAL);
-			stage.setTitle("Datei zum Concern hinzufügen");
+			stage.setTitle("Datei zum Anliegen hinzufügen");
 			stage.setScene(new Scene(new FormsView(presenter, stage, this, fileTableView.getItems()), 450, 450));
 			stage.show();
 		});
@@ -443,7 +445,7 @@ public class ConcernView extends GridPane {
 			Stage stage = new Stage();
 			stage.setAlwaysOnTop(true);
 			stage.initModality(Modality.APPLICATION_MODAL);
-			stage.setTitle("Datei zum Concern hinzufügen");
+			stage.setTitle("Neuen Termin hinzufügen");
 			stage.setScene(new Scene(new NewAppointmentView(stage, presenter, this), 450, 450));
 			stage.show();
 		});
@@ -459,6 +461,21 @@ public class ConcernView extends GridPane {
 				fileTableView.getItems().removeAll(oldVal.getForms());
 			}
 		    fileTableView.getItems().addAll(newVal.getForms());
+		});
+		
+		
+		studentTableView.setOnMousePressed(new EventHandler<MouseEvent>() {
+		    @Override 
+		    public void handle(MouseEvent event) {
+		        if (event.isPrimaryButtonDown() && event.getClickCount() > 1) {
+		        	Student selectedStudent = studentTableView.getSelectionModel().getSelectedItem();
+		        	if(selectedStudent != null)
+		        	{
+		        		presenter.openStudenTab(selectedStudent);;
+		        	}
+		                               
+		        }
+		    }
 		});
 
 	}

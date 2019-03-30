@@ -8,8 +8,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
@@ -137,7 +135,7 @@ public class FormsView extends GridPane {
 			stage.setAlwaysOnTop(true);
 			stage.initModality(Modality.APPLICATION_MODAL);
 			stage.setTitle("Neues Formular hinzufügen");
-			stage.setScene(new Scene(new NewFormView(stage, presenter, forms), 450, 450));
+			stage.setScene(new Scene(new NewFormView(stage, presenter, this, forms), 450, 450));
 			stage.show();
 		});
 		deleteFormButton.setOnAction((event) -> {
@@ -149,7 +147,6 @@ public class FormsView extends GridPane {
 		
 		renameFormButton.setOnAction((event) -> {
 			formListView.getSelectionModel().getSelectedItem();
-			//TODO in ListView umbenennen?
 		});
 		
 		//--------------------------------------------------------------
@@ -174,6 +171,11 @@ public class FormsView extends GridPane {
 			stage.close();
 		});
 
+	}
+
+	public void addNewForm(Form newForm) {
+		formListView.getItems().add(newForm);
+		
 	}
 
 

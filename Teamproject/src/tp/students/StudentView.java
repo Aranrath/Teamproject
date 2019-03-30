@@ -1,11 +1,13 @@
 package tp.students;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -19,15 +21,18 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import tp.Presenter;
@@ -46,6 +51,7 @@ public class StudentView extends GridPane {
 
 	private ImageView studentImage;
 	private Button takePictureButton;
+	private Button searchPictureButton;
 	private Label nameLabel;
 	private Label studentName;
 	private Label mailLabel;
@@ -112,9 +118,15 @@ public class StudentView extends GridPane {
 		studentImage.setCache(true);
 		
 		takePictureButton = new Button("Bild aufnehmen");
+		searchPictureButton = new Button("Bild laden");
 		
 		takePictureButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
+		searchPictureButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
 		studentImage.minHeight(studentImage.prefHeight(USE_COMPUTED_SIZE));
+		
+	
+
+		
 		
 		nameLabel = new Label("Name");
 		studentName = new Label();
@@ -181,8 +193,9 @@ public class StudentView extends GridPane {
 		// =====================================
 		
 		add(studentImage, 0, 0, 1, 8);
-		add(takePictureButton, 0, 8);
-		GridPane.setHalignment(takePictureButton, HPos.CENTER);
+		HBox pictureButtonHBox = new HBox(searchPictureButton, takePictureButton);
+		add(pictureButtonHBox, 0, 8);
+		pictureButtonHBox.setAlignment(Pos.CENTER);
 		add(nameLabel, 1, 0);
 		add(studentName, 2, 0,2,1);
 		add(mailLabel, 1, 3);
@@ -250,6 +263,29 @@ public class StudentView extends GridPane {
 			stage.setScene(new Scene(new TakeImageView(stage, presenter, this), 450, 450));
 			stage.show();
 		});
+		
+		searchPictureButton.setOnAction((event)->{
+			
+			FileChooser fileChooser = new FileChooser();
+            
+            //Set extension filter
+            FileChooser.ExtensionFilter extFilterJPG = new FileChooser.ExtensionFilter("JPG files (*.jpg)", "*.JPG");
+            FileChooser.ExtensionFilter extFilterPNG = new FileChooser.ExtensionFilter("PNG files (*.png)", "*.PNG");
+            fileChooser.getExtensionFilters().addAll(extFilterJPG, extFilterPNG);
+              
+            //Show open file dialog
+            File file = fileChooser.showOpenDialog(null);
+                       
+            try {
+            	
+            	updateImage(new Image(file.toURI().toString()));
+
+            } catch (Exception e)
+            {
+            }
+
+		
+		});
 
 
 		newConcernButton.setOnAction((event) -> {
@@ -290,10 +326,25 @@ public class StudentView extends GridPane {
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
 				student.setNotes(newValue);
-				presenter.saveEditedStudent(student);
+				presenter.saveEditedStudentNotes(student, studentNotes.getText());
 				
 			}
 		});
+		
+		connectedConcernsListView.setOnMousePressed(new EventHandler<MouseEvent>() {
+		    @Override 
+		    public void handle(MouseEvent event) {
+		        if (event.isPrimaryButtonDown() && event.getClickCount() > 1) {
+		        	Concern selectedConcern = connectedConcernsListView.getSelectionModel().getSelectedItem();
+		        	if(selectedConcern != null)
+		        	{
+		        		presenter.openConcernTab(selectedConcern);
+		        	}
+		                               
+		        }
+		    }
+		});
+		
 	}
 
 	private void fillView() {

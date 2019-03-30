@@ -1,18 +1,19 @@
 package tp.students;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.control.TableColumn;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -25,6 +26,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import tp.Presenter;
@@ -44,6 +46,7 @@ public class EditStudentView extends GridPane {
 
 	private ImageView studentImage;
 	private Button takePictureButton;
+	private Button searchPictureButton;
 	private Label nameLabel;
 	private TextField studentFirstName;
 	private TextField studentLastName;
@@ -98,6 +101,7 @@ public class EditStudentView extends GridPane {
 		studentImage.setCache(true);
 
 		takePictureButton = new Button("Bild aufnehmen");
+		searchPictureButton = new Button("Bild laden");
 		nameLabel = new Label("Name");
 		studentFirstName = new TextField();
 		studentFirstName.setPromptText("Vorname");
@@ -155,8 +159,10 @@ public class EditStudentView extends GridPane {
 		// =====================================
 		add(studentImage, 0, 0, 1, 8);
 		GridPane.setValignment(studentImage, VPos.TOP);
-		add(takePictureButton, 0, 8);
-		GridPane.setHalignment(takePictureButton, HPos.CENTER);
+		
+		HBox pictureButtonHBox = new HBox(searchPictureButton, takePictureButton);
+		add(pictureButtonHBox, 0, 8);
+		pictureButtonHBox.setAlignment(Pos.CENTER);
 		studentImage.setPreserveRatio(true);
 		if (student == null) {
 			studentImage.setImage(presenter.getDefaultStudentImage());
@@ -226,6 +232,27 @@ public class EditStudentView extends GridPane {
 			stage.setTitle("Foto aufnehmen");
 			stage.setScene(new Scene(new TakeImageView(stage, presenter, this), 450, 450));
 			stage.show();
+		});
+		
+		searchPictureButton.setOnAction((event)->{
+			
+			FileChooser fileChooser = new FileChooser();
+            
+            //Set extension filter
+            FileChooser.ExtensionFilter extFilterJPG = new FileChooser.ExtensionFilter("JPG files (*.jpg)", "*.JPG");
+            FileChooser.ExtensionFilter extFilterPNG = new FileChooser.ExtensionFilter("PNG files (*.png)", "*.PNG");
+            fileChooser.getExtensionFilters().addAll(extFilterJPG, extFilterPNG);
+              
+            //Show open file dialog
+            File file = fileChooser.showOpenDialog(null);
+                       
+            try {
+            	  studentImage.setImage(new Image(file.toURI().toString()));
+            } catch (Exception e)
+            {
+            }
+
+		
 		});
 
 		saveButton.setOnAction((event) -> {

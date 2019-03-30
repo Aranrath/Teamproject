@@ -1,6 +1,7 @@
 package tp.reminders;
 
 import javafx.collections.ObservableList;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -50,6 +51,7 @@ public class NewReminderAlertView extends GridPane
 		add(remindersListView,0,1);
 		add(addedToRemindersViewLabel,0,2);
 		add(showRemindersViewButton,0,3);
+		GridPane.setHalignment(showRemindersViewButton, HPos.RIGHT);
 		
 		//==============================
 		

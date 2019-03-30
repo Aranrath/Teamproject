@@ -1,7 +1,7 @@
 package tp;
 
+import java.sql.Date;
 import java.util.ArrayList;
-import java.util.Date;
 
 import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
@@ -506,7 +506,7 @@ public class MainView extends BorderPane {
 	        stage.setScene(new Scene(new NewReminderAlertView(presenter,stage, newReminders), 450, 450));
 	        stage.show();
 		}
-		options.setLastReminderCheck(new Date());
+		options.setLastReminderCheck(new Date(System.currentTimeMillis()));
 		presenter.saveEditedOptions(options);
 	}
 

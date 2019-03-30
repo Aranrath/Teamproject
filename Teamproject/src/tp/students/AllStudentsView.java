@@ -3,6 +3,8 @@ package tp.students;
 import java.sql.Date;
 import java.util.List;
 
+import javafx.collections.FXCollections;
+import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -13,6 +15,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import tp.Presenter;
@@ -144,29 +147,48 @@ public class AllStudentsView extends GridPane {
 				}
 			}
 
-			updateStudents();
 
 		});
 		studentToNewConcernButton.setOnAction((event) -> {
 			presenter.openNewConcernTab(selectedStudentsTable.getItems());
 		});
+		
+		
+		allStudentsTable.setOnMousePressed(new EventHandler<MouseEvent>() {
+		    @Override 
+		    public void handle(MouseEvent event) {
+		        if (event.isPrimaryButtonDown() && event.getClickCount() > 1) {
+		        	Student selectedStudent = allStudentsTable.getSelectionModel().getSelectedItem();
+		        	if(selectedStudent!=null)
+		        	{
+		        		presenter.openStudenTab(selectedStudent);  
+		        	}
+		                             
+		        }
+		    }
+		});
+		
+		selectedStudentsTable.setOnMousePressed(new EventHandler<MouseEvent>() {
+		    @Override 
+		    public void handle(MouseEvent event) {
+		        if (event.isPrimaryButtonDown() && event.getClickCount() > 1) {
+		        	
+		        	Student selectedStudent = selectedStudentsTable.getSelectionModel().getSelectedItem();
+		        	if(selectedStudent!=null)
+		        	{
+		        		presenter.openStudenTab(selectedStudent);  
+		        	}                 
+		        }
+		    }
+		});
 
 	}
 
-
-
-	private void fillView() {
-		//TODO
-
-	}
 	
-	private void updateStudents() {
-		/*TODO Alle Tabs die Studenten betreffen könnten behandel
-		 *  Student in Tab offen -> Tab schließen
-		 *  Student in Anliegen -> löschen? / vermerken???
-		 */
-		
-		
+	private void fillView()
+	{
+		allStudentsTable.setItems(presenter.getStudents());
+		selectedStudentsTable.setItems(FXCollections.observableArrayList());
 	}
 
 }

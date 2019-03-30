@@ -285,7 +285,7 @@ public class Presenter {
 		
 	}
 
-	public ObservableList<Reminder> getNewReminders(java.util.Date lastReminderCheck) {
+	public ObservableList<Reminder> getNewReminders(Date lastReminderCheck) {
 		return model.getNewReminders(lastReminderCheck);
 	}
 
@@ -359,6 +359,16 @@ public class Presenter {
 
 	public void changeStudentMtrNr(int oldMtrNr, int newMtrNr) {
 		model.changeStudentMtrNr( oldMtrNr,  newMtrNr);
+		
+	}
+
+	public void openConcernTab(Concern concern) {
+		mainView.openConcernTab(concern);
+		
+	}
+
+	public void saveEditedStudentNotes(Student student, String notes) {
+		model.saveEditedStudentNotes( student,  notes);
 		
 	}
 

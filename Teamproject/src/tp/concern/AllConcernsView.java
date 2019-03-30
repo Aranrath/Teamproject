@@ -2,6 +2,7 @@ package tp.concern;
 
 import java.sql.Date;
 
+import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
@@ -12,6 +13,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import tp.Presenter;
@@ -68,9 +70,6 @@ public class AllConcernsView extends GridPane
 		col1.setPercentWidth(30);
 		     
 		getColumnConstraints().addAll(col0,col1);
-
-				
-		
 		
 		// ======================================================================
 		
@@ -88,6 +87,7 @@ public class AllConcernsView extends GridPane
 		
 		double width = titleCol.widthProperty().get() + topicNameCol.widthProperty().get() + nextAppointmentDateAndTimeCol.widthProperty().get();
 		students.prefWidthProperty().bind(allConcernsTable.widthProperty().subtract(width));
+		
 		
 		allConcernsTable.getColumns().addAll(titleCol, topicNameCol, nextAppointmentDateAndTimeCol, students);
 
@@ -112,9 +112,24 @@ public class AllConcernsView extends GridPane
 				presenter.deleteConcern(concernToDelete);
 			}
 
-			updateConcerns();
 
 		});
+		
+		allConcernsTable.setOnMousePressed(new EventHandler<MouseEvent>() {
+		    @Override 
+		    public void handle(MouseEvent event) {
+		        if (event.isPrimaryButtonDown() && event.getClickCount() > 1) {
+		        	Concern selectedConcern = allConcernsTable.getSelectionModel().getSelectedItem();
+		        	if(selectedConcern != null)
+		        	{
+		        		presenter.openConcernTab(selectedConcern);
+		        	}
+		                               
+		        }
+		    }
+		});
+		
+		
 	}
 	
 
@@ -122,13 +137,6 @@ public class AllConcernsView extends GridPane
 		allConcernsTable.setItems(presenter.getConcerns());
 		
 	}
-	
-	private void updateConcerns() {
-		/*TODO Alle Tabs die Aliegen betreffen kˆnnten behandel
-		 *  Anliegen in Tab offen -> Tab schlieﬂen
-		 *	Kalendare updaten
-		 */
-		
-	}
+
 	
 }

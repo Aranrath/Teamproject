@@ -616,9 +616,10 @@ public class Model {
 		return result;
 	}
 
-	public ObservableList<Reminder> getNewReminders(java.util.Date lastReminderCheck) {
+	public ObservableList<Reminder> getNewReminders(Date lastReminderCheck) {
+		
 		ObservableList<Reminder> result = FXCollections.observableArrayList();
-		String sql ="SELECT id FROM reminder WHERE date <= date() AND date >= " + new Date(lastReminderCheck.getTime());
+		String sql ="SELECT id FROM reminder WHERE date >= date() AND date <= " + lastReminderCheck;
 		try(Connection conn = this.connect();
 				Statement stmt = conn.createStatement();
 				ResultSet rs = stmt.executeQuery(sql))
@@ -1501,6 +1502,12 @@ public boolean mtrAlreadyExists(int mtrNr) {
 
 
 public void changeStudentMtrNr(int oldMtrNr, int newMtrNr) {
+	// TODO Auto-generated method stub
+	
+}
+
+
+public void saveEditedStudentNotes(Student student, String notes) {
 	// TODO Auto-generated method stub
 	
 }
