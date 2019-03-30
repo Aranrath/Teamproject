@@ -169,13 +169,16 @@ public class ConcernView extends GridPane {
 		
 		// ======================================================================
 		
-		TableColumn<Student, String> nameCol = new TableColumn<Student, String>("Name");
+		TableColumn<Student, Integer> mtrNrCol = new TableColumn<Student, Integer>("Matrikelnr.");
+		mtrNrCol.setCellValueFactory(new PropertyValueFactory<>("mtrNr"));
+		
+		TableColumn<Student, String> nameCol = new TableColumn<Student, String>("Nachname");
 		nameCol.setCellValueFactory(new PropertyValueFactory<Student, String>("name"));
 		
 		TableColumn<Student, String> firstNameCol = new TableColumn<Student, String>("Vorname");
 		firstNameCol.setCellValueFactory(new PropertyValueFactory<Student, String>("firstName"));
 
-		studentTableView.getColumns().addAll(nameCol, firstNameCol);
+		studentTableView.getColumns().addAll(mtrNrCol, nameCol, firstNameCol);
 
 
 		TableColumn<Reminder, Date> dateCol = new TableColumn<Reminder, Date>("Datum");
@@ -202,10 +205,10 @@ public class ConcernView extends GridPane {
 		appDateCol.setCellValueFactory(new PropertyValueFactory<>("date"));
 		
 		TableColumn<Appointment, Long> startTimeCol = new TableColumn<Appointment, Long>("Von");
-		startTimeCol.setCellValueFactory(new PropertyValueFactory<>("startTime"));
+		startTimeCol.setCellValueFactory(new PropertyValueFactory<>("startTimeString"));
 		
 		TableColumn<Appointment, Long> endTimeCol = new TableColumn<Appointment, Long>("Bis");
-		endTimeCol.setCellValueFactory(new PropertyValueFactory<>("endTime"));
+		endTimeCol.setCellValueFactory(new PropertyValueFactory<>("endTimeString"));
 		
 		TableColumn<Appointment, String> roomNmbCol = new TableColumn<Appointment, String>("Raum");
 		roomNmbCol.setCellValueFactory(new PropertyValueFactory<>("roomNmb"));

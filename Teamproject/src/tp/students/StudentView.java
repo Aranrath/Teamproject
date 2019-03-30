@@ -330,7 +330,11 @@ public class StudentView extends GridPane {
 	
 		studentECTS.setText("" + student.getEcts());
 		studentSemester.setText("" + student.getSemester());
-		connectedConcernsListView = new ListView<Concern>(student.getConcerns());
+		ObservableList<Concern> concerns = FXCollections.observableArrayList();
+		for (int id : student.getConcernIds()){
+			concerns.add(presenter.getConcern(id));
+		}
+		connectedConcernsListView = new ListView<Concern>(concerns);
 		studentNotes.setText(student.getNotes());
 		//TODO für Mail nen loading label oder sowas
 

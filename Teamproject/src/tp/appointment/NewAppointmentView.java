@@ -86,27 +86,34 @@ public class NewAppointmentView extends GridPane{
 		
 		//=======================================
 		
+		//|| startHourTextField.getText().length() < 2 || Integer.parseInt(startHourTextField.getText().substring(0, 1))>2 || Integer.parseInt(startHourTextField.getText().substring(1, 2))>4
+		
 		startHourTextField.setOnKeyTyped(event ->{
-	        if(startHourTextField.getText().length() > 2 || startHourTextField.getText().length() < 2 || Integer.parseInt(startHourTextField.getText().substring(0, 1))>2 || Integer.parseInt(startHourTextField.getText().substring(1, 2))>4) 
+	        if(startHourTextField.getText().length() >= 2) 
 	        {
 	        	event.consume();
 	        }
 	    });
 		
+		// || startMinuteTextField.getText().length() < 2 || Integer.parseInt(startMinuteTextField.getText().substring(0, 1))>2 || Integer.parseInt(startMinuteTextField.getText().substring(1, 2))>4
 		startMinuteTextField.setOnKeyTyped(event ->{
-	        if(startMinuteTextField.getText().length() > 2 || startMinuteTextField.getText().length() < 2 || Integer.parseInt(startMinuteTextField.getText().substring(0, 1))>2 || Integer.parseInt(startMinuteTextField.getText().substring(1, 2))>4) 
+	        if(startMinuteTextField.getText().length() >= 2) 
 	        {
 	        	event.consume();
 	        }
 	    });
+		
+		// || endHourTextField.getText().length() < 2 || Integer.parseInt(endHourTextField.getText().substring(0, 1))>2 || Integer.parseInt(endHourTextField.getText().substring(1, 2))>4
 		endHourTextField.setOnKeyTyped(event ->{
-	        if(endHourTextField.getText().length() > 2 || endHourTextField.getText().length() < 2 || Integer.parseInt(endHourTextField.getText().substring(0, 1))>2 || Integer.parseInt(endHourTextField.getText().substring(1, 2))>4) 
+	        if(endHourTextField.getText().length() >= 2) 
 	        {
 	        	event.consume();
 	        }
 	    });
+		
+		// || endMinuteTextField.getText().length() < 2 || Integer.parseInt(endMinuteTextField.getText().substring(0, 1))>2 || Integer.parseInt(endMinuteTextField.getText().substring(1, 2))>4
 		endMinuteTextField.setOnKeyTyped(event ->{
-	        if(endMinuteTextField.getText().length() > 2 || endMinuteTextField.getText().length() < 2 || Integer.parseInt(endMinuteTextField.getText().substring(0, 1))>2 || Integer.parseInt(endMinuteTextField.getText().substring(1, 2))>4) 
+	        if(endMinuteTextField.getText().length() >= 2) 
 	        {
 	        	event.consume();
 	        }

@@ -324,9 +324,7 @@ public class Model {
 				Topic topic =getTopic(rs.getInt("topic"));
 				ObservableList<Appointment> appointments = getAppointments(concernId);
 				ObservableList<Reminder> reminders = getReminders(concernId);
-				//TODO endlosschleife!!
-//				ObservableList<Student> students = getStudents(concernId);
-				ObservableList<Student> students = FXCollections.observableArrayList();
+				ObservableList<Student> students = getStudents(concernId);
 				String notes = rs.getString("notes");	
 			
 				result = new Concern (concernId, title, forms, topic, appointments, reminders, students, notes);
@@ -361,29 +359,6 @@ public class Model {
 		return result;
 	}
 
-
-	private ObservableList<Concern> getConcerns(int mtrNr) {
-		ObservableList<Concern> concerns = FXCollections.observableArrayList();
-	
-		String sql = "SELECT concern FROM concern_student WHERE student = " + mtrNr;
-		try (Connection conn = this.connect();
-			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery(sql))
-		{
-			while(rs.next())
-			{
-				int id = rs.getInt("concern");
-				concerns.add(getConcern(id));
-			}
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		return concerns;
-	}
-
-
 	private ObservableList<Form> getConcernForms(int concernId) {
 		ObservableList<Form>  result = FXCollections.observableArrayList();
 		String sql = "SELECT form FROM concern_forms WHERE concern = " + concernId;
@@ -408,13 +383,13 @@ public class Model {
 		ArrayList<String> mailAddress = student.geteMailAddresses();
 		String sql = null;
 		if(mailAddress.size()==3) {
-			sql = "SELECT * FROM eMail WHERE eMailAddress = "+ mailAddress.get(0) + " OR eMailAddress = " 
-					+ mailAddress.get(1) + " OR eMailAddress = "+ mailAddress.get(2) + "ORDER BY date ASC";
+			sql = "SELECT * FROM eMail WHERE eMailAddress = '"+ mailAddress.get(0) + "' OR eMailAddress = '" 
+					+ mailAddress.get(1) + "' OR eMailAddress = '"+ mailAddress.get(2) + "' ORDER BY date ASC";
 		}else if(mailAddress.size()==2) {
-			sql = "SELECT * FROM eMail WHERE eMailAddress = "+ mailAddress.get(0) + " OR eMailAddress = " 
-					+mailAddress.get(1) + "ORDER BY date ASC";
+			sql = "SELECT * FROM eMail WHERE eMailAddress = '"+ mailAddress.get(0) + "' OR eMailAddress = '" 
+					+mailAddress.get(1) + "' ORDER BY date ASC";
 		}else if (mailAddress.size()==1) {
-			sql = "SELECT * FROM eMail WHERE eMailAddress = "+ mailAddress.get(0) +" ORDER BY date ASC";
+			sql = "SELECT * FROM eMail WHERE eMailAddress = '"+ mailAddress.get(0) +"' ORDER BY date ASC";
 		}else {
 			return mail;
 		}
@@ -469,7 +444,7 @@ public class Model {
 	public Form getForm(int id) {
 		//TODO Teest
 		Form result = new Form(null, null);
-		String sql = "SELECT * FROM form WHERE id = 0 " + id;
+		String sql = "SELECT * FROM form WHERE id = " + id;
 		try 	(Connection conn = this.connect();
 				Statement stmt = conn.createStatement();
 				ResultSet rs = stmt.executeQuery(sql))
@@ -480,7 +455,7 @@ public class Model {
 			
 				File file = File.createTempFile(title, ".tmp");
 				try(FileOutputStream out = new FileOutputStream(file);
-						InputStream in = rs.getBinaryStream("image")){
+						InputStream in = rs.getBinaryStream("file")){
 					byte[] buffer = new byte[1024];
 					while(in.read(buffer)>0) {
 						out.write(buffer);
@@ -531,41 +506,59 @@ public class Model {
 
 	public Student getStudent(int mtrNr) 
 	{
-		Student result = new Student(0, null, null, null, 0, null, 0, null, null, null);
-		String sql = "SELECT * FROM student WHERE matrNr = " + mtrNr;
-		
-		try (Connection conn = this.connect();
-				Statement stmt = conn.createStatement();
-				ResultSet rs = stmt.executeQuery(sql))
-			{
-				if (rs.next()) {
-				
-					String name = rs.getString("name");
-					String firstname = rs.getString("firstname");
-					ArrayList<String> eMailAddressess = getEMailAddressess(mtrNr);
-					int semester = rs.getInt("semester");
-					String notes = rs.getString("notes");
-					int ects = rs.getInt("ects");
-					ObservableList<Concern> concerns = getConcerns(mtrNr);
-					Image img = null;
-					try(InputStream is= rs.getBinaryStream("image")){
-						if (is!=null) {
-							img = new Image(is);		
-						}
-					}catch(Exception e) {
-						e.printStackTrace();
+	Student result = new Student(0, null, null, null, 0, null, 0, null, null, null, null);
+	String sql1 = "SELECT * FROM student WHERE matrNr = " + mtrNr;
+	String sql2 = "SELECT concern FROM concern_student WHERE student = " + mtrNr;
+	
+	try (Connection conn = this.connect();
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(sql1))				
+		{
+			if (rs.next()) {
+			
+				String name = rs.getString("name");
+				String firstname = rs.getString("firstname");
+				ArrayList<String> eMailAddressess = getEMailAddressess(mtrNr);
+				int semester = rs.getInt("semester");
+				String notes = rs.getString("notes");
+				int ects = rs.getInt("ects");
+				Image img = null;
+				try(InputStream is= rs.getBinaryStream("image")){
+					if (is!=null) {
+						img = new Image(is);		
 					}
-					String gender = rs.getString("gender");
-				
-					result = new Student(mtrNr, name, firstname, eMailAddressess, semester, notes, ects, img, concerns, gender);	
+				}catch(Exception e) {
+					e.printStackTrace();
 				}
-			}		
-			catch(Exception e)
+				String gender = rs.getString("gender");
+				
+				result = new Student(mtrNr, name, firstname, eMailAddressess, semester, notes, ects, img, null, gender, null);
+				if(getLastEmail(result)!=null) {
+					Date lastContact = getLastEmail(result).getDate();
+					result.setLastContact(lastContact);
+				}
+			}
+		}	
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}	
+		try (Connection conn = this.connect();
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(sql2))				
+		{
+			ObservableList<Integer> concerns = FXCollections.observableArrayList();
+			while(rs.next())
 			{
-				e.printStackTrace();
-			}	
-			return result;
+				concerns.add(rs.getInt("concern"));
+			}
+			result.setConcernIds(concerns);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}		
+		return result;
 	}
+	
 	
 	private ObservableList<Student> getStudents(int concernId) {
 		ObservableList<Student>  result = FXCollections.observableArrayList();
@@ -934,13 +927,13 @@ public class Model {
 	}
 
 
-	private void addConcernsStudent(ObservableList<Concern> concerns, int mtrNr) {
+	private void addConcernsStudent(ObservableList<Integer> concernIds, int mtrNr) {
 		String sql;
 		try (Connection conn = this.connect();
 				Statement stmt = conn.createStatement())
 			{
-			for (Concern concern: concerns){
-				sql="INSERT INTO concern_student (concern, student) VALUES (" + concern.getId() + ", " + mtrNr + ")";
+			for (Integer concern: concernIds){
+				sql="INSERT INTO concern_student (concern, student) VALUES (" + concern + ", " + mtrNr + ")";
 				stmt.executeQuery(sql);
 			}
 			}catch (Exception e) {
@@ -973,11 +966,7 @@ public class Model {
 		{	
 			File file = form.getFile();
 			pstmt.setString(1, form.getName());
-			try(InputStream is = new FileInputStream(file)){
-				pstmt.setBinaryStream(2, is);
-			}catch(Exception e) {
-				e.printStackTrace();
-			}
+			pstmt.setBytes(2, readFile(file.getAbsolutePath()));
 			pstmt.executeUpdate();
 		}
 		catch (Exception e)
@@ -985,6 +974,23 @@ public class Model {
 			e.printStackTrace();
 		}
 	}
+	
+	private byte[] readFile(String file) {
+        ByteArrayOutputStream bos = null;
+        try {
+            File f = new File(file);
+            FileInputStream fis = new FileInputStream(f);
+            byte[] buffer = new byte[1024];
+            bos = new ByteArrayOutputStream();
+            for (int len; (len = fis.read(buffer)) != -1;) {
+                bos.write(buffer, 0, len);
+            }
+        } catch (Exception e) {
+        	e.printStackTrace();
+        }
+
+        return bos != null ? bos.toByteArray() : null;
+    }
 
 
 	public void deleteForm(Form f) 
@@ -1176,7 +1182,7 @@ public class Model {
 					stmt.executeQuery(sql);
 				}
 				addStudentEmail(student.getMtrNr(), newMailAddresses);
-				addConcernsStudent(student.getConcerns(), student.getMtrNr());			
+				addConcernsStudent(student.getConcernIds(), student.getMtrNr());			
 			}
 			catch(Exception e)
 			{

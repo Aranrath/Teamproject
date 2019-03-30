@@ -1,6 +1,7 @@
 package tp.model;
 
 import java.sql.Date;
+import java.sql.Time;
 
 public class Appointment {
 
@@ -76,5 +77,13 @@ public class Appointment {
 		this.roomNmb = roomNmb;
 	}
 	
+	//For TableVIews
+	public String getStartTimeString() {
+		return new Time(startTime).toString();
+	}
+	
+	public String getEndTimeString() {
+		return new Time(startTime).toString();
+	}
 
 }

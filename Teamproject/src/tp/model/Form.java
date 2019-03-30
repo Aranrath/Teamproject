@@ -37,6 +37,11 @@ public class Form {
 	public void setFile(File file) {
 		this.file = file;
 	}
+
+	@Override
+	public String toString() {
+		return name;
+	}
 	
 	
 }

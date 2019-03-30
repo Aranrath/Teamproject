@@ -12,6 +12,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -149,7 +150,8 @@ public class EditStudentView extends GridPane {
 		genderComboBox = new ComboBox<String>(genderOptions);
 		genderComboBox.setValue("unbekannt");
 		genderComboBox.setMaxWidth(Double.MAX_VALUE);
-
+	
+		
 		// =====================================
 		add(studentImage, 0, 0, 1, 8);
 		GridPane.setValignment(studentImage, VPos.TOP);
@@ -373,7 +375,11 @@ public class EditStudentView extends GridPane {
 				student.setPo(po);
 				student.setSemester(semester);
 				student.setEcts(ects);
-				student.setConcerns(concerns);
+				ObservableList<Integer> concernIds = FXCollections.observableArrayList();
+				for (Concern c : concerns) {
+					concernIds.add(c.getId());
+				}
+				student.setConcernIds(concernIds);
 				student.setNotes(notes);
 
 				presenter.saveEditedStudent(student);
@@ -415,7 +421,11 @@ public class EditStudentView extends GridPane {
 		studentPO.getSelectionModel().select(student.getPo());
 		studentECTS.setText("" + student.getEcts());
 		studentSemester.setText("" + student.getSemester());
-		concernsListView = new ListView<Concern>(student.getConcerns());
+		ObservableList<Concern> concerns = FXCollections.observableArrayList();
+		for (int id : student.getConcernIds()){
+			concerns.add(presenter.getConcern(id));
+		}
+		concernsListView = new ListView<Concern>(concerns);
 		studentNotes.setText(student.getNotes());
 		genderComboBox.setValue(student.getGender());
 	}

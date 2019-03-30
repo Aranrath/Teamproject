@@ -1,5 +1,6 @@
 package tp.concern;
 
+import java.sql.Date;
 import java.util.List;
 
 import javafx.collections.ObservableList;
@@ -8,7 +9,9 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -47,6 +50,7 @@ public class AddStudentToConcernView extends GridPane{
 		buildView();
 	}
 
+	@SuppressWarnings("unchecked")
 	private void buildView() {
 		setPadding(new Insets(10, 10, 10, 10));
 		setHgap(10);
@@ -89,31 +93,50 @@ public class AddStudentToConcernView extends GridPane{
 
 				// ======================================================================
 
-//				TableColumn<Student, String> lastNameCol = new TableColumn<Student, String>("Nachname");
-//				TableColumn<Student, String> firstNameCol = new TableColumn<Student, String>("Vorname");
-//				TableColumn<Student, Integer> mtrNrCol = new TableColumn<Student, Integer>("Matrikelnr.");
-//				TableColumn<Student,Date> lastContactCol = new TableColumn<Student, Date>("Letzter Kontakt");
-//				TableColumn<Student, String> emailCol = new TableColumn<Student, String>("Email");
-
-//				allStudentsTable.getColumns().addAll(mtrNrCol, lastNameCol,firstNameCol,lastContactCol, emailCol);
-//				selectedStudentsTable.getColumns().addAll(mtrNrCol,lastNameCol, firstNameCol);
+				TableColumn<Student, String> lastNameCol = new TableColumn<Student, String>("Nachname");
+				lastNameCol.setCellValueFactory(new PropertyValueFactory<Student, String>("name"));
+				
+				TableColumn<Student, String> firstNameCol = new TableColumn<Student, String>("Vorname");
+				firstNameCol.setCellValueFactory(new PropertyValueFactory<Student, String>("firstName"));
+				
+				TableColumn<Student, Integer> mtrNrCol = new TableColumn<Student, Integer>("Matrikelnr.");
+				mtrNrCol.setCellValueFactory(new PropertyValueFactory<>("mtrNr"));
+				
+				TableColumn<Student, Date> lastContactCol = new TableColumn<Student, Date>("Letzter Kontakt");
+				lastContactCol.setCellValueFactory(new PropertyValueFactory<>("lastContact"));
+				
+				allStudentsTable.getColumns().addAll(mtrNrCol, lastNameCol,firstNameCol,lastContactCol);
+				
+				
+				TableColumn<Student, String> lastNameCol2 = new TableColumn<Student, String>("Nachname");
+				lastNameCol2.setCellValueFactory(new PropertyValueFactory<Student, String>("name"));
+				
+				TableColumn<Student, String> firstNameCol2 = new TableColumn<Student, String>("Vorname");
+				firstNameCol2.setCellValueFactory(new PropertyValueFactory<Student, String>("firstName"));
+				
+				TableColumn<Student, Integer> mtrNrCol2 = new TableColumn<Student, Integer>("Matrikelnr.");
+				mtrNrCol2.setCellValueFactory(new PropertyValueFactory<>("mtrNr"));
+				
+				selectedStudentsTable.getColumns().addAll(mtrNrCol2, lastNameCol2, firstNameCol2);
 
 				// =====================================================================
 
 				newStudentButton.setOnAction((event) -> {
+					//TODO Student is immernoch im Hintergrnd, kann nicht drauf zugegriffen werden
 					presenter.openNewStudentTab();
 				});
 				
 				toRightButton.setOnAction((event) -> {
 					List<Student> studentsToMove = allStudentsTable.getSelectionModel().getSelectedItems();
-					allStudents.removeAll(studentsToMove);
+					// First addAll, because studentsToMove will be empty after they have been deleted from allStudents
 					selectedStudents.addAll(studentsToMove);
+					allStudents.removeAll(studentsToMove); 
 				});
 				
 				toLeftButton.setOnAction((event) -> {
 					List<Student> studentsToMove = selectedStudentsTable.getSelectionModel().getSelectedItems();
-					selectedStudents.removeAll(studentsToMove);
 					allStudents.addAll(studentsToMove);
+					selectedStudents.removeAll(studentsToMove);
 				});
 				
 				allToLeftButton.setOnAction((event) -> {

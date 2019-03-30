@@ -1,12 +1,13 @@
 package tp.model;
 
+import java.sql.Date;
 import java.util.ArrayList;
 
 import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
 
-public class Student{
-	
+public class Student {
+
 	private int mtrNr;
 	private String name;
 	private String firstName;
@@ -15,18 +16,19 @@ public class Student{
 	private String notes;
 	private int ects;
 	private Image image;
-	private ObservableList<Concern> concerns;
+	private ObservableList<Integer> concernIds;
 	private PO po;
 	private String gender;
-	
-	public Student(int mtrNr, String name)
-	{
+	// For TableView
+	private Date lastContact;
+
+	public Student(int mtrNr, String name) {
 		this.mtrNr = mtrNr;
 		this.name = name;
 	}
-	
-	public Student(int mtrNr, String name, String firstName,ArrayList<String> eMailAddresses, int semester, String notes, int ects, Image image, ObservableList<Concern> concerns, String gender)
-	{
+
+	public Student(int mtrNr, String name, String firstName, ArrayList<String> eMailAddresses, int semester,
+			String notes, int ects, Image image, ObservableList<Integer> concernIds, String gender, Date lastContact) {
 		this.mtrNr = mtrNr;
 		this.name = name;
 		this.firstName = firstName;
@@ -35,12 +37,13 @@ public class Student{
 		this.notes = notes;
 		this.ects = ects;
 		this.image = image;
-		this.concerns =  concerns;
+		this.concernIds = concernIds;
 		this.gender = gender;
-		
+		this.lastContact = lastContact;
+
 	}
-	
-	//------------------------------------GetterSetter
+
+	// ------------------------------------GetterSetter
 
 	public int getMtrNr() {
 		return mtrNr;
@@ -74,8 +77,8 @@ public class Student{
 		return eMailAddresses;
 	}
 
-	public ObservableList<Concern> getConcerns() {
-		return concerns;
+	public ObservableList<Integer> getConcernIds() {
+		return concernIds;
 	}
 
 	public PO getPo() {
@@ -114,8 +117,8 @@ public class Student{
 		this.image = image;
 	}
 
-	public void setConcerns(ObservableList<Concern> concerns) {
-		this.concerns = concerns;
+	public void setConcernIds(ObservableList<Integer> concernIds) {
+		this.concernIds = concernIds;
 	}
 
 	public void setPo(PO po) {
@@ -129,9 +132,20 @@ public class Student{
 	public void setGender(String gender) {
 		this.gender = gender;
 	}
-	
-	
-	
-	
 
+	// For TableView
+	public void setLastContact(Date lastContact) {
+		this.lastContact = lastContact;
+	}
+
+	public Date getLastContact() {
+		return lastContact;
+	}
+
+	@Override
+	public String toString() {
+		return "Student [name=" + name + "]";
+	}
+
+	
 }

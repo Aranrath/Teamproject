@@ -8,6 +8,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
@@ -92,6 +94,7 @@ public class FormsView extends GridPane {
 		toLeftButton.setVisible(false);
 		selectedFormsToConcernButton.setVisible(false);
 
+		
 		// =====================================================================
 
 		add(searchBar, 0, 0);
