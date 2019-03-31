@@ -187,13 +187,11 @@ public class Presenter {
 
 	public void saveNewSubject(String title, int ects) {
 		model.saveNewSubject(title, ects);
-		mainView.updateSubjectRelatedTabs();
 	}
 
 	public void saveEditedSubject(String title, int ects, int id) {
 
 		model.saveEditedSubject(title, ects, id);
-		mainView.updateSubjectRelatedTabs();
 
 	}
 

@@ -3,7 +3,6 @@ package tp.students;
 import java.sql.Date;
 import java.util.List;
 
-import javafx.collections.FXCollections;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -41,7 +40,6 @@ public class AllStudentsView extends GridPane {
 	public AllStudentsView(Presenter presenter) {
 		this.presenter = presenter;
 		buildView();
-		fillView();
 	}
 
 	//TODO ?
@@ -52,7 +50,7 @@ public class AllStudentsView extends GridPane {
 		setHgap(20);
 		setVgap(20);
 
-		allStudentsTable = new TableView<Student>();
+		allStudentsTable = new TableView<Student>(presenter.getStudents());
 		selectedStudentsTable = new TableView<Student>();
 		searchBar = new Label("Hier sollte die SearchBar sein");
 		selectionLabel = new Label("Auswahl");
@@ -185,10 +183,11 @@ public class AllStudentsView extends GridPane {
 	}
 
 	
-	private void fillView()
+	public void updateView()
 	{
 		allStudentsTable.setItems(presenter.getStudents());
-		selectedStudentsTable.setItems(FXCollections.observableArrayList());
+		allStudentsTable.getItems().removeAll(selectedStudentsTable.getItems());
+		
 	}
 
 }

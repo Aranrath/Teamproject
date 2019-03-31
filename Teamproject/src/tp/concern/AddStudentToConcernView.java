@@ -42,7 +42,7 @@ public class AddStudentToConcernView extends GridPane{
 		this.concernView = concernView;
 		this.selectedStudents = alreadyInConcernStudents;
 		this.allStudents = presenter.getStudents();
-		allStudents.removeAll(selectedStudents);
+		allStudents.removeAll(alreadyInConcernStudents);
 		
 		buildView();
 	}

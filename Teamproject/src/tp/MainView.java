@@ -242,6 +242,18 @@ public class MainView extends BorderPane {
 		}
 		SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
 		selectionModel.select(newTab);
+		
+		
+		
+		final MyTab innerTab = newTab;
+		newTab.setOnSelectionChanged((event) -> {
+			if(innerTab.isSelected())
+			{
+				AllStudentsView view = (AllStudentsView) innerTab.getContent();
+				view.updateView();
+				
+			}
+		});
 	}
 
 	public void openStudentTab(Student student) {
@@ -338,6 +350,16 @@ public class MainView extends BorderPane {
 		}
 		SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
 		selectionModel.select(newTab);
+		
+		final MyTab innerTab = newTab;
+		newTab.setOnSelectionChanged((event) -> {
+			if(innerTab.isSelected())
+			{
+				AllConcernsView view = (AllConcernsView) innerTab.getContent();
+				view.updateView();
+				
+			}
+		});
 
 	}
 
@@ -479,10 +501,6 @@ public class MainView extends BorderPane {
 
 	//=========================================================================00
 	
-	public void updateSubjectRelatedTabs() {
-		// TODO Auto-generated method stub
-		
-	}
 
 	public void showEditUserDataView(Options options) {
 		Stage stage = new Stage();

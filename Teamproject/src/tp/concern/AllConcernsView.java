@@ -32,7 +32,6 @@ public class AllConcernsView extends GridPane
 	{
 		this.presenter = presenter;
 		buildView();
-		fillView();
 	}
 
 	//TODO ?
@@ -133,9 +132,10 @@ public class AllConcernsView extends GridPane
 	}
 	
 
-	private void fillView() {
+
+	public void updateView() {
 		allConcernsTable.setItems(presenter.getConcerns());
-		
+		//TODO updateSearchbar
 	}
 
 	
