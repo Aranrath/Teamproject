@@ -504,80 +504,6 @@ public class Model {
 	}
 
 
-	public Student getStudent(int mtrNr) 
-	{
-	Student result = new Student(0, null, null, null, 0, null, 0, null, null, null, null);
-	String sql1 = "SELECT * FROM student WHERE matrNr = " + mtrNr;
-	String sql2 = "SELECT concern FROM concern_student WHERE student = " + mtrNr;
-	
-	try (Connection conn = this.connect();
-			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery(sql1))				
-		{
-			if (rs.next()) {
-			
-				String name = rs.getString("name");
-				String firstname = rs.getString("firstname");
-				ArrayList<String> eMailAddressess = getEMailAddressess(mtrNr);
-				int semester = rs.getInt("semester");
-				String notes = rs.getString("notes");
-				int ects = rs.getInt("ects");
-				Image img = null;
-				try(InputStream is= rs.getBinaryStream("image")){
-					if (is!=null) {
-						img = new Image(is);		
-					}
-				}catch(Exception e) {
-					e.printStackTrace();
-				}
-				String gender = rs.getString("gender");
-				
-				result = new Student(mtrNr, name, firstname, eMailAddressess, semester, notes, ects, img, null, gender, null);
-				if(getLastEmail(result)!=null) {
-					Date lastContact = getLastEmail(result).getDate();
-					result.setLastContact(lastContact);
-				}
-			}
-		}	
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}	
-		try (Connection conn = this.connect();
-			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery(sql2))				
-		{
-			ObservableList<Integer> concerns = FXCollections.observableArrayList();
-			while(rs.next())
-			{
-				concerns.add(rs.getInt("concern"));
-			}
-			result.setConcernIds(concerns);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}		
-		return result;
-	}
-	
-	
-	private ObservableList<Student> getStudents(int concernId) {
-		ObservableList<Student>  result = FXCollections.observableArrayList();
-		String sql = "SELECT student FROM concern_student WHERE concern = " + concernId;
-		try (Connection conn = this.connect();
-			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery(sql))
-		{
-			while(rs.next()) {
-				result.add(getStudent(rs.getInt("student")));
-			}
-			
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
-		return result;
-	}
-
-
 	public Reminder getReminder(int id) {
 		Reminder result = new Reminder(null, null);
 		String sql = "SELECT * FROM reminder WHERE id = " + id;
@@ -647,6 +573,62 @@ public class Model {
 	}
 
 
+	public Student getStudent(int mtrNr) 
+	{
+	Student result = new Student(0, null, null, null, 0, null, 0, null, null, null, null);
+	String sql1 = "SELECT * FROM student WHERE matrNr = " + mtrNr;
+	String sql2 = "SELECT concern FROM concern_student WHERE student = " + mtrNr;
+	
+	try (Connection conn = this.connect();
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(sql1))				
+		{
+			if (rs.next()) {
+			
+				String name = rs.getString("name");
+				String firstname = rs.getString("firstname");
+				ArrayList<String> eMailAddressess = getEMailAddressess(mtrNr);
+				int semester = rs.getInt("semester");
+				String notes = rs.getString("notes");
+				int ects = rs.getInt("ects");
+				Image img = null;
+				try(InputStream is= rs.getBinaryStream("image")){
+					if (is!=null) {
+						img = new Image(is);		
+					}
+				}catch(Exception e) {
+					e.printStackTrace();
+				}
+				String gender = rs.getString("gender");
+				
+				result = new Student(mtrNr, name, firstname, eMailAddressess, semester, notes, ects, img, null, gender, null);
+				if(getLastEmail(result)!=null) {
+					Date lastContact = getLastEmail(result).getDate();
+					result.setLastContact(lastContact);
+				}
+			}
+		}	
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}	
+		try (Connection conn = this.connect();
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(sql2))				
+		{
+			ObservableList<Integer> concerns = FXCollections.observableArrayList();
+			while(rs.next())
+			{
+				concerns.add(rs.getInt("concern"));
+			}
+			result.setConcernIds(concerns);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}		
+		return result;
+	}
+
+
 	public ObservableList<Student> getStudents() {
 		ObservableList<Student> result = FXCollections.observableArrayList();
 		String sql = "SELECT * FROM student";
@@ -662,6 +644,24 @@ public class Model {
 		}
 		catch(Exception e)
 		{
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+
+	private ObservableList<Student> getStudents(int concernId) {
+		ObservableList<Student>  result = FXCollections.observableArrayList();
+		String sql = "SELECT student FROM concern_student WHERE concern = " + concernId;
+		try (Connection conn = this.connect();
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(sql))
+		{
+			while(rs.next()) {
+				result.add(getStudent(rs.getInt("student")));
+			}
+			
+		}catch(Exception e) {
 			e.printStackTrace();
 		}
 		return result;
@@ -739,6 +739,7 @@ public class Model {
 			
 				ObservableList<Form> forms = getTopicForms(topicId);
 				result = new Topic(title, forms);	
+				result.setId(topicId);
 			}
 		}catch(Exception e) {
 			e.printStackTrace();
@@ -749,7 +750,7 @@ public class Model {
 
 	public ObservableList<Topic> getTopics() 
 	{
-		ObservableList<Topic> topic = FXCollections.observableArrayList();
+		ObservableList<Topic> result = FXCollections.observableArrayList();
 		String sql = "SELECT * FROM topic";
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement();
@@ -760,14 +761,16 @@ public class Model {
 				int id = rs.getInt("id");
 				String title = rs.getString("title");
 				ObservableList<Form> forms = getTopicForms(id);
-				topic.add(new Topic (title, forms));
+				Topic topic = new Topic(title, forms);
+				topic.setId(id);
+				result.add(topic);
 			}
 		}
 		catch(Exception e)
 		{
 			e.printStackTrace();
 		}
-		return topic;
+		return result;
 	}
 
 
@@ -842,26 +845,29 @@ public class Model {
 
 	public int saveNewConcern(Concern concern) {
 		
-		//TODO id testen..
 		int id = 0; 
 		String sql1 = "INSERT INTO concern (title, topic, notes) values (?, ?, ?)";
 		String sql2 = "SELECT last_insert_rowid()";
 		try (Connection conn = this.connect();
 			PreparedStatement pstmt = conn.prepareStatement(sql1);
 			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery(sql2))
+			)
 		{
 			pstmt.setString(1, concern.getTitle());
 			pstmt.setInt(2, concern.getTopic().getId());
 			pstmt.setString(3, concern.getNotes());
 			pstmt.executeUpdate();
+			try (ResultSet rs = stmt.executeQuery(sql2)){
+				if (rs.next()) {
+					id = rs.getInt(1);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			addConcernForms(concern.getId(), concern.getFiles());
 			addConcernStudents(concern.getId(), concern.getStudents());
 			addAppointments(concern.getAppointments());
 			addReminders(concern.getId(), concern.getReminders());
-			
-			rs.next();
-			id = rs.getInt("id");
 		}
 		catch(Exception e)
 		{
@@ -874,10 +880,10 @@ public class Model {
 	public void saveEditedConcern(Concern concern) {
 		String sql1 = "UPDATE concern SET title = " + concern.getTitle() + ", topic = " + concern.getTopic().getId() +
 				", notes = " + concern.getNotes();
-		String sql2 = "DELETE * FROM concern_forms WHERE concern = " + concern.getId();
-		String sql3 = "DELETE * FROM concern_student WHERE concern = " + concern.getId();
-		String sql4 = "DELETE * FROM appointment WHERE concern = " + concern.getId();
-		String sql5 = "DELETE * FROM reminder WHERE concern = " + concern.getId();
+		String sql2 = "DELETE FROM concern_forms WHERE concern = " + concern.getId();
+		String sql3 = "DELETE FROM concern_student WHERE concern = " + concern.getId();
+		String sql4 = "DELETE FROM appointment WHERE concern = " + concern.getId();
+		String sql5 = "DELETE FROM reminder WHERE concern = " + concern.getId();
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement())
 		{
@@ -900,11 +906,11 @@ public class Model {
 
 	public void deleteConcern(Concern c) 
 	{
-		String sql = "DELETE * FROM concern WHERE id = "+ c.getId();
+		String sql = "DELETE FROM concern WHERE id = "+ c.getId();
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement())
 		{
-			stmt.executeQuery(sql);
+			stmt.executeUpdate(sql);
 		}
 		catch(Exception e)
 		{
@@ -951,7 +957,7 @@ public class Model {
 			{
 			for (Student student: students){
 				sql="INSERT INTO concern_student (concern, student) VALUES (" + id + ", " + student.getMtrNr()+ ")";
-				stmt.executeQuery(sql);
+				stmt.executeUpdate(sql);
 			}
 			}catch (Exception e) {
 				e.printStackTrace();
@@ -996,7 +1002,7 @@ public class Model {
 
 	public void deleteForm(Form f) 
 	{
-		String sql = "DELETE * FROM form WHERE name = "+ f.getId();
+		String sql = "DELETE FROM form WHERE name = "+ f.getId();
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement())
 		{
@@ -1094,11 +1100,11 @@ public class Model {
 
 	public boolean saveNewSubject(String title, int ects) 
 	{
-		String sql = "INSERT INTO subject(title, ects) VALUES(" + title +"," + ects +")";
+		String sql = "INSERT INTO subject(title, ects) VALUES('" + title +"'," + ects +")";
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement())
 		{
-			stmt.executeQuery(sql);
+			stmt.executeUpdate(sql);
 		}
 		catch (Exception e)
 		{
@@ -1164,7 +1170,7 @@ public class Model {
 			String sql1 = "UPDATE student SET name = "+student.getName()+", firstname = "+student.getFirstName()+", semester = "+student.getSemester()+
 				", notes = "+student.getNotes()+", ects = "+student.getEcts()+", img = " +is + 
 				"WHERE matrNr = " + student.getMtrNr();
-			String sql2 = "DELETE * FROM concern_student WHERE student = " + student.getMtrNr();
+			String sql2 = "DELETE FROM concern_student WHERE student = " + student.getMtrNr();
 			
 			Student oldStudent = getStudent(student.getMtrNr());
 			//get MailAddresses to be added
@@ -1179,7 +1185,7 @@ public class Model {
 				stmt.executeQuery(sql1);
 				stmt.executeQuery(sql2);
 				for (String address: oldMailAddresses) {
-					String sql = "DELETE * FROM student_emailAddress WHERE emailAddress = " + address;
+					String sql = "DELETE FROM student_emailAddress WHERE emailAddress = " + address;
 					stmt.executeQuery(sql);
 				}
 				addStudentEmail(student.getMtrNr(), newMailAddresses);
@@ -1200,7 +1206,7 @@ public class Model {
 	{
 		Student ds = s;
 		int matNr = ds.getMtrNr();
-		String sql = "DELETE * FROM student WHERE Matrikelnummer = "+ matNr;
+		String sql = "DELETE FROM student WHERE Matrikelnummer = "+ matNr;
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement())
 		{
@@ -1232,26 +1238,23 @@ public class Model {
 
 	public void saveNewTopic(String title, ObservableList<Form> selectedForms) 
 	{
-		String sql1 = "INSERT INTO topic(title) VALUES (" + title + ")";
-		String sql2 = "SELECT id FROM topic WHERE title = " + title;
+		String sql1 = "INSERT INTO topic (title) VALUES ('" + title + "')";
+		String sql2 = "SELECT id FROM topic WHERE title = '" + title + "'";
 		try (Connection conn = this.connect();
-			Statement stmt = conn.createStatement())
+			Statement stmt = conn.createStatement();
+			Statement stmt2 = conn.createStatement();
+			ResultSet rs = stmt2.executeQuery(sql2))
 		{
-			stmt.executeQuery(sql1);
-			try (ResultSet rs = stmt.executeQuery(sql2))
-			{
+			stmt.executeUpdate(sql1);
+			if (rs.next()) {
 				int id = rs.getInt("id");
 				addTopicForms(id, selectedForms);
-			}
-			catch(Exception e)
-			{
-				e.printStackTrace();
 			}
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
-		}		
+		}	
 	}
 
 	public void saveEditedTopic(String title, ObservableList<Form> selectedForms, Topic topic) 

@@ -142,10 +142,6 @@ public class Student {
 		return lastContact;
 	}
 
-	@Override
-	public String toString() {
-		return "Student [name=" + name + "]";
-	}
 
 	
 }

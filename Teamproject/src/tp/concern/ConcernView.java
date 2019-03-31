@@ -275,7 +275,6 @@ public class ConcernView extends GridPane {
 
 			String newTitle = titleTextField.getText();
 			Topic newTopic = topicComboBox.getSelectionModel().getSelectedItem();
-
 			if (newTitle.equals("") || newTopic == null)
 			{
 				errorLabel.setText("Titel und Thema müssen gesetzt sein");
@@ -457,10 +456,12 @@ public class ConcernView extends GridPane {
 		});
 
 		topicComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal)->{
-			if(oldVal != null) {
+			if(oldVal != null && oldVal.getForms() != null) {
 				fileTableView.getItems().removeAll(oldVal.getForms());
 			}
-		    fileTableView.getItems().addAll(newVal.getForms());
+			if(newVal != null && newVal.getForms() != null) {
+				fileTableView.getItems().addAll(newVal.getForms());
+			}
 		});
 		
 		
@@ -494,15 +495,26 @@ public class ConcernView extends GridPane {
 	}
 
 	private void fillView() {
+		//TODO NullpointerException abfangen
 		titleTextField.setText(concern.getTitle());
 		topicComboBox.getSelectionModel().select(concern.getTopic());
-		studentTableView.setItems(concern.getStudents());
-		reminderTableView.setItems(concern.getReminders());
-		fileTableView.setItems(concern.getFiles());
-		fileTableView.getItems().addAll(concern.getTopic().getForms());
+		if(concern.getStudents() != null) {
+			studentTableView.setItems(concern.getStudents());
+		}
+		if (concern.getReminders() != null) {
+			reminderTableView.setItems(concern.getReminders());
+		}
+		if (concern.getFiles() != null) {
+			fileTableView.setItems(concern.getFiles());
+		}
+		if (concern.getTopic() != null && concern.getTopic().getForms() != null) {
+			fileTableView.getItems().addAll(concern.getTopic().getForms());
+		}
 		notesTextArea.setText(concern.getNotes());
-		appointmentTableView.setItems(concern.getAppointments());
-
+		if (concern.getAppointments() != null) {
+			appointmentTableView.setItems(concern.getAppointments());
+		}
+		
 	}
 
 	public void addStudentsToConcern(ObservableList<Student> students) {

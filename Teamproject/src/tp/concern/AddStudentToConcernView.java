@@ -1,6 +1,7 @@
 package tp.concern;
 
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 import javafx.collections.ObservableList;
@@ -42,6 +43,15 @@ public class AddStudentToConcernView extends GridPane{
 		this.concernView = concernView;
 		this.selectedStudents = alreadyInConcernStudents;
 		this.allStudents = presenter.getStudents();
+		//Remove all doesn't work, as the students are equal, not the same Object.
+		for (Student inStu: alreadyInConcernStudents) {
+			for (Student allStu: allStudents) {
+				if(inStu.getMtrNr() == allStu.getMtrNr()) {
+					allStudents.remove(allStu);
+					break;
+				}
+			}
+		}
 		allStudents.removeAll(alreadyInConcernStudents);
 		
 		buildView();
