@@ -45,6 +45,9 @@ public class ConcernView extends GridPane {
 	private Presenter presenter;
 	private Concern concern;
 	private MyTab tab;
+	//lokal hinterlegte Studenten, nicht unbedingt gespeichert. Nutzen: Basis für Suchanfragen
+	private ObservableList<Student> localStudents;
+	private ObservableList<Student> filteredStudents;
 
 	// ==================================
 
@@ -58,9 +61,7 @@ public class ConcernView extends GridPane {
 	private Button newTopicButton;
 
 	private Label studentLabel;
-	private HBox searchHBox;
 	private TextField searchTextField;
-	private Button searchButton;
 	private HBox studentHBox;
 	private Button addStudentButton;
 	private Button removeStudentButton;
@@ -91,6 +92,8 @@ public class ConcernView extends GridPane {
 	public ConcernView(Presenter presenter, MyTab tab) {
 		this.presenter = presenter;
 		this.tab = tab;
+		localStudents = FXCollections.observableArrayList();
+		
 		buildView();
 		titleTextField.setText(new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime()));
 	}
@@ -99,17 +102,24 @@ public class ConcernView extends GridPane {
 	public ConcernView(Presenter presenter, MyTab tab, ObservableList<Student> students) {
 		this.presenter = presenter;
 		this.tab = tab;
+		// Studenten einsetzen
+		localStudents = FXCollections.observableArrayList(students);
+		
 		buildView();
 		titleTextField.setText(new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime()));
 
-		// Studenten einsetzen
-		studentTableView.setItems(students);
+		
 	}
 
 	public ConcernView(Presenter presenter, MyTab tab, Concern concern) {
 		this.presenter = presenter;
 		this.tab = tab;
 		this.concern = concern;
+		// Studenten einsetzen
+		if(concern.getStudents() != null) {
+			localStudents = concern.getStudents();
+		}
+		
 		buildView();
 		fillView();
 	}
@@ -140,13 +150,12 @@ public class ConcernView extends GridPane {
 		searchTextField = new TextField("");
 		searchTextField.setPromptText("Durchsuche Studenten");
 		HBox.setHgrow(searchTextField, Priority.ALWAYS);
-		searchButton = new Button("Suchen");
-		searchButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
-		searchHBox = new HBox(searchTextField, searchButton);
+
 		addStudentButton = new Button("Hinzufügen");
 		removeStudentButton = new Button("Entfernen");
 		studentHBox = new HBox(addStudentButton, removeStudentButton);
-		studentTableView = new TableView<Student>();
+		filteredStudents =  FXCollections.observableArrayList(localStudents);
+		studentTableView = new TableView<Student>(filteredStudents);
 	
 		notesLabel = new Label("Notizen");
 		notesTextArea = new TextArea();
@@ -229,7 +238,7 @@ public class ConcernView extends GridPane {
 		add(topicHBox, 1, 1, 3, 1);
 
 		add(studentLabel, 0, 2);
-		add(searchHBox, 1, 2, 3, 1);
+		add(searchTextField, 1, 2, 3, 1);
 		add(studentHBox, 4, 2, 2, 1);
 		studentHBox.setSpacing(5);
 		studentHBox.setAlignment(Pos.CENTER_RIGHT);
@@ -293,7 +302,7 @@ public class ConcernView extends GridPane {
 				concern = new Concern(newTitle, newTopic);
 				
 				//übrige Attribute auslesen uns setzen
-				concern.setStudents(studentTableView.getItems());
+				concern.setStudents(localStudents);
 				concern.setNotes(notesTextArea.getText());
 				concern.setReminders(reminderTableView.getItems());
 				concern.setAppointments(appointmentTableView.getItems());
@@ -317,7 +326,7 @@ public class ConcernView extends GridPane {
 				concern.setTitle(newTitle);
 				concern.setTopic(newTopic);
 				
-				concern.setStudents(studentTableView.getItems());
+				concern.setStudents(localStudents);
 				concern.setNotes(notesTextArea.getText());
 				concern.setReminders(reminderTableView.getItems());
 				concern.setAppointments(appointmentTableView.getItems());
@@ -343,49 +352,10 @@ public class ConcernView extends GridPane {
 			stage.setScene(new Scene(new EditTopicView(stage, presenter), 450, 450));
 			stage.show();
 		});
-
-		searchButton.setOnAction((event) -> {
-			if (searchTextField.getText().equals("")) {
-
-			} else {
-				ObservableList<Student> students = studentTableView.getItems();
-				String searchTerms[] = searchTextField.getText().toLowerCase().split("");
-				ObservableList<Student> searchResult = FXCollections.observableArrayList();
-				for (Student student : students) {
-
-					for (String mail : student.geteMailAddresses()) {
-						for (String term : searchTerms) {
-							if (mail.toLowerCase().contains(term)) {
-								searchResult.add(student);
-							}
-						}
-
-					}
-
-					for (String term : searchTerms) {
-						if (student.getFirstName().toLowerCase().contains(term)) {
-							searchResult.add(student);
-						}
-					}
-
-					for (String term : searchTerms) {
-						if (student.getName().toLowerCase().contains(term)) {
-							searchResult.add(student);
-						}
-					}
-
-					for (String term : searchTerms) {
-						if (("" + student.getMtrNr()).contains(term)) {
-							searchResult.add(student);
-						}
-					}
-
-				}
-
-				// suchErgebnis anzeigen in TableView
-				studentTableView.setItems(searchResult);
-			}
-
+		
+		
+		searchTextField.textProperty().addListener((obs, oldText, newText) -> {
+				searchStudents(newText);
 		});
 
 		addStudentButton.setOnAction((event) -> {
@@ -399,7 +369,8 @@ public class ConcernView extends GridPane {
 		});
 
 		removeStudentButton.setOnAction((event) -> {
-			studentTableView.getItems().remove(studentTableView.getSelectionModel().getSelectedItem());
+			localStudents.remove(studentTableView.getSelectionModel().getSelectedItem());
+			searchStudents(searchTextField.getText());
 		});
 
 		newReminderButton.setOnAction((event) -> {
@@ -493,14 +464,62 @@ public class ConcernView extends GridPane {
 
 		return false;
 	}
+	
+	private void searchStudents(String searchTerm) {
+		//TODO funkt nicht :(((
+		
+		if(searchTerm.isEmpty())
+		{
+			filteredStudents = FXCollections.observableArrayList(localStudents);
+		}
+		else
+		{
+			filteredStudents = FXCollections.observableArrayList();
+			String searchTerms[] = searchTerm.toLowerCase().split(" ");
+			
+			continuePoint : for (Student student : localStudents)
+			{
+				for (String term : searchTerms)
+				{
+					
+					if (("" + student.getMtrNr()).contains(term)) {
+						filteredStudents.add(student);
+						continue continuePoint;
+					}
+						
+					if (student.getName().toLowerCase().contains(term)) {
+						filteredStudents.add(student);
+						continue continuePoint;
+					}
+					
+					if (student.getFirstName().toLowerCase().contains(term)) {
+						filteredStudents.add(student);
+						continue continuePoint;
+					}
+					
+					for (String mail : student.geteMailAddresses())
+					{
+						if (mail.toLowerCase().contains(term)) {
+							filteredStudents.add(student);
+							continue continuePoint;
+						}
+					}
+					
+				}
+				
+			}
+			
+			
+			
+
+		}
+	}
+
 
 	private void fillView() {
 		//TODO NullpointerException abfangen
 		titleTextField.setText(concern.getTitle());
 		topicComboBox.getSelectionModel().select(concern.getTopic());
-		if(concern.getStudents() != null) {
-			studentTableView.setItems(concern.getStudents());
-		}
 		if (concern.getReminders() != null) {
 			reminderTableView.setItems(concern.getReminders());
 		}
@@ -518,7 +537,8 @@ public class ConcernView extends GridPane {
 	}
 
 	public void addStudentsToConcern(ObservableList<Student> students) {
-		studentTableView.setItems(students);
+		localStudents = FXCollections.observableArrayList(students);
+		searchStudents(searchTextField.getText());
 	}
 	
 	public void addFilesToConcern(ObservableList<Form> files)

@@ -98,19 +98,19 @@ public class AllConcernsView extends GridPane
 
 		deleteConcernButton.setOnAction((event) -> {
 			Concern concernToDelete = allConcernsTable.getSelectionModel().getSelectedItem();
-			if (concernToDelete == null)
+			if (concernToDelete != null)
 			{
-				return;
-			}
-			Alert alert = new Alert(AlertType.WARNING, "Anliegen \"" + concernToDelete.getTitle() + "\" wirklich aus der Datenbank löschen?",
-					ButtonType.YES, ButtonType.CANCEL);
-			alert.showAndWait();
+				Alert alert = new Alert(AlertType.WARNING, "Anliegen \"" + concernToDelete.getTitle() + "\" wirklich aus der Datenbank löschen?",
+						ButtonType.YES, ButtonType.CANCEL);
+				alert.showAndWait();
 
-			if (alert.getResult() == ButtonType.YES) {
-				
-				presenter.deleteConcern(concernToDelete);
+				if (alert.getResult() == ButtonType.YES) {
+					
+					presenter.deleteConcern(concernToDelete);
+					allConcernsTable.getItems().remove(concernToDelete);
+					
+				}
 			}
-
 
 		});
 		

@@ -297,9 +297,11 @@ public class StudentView extends GridPane {
 		
 		deleteConcernButton.setOnAction((event) -> {
 			Concern selectedConcern = connectedConcernsListView.getSelectionModel().getSelectedItem();
-			selectedConcern.getStudents().remove(student);
-			connectedConcernsListView.getItems().remove(selectedConcern);
-			
+			if(selectedConcern!= null)
+			{
+				selectedConcern.getStudents().remove(student);
+				connectedConcernsListView.getItems().remove(selectedConcern);
+			}
 		});
 
 		editStudentButton.setOnAction((event) -> {

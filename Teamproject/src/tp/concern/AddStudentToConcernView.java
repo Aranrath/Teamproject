@@ -1,9 +1,9 @@
 package tp.concern;
 
 import java.sql.Date;
-import java.util.ArrayList;
 import java.util.List;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -35,16 +35,16 @@ public class AddStudentToConcernView extends GridPane{
 	Button toRightButton;
 	Button toLeftButton;
 	Button allToLeftButton;
-	Button studentToConcernButton;
+	Button saveButton;
 	
 	public AddStudentToConcernView(Presenter presenter, Stage stage, ConcernView concernView, ObservableList<Student> alreadyInConcernStudents)
 	{
 		this.stage = stage;
 		this.concernView = concernView;
-		this.selectedStudents = alreadyInConcernStudents;
+		this.selectedStudents = FXCollections.observableArrayList(alreadyInConcernStudents);
 		this.allStudents = presenter.getStudents();
 		//Remove all doesn't work, as the students are equal, not the same Object.
-		for (Student inStu: alreadyInConcernStudents) {
+		for (Student inStu: selectedStudents) {
 			for (Student allStu: allStudents) {
 				if(inStu.getMtrNr() == allStu.getMtrNr()) {
 					allStudents.remove(allStu);
@@ -52,7 +52,7 @@ public class AddStudentToConcernView extends GridPane{
 				}
 			}
 		}
-		allStudents.removeAll(alreadyInConcernStudents);
+		allStudents.removeAll(selectedStudents);
 		
 		buildView();
 	}
@@ -70,7 +70,7 @@ public class AddStudentToConcernView extends GridPane{
 		toRightButton = new Button(">");
 		toLeftButton = new Button("<");
 		allToLeftButton = new Button("<<");
-		studentToConcernButton = new Button("Zum Anliegen hinzufügen");
+		saveButton = new Button("Studenten im Anliegen übernehmen");
 		
 		// =====================================================================
 
@@ -88,8 +88,8 @@ public class AddStudentToConcernView extends GridPane{
 				add(leftRightButtonBox, 2, 1,1,3);
 				leftRightButtonBox.setAlignment(Pos.CENTER);
 
-				add(studentToConcernButton, 3, 4, 2, 1);
-				GridPane.setHalignment(studentToConcernButton, HPos.RIGHT);
+				add(saveButton, 3, 4, 2, 1);
+				GridPane.setHalignment(saveButton, HPos.RIGHT);
 
 				add(allStudentsTable, 0, 1, 2, 5);
 				add(selectedStudentsTable, 3, 1, 2, 3);
@@ -143,7 +143,7 @@ public class AddStudentToConcernView extends GridPane{
 					
 				});
 				
-				studentToConcernButton.setOnAction((event) -> {
+				saveButton.setOnAction((event) -> {
 					concernView.addStudentsToConcern(selectedStudentsTable.getItems());
 					stage.close();
 				});
