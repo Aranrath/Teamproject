@@ -402,7 +402,7 @@ public class ConcernView extends GridPane {
 			Form fileToDelete = fileTableView.getSelectionModel().getSelectedItem();
 			
 			//Wenn die Datei nicht zum ausgewählten Topic gehört
-			if(!topicComboBox.getSelectionModel().getSelectedItem().getForms().contains(fileToDelete))
+			if(topicComboBox.getSelectionModel().getSelectedItem()!= null && !topicComboBox.getSelectionModel().getSelectedItem().getForms().contains(fileToDelete))
 			{
 				presenter.deleteForm(fileToDelete);
 			}	

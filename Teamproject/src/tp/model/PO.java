@@ -14,6 +14,12 @@ public class PO {
 	{
 		this.name = name;
 	}
+	
+	public PO(String name, ObservableList<Subject> optionalSubjects, ObservableList<Subject> mandatorySubjects) {
+		this.name = name;
+		this.optionalSubjects = optionalSubjects;
+		this.mandatorySubjects = mandatorySubjects;
+	}
 
 	
 	//---------------------------------------Getter Setter

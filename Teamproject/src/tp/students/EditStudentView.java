@@ -423,7 +423,7 @@ public class EditStudentView extends GridPane {
 			stage.initModality(Modality.APPLICATION_MODAL);
 			stage.setTitle("Neue PO");
 			stage.setScene(
-					new Scene(new EditPOView(presenter.getPOs(), presenter.getSubjects(), stage, presenter), 450, 450));
+					new Scene(new EditPOView(stage, presenter), 450, 450));
 			stage.show();
 		});
 	}

@@ -4,5 +4,6 @@
 	<classpathentry kind="src" path="Teamproject/src"/>
 	<classpathentry kind="lib" path="javax.mail.jar"/>
 	<classpathentry kind="lib" path="sqlite-jdbc-3.27.2.jar"/>
+	<classpathentry kind="lib" path="controlsfx-8.40.11.jar"/>
 	<classpathentry kind="output" path="Teamproject/bin"/>
 </classpath>

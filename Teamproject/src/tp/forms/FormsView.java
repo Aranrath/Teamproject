@@ -153,16 +153,16 @@ public class FormsView extends GridPane {
 
 		toRightButton.setOnAction(event -> {
 			ObservableList<Form> itemsToMove = formListView.getSelectionModel().getSelectedItems();
-			
-			formListView.getItems().removeAll(itemsToMove);
+
 			selectedFormsListView.getItems().addAll(itemsToMove);
+			formListView.getItems().removeAll(itemsToMove);
 		});
 		
 		toLeftButton.setOnAction(event -> {
 			ObservableList<Form> itemsToMove = selectedFormsListView.getSelectionModel().getSelectedItems();
-			
-			selectedFormsListView.getItems().removeAll(itemsToMove);
+
 			formListView.getItems().addAll(itemsToMove);
+			selectedFormsListView.getItems().removeAll(itemsToMove);
 		});
 
 		

@@ -1034,6 +1034,30 @@ public class Model {
 	}
 
 
+	public void saveNewPO(PO po) {
+		String sql = "INSERT INTO po(name) VALUES ('"+ po.getName() +"')";
+		String sql2 = "SELECT last_insert_rowid()";
+		try (Connection conn = this.connect();
+				Statement stmt = conn.createStatement())
+			{
+			stmt.executeUpdate(sql);
+			int poId = 0;
+			try (ResultSet rs = stmt.executeQuery(sql2)){
+				if (rs.next()) {
+					poId = rs.getInt(1);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			addPoSubject(poId, po.getOptionalSubjects(), true);
+			addPoSubject(poId, po.getMandatorySubjects(), false);
+			
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		
+	}
+	
 	public void saveEditedPO(String newPOName, ObservableList<Subject> selectedMandatorySubjects,
 			ObservableList<Subject> selectedOptionalSubjects, PO po) 
 	{
@@ -1239,17 +1263,23 @@ public class Model {
 	public void saveNewTopic(String title, ObservableList<Form> selectedForms) 
 	{
 		String sql1 = "INSERT INTO topic (title) VALUES ('" + title + "')";
-		String sql2 = "SELECT id FROM topic WHERE title = '" + title + "'";
+		String sql2 = "SELECT last_insert_rowid()";
 		try (Connection conn = this.connect();
-			Statement stmt = conn.createStatement();
-			Statement stmt2 = conn.createStatement();
-			ResultSet rs = stmt2.executeQuery(sql2))
+			Statement stmt = conn.createStatement();)
 		{
 			stmt.executeUpdate(sql1);
-			if (rs.next()) {
-				int id = rs.getInt("id");
-				addTopicForms(id, selectedForms);
+			int id = 0;
+			try (ResultSet rs = stmt.executeQuery(sql2)){
+				if (rs.next()) {
+					id = rs.getInt(1);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
+				if(id!=0) {
+					addTopicForms(id, selectedForms);
+				}
+		
 		}
 		catch (Exception e)
 		{
@@ -1285,7 +1315,7 @@ public class Model {
 			{
 			for (Form form: selectedForms){
 				sql="INSERT INTO topic_forms (topic, form) VALUES (" + id + ", " + form.getId() + ")";
-				stmt.executeQuery(sql);
+				stmt.executeUpdate(sql);
 			}
 			}catch (Exception e) {
 				e.printStackTrace();

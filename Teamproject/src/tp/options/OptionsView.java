@@ -137,7 +137,7 @@ public class OptionsView extends GridPane {
 			stage.setAlwaysOnTop(true);
 			stage.initModality(Modality.APPLICATION_MODAL);
             stage.setTitle("Neue PO");
-            stage.setScene(new Scene(new EditPOView(pos, subjects,stage, presenter), 450, 450));
+            stage.setScene(new Scene(new EditPOView(stage, presenter), 450, 450));
             stage.show();
 		});
 		addSubjectButton.setOnAction((event)-> {

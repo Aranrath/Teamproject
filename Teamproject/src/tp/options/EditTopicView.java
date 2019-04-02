@@ -1,6 +1,9 @@
 package tp.options;
 
+import org.controlsfx.control.CheckListView;
+
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -28,7 +31,7 @@ public class EditTopicView extends GridPane {
 	private Label titleLabel;
 	private TextField titleTextField;
 	private Label formLabel;
-	private ListView<Form> allFormsListView;
+	private CheckListView<Form> allFormsListView;
 	private Label errorLabel;
 	private Button saveButton;
 
@@ -69,11 +72,11 @@ public class EditTopicView extends GridPane {
 		
 		if(allForms != null)
 		{
-			allFormsListView = new ListView<Form>(allForms);
+			allFormsListView = new CheckListView<Form>(allForms);
 		}
 		else
 		{
-			allFormsListView = new ListView<Form>();
+			allFormsListView = new CheckListView<Form>();
 		}
 		
 		add(titleLabel,0,0);
@@ -104,12 +107,8 @@ public class EditTopicView extends GridPane {
 			}
 			else
 			{
-				ObservableList<Form> selectedForms = FXCollections.observableArrayList();
-				for(Form o : allFormsListView.getItems())
-				{
-					selectedForms.add(o);
-					//TODO nur alle ausgewählten
-				}
+				
+				ObservableList<Form> selectedForms = allFormsListView.getCheckModel().getCheckedItems();
 				//UNTERSCHIED: speicher als neues Thema
 				presenter.saveNewTopic(titleTextField.getText(), selectedForms);
 				stage.close();
@@ -120,6 +119,10 @@ public class EditTopicView extends GridPane {
 
 	// Editing an existing Topic
 	private void fillView(Topic topic) {
+		//check Forms that already belong to Topic
+		for(Form f: topic.getForms()) {
+			allFormsListView.getSelectionModel().select(f);
+		}
 		saveButton.setOnAction((event)->{
 			if(titleTextField.getText().equals(""))
 			{
@@ -136,12 +139,7 @@ public class EditTopicView extends GridPane {
 			}
 			else
 			{
-				ObservableList<Form> selectedForms = FXCollections.observableArrayList();
-				for(Form o : allFormsListView.getItems())
-				{
-					selectedForms.add(o);
-					//TODO nur alle ausgewählten
-				}
+				ObservableList<Form> selectedForms = allFormsListView.getCheckModel().getCheckedItems();
 				//UNTERSCHIED: speicher das geänderte Thema
 				presenter.saveEditedTopic(titleTextField.getText(), selectedForms, topic);
 				stage.close();

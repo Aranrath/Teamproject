@@ -209,6 +209,10 @@ public class Presenter {
 
 	}
 
+	public void saveNewPo(PO po) {
+		model.saveNewPO(po);
+	}
+	
 	public void saveEditedPO(String newPOName, ObservableList<Subject> selectedOptionalSubjects,
 			ObservableList<Subject> selectedMandatorySubjects, PO po) {
 		model.saveEditedPO(newPOName, selectedOptionalSubjects, selectedMandatorySubjects, po);

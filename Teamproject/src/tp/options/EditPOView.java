@@ -15,24 +15,23 @@ import javafx.stage.Stage;
 import tp.Presenter;
 import tp.model.PO;
 import tp.model.Subject;
+import org.controlsfx.control.CheckListView;
 
 public class EditPOView extends GridPane{
 
-	ObservableList<PO> allPOs;
-	ObservableList<Subject> allSubjects;
-	Stage stage;
-	Presenter presenter;
+	private ObservableList<Subject> allSubjects;
+	private Stage stage;
+	private Presenter presenter;
 
-	Button saveButton;
-	Label subjectErrorLabel;
-	Label poNameErrorLabel;
-	TextField poNameTextField;
-	ListView<Subject> selectSubjectsListView;
+	private Button saveButton;
+	private Label subjectErrorLabel;
+	private Label poNameErrorLabel;
+	private TextField poNameTextField;
+	private CheckListView<Subject> selectSubjectsListView;
 	
-	public EditPOView(ObservableList<PO> pos, ObservableList<Subject> subjects, Stage stage, Presenter presenter)
+	public EditPOView(Stage stage, Presenter presenter)
 	{
-		this.allPOs = pos;
-		this.allSubjects = subjects;
+		allSubjects = presenter.getSubjects();
 		this.stage = stage;
 		this.presenter = presenter;
 		
@@ -40,10 +39,9 @@ public class EditPOView extends GridPane{
 		fillView();
 	}
 	
-	public EditPOView(ObservableList<PO> allPOs, ObservableList<Subject> allSubjects, Stage stage, Presenter presenter, PO po)
+	public EditPOView(Stage stage, Presenter presenter, PO po)
 	{
-		this.allPOs = allPOs;
-		this.allSubjects = allSubjects;
+		allSubjects = presenter.getSubjects();
 		this.stage = stage;
 		this.presenter = presenter;
 		
@@ -60,7 +58,7 @@ public class EditPOView extends GridPane{
 		saveButton = new Button("Speichern");
 		subjectErrorLabel = new Label("");
 		poNameErrorLabel = new Label("");
-		selectSubjectsListView = new ListView<Subject>();
+		selectSubjectsListView = new CheckListView<Subject>(allSubjects);
 
 		add(new Label("PO Name"), 0, 0);
 		add(poNameTextField,1,0);
@@ -78,10 +76,6 @@ public class EditPOView extends GridPane{
 	}
 	private void fillView() {
 
-		
-	}
-	
-	private void fillView(PO po) {
 		saveButton.setOnAction((event)->{
 			if(poNameTextField.getText().equals(""))
 			{
@@ -92,24 +86,73 @@ public class EditPOView extends GridPane{
 			}
 			if(nameAlreadyExists(poNameTextField.getText()))
 			{
-				poNameErrorLabel.setText("Titel bereits vorhanden");
+				poNameErrorLabel.setText("Name bereits vorhanden");
 				poNameErrorLabel.setTextFill(Color.RED);
 				return;
 			}
 			else
 			{
+				ObservableList<Subject>	selectedSubjects = selectSubjectsListView.getCheckModel().getCheckedItems();
 				ObservableList<Subject> selectedOptionalSubjects = FXCollections.observableArrayList();
 				ObservableList<Subject> selectedMandatorySubjects = FXCollections.observableArrayList();
-				for(Subject o : selectSubjectsListView.getItems())
-				{
-					//TODO wenn ListView korrekt dargestellt mit checkboxen
-					
-					//if (selected as optional)
-					selectedOptionalSubjects.add(o);
-					//else
-						//if(selected as mandatory)
-						selectedMandatorySubjects.add(o);
-				}
+//				for(Subject s : selectSubjectsListView.getItems())
+//				{
+//					
+//					//TODO wenn ListView korrekt dargestellt mit checkboxen
+//					
+//					//if (selected as optional)
+//					selectedOptionalSubjects.add(s);
+//					//else
+//						//if(selected as mandatory)
+//						selectedMandatorySubjects.add(s);
+//				}
+				//UNTERSCHIED: speicher das geänderte Thema
+				PO po = new PO(poNameTextField.getText(), selectedOptionalSubjects, selectedMandatorySubjects);
+				presenter.saveNewPo(po);
+				stage.close();
+			}
+		});
+		
+	}
+	
+	private void fillView(PO po) {
+		for(Subject s: po.getMandatorySubjects()) {
+			selectSubjectsListView.getCheckModel().check(s);
+		}
+		for(Subject s: po.getOptionalSubjects()) {
+			selectSubjectsListView.getCheckModel().check(s);
+		}
+		
+		saveButton.setOnAction((event)->{
+			if(poNameTextField.getText().equals(""))
+			{
+				poNameErrorLabel.setText("Titel muss ausgefüllt sein");
+				poNameErrorLabel.setTextFill(Color.RED);
+				return;
+				
+			}
+			if(nameAlreadyExists(poNameTextField.getText()))
+			{
+				poNameErrorLabel.setText("Name bereits vorhanden");
+				poNameErrorLabel.setTextFill(Color.RED);
+				return;
+			}
+			else
+			{
+				ObservableList<Subject>	selectedSubjects = selectSubjectsListView.getCheckModel().getCheckedItems();
+				ObservableList<Subject> selectedOptionalSubjects = FXCollections.observableArrayList();
+				ObservableList<Subject> selectedMandatorySubjects = FXCollections.observableArrayList();
+//				for(Subject s : selectSubjectsListView.getItems())
+//				{
+//					
+//					//TODO wenn ListView korrekt dargestellt mit checkboxen
+//					
+//					//if (selected as optional)
+//					selectedOptionalSubjects.add(s);
+//					//else
+//						//if(selected as mandatory)
+//						selectedMandatorySubjects.add(s);
+//				}
 				//UNTERSCHIED: speicher das geänderte Thema
 				presenter.saveEditedPO(poNameTextField.getText(),selectedMandatorySubjects, selectedOptionalSubjects, po);
 				stage.close();
@@ -120,9 +163,9 @@ public class EditPOView extends GridPane{
 	// =================================================================
 
 	private boolean nameAlreadyExists(String newPOName) {
-		for(Subject s : allSubjects)
+		for(PO p : presenter.getPOs())
 		{
-			if(s.getTitle().equals(newPOName))
+			if(p.getName().equals(newPOName))
 			{
 				return true;
 			}
