@@ -817,7 +817,7 @@ public class Model {
 
 	// ------------Datenbank Datenännderungen------------------------------------------------------------
 	
-	private void addAppointment(Appointment appointment) {
+	public void saveNewAppointment(Appointment appointment) {
 		String sql = "INSERT INTO appointment(concern, date, startTime, endTime, roomNmb) values (?, ?, ?, ?, ?)";
 		try (Connection conn = this.connect();
 			PreparedStatement pstmt = conn.prepareStatement(sql))
@@ -838,7 +838,21 @@ public class Model {
 
 	private void addAppointments(ObservableList<Appointment> appointments) {
 		for (Appointment a: appointments) {
-			addAppointment(a);
+			saveNewAppointment(a);
+		}
+	}
+
+
+	public void deleteAppointment(Appointment appointmentToDelete) {
+		String sql = "DELETE FROM appointment WHERE id = "+ appointmentToDelete.getId();
+		try (Connection conn = this.connect();
+			Statement stmt = conn.createStatement())
+		{
+			stmt.executeQuery(sql);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
 		}
 	}
 
@@ -1122,6 +1136,17 @@ public class Model {
 	}
 
 
+	public void deleteReminder(Reminder reminderToDelete) {
+		String sql = "DELETE FROM reminder WHERE id = " + reminderToDelete.getId();
+		try (Connection conn = this.connect();
+				Statement stmt = conn.createStatement()) {
+			stmt.executeUpdate(sql);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+
 	public boolean saveNewSubject(String title, int ects) 
 	{
 		String sql = "INSERT INTO subject(title, ects) VALUES('" + title +"'," + ects +")";
@@ -1178,21 +1203,47 @@ public class Model {
 
 
 	public void saveNewStudent(Student student) {
-		//TODO
+		Image img = student.getImage();
+		try(ByteArrayOutputStream os = new ByteArrayOutputStream();
+		   InputStream is = new ByteArrayInputStream(os.toByteArray())){
+			ImageIO.write(SwingFXUtils.fromFXImage(img, null),"png", os); 
+		
+			String sql = "INSERT INTO student(matrNr, name, firstName, semester, po, ects, image, notes, gender) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			try(Connection conn = this.connect();
+					PreparedStatement pstmt = conn.prepareStatement(sql))
+			{
+				pstmt.setInt(1, student.getMtrNr());
+				pstmt.setString(2, student.getName());
+				pstmt.setString(3, student.getFirstName());
+				pstmt.setInt(4, student.getSemester());
+				pstmt.setInt(5, student.getPo().getId());
+				pstmt.setInt(6, student.getEcts());
+				pstmt.setBlob(7, is);
+				pstmt.setString(8, student.getNotes());
+				pstmt.setString(9, student.getGender());
+				pstmt.executeUpdate();
+				addStudentEmail(student.getMtrNr(), student.geteMailAddresses());
+				addConcernsStudent(student.getConcernIds(), student.getMtrNr());			
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 
-	public void saveEditedStudent(Student student) {
-		//TODO Test..
-		
+	public void saveEditedStudent(Student student) {	
 		
 		Image img = student.getImage();
 		try(ByteArrayOutputStream os = new ByteArrayOutputStream();
 		   InputStream is = new ByteArrayInputStream(os.toByteArray())){
 			ImageIO.write(SwingFXUtils.fromFXImage(img, null),"png", os); 
 		
-			String sql1 = "UPDATE student SET name = "+student.getName()+", firstname = "+student.getFirstName()+", semester = "+student.getSemester()+
-				", notes = "+student.getNotes()+", ects = "+student.getEcts()+", img = " +is + 
+			String sql1 = "UPDATE student SET name = '"+student.getName()+"', firstname = '"+student.getFirstName()+"', semester = "+student.getSemester()+
+				", notes = '"+student.getNotes()+"', ects = "+student.getEcts()+", img = " +is + 
 				"WHERE matrNr = " + student.getMtrNr();
 			String sql2 = "DELETE FROM concern_student WHERE student = " + student.getMtrNr();
 			
@@ -1206,11 +1257,11 @@ public class Model {
 			try(Connection conn = this.connect();
 					Statement stmt = conn.createStatement())
 			{
-				stmt.executeQuery(sql1);
-				stmt.executeQuery(sql2);
+				stmt.executeUpdate(sql1);
+				stmt.executeUpdate(sql2);
 				for (String address: oldMailAddresses) {
 					String sql = "DELETE FROM student_emailAddress WHERE emailAddress = " + address;
-					stmt.executeQuery(sql);
+					stmt.executeUpdate(sql);
 				}
 				addStudentEmail(student.getMtrNr(), newMailAddresses);
 				addConcernsStudent(student.getConcernIds(), student.getMtrNr());			
@@ -1226,15 +1277,58 @@ public class Model {
 	}
 
 
+	public void changeStudentMtrNr(int oldMtrNr, int newMtrNr) {
+		String sql ="UPDATE student SET matrNr = " + newMtrNr + " WHERE matrNr = " + oldMtrNr;
+		try(Connection conn = this.connect();
+				Statement stmt = conn.createStatement())
+		{
+			stmt.executeUpdate(sql);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+
+	public void saveEditedStudentNotes(Student student, String notes) {
+		String sql ="UPDATE student SET notes = " + notes + " WHERE matrNr = " + student.getMtrNr();
+		try(Connection conn = this.connect();
+				Statement stmt = conn.createStatement())
+		{
+			stmt.executeUpdate(sql);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+
+	public boolean mtrAlreadyExists(int mtrNr) {
+		String sql = "SELECT * FROM student WHERE matrNr = " + mtrNr;
+		
+		try (Connection conn = this.connect();
+				Statement stmt = conn.createStatement();
+				ResultSet rs = stmt.executeQuery(sql))				
+			{
+				if (rs.next()) {
+					return true;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		return false;
+	}
+
+
 	public void deleteStudent(Student s) 
 	{
-		Student ds = s;
-		int matNr = ds.getMtrNr();
-		String sql = "DELETE FROM student WHERE Matrikelnummer = "+ matNr;
+		String sql = "DELETE FROM student WHERE Matrikelnummer = "+ s.getMtrNr();
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement())
 		{
-			stmt.executeQuery(sql);
+			stmt.executeUpdate(sql);
 		}
 		catch(Exception e)
 		{
@@ -1502,46 +1596,10 @@ public static String getEmailContent(Part message) throws Exception {
 	   }
 
 
-public void deleteReminder(Reminder reminderToDelete) {
-	// TODO Auto-generated method stub
-	
-}
-
-
-public void deleteAppointment(Appointment appointmentToDelete) {
-	// TODO Auto-generated method stub
-	
-}
-
-
-public void saveNewAppointment(Appointment newAppointment) {
-	// TODO Auto-generated method stub
-	
-}
-
-
 public Image getDefaultStudentImage() {
 	// TODO Auto-generated method stub
 	return new Image("https://i.pinimg.com/originals/e2/69/8e/e2698e465dbf3f13844e896e00f0ea30.jpg");
 //	return null;
-	
-}
-
-
-public boolean mtrAlreadyExists(int mtrNr) {
-	// TODO Auto-generated method stub
-	return false;
-}
-
-
-public void changeStudentMtrNr(int oldMtrNr, int newMtrNr) {
-	// TODO Auto-generated method stub
-	
-}
-
-
-public void saveEditedStudentNotes(Student student, String notes) {
-	// TODO Auto-generated method stub
 	
 }
 }
