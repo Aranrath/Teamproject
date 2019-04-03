@@ -102,7 +102,6 @@ public class ConcernView extends GridPane {
 	public ConcernView(Presenter presenter, MyTab tab, ObservableList<Student> students) {
 		this.presenter = presenter;
 		this.tab = tab;
-		// Studenten einsetzen
 		localStudents = FXCollections.observableArrayList(students);
 		
 		buildView();
@@ -115,9 +114,12 @@ public class ConcernView extends GridPane {
 		this.presenter = presenter;
 		this.tab = tab;
 		this.concern = concern;
-		// Studenten einsetzen
 		if(concern.getStudents() != null) {
 			localStudents = concern.getStudents();
+		}
+		else
+		{
+			localStudents = FXCollections.observableArrayList();
 		}
 		
 		buildView();
@@ -355,7 +357,7 @@ public class ConcernView extends GridPane {
 		
 		
 		searchTextField.textProperty().addListener((obs, oldText, newText) -> {
-				searchStudents(newText);
+			filterStudents(newText);
 		});
 
 		addStudentButton.setOnAction((event) -> {
@@ -369,8 +371,9 @@ public class ConcernView extends GridPane {
 		});
 
 		removeStudentButton.setOnAction((event) -> {
-			localStudents.remove(studentTableView.getSelectionModel().getSelectedItem());
-			searchStudents(searchTextField.getText());
+			Student studentToRemove = studentTableView.getSelectionModel().getSelectedItem();
+			localStudents.remove(studentToRemove);
+			filteredStudents.remove(studentToRemove);
 		});
 
 		newReminderButton.setOnAction((event) -> {
@@ -465,59 +468,46 @@ public class ConcernView extends GridPane {
 		return false;
 	}
 	
-	private void searchStudents(String searchTerm) {
-		//TODO funkt nicht :(((
-		
+	private void filterStudents(String searchTerm) {
+
 		if(searchTerm.isEmpty())
 		{
-			filteredStudents = FXCollections.observableArrayList(localStudents);
+			filteredStudents.clear();
+			filteredStudents.addAll(localStudents);
 		}
 		else
 		{
-			filteredStudents = FXCollections.observableArrayList();
-			String searchTerms[] = searchTerm.toLowerCase().split(" ");
 			
-			continuePoint : for (Student student : localStudents)
+			filteredStudents.clear();
+			String [] searchTerms = searchTerm.toLowerCase().split(" ");
+			
+			
+			for (Student student : localStudents)
 			{
-				for (String term : searchTerms)
+				if(containsAll(student.toString().toLowerCase(), searchTerms))
 				{
-					
-					if (("" + student.getMtrNr()).contains(term)) {
-						filteredStudents.add(student);
-						continue continuePoint;
-					}
-						
-					if (student.getName().toLowerCase().contains(term)) {
-						filteredStudents.add(student);
-						continue continuePoint;
-					}
-					
-					if (student.getFirstName().toLowerCase().contains(term)) {
-						filteredStudents.add(student);
-						continue continuePoint;
-					}
-					
-					for (String mail : student.geteMailAddresses())
-					{
-						if (mail.toLowerCase().contains(term)) {
-							filteredStudents.add(student);
-							continue continuePoint;
-						}
-					}
-					
+					filteredStudents.add(student);
 				}
 				
 			}
 			
-			
-			
-
 		}
+	}
+	
+	public static boolean containsAll(String searchText, String ...searchTerm) {
+	    for (String s : searchTerm)
+	    {
+	    	if (!searchText.contains(s)) 
+	        {
+	        	return false;
+	        }
+	    }
+	        
+	    return true;
 	}
 
 
 	private void fillView() {
-		//TODO NullpointerException abfangen
 		titleTextField.setText(concern.getTitle());
 		topicComboBox.getSelectionModel().select(concern.getTopic());
 		if (concern.getReminders() != null) {
@@ -537,8 +527,11 @@ public class ConcernView extends GridPane {
 	}
 
 	public void addStudentsToConcern(ObservableList<Student> students) {
-		localStudents = FXCollections.observableArrayList(students);
-		searchStudents(searchTextField.getText());
+		localStudents.clear();
+		localStudents.addAll(students);
+		
+		filterStudents(searchTextField.getText());
+		
 	}
 	
 	public void addFilesToConcern(ObservableList<Form> files)

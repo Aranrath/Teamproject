@@ -64,8 +64,10 @@ public class StudentView extends GridPane {
 	private Label studentPO;
 	private Label semesterLabel;
 	private Label studentSemester;
+	
 	private Label ectsLabel;
 	private Label studentECTS;
+	
 	private Label concernsLabel;
 	private Button newConcernButton;
 	private Button deleteConcernButton;
@@ -140,6 +142,7 @@ public class StudentView extends GridPane {
 		studentPO = new Label();
 		ectsLabel = new Label("ECTS");
 		studentECTS = new Label();
+		
 		semesterLabel = new Label("Semester");
 		studentSemester = new Label();
 		concernsLabel = new Label("Anliegen");
@@ -208,6 +211,7 @@ public class StudentView extends GridPane {
 		add(studentPO, 2, 2,2,1);
 		add(ectsLabel, 1, 6);
 		add(studentECTS, 2, 6);
+		
 		add(semesterLabel, 1, 7);
 		add(studentSemester, 2, 7);
 		add(concernsLabel, 4, 2,2,1);
@@ -322,6 +326,7 @@ public class StudentView extends GridPane {
 
 			
 		});
+		
 
 		studentNotes.textProperty().addListener(new ChangeListener<String>() {
 
@@ -381,7 +386,7 @@ public class StudentView extends GridPane {
 			studentPO.setText(student.getPo().getName());
 		}
 	
-		studentECTS.setText("" + student.getEcts());
+		studentECTS.setText("" + presenter.calculateEcts(student.getPassedSubjects(),student.getPo()));
 		studentSemester.setText("" + student.getSemester());
 		ObservableList<Concern> concerns = FXCollections.observableArrayList();
 		for (int id : student.getConcernIds()){
@@ -468,6 +473,11 @@ public class StudentView extends GridPane {
 		studentImage.setImage(image);
 		student.setImage(image);
 		presenter.saveEditedStudent(student);
+	}
+	
+	public void calculateECTS()
+	{
+		
 	}
 
 }

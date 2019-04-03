@@ -34,6 +34,7 @@ import tp.model.Concern;
 import tp.model.MyTab;
 import tp.model.PO;
 import tp.model.Student;
+import tp.model.Subject;
 import tp.options.EditPOView;
 
 public class EditStudentView extends GridPane {
@@ -41,6 +42,8 @@ public class EditStudentView extends GridPane {
 	private Presenter presenter;
 	private Student student;
 	private MyTab tab;
+	
+	private ObservableList<Subject> localPassedSubjects;
 
 	// ====================================
 
@@ -62,7 +65,9 @@ public class EditStudentView extends GridPane {
 	private Label semesterLabel;
 	private TextField studentSemester;
 	private Label ectsLabel;
-	private TextField studentECTS;
+	private Label studentECTS;
+	private Button passedSubjectsButton;
+	
 	private Label concernsLabel;
 	private ListView<Concern> concernsListView;
 	private Label errorLabel;
@@ -78,12 +83,16 @@ public class EditStudentView extends GridPane {
 	public EditStudentView(Presenter presenter, MyTab tab) {
 		this.presenter = presenter;
 		this.tab = tab;
+		localPassedSubjects = FXCollections.observableArrayList();
+		
 		buildView();
 	}
 
 	public EditStudentView(Presenter presenter, Student student, MyTab tab) {
 		this.presenter = presenter;
 		this.tab = tab;
+		localPassedSubjects = FXCollections.observableArrayList(student.getPassedSubjects());
+		
 		buildView();
 		fillView();
 	}
@@ -127,8 +136,9 @@ public class EditStudentView extends GridPane {
 		HBox.setHgrow(studentPO, Priority.ALWAYS);
 		
 		ectsLabel = new Label("ECTS");
-		studentECTS = new TextField();
-		studentECTS.setPromptText("0");
+		studentECTS = new Label("" + 0);
+		passedSubjectsButton = new Button("Bestandene Fächer ändern");
+		
 		semesterLabel = new Label("Semester");
 		studentSemester = new TextField();
 		studentSemester.setPromptText("0");
@@ -234,6 +244,35 @@ public class EditStudentView extends GridPane {
 			stage.show();
 		});
 		
+		passedSubjectsButton.setOnAction((event) -> {
+			
+            if(studentPO.getSelectionModel().getSelectedItem() == null)
+            {
+            	errorLabel.setText("PO muss ausgewählt sein um bestandene Fächer auszuwählen");
+        		errorLabel.setVisible(true);
+        		return;
+            }
+            else
+            {
+    			Stage stage = new Stage();
+    			stage.setAlwaysOnTop(true);
+    			stage.initModality(Modality.APPLICATION_MODAL);
+                stage.setTitle("Bestandene Fächer auswählen");
+                
+                if(localPassedSubjects == null)
+                {
+                	stage.setScene(new Scene(new SelectPassedSubjectsView(stage, presenter, this, studentPO.getSelectionModel().getSelectedItem()), 450, 450));
+                }
+                else
+                {
+                	stage.setScene(new Scene(new SelectPassedSubjectsView(stage, presenter, this, studentPO.getSelectionModel().getSelectedItem(), localPassedSubjects), 450, 450));
+                }
+
+                stage.show();
+            }
+            
+		});
+		
 		searchPictureButton.setOnAction((event)->{
 			
 			FileChooser fileChooser = new FileChooser();
@@ -266,7 +305,6 @@ public class EditStudentView extends GridPane {
 			Image image;
 			PO po;
 			int semester;
-			int ects;
 			ObservableList<Concern> concerns;
 			String notes;
 			
@@ -343,23 +381,6 @@ public class EditStudentView extends GridPane {
 				semester = 0;
 			}
 
-			if(!studentECTS.getText().isEmpty())
-			{
-				try
-				{
-					ects = Integer.parseInt(studentECTS.getText());
-				}
-				catch(Exception e)
-				{
-					errorLabel.setText("ECTS-Angabe ungültig");
-					errorLabel.setVisible(true);
-					return;
-				}
-			}
-			else
-			{
-				ects = 0;
-			}
 
 			
 			concerns = concernsListView.getItems();
@@ -378,7 +399,7 @@ public class EditStudentView extends GridPane {
 				student.setImage(image);
 				student.setPo(po);
 				student.setSemester(semester);
-				student.setEcts(ects);
+				student.setPassedSubjects(localPassedSubjects);
 				student.setNotes(notes);
 				
 				presenter.saveNewStudent(student);
@@ -401,7 +422,7 @@ public class EditStudentView extends GridPane {
 				student.setImage(image);
 				student.setPo(po);
 				student.setSemester(semester);
-				student.setEcts(ects);
+				student.setPassedSubjects(localPassedSubjects);
 				ObservableList<Integer> concernIds = FXCollections.observableArrayList();
 				for (Concern c : concerns) {
 					concernIds.add(c.getId());
@@ -426,6 +447,13 @@ public class EditStudentView extends GridPane {
 					new Scene(new EditPOView(stage, presenter), 450, 450));
 			stage.show();
 		});
+		
+		
+		studentPO.setOnAction((event)-> {
+			updateEctsDisplay();
+		});
+		 
+		
 	}
 
 	private void fillView() {
@@ -446,7 +474,7 @@ public class EditStudentView extends GridPane {
 		studentMail_3.setText(student.geteMailAddresses().get(2));
 		studentMtrNr.setText("" + student.getMtrNr());
 		studentPO.getSelectionModel().select(student.getPo());
-		studentECTS.setText("" + student.getEcts());
+		studentECTS.setText("" + presenter.calculateEcts(student.getPassedSubjects(), student.getPo()));
 		studentSemester.setText("" + student.getSemester());
 		ObservableList<Concern> concerns = FXCollections.observableArrayList();
 		for (int id : student.getConcernIds()){
@@ -462,4 +490,15 @@ public class EditStudentView extends GridPane {
 	public void updateImage(Image image) {
 		studentImage.setImage(image);
 	}
+
+	public void updateEctsDisplay() {
+		studentECTS.setText("" + presenter.calculateEcts(localPassedSubjects, studentPO.getSelectionModel().getSelectedItem()));
+	}
+	
+	public void updatePassedSubjects(ObservableList<Subject> updatedPassedSubjects)
+	{
+		localPassedSubjects = updatedPassedSubjects;
+		updateEctsDisplay();
+	}
+	
 }

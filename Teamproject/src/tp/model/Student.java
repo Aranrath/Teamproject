@@ -14,7 +14,7 @@ public class Student {
 	private ArrayList<String> eMailAddresses;
 	private int semester;
 	private String notes;
-	private int ects;
+	private ObservableList<Subject> passedSubjects;
 	private Image image;
 	private ObservableList<Integer> concernIds;
 	private PO po;
@@ -28,14 +28,14 @@ public class Student {
 	}
 
 	public Student(int mtrNr, String name, String firstName, ArrayList<String> eMailAddresses, int semester,
-			String notes, int ects, Image image, ObservableList<Integer> concernIds, String gender, Date lastContact) {
+			String notes, ObservableList<Subject> passedSubjects, Image image, ObservableList<Integer> concernIds, String gender, Date lastContact) {
 		this.mtrNr = mtrNr;
 		this.name = name;
 		this.firstName = firstName;
 		this.eMailAddresses = eMailAddresses;
 		this.semester = semester;
 		this.notes = notes;
-		this.ects = ects;
+		this.passedSubjects = passedSubjects;
 		this.image = image;
 		this.concernIds = concernIds;
 		this.gender = gender;
@@ -63,10 +63,6 @@ public class Student {
 
 	public String getNotes() {
 		return notes;
-	}
-
-	public int getEcts() {
-		return ects;
 	}
 
 	public Image getImage() {
@@ -109,10 +105,6 @@ public class Student {
 		this.notes = notes;
 	}
 
-	public void setEcts(int ects) {
-		this.ects = ects;
-	}
-
 	public void setImage(Image image) {
 		this.image = image;
 	}
@@ -140,6 +132,33 @@ public class Student {
 
 	public Date getLastContact() {
 		return lastContact;
+	}
+	
+	public ObservableList<Subject> getPassedSubjects() {
+		return passedSubjects;
+	}
+
+	public void setPassedSubjects(ObservableList<Subject> passedSubjects) {
+		this.passedSubjects = passedSubjects;
+	}
+	
+	
+	//=====================================================
+
+	public String toString()
+	{
+		String studentString = mtrNr + " " + name;
+		
+		if(firstName != null)
+		{
+			studentString += " " + firstName;
+		}
+		for ( String mail : eMailAddresses )
+		{
+			studentString += " " + mail;
+		}
+		
+		return studentString;
 	}
 
 

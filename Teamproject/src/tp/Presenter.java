@@ -374,6 +374,10 @@ public class Presenter {
 		
 	}
 
+	public int calculateEcts(ObservableList<Subject> passedSubjects, PO po) {
+		return model.calculateEcts(passedSubjects, po);
+	}
+
 
 
 

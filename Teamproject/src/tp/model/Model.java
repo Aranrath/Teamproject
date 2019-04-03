@@ -1602,4 +1602,20 @@ public Image getDefaultStudentImage() {
 //	return null;
 	
 }
+
+
+	public int calculateEcts(ObservableList<Subject> passedSubjects, PO po)
+	{
+		int ects = 0;
+		
+		for(Subject sub : passedSubjects)
+		{
+			if(po.getMandatorySubjects().contains(sub) || po.getOptionalSubjects().contains(sub))
+			{
+				ects += sub.getEcts();
+			}
+		}
+		
+		return ects;
+	}
 }
