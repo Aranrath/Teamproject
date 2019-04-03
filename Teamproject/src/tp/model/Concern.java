@@ -124,6 +124,11 @@ public class Concern {
 		return studentsString;
 	}
 
+	@Override
+	public String toString() {
+		return title;
+	}
+
 	
 
 }

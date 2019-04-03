@@ -46,6 +46,7 @@ public class StudentView extends GridPane {
 	private Presenter presenter;
 	private Student student;
 	private MyTab tab;
+	ObservableList<Concern> concerns;
 
 	// ====================================GUI
 
@@ -148,7 +149,9 @@ public class StudentView extends GridPane {
 		concernsLabel = new Label("Anliegen");
 		newConcernButton = new Button("Neues Anliegen");
 		deleteConcernButton = new Button("Student aus Anliegen entfernen");
-		connectedConcernsListView = new ListView<Concern>();
+
+		concerns = FXCollections.observableArrayList();
+		connectedConcernsListView = new ListView<Concern>(concerns);
 		errorLabel = new Label("Ich bin ein Error-Label, bitch");
 		errorLabel.setVisible(false);
 		editStudentButton = new Button("Profil bearbeiten");
@@ -388,11 +391,9 @@ public class StudentView extends GridPane {
 	
 		studentECTS.setText("" + presenter.calculateEcts(student.getPassedSubjects(),student.getPo()));
 		studentSemester.setText("" + student.getSemester());
-		ObservableList<Concern> concerns = FXCollections.observableArrayList();
 		for (int id : student.getConcernIds()){
 			concerns.add(presenter.getConcern(id));
 		}
-		connectedConcernsListView = new ListView<Concern>(concerns);
 		studentNotes.setText(student.getNotes());
 		//TODO für Mail nen loading label oder sowas
 

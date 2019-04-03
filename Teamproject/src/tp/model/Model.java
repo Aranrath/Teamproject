@@ -473,6 +473,23 @@ public class Model {
 		return result;
 	}
 
+	private ObservableList<Subject> getPassedSubjects(int mtrNr) {
+		ObservableList<Subject>  result = FXCollections.observableArrayList();
+		String sql = "SELECT subject FROM passed_subjects WHERE student = " + mtrNr;
+		try (Connection conn = this.connect();
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(sql))
+		{
+			while(rs.next()) {
+				int id = rs.getInt("subject");
+				result.add(getSubject(id));
+			}
+			
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
 
 	public ObservableList<PO> getPOs() 
 	{
@@ -575,7 +592,7 @@ public class Model {
 
 	public Student getStudent(int mtrNr) 
 	{
-	Student result = new Student(0, null, null, null, 0, null, 0, null, null, null, null);
+	Student result = new Student(0, null, null, null, 0, null, null, null, null, null, null);
 	String sql1 = "SELECT * FROM student WHERE matrNr = " + mtrNr;
 	String sql2 = "SELECT concern FROM concern_student WHERE student = " + mtrNr;
 	
@@ -590,7 +607,7 @@ public class Model {
 				ArrayList<String> eMailAddressess = getEMailAddressess(mtrNr);
 				int semester = rs.getInt("semester");
 				String notes = rs.getString("notes");
-				int ects = rs.getInt("ects");
+				ObservableList<Subject> passedSubjects= getPassedSubjects(mtrNr);
 				Image img = null;
 				try(InputStream is= rs.getBinaryStream("image")){
 					if (is!=null) {
@@ -601,7 +618,7 @@ public class Model {
 				}
 				String gender = rs.getString("gender");
 				
-				result = new Student(mtrNr, name, firstname, eMailAddressess, semester, notes, ects, img, null, gender, null);
+				result = new Student(mtrNr, name, firstname, eMailAddressess, semester, notes, passedSubjects, img, null, gender, null);
 				if(getLastEmail(result)!=null) {
 					Date lastContact = getLastEmail(result).getDate();
 					result.setLastContact(lastContact);
@@ -998,9 +1015,8 @@ public class Model {
 	
 	private byte[] readFile(String file) {
         ByteArrayOutputStream bos = null;
-        try {
-            File f = new File(file);
-            FileInputStream fis = new FileInputStream(f);
+        File f = new File(file);
+        try (FileInputStream fis = new FileInputStream(f)){            
             byte[] buffer = new byte[1024];
             bos = new ByteArrayOutputStream();
             for (int len; (len = fis.read(buffer)) != -1;) {
@@ -1208,7 +1224,7 @@ public class Model {
 		   InputStream is = new ByteArrayInputStream(os.toByteArray())){
 			ImageIO.write(SwingFXUtils.fromFXImage(img, null),"png", os); 
 		
-			String sql = "INSERT INTO student(matrNr, name, firstName, semester, po, ects, image, notes, gender) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			String sql = "INSERT INTO student(matrNr, name, firstName, semester, po, image, notes, gender) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 			try(Connection conn = this.connect();
 					PreparedStatement pstmt = conn.prepareStatement(sql))
 			{
@@ -1217,12 +1233,12 @@ public class Model {
 				pstmt.setString(3, student.getFirstName());
 				pstmt.setInt(4, student.getSemester());
 				pstmt.setInt(5, student.getPo().getId());
-				pstmt.setInt(6, student.getEcts());
-				pstmt.setBlob(7, is);
-				pstmt.setString(8, student.getNotes());
-				pstmt.setString(9, student.getGender());
+				pstmt.setBlob(6, is);
+				pstmt.setString(7, student.getNotes());
+				pstmt.setString(8, student.getGender());
 				pstmt.executeUpdate();
 				addStudentEmail(student.getMtrNr(), student.geteMailAddresses());
+				addPassedSubjects(student.getMtrNr(), student.getPassedSubjects());
 				addConcernsStudent(student.getConcernIds(), student.getMtrNr());			
 			}
 			catch(Exception e)
@@ -1240,12 +1256,12 @@ public class Model {
 		Image img = student.getImage();
 		try(ByteArrayOutputStream os = new ByteArrayOutputStream();
 		   InputStream is = new ByteArrayInputStream(os.toByteArray())){
-			ImageIO.write(SwingFXUtils.fromFXImage(img, null),"png", os); 
-		
+			ImageIO.write(SwingFXUtils.fromFXImage(img, null),"png", os);
 			String sql1 = "UPDATE student SET name = '"+student.getName()+"', firstname = '"+student.getFirstName()+"', semester = "+student.getSemester()+
-				", notes = '"+student.getNotes()+"', ects = "+student.getEcts()+", img = " +is + 
+				", notes = '"+student.getNotes()+", img = " +is + 
 				"WHERE matrNr = " + student.getMtrNr();
 			String sql2 = "DELETE FROM concern_student WHERE student = " + student.getMtrNr();
+			String sql3 = "DELETE FROM passed_subjects WHERE student = " + student.getMtrNr();
 			
 			Student oldStudent = getStudent(student.getMtrNr());
 			//get MailAddresses to be added
@@ -1259,12 +1275,14 @@ public class Model {
 			{
 				stmt.executeUpdate(sql1);
 				stmt.executeUpdate(sql2);
+				stmt.executeUpdate(sql3);
 				for (String address: oldMailAddresses) {
 					String sql = "DELETE FROM student_emailAddress WHERE emailAddress = " + address;
 					stmt.executeUpdate(sql);
 				}
 				addStudentEmail(student.getMtrNr(), newMailAddresses);
-				addConcernsStudent(student.getConcernIds(), student.getMtrNr());			
+				addPassedSubjects(student.getMtrNr(), student.getPassedSubjects());
+				addConcernsStudent(student.getConcernIds(), student.getMtrNr());
 			}
 			catch(Exception e)
 			{
@@ -1292,7 +1310,7 @@ public class Model {
 
 
 	public void saveEditedStudentNotes(Student student, String notes) {
-		String sql ="UPDATE student SET notes = " + notes + " WHERE matrNr = " + student.getMtrNr();
+		String sql ="UPDATE student SET notes = '" + notes + "' WHERE matrNr = " + student.getMtrNr();
 		try(Connection conn = this.connect();
 				Statement stmt = conn.createStatement())
 		{
@@ -1349,8 +1367,20 @@ public class Model {
 			}catch (Exception e) {
 				e.printStackTrace();
 			}
-		
-		
+	}
+
+	private void addPassedSubjects(int mtrNr, ObservableList<Subject> passedSubjects) {
+		String sql;
+		try (Connection conn = this.connect();
+				Statement stmt = conn.createStatement())
+			{
+			for (Subject subject: passedSubjects){
+				sql="INSERT INTO passed_subjects (student, subject) VALUES (" + mtrNr + ", " + subject.getId() + ")";
+				stmt.executeQuery(sql);
+			}
+			}catch (Exception e) {
+				e.printStackTrace();
+			}
 	}
 
 

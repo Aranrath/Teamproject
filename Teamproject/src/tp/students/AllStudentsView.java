@@ -3,12 +3,15 @@ package tp.students;
 import java.sql.Date;
 import java.util.List;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
@@ -23,6 +26,8 @@ import tp.model.Student;
 public class AllStudentsView extends GridPane {
 
 	private Presenter presenter;
+	private ObservableList<Student> selectedStudents;
+	private ObservableList<Student> allStudents;
 
 	//================================
 	
@@ -49,9 +54,10 @@ public class AllStudentsView extends GridPane {
 		setPadding(new Insets(20));
 		setHgap(20);
 		setVgap(20);
-
-		allStudentsTable = new TableView<Student>(presenter.getStudents());
-		selectedStudentsTable = new TableView<Student>();
+		allStudents = presenter.getStudents();
+		selectedStudents = FXCollections.observableArrayList();
+		allStudentsTable = new TableView<Student>(allStudents);
+		selectedStudentsTable = new TableView<Student>(selectedStudents);
 		searchBar = new Label("Hier sollte die SearchBar sein");
 		selectionLabel = new Label("Auswahl");
 		newStudentButton = new Button("Neuen Studenten hinzufügen");
@@ -92,48 +98,56 @@ public class AllStudentsView extends GridPane {
 		// ======================================================================
 
 		TableColumn<Student, String> lastNameCol = new TableColumn<Student, String>("Nachname");
+		lastNameCol.setCellValueFactory(new PropertyValueFactory<Student, String>("name"));
+		
 		TableColumn<Student, String> firstNameCol = new TableColumn<Student, String>("Vorname");
+		firstNameCol.setCellValueFactory(new PropertyValueFactory<Student, String>("firstName"));
+		
 		TableColumn<Student, Integer> mtrNrCol = new TableColumn<Student, Integer>("Matrikelnr.");
-		TableColumn<Student,Date> lastContactCol = new TableColumn<Student, Date>("Letzter Kontakt");
-		TableColumn<Student, String> emailCol = new TableColumn<Student, String>("Email");
-
-		allStudentsTable.getColumns().addAll(mtrNrCol, lastNameCol,firstNameCol,lastContactCol, emailCol);
-		selectedStudentsTable.getColumns().addAll(mtrNrCol,lastNameCol, firstNameCol);
+		mtrNrCol.setCellValueFactory(new PropertyValueFactory<>("mtrNr"));
+		
+		TableColumn<Student, Date> lastContactCol = new TableColumn<Student, Date>("Letzter Kontakt");
+		lastContactCol.setCellValueFactory(new PropertyValueFactory<>("lastContact"));
+		
+		allStudentsTable.getColumns().addAll(mtrNrCol, lastNameCol,firstNameCol,lastContactCol);
+		
+		
+		TableColumn<Student, String> lastNameCol2 = new TableColumn<Student, String>("Nachname");
+		lastNameCol2.setCellValueFactory(new PropertyValueFactory<Student, String>("name"));
+		
+		TableColumn<Student, String> firstNameCol2 = new TableColumn<Student, String>("Vorname");
+		firstNameCol2.setCellValueFactory(new PropertyValueFactory<Student, String>("firstName"));
+		
+		TableColumn<Student, Integer> mtrNrCol2 = new TableColumn<Student, Integer>("Matrikelnr.");
+		mtrNrCol2.setCellValueFactory(new PropertyValueFactory<>("mtrNr"));
+		
+		selectedStudentsTable.getColumns().addAll(mtrNrCol2, lastNameCol2, firstNameCol2);
 
 		// =====================================================================
 
 		newStudentButton.setOnAction((event) -> {
 			presenter.openNewStudentTab();
 		});
+		
 		toRightButton.setOnAction((event) -> {
-			List<Student> selectedStudents = allStudentsTable.getSelectionModel().getSelectedItems();
-			
-			//für jeden Studenten der der Auswahl hinzugefügt werden soll, gleiche mit jedem bereits ausgewählten Studenten ab, ob bereits ausgewählt. Wenn nicht, füge ihn der Auswahl hinzu; wenn ja, überspringe diesen Studenten
-			for (Student unselectedS : selectedStudents)
-			{
-				boolean alreadySelected = false;
-				
-				for(Student selectedS : selectedStudentsTable.getItems())
-				{		
-					if(unselectedS.getMtrNr() == selectedS.getMtrNr())
-					{
-						alreadySelected = true;
-						break;
-					}
-				}
-				
-				if(!alreadySelected)
-				{
-					//Studenten  zur Auswahl (rechts) hinzufügen, NICHT aus linker Auswahl entfernen (?)
-					selectedStudentsTable.getItems().add(unselectedS);
-				}
-					
-			}
+			List<Student> studentsToMove = allStudentsTable.getSelectionModel().getSelectedItems();
+			// First addAll, because studentsToMove will be empty after they have been deleted from allStudents
+			selectedStudents.addAll(studentsToMove);
+			allStudents.removeAll(studentsToMove); 
 		});
+		
 		toLeftButton.setOnAction((event) -> {
+			List<Student> studentsToMove = selectedStudentsTable.getSelectionModel().getSelectedItems();
+			allStudents.addAll(studentsToMove);
+			selectedStudents.removeAll(studentsToMove);
 		});
+		
 		allToLeftButton.setOnAction((event) -> {
+			allStudents.addAll(selectedStudents);
+			selectedStudents.clear();
+			
 		});
+		
 		deleteStudentButton.setOnAction((event) -> {
 			Alert alert = new Alert(AlertType.WARNING, "Ausgewählte Studenten aus der Datenbank löschen?",
 					ButtonType.YES, ButtonType.CANCEL);
