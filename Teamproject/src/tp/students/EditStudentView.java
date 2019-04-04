@@ -90,6 +90,7 @@ public class EditStudentView extends GridPane {
 
 	public EditStudentView(Presenter presenter, Student student, MyTab tab) {
 		this.presenter = presenter;
+		this.student = student;
 		this.tab = tab;
 		localPassedSubjects = FXCollections.observableArrayList(student.getPassedSubjects());
 		
@@ -195,6 +196,8 @@ public class EditStudentView extends GridPane {
 
 		add(ectsLabel, 1, 6);
 		add(studentECTS, 2, 6);
+		add(passedSubjectsButton, 3, 6);
+		
 		add(semesterLabel, 1, 7);
 		add(studentSemester, 2, 7);
 		add(genderLabel, 1, 8);
@@ -469,9 +472,15 @@ public class EditStudentView extends GridPane {
 		}
 		studentFirstName.setText(student.getFirstName());
 		studentLastName.setText(student.getName());
-		studentMail_1.setText(student.geteMailAddresses().get(0));
-		studentMail_2.setText(student.geteMailAddresses().get(1));
-		studentMail_3.setText(student.geteMailAddresses().get(2));
+		if (student.geteMailAddresses().size() >= 1) {
+			studentMail_1.setText(student.geteMailAddresses().get(0));
+		}
+		if (student.geteMailAddresses().size() >= 2) {
+			studentMail_2.setText(student.geteMailAddresses().get(1));
+		}
+		if (student.geteMailAddresses().size() == 3) {
+			studentMail_3.setText(student.geteMailAddresses().get(2));
+		}
 		studentMtrNr.setText("" + student.getMtrNr());
 		studentPO.getSelectionModel().select(student.getPo());
 		studentECTS.setText("" + presenter.calculateEcts(student.getPassedSubjects(), student.getPo()));
