@@ -31,6 +31,7 @@ import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.internet.InternetAddress;
 
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
@@ -708,7 +709,7 @@ public class Model {
 
 	public ObservableList<Subject> getSubjects() 
 	{
-		ObservableList<Subject> subject = FXCollections.observableArrayList();
+		ObservableList<Subject> result = FXCollections.observableArrayList();
 		String sql = "SELECT * FROM subject";
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement();
@@ -717,16 +718,51 @@ public class Model {
 			while(rs.next())
 			{
 				int id = rs.getInt("id");
-				subject.add(getSubject(id));
+				result.add(getSubject(id));
 			}
 		}
 		catch(Exception e)
 		{
 			e.printStackTrace();
 		}
-		return subject;
+		return result;
 	}
+	
+	public ObservableList<Subject> getSubjects(PO po) 
+	{
+		ObservableList<Subject> result = getSubjects();
+		result = addMandatoryOptional(result, po);
+		return result;
+	}
+	
 
+	private ObservableList<Subject> addMandatoryOptional(ObservableList<Subject> result, PO po) {
+		String sql = "SELECT * FROM po_subject WHERE po = " + po.getId();
+		try (Connection conn = this.connect();
+				Statement stmt = conn.createStatement();
+				ResultSet rs = stmt.executeQuery(sql))
+			{
+				while(rs.next())
+				{
+					int id = rs.getInt("subject");
+					System.out.println(id);
+					boolean optional = rs.getBoolean("optional");
+					for (Subject s: result) {
+						if(s.getId() == id) {
+							s.setOptional(optional);
+							s.setMandatory(!optional);
+							break;
+						}
+					}
+				}
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+		return result;
+	}
+	
 
 	private ObservableList<Subject> getSubjects(int poId, boolean optional) {
 		ObservableList<Subject> result = FXCollections.observableArrayList();
@@ -1109,16 +1145,12 @@ public class Model {
 
 
 	private void addPoSubject(int poId, ObservableList<Subject> subjects, boolean optional) {
-		String op = null;
-		if (optional) {
-			op = "x";
-		}
 		String sql;
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement())
 		{
 			for (Subject subject: subjects) {
-				sql = "INSERT INTO po_subject (subject, po, optional) VALUES ("+ subject.getId() + ", " + poId + ", " + op + ")";
+				sql = "INSERT INTO po_subject (subject, po, optional) VALUES ("+ subject.getId() + ", " + poId + ", " + optional + ")";
 				stmt.executeQuery(sql);
 			}
 		}catch (Exception e)

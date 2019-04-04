@@ -1,23 +1,27 @@
 package tp.options;
 
-
-import org.controlsfx.control.CheckListView;
-
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.CheckBoxTableCell;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import tp.Presenter;
 import tp.model.PO;
 import tp.model.Subject;
 
-public class EditPOView extends GridPane{
+public class EditPOView extends GridPane {
 
 	private ObservableList<Subject> allSubjects;
 	private Stage stage;
@@ -27,28 +31,27 @@ public class EditPOView extends GridPane{
 	private Label subjectErrorLabel;
 	private Label poNameErrorLabel;
 	private TextField poNameTextField;
-	private CheckListView<Subject> selectSubjectsListView;
-	
-	public EditPOView(Stage stage, Presenter presenter)
-	{
+	private TableView<Subject> selectSubjectsTable;
+
+	public EditPOView(Stage stage, Presenter presenter) {
 		allSubjects = presenter.getSubjects();
 		this.stage = stage;
 		this.presenter = presenter;
-		
+
 		buildView();
 		fillView();
 	}
-	
-	public EditPOView(Stage stage, Presenter presenter, PO po)
-	{
-		allSubjects = presenter.getSubjects();
+
+	public EditPOView(Stage stage, Presenter presenter, PO po) {
+		allSubjects = presenter.getSubjects(po);
 		this.stage = stage;
 		this.presenter = presenter;
-		
+
 		buildView();
 		fillView(po);
 	}
 
+	@SuppressWarnings("unchecked")
 	private void buildView() {
 		setPadding(new Insets(10, 10, 10, 10));
 		setHgap(10);
@@ -58,115 +61,133 @@ public class EditPOView extends GridPane{
 		saveButton = new Button("Speichern");
 		subjectErrorLabel = new Label("");
 		poNameErrorLabel = new Label("");
-		selectSubjectsListView = new CheckListView<Subject>(allSubjects);
+		selectSubjectsTable = new TableView<Subject>(allSubjects);
 
 		add(new Label("PO Name"), 0, 0);
-		add(poNameTextField,1,0);
-		add(poNameErrorLabel,1,1);
-		
-		add(selectSubjectsListView,0,2,2,1);
-		
-		add(subjectErrorLabel,0,3,2,1);
-		add(saveButton,0,4,2,1);
-		GridPane.setHalignment(saveButton, HPos.RIGHT);
-		
+		add(poNameTextField, 1, 0);
+		add(poNameErrorLabel, 1, 1);
 
-		
-		
+		add(selectSubjectsTable, 0, 2, 2, 1);
+
+		add(subjectErrorLabel, 0, 3, 2, 1);
+		add(saveButton, 0, 4, 2, 1);
+		GridPane.setHalignment(saveButton, HPos.RIGHT);
+
+		// ======================================================================
+		selectSubjectsTable.setEditable(true);
+
+		TableColumn<Subject, String> titleCol = new TableColumn<Subject, String>("Modul");
+		titleCol.setCellValueFactory(new PropertyValueFactory<>("title"));
+
+		TableColumn<Subject, Boolean> mandatoryCol = new TableColumn<Subject, Boolean>("Pflicht");
+		mandatoryCol.setCellValueFactory(new PropertyValueFactory<>("mandatory"));
+		mandatoryCol.setCellFactory(new Callback<TableColumn<Subject, Boolean>, TableCell<Subject, Boolean>>() {
+			@Override
+			public TableCell<Subject, Boolean> call(TableColumn<Subject, Boolean> p) {
+				final CheckBoxTableCell<Subject, Boolean> manCell = new CheckBoxTableCell<>();
+				manCell.setSelectedStateCallback(new Callback<Integer, ObservableValue<Boolean>>() {
+					@Override
+					public ObservableValue<Boolean> call(Integer index) {
+						if (selectSubjectsTable.getItems().get(index).mandatoryProperty().get()) {
+							selectSubjectsTable.getItems().get(index).setOptional(false);
+						}
+						return selectSubjectsTable.getItems().get(index).mandatoryProperty();
+					}
+				});
+				return manCell;
+			}
+		});
+
+		TableColumn<Subject, Boolean> optionalCol = new TableColumn<Subject, Boolean>("Wahl");
+		optionalCol.setCellValueFactory(new PropertyValueFactory<>("optional"));
+		optionalCol.setCellFactory(new Callback<TableColumn<Subject, Boolean>, TableCell<Subject, Boolean>>() {
+			@Override
+			public TableCell<Subject, Boolean> call(TableColumn<Subject, Boolean> p) {
+				final CheckBoxTableCell<Subject, Boolean> opCell = new CheckBoxTableCell<>();
+				opCell.setSelectedStateCallback(new Callback<Integer, ObservableValue<Boolean>>() {
+					@Override
+					public ObservableValue<Boolean> call(Integer index) {
+						if (selectSubjectsTable.getItems().get(index).optionalProperty().get()) {
+							selectSubjectsTable.getItems().get(index).setMandatory(false);
+						}
+						return selectSubjectsTable.getItems().get(index).optionalProperty();
+					}
+				});
+				return opCell;
+			}
+		});
+
+		selectSubjectsTable.getColumns().addAll(titleCol, mandatoryCol, optionalCol);
+
+		// ======================================================================
+
 	}
+
 	private void fillView() {
 
-		saveButton.setOnAction((event)->{
-			if(poNameTextField.getText().equals(""))
-			{
+		saveButton.setOnAction((event) -> {
+			if (poNameTextField.getText().equals("")) {
 				poNameErrorLabel.setText("Titel muss ausgefüllt sein");
 				poNameErrorLabel.setTextFill(Color.RED);
 				return;
-				
+
 			}
-			if(nameAlreadyExists(poNameTextField.getText()))
-			{
+			if (nameAlreadyExists(poNameTextField.getText())) {
 				poNameErrorLabel.setText("Name bereits vorhanden");
 				poNameErrorLabel.setTextFill(Color.RED);
 				return;
-			}
-			else
-			{
-				ObservableList<Subject>	selectedSubjects = selectSubjectsListView.getCheckModel().getCheckedItems();
+			} else {
 				ObservableList<Subject> selectedOptionalSubjects = FXCollections.observableArrayList();
 				ObservableList<Subject> selectedMandatorySubjects = FXCollections.observableArrayList();
-//				for(Subject s : selectSubjectsListView.getItems())
-//				{
-//					
-//					//TODO wenn ListView korrekt dargestellt mit checkboxen
-//					
-//					//if (selected as optional)
-//					selectedOptionalSubjects.add(s);
-//					//else
-//						//if(selected as mandatory)
-//						selectedMandatorySubjects.add(s);
-//				}
-				//UNTERSCHIED: speicher das geänderte Thema
+				for (Subject s : selectSubjectsTable.getItems()) {
+					if (s.optionalProperty().get()) {
+						selectedOptionalSubjects.add(s);
+					} else if (s.mandatoryProperty().get())
+						selectedMandatorySubjects.add(s);
+				}
+				// UNTERSCHIED: speicher das geänderte Thema
 				PO po = new PO(poNameTextField.getText(), selectedOptionalSubjects, selectedMandatorySubjects);
 				presenter.saveNewPo(po);
 				stage.close();
 			}
 		});
-		
+
 	}
-	
+
 	private void fillView(PO po) {
-		for(Subject s: po.getMandatorySubjects()) {
-			selectSubjectsListView.getCheckModel().check(s);
-		}
-		for(Subject s: po.getOptionalSubjects()) {
-			selectSubjectsListView.getCheckModel().check(s);
-		}
-		
-		saveButton.setOnAction((event)->{
-			if(poNameTextField.getText().equals(""))
-			{
+		saveButton.setOnAction((event) -> {
+			if (poNameTextField.getText().equals("")) {
 				poNameErrorLabel.setText("Titel muss ausgefüllt sein");
 				poNameErrorLabel.setTextFill(Color.RED);
 				return;
-				
+
 			}
-			if(nameAlreadyExists(poNameTextField.getText()))
-			{
+			if (nameAlreadyExists(poNameTextField.getText())) {
 				poNameErrorLabel.setText("Name bereits vorhanden");
 				poNameErrorLabel.setTextFill(Color.RED);
 				return;
-			}
-			else
-			{
-				ObservableList<Subject>	selectedSubjects = selectSubjectsListView.getCheckModel().getCheckedItems();
+			} else {
 				ObservableList<Subject> selectedOptionalSubjects = FXCollections.observableArrayList();
 				ObservableList<Subject> selectedMandatorySubjects = FXCollections.observableArrayList();
-//				for(Subject s : selectSubjectsListView.getItems())
-//				{
-//					
-//					//TODO wenn ListView korrekt dargestellt mit checkboxen
-//					
-//					//if (selected as optional)
-//					selectedOptionalSubjects.add(s);
-//					//else
-//						//if(selected as mandatory)
-//						selectedMandatorySubjects.add(s);
-//				}
-				//UNTERSCHIED: speicher das geänderte Thema
-				presenter.saveEditedPO(poNameTextField.getText(),selectedMandatorySubjects, selectedOptionalSubjects, po);
+				for (Subject s : selectSubjectsTable.getItems()) {
+					if (s.optionalProperty().get()) {
+						selectedOptionalSubjects.add(s);
+					} else if (s.mandatoryProperty().get())
+						selectedMandatorySubjects.add(s);
+				}
+				// UNTERSCHIED: speicher das geänderte Thema
+				presenter.saveEditedPO(poNameTextField.getText(), selectedMandatorySubjects, selectedOptionalSubjects,
+						po);
 				stage.close();
 			}
 		});
 	}
-	
+
 	// =================================================================
 
 	private boolean nameAlreadyExists(String newPOName) {
-		for(PO p : presenter.getPOs())
-		{
-			if(p.getName().equals(newPOName))
-			{
+		for (PO p : presenter.getPOs()) {
+			if (p.getName().equals(newPOName)) {
 				return true;
 			}
 		}

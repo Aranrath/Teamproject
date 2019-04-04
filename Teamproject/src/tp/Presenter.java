@@ -184,6 +184,11 @@ public class Presenter {
 	public ObservableList<Subject> getSubjects() {
 		return model.getSubjects();
 	}
+	
+	public ObservableList<Subject> getSubjects(PO po) {
+		return model.getSubjects(po);
+	}
+
 
 	public void saveNewSubject(String title, int ects) {
 		model.saveNewSubject(title, ects);

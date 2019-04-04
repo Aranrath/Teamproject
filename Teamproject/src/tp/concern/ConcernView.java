@@ -134,7 +134,7 @@ public class ConcernView extends GridPane {
 
 		titleLabel = new Label("Titel:");
 		titleTextField = new TextField("");
-		errorLabel = new Label("eror :D");
+		errorLabel = new Label("");
 		if (concern == null) {
 			saveButton = new Button("Anliegen erstellen");
 		} else {
@@ -292,14 +292,14 @@ public class ConcernView extends GridPane {
 				errorLabel.setTextFill(Color.RED);
 				return;
 			}
-			else if (concernTitleAlreadyExists(newTitle))
-			{
-				errorLabel.setText("Titel bereits vergeben");
-				errorLabel.setTextFill(Color.RED);
-				return;
-			}
 			else if (concern == null)
 			{
+				if (concernTitleAlreadyExists(newTitle))
+				{
+					errorLabel.setText("Titel bereits vergeben");
+					errorLabel.setTextFill(Color.RED);
+					return;
+				}
 				// Concern mit angegebenen Titel erstellen
 				concern = new Concern(newTitle, newTopic);
 				
