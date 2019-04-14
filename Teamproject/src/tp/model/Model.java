@@ -31,7 +31,6 @@ import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.internet.InternetAddress;
 
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
@@ -1100,7 +1099,10 @@ public class Model {
 	}
 
 
-	public void saveNewPO(PO po) {
+	public PO saveNewPO(PO po) {
+		
+		//TODO muss jetzt gegebene PO zurückliefern mit hinzugefügter id
+		
 		String sql = "INSERT INTO po(name) VALUES ('"+ po.getName() +"')";
 		String sql2 = "SELECT last_insert_rowid()";
 		try (Connection conn = this.connect();
@@ -1195,8 +1197,10 @@ public class Model {
 	}
 
 
-	public boolean saveNewSubject(String title, int ects) 
+	public Subject saveNewSubject(Subject subject)
 	{
+		//Gebe gegebenes Subject wieder, aber mit ID!
+		
 		String sql = "INSERT INTO subject(title, ects) VALUES('" + title +"'," + ects +")";
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement())
@@ -1206,14 +1210,14 @@ public class Model {
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			return false;
-		}	
-		return true;
+		}
 		
 	}
 
-	public boolean saveEditedSubject(String title, int ects, int id) 
+	public void saveEditedSubject(Subject subject)
 	{
+		
+		//bekommt jetzt bereits geändertes Subject-Object
 		String sql = "UPDATE subject SET title = "+title+", ects = "+ects + "WHERE id = " + id;
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement())
@@ -1223,9 +1227,7 @@ public class Model {
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			return false;
 		}
-		return true;
 	}
 
 
@@ -1416,8 +1418,10 @@ public class Model {
 	}
 
 
-	public void saveNewTopic(String title, ObservableList<Form> selectedForms) 
+	public Topic saveNewTopic(Topic newTopic) 
 	{
+		//TODO bekommt jetzt bereits erstelltes Topic + muss jetzt das gespeicherte Topic mit id(!) zurückliefern
+		
 		String sql1 = "INSERT INTO topic (title) VALUES ('" + title + "')";
 		String sql2 = "SELECT last_insert_rowid()";
 		try (Connection conn = this.connect();
@@ -1443,8 +1447,10 @@ public class Model {
 		}	
 	}
 
-	public void saveEditedTopic(String title, ObservableList<Form> selectedForms, Topic topic) 
+	public void saveEditedTopic(Topic topic) 
 	{
+		//TODO bekommt jetzt bereits geändertes Topic
+		
 		String sql1 = "UPDATE topic SET title = "  + title + "WHERE id = " + topic.getId();
 		String sql2 = "DELETE FROM topic_forms WHERE topic = " + topic.getId();
 		try (Connection conn = this.connect();
@@ -1679,5 +1685,23 @@ public Image getDefaultStudentImage() {
 		}
 		
 		return ects;
+	}
+
+
+	public void deleteTopic(Topic topicToDelete) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	public void deletePO(PO poToDelete) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	public void deleteSubject(Subject subjectToDelete) {
+		// TODO Auto-generated method stub
+		
 	}
 }

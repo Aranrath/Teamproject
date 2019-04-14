@@ -190,13 +190,13 @@ public class Presenter {
 	}
 
 
-	public void saveNewSubject(String title, int ects) {
-		model.saveNewSubject(title, ects);
+	public Subject saveNewSubject(Subject newSubject) {
+		return model.saveNewSubject(newSubject);
 	}
 
-	public void saveEditedSubject(String title, int ects, int id) {
+	public void saveEditedSubject(Subject subject) {
 
-		model.saveEditedSubject(title, ects, id);
+		model.saveEditedSubject(subject);
 
 	}
 
@@ -204,18 +204,18 @@ public class Presenter {
 		return model.getTopicForms();
 	}
 
-	public void saveNewTopic(String title, ObservableList<Form> selectedForms) {
-		model.saveNewTopic(title, selectedForms);
+	public Topic saveNewTopic(Topic newTopic) {
+		 return model.saveNewTopic(newTopic);
 
 	}
 
-	public void saveEditedTopic(String text, ObservableList<Form> selectedForms, Topic topic) {
-		model.saveEditedTopic(text, selectedForms, topic);
+	public void saveEditedTopic(Topic topic) {
+		model.saveEditedTopic(topic);
 
 	}
 
-	public void saveNewPo(PO po) {
-		model.saveNewPO(po);
+	public PO saveNewPo(PO po) {
+		return model.saveNewPO(po);
 	}
 	
 	public void saveEditedPO(String newPOName, ObservableList<Subject> selectedOptionalSubjects,
@@ -381,6 +381,21 @@ public class Presenter {
 
 	public int calculateEcts(ObservableList<Subject> passedSubjects, PO po) {
 		return model.calculateEcts(passedSubjects, po);
+	}
+
+	public void deleteTopic(Topic topicToDelete) {
+		model.deleteTopic(topicToDelete);
+		
+	}
+
+	public void deletePO(PO poToDelete) {
+		model.deletePO(poToDelete);
+		
+	}
+
+	public void deleteSubject(Subject subjectToDelete) {
+		model.deleteSubject(subjectToDelete);
+		
 	}
 
 

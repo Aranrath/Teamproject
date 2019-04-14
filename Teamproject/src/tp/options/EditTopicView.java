@@ -12,6 +12,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import tp.Presenter;
+import tp.concern.ConcernView;
 import tp.model.Form;
 import tp.model.Topic;
 
@@ -21,9 +22,9 @@ public class EditTopicView extends GridPane {
 	private Stage stage;
 	private Presenter presenter;
 	
-	//from presenter
-	private ObservableList<Topic> allTopics;
-	private ObservableList<Form> allForms;
+	private OptionsView optionsView;
+	private ConcernView concernView;
+	
 
 	private Label titleLabel;
 	private TextField titleTextField;
@@ -34,14 +35,26 @@ public class EditTopicView extends GridPane {
 
 	// =======================Constructors======================================
 
-	//new Topic
-	public EditTopicView(Stage stage, Presenter presenter) {
+	//neues Thema (von OptionView aus gestartet)
+	public EditTopicView(Stage stage, Presenter presenter, OptionsView optionsView) {
 		this.stage = stage;
 		this.presenter = presenter;
+		this.optionsView = optionsView;
 
 		buildView();
 		fillView();
 	}
+	
+	//neues Thema (von ConcernView aus gestartet)
+	public EditTopicView(Stage stage, Presenter presenter, ConcernView concernView) {
+		this.stage = stage;
+		this.presenter = presenter;
+		this.concernView = concernView;
+
+		buildView();
+		fillView();
+	}
+	
 
 	//With Topic to edit
 	public EditTopicView( Stage stage, Presenter presenter, Topic toEditTopic) {
@@ -51,15 +64,15 @@ public class EditTopicView extends GridPane {
 		buildView();
 		fillView(toEditTopic);
 	}
+	
 	// =================================================================
+
+
 
 	private void buildView() {
 		setPadding(new Insets(10,10,10,10));
 		setHgap(10);
 		setVgap(10);
-		
-		this.allForms = presenter.getTopicForms();
-		this.allTopics = presenter.getTopics();
 		
 		errorLabel = new Label("");
 		titleLabel = new Label("Titel:");
@@ -67,6 +80,7 @@ public class EditTopicView extends GridPane {
 		formLabel = new Label("Zugehörige Formulare:");
 		saveButton = new Button("Speichern");
 		
+		ObservableList<Form> allForms = presenter.getTopicForms();
 		if(allForms != null)
 		{
 			allFormsListView = new CheckListView<Form>(allForms);
@@ -106,20 +120,34 @@ public class EditTopicView extends GridPane {
 			{
 				
 				ObservableList<Form> selectedForms = allFormsListView.getCheckModel().getCheckedItems();
-				//UNTERSCHIED: speicher als neues Thema
-				presenter.saveNewTopic(titleTextField.getText(), selectedForms);
+				//UNTERSCHIED: speicher als neues Thema + Passe Oberfläche des aufrufenden Tab an
+				Topic newTopic = presenter.saveNewTopic(new Topic (titleTextField.getText(), selectedForms));
+				
+				if(optionsView != null)
+				{
+					optionsView.addNewTopic(newTopic);
+				}
+				else if(concernView != null)
+				{
+					concernView.addNewTopic(newTopic);
+				}
+				
 				stage.close();
 			}
 		});
 
 	}
 
-	// Editing an existing Topic
+	// Bearbeite existierendes Thema -> Trage aktuelle Daten des Themas in der Oberfläche ein
 	private void fillView(Topic topic) {
-		//check Forms that already belong to Topic
+		
+		titleTextField.setText(topic.getTitle());
+		
 		for(Form f: topic.getForms()) {
+			//TODO Auswahl failed weil Topic-Object nach Laden aus der Datenbank nicht dasselbe....? evtl? ....Maybe?
 			allFormsListView.getSelectionModel().select(f);
 		}
+		
 		saveButton.setOnAction((event)->{
 			if(titleTextField.getText().equals(""))
 			{
@@ -128,7 +156,7 @@ public class EditTopicView extends GridPane {
 				return;
 				
 			}
-			if(titleAlreadyExists(titleTextField.getText()))
+			if(titleAlreadyExists(topic, titleTextField.getText()))
 			{
 				errorLabel.setText("Titel bereits vorhanden");
 				errorLabel.setTextFill(Color.RED);
@@ -138,7 +166,9 @@ public class EditTopicView extends GridPane {
 			{
 				ObservableList<Form> selectedForms = allFormsListView.getCheckModel().getCheckedItems();
 				//UNTERSCHIED: speicher das geänderte Thema
-				presenter.saveEditedTopic(titleTextField.getText(), selectedForms, topic);
+				topic.setTitle(titleTextField.getText());
+				topic.setLinkedForms(selectedForms);
+				presenter.saveEditedTopic(topic);
 				stage.close();
 			}
 		});
@@ -149,9 +179,20 @@ public class EditTopicView extends GridPane {
 	// =================================================================
 
 	private boolean titleAlreadyExists(String newTitle) {
-		for(Topic t: allTopics)
+		for(Topic t: presenter.getTopics())
 		{
 			if(t.getTitle().equals(newTitle))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private boolean titleAlreadyExists(Topic topic, String newTitle) {
+		for(Topic t: presenter.getTopics())
+		{
+			if(topic.getId() != t.getId() && t.getTitle().equals(newTitle))
 			{
 				return true;
 			}

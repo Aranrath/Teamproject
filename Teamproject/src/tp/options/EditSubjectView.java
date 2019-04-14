@@ -1,6 +1,5 @@
 package tp.options;
 
-import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
@@ -14,9 +13,10 @@ import tp.model.Subject;
 
 public class EditSubjectView extends GridPane {
 
-	ObservableList<Subject> subjects;
 	Presenter presenter;
 	Stage stage;
+	OptionsView optionsView;
+	
 	int ects;
 
 	Button minusEctsButton;
@@ -26,18 +26,17 @@ public class EditSubjectView extends GridPane {
 	Label ectsLabel;
 	Label errorLabel;
 
-	public EditSubjectView(ObservableList<Subject> subjects, Stage stage, Presenter presenter) {
+	public EditSubjectView(Stage stage, Presenter presenter, OptionsView optionsView) {
 		this.stage = stage;
-		this.subjects = subjects;
 		this.presenter = presenter;
+		this.optionsView = optionsView;
 
 		buildView();
 		fillView();
 	}
 
-	public EditSubjectView(ObservableList<Subject> subjects, Stage stage, Presenter presenter, Subject subjectToEdit) {
+	public EditSubjectView(Stage stage, Presenter presenter, Subject subjectToEdit) {
 		this.stage = stage;
-		this.subjects = subjects;
 		this.presenter = presenter;
 
 		buildView();
@@ -55,6 +54,7 @@ public class EditSubjectView extends GridPane {
 		saveButton = new Button("Speichern");
 		ectsLabel = new Label();
 		errorLabel = new Label();
+		errorLabel.setTextFill(Color.RED);
 
 		add(new Label("Titel"), 0, 0);
 		add(titleTextField, 1, 0, 3, 1);
@@ -83,36 +83,77 @@ public class EditSubjectView extends GridPane {
 		ects = 5;
 		ectsLabel.setText(String.valueOf(ects));
 		saveButton.setOnAction((event) -> {
-			if(!titleTextField.getText().equals(""))
+			if(subjectTitleAlreadyInUse(titleTextField.getText()))
 			{
-				stage.close();
-				presenter.saveNewSubject(titleTextField.getText(), Integer.parseInt(ectsLabel.getText()));
+				errorLabel.setText("Titel bereits verwendet");
+			}
+			else if(titleTextField.getText().equals(""))
+			{
+				errorLabel.setText("Titel muss ausgefüllt sein");
 			}
 			else
 			{
-				errorLabel.setText("Titel muss ausgefüllt sein");
-				errorLabel.setTextFill(Color.RED);
+
+				Subject newSubject = presenter.saveNewSubject(new Subject (titleTextField.getText(), Integer.parseInt(ectsLabel.getText())));
+				optionsView.addNewSubject(newSubject);
+				stage.close();
 			}
 			
 		});
 	}
 
-	private void fillView(Subject subjectToEdit) {
+
+
+	private void fillView(Subject subjectToEdit)
+	{
 		ects = subjectToEdit.getEcts();
 		ectsLabel.setText(String.valueOf(ects));;
 		saveButton.setOnAction((event) -> {
-			if(!titleTextField.getText().equals(""))
+			if(subjectTitleAlreadyInUse(subjectToEdit, titleTextField.getText()))
 			{
-				stage.close();
-				presenter.saveEditedSubject(titleTextField.getText(), Integer.parseInt(ectsLabel.getText()), subjectToEdit.getId() );
+				errorLabel.setText("Titel bereits verwendet");
+				
+			}
+			else if(titleTextField.getText().equals(""))
+			{
+				errorLabel.setText("Titel muss ausgefüllt sein");
 			}
 			else
 			{
-				errorLabel.setText("Titel muss ausgefüllt sein");
-				errorLabel.setTextFill(Color.RED);
+				subjectToEdit.setTitle(titleTextField.getText());
+				subjectToEdit.setEcts(Integer.parseInt(ectsLabel.getText()));
+				
+				presenter.saveEditedSubject(subjectToEdit);
+				stage.close();
+				
 			}
 		});
 
+	}
+	
+	
+	//Kontrolliere Namen auf Doppelung unter Berücksichtigung des aktuellen Subject-Object
+	private boolean subjectTitleAlreadyInUse(Subject subjectToEdit, String newTitle) {
+		for(Subject s : presenter.getSubjects())
+		{
+			if(s.getId() != subjectToEdit.getId() && s.getTitle().equals(newTitle))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	//Kontrolliere Namen auf Doppelung (bei neuem Subject-Object)
+	private boolean subjectTitleAlreadyInUse(String newTitle) {
+		for(Subject s : presenter.getSubjects())
+		{
+			if(s.getTitle().equals(newTitle))
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 
 }

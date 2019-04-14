@@ -1,16 +1,19 @@
 package tp.options;
 
-import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -31,13 +34,13 @@ public class OptionsView extends GridPane {
 	private ListView<Topic> topicsList;
 	private ListView<Subject> subjectsList;
 
-	private ObservableList<PO> pos;
-	private ObservableList<Topic> topics;
-	private ObservableList<Subject> subjects;
-
 	private Button addTopicButton;
 	private Button addPOButton;
 	private Button addSubjectButton;
+	
+	private Button deleteTopicButton;
+	private Button deletePOButton;
+	private Button deleteSubjectButton;
 	
 	//------------------------------
 	private GridPane userDataGridPane;
@@ -69,6 +72,10 @@ public class OptionsView extends GridPane {
 		addPOButton = new Button("+");
 		addSubjectButton = new Button("+");
 		
+		deleteTopicButton = new Button("Löschen");
+		deletePOButton= new Button("Löschen");
+		deleteSubjectButton= new Button("Löschen");
+		
 		//--------------------------------------------
 		
 		userDataGridPane = new GridPane();
@@ -82,20 +89,24 @@ public class OptionsView extends GridPane {
 		
 		//============================================
 
-		add(topicsList, 0, 1, 2, 1);
-		add(addTopicButton, 1, 0);
 		add(new Label("Themen (von Anliegen)"), 0, 0);
-		GridPane.setHalignment(addTopicButton, HPos.RIGHT);
+		HBox topicButtonBox = new HBox(deleteTopicButton, addTopicButton);
+		add(topicButtonBox,1,0);
+		add(topicsList, 0, 1, 2, 1);
+		topicButtonBox.setAlignment(Pos.CENTER_RIGHT);
 
-		add(posList, 2, 1, 2, 1);
 		add(new Label("PO's (Studiengänge)"), 2, 0);
-		add(addPOButton, 3, 0);
-		GridPane.setHalignment(addPOButton, HPos.RIGHT);
+		HBox poButtonBox = new HBox(deletePOButton, addPOButton);
+		add(poButtonBox,3,0);
+		add(posList, 2, 1, 2, 1);
+		poButtonBox.setAlignment(Pos.CENTER_RIGHT);
 
-		add(subjectsList, 4, 1 , 2, 1);
 		add(new Label("Module"), 4, 0);
-		add(addSubjectButton, 5, 0);
-		GridPane.setHalignment(addSubjectButton, HPos.RIGHT);
+		HBox subjectButtonBox = new HBox(deleteSubjectButton,addSubjectButton);
+		add(subjectButtonBox, 5,0);
+		add(subjectsList, 4, 1 , 2, 1);
+		subjectButtonBox.setAlignment(Pos.CENTER_RIGHT);
+		
 		
 		//------------------------------------
 		
@@ -129,7 +140,7 @@ public class OptionsView extends GridPane {
 			stage.setAlwaysOnTop(true);
 			stage.initModality(Modality.APPLICATION_MODAL);
             stage.setTitle("Neues Thema");
-            stage.setScene(new Scene(new EditTopicView(stage, presenter), 450, 450));
+            stage.setScene(new Scene(new EditTopicView(stage, presenter, (OptionsView) topicsList.getParent()), 450, 450));
             stage.show();
 		});
 		addPOButton.setOnAction((event)-> {
@@ -137,7 +148,7 @@ public class OptionsView extends GridPane {
 			stage.setAlwaysOnTop(true);
 			stage.initModality(Modality.APPLICATION_MODAL);
             stage.setTitle("Neue PO");
-            stage.setScene(new Scene(new EditPOView(stage, presenter), 450, 450));
+            stage.setScene(new Scene(new EditPOView(stage, presenter, (OptionsView) posList.getParent()), 450, 450));
             stage.show();
 		});
 		addSubjectButton.setOnAction((event)-> {
@@ -145,7 +156,7 @@ public class OptionsView extends GridPane {
 			stage.setAlwaysOnTop(true);
 			stage.initModality(Modality.APPLICATION_MODAL);
             stage.setTitle("Neues Modul");
-            stage.setScene(new Scene(new EditSubjectView(subjects,stage, presenter), 450, 450));
+            stage.setScene(new Scene(new EditSubjectView(stage, presenter, (OptionsView) posList.getParent()), 450, 450));
             stage.show();
 		});
 		
@@ -157,18 +168,115 @@ public class OptionsView extends GridPane {
             stage.setScene(new Scene(new EditUserDataView(presenter, stage, options), 450, 450));
             stage.show();
 		});
+		
+		deleteTopicButton.setOnAction((event) -> {
+			Topic topicToDelete = topicsList.getSelectionModel().getSelectedItem();
+			if(topicToDelete != null)
+			{
+				presenter.deleteTopic(topicToDelete);
+				topicsList.getItems().remove(topicToDelete);
+			}
+		});
+		
+		deletePOButton.setOnAction((event) -> {
+			PO poToDelete = posList.getSelectionModel().getSelectedItem();
+			if(poToDelete != null)
+			{
+				presenter.deletePO(poToDelete);
+				posList.getItems().remove(poToDelete);
+			}
+		});
+		
+		deleteSubjectButton.setOnAction((event) -> {
+			Subject subjectToDelete = subjectsList.getSelectionModel().getSelectedItem();
+			if(subjectToDelete != null)
+			{
+				presenter.deleteSubject(subjectToDelete);
+				subjectsList.getItems().remove(subjectToDelete);
+			}
+		});
+		
+		topicsList.setOnMousePressed(new EventHandler<MouseEvent>() {
+		    @Override 
+		    public void handle(MouseEvent event) {
+		        if (event.isPrimaryButtonDown() && event.getClickCount() > 1) {
+		        	Topic selectedTopic = topicsList.getSelectionModel().getSelectedItem();
+		        	if(selectedTopic != null)
+		        	{
+		        		Stage stage = new Stage();
+		    			stage.setAlwaysOnTop(true);
+		    			stage.initModality(Modality.APPLICATION_MODAL);
+		                stage.setTitle("Thema \"" + selectedTopic.getTitle() + "\" bearbeiten");
+		                stage.setScene(new Scene(new EditTopicView(stage, presenter, selectedTopic), 450, 450));
+		                stage.show();
+		        	}
+		                               
+		        }
+		    }
+		});
+		
+		
+		posList.setOnMousePressed(new EventHandler<MouseEvent>() {
+		    @Override 
+		    public void handle(MouseEvent event) {
+		        if (event.isPrimaryButtonDown() && event.getClickCount() > 1) {
+		        	PO selectedPO = posList.getSelectionModel().getSelectedItem();
+		        	if(selectedPO != null)
+		        	{
+		        		Stage stage = new Stage();
+		    			stage.setAlwaysOnTop(true);
+		    			stage.initModality(Modality.APPLICATION_MODAL);
+		                stage.setTitle("PO \"" + selectedPO.getName() + "\" bearbeiten");
+		                stage.setScene(new Scene(new EditPOView(stage, presenter, selectedPO), 450, 450));
+		                stage.show();
+		        	}
+		                               
+		        }
+		    }
+		});
+		
+		
+		
+		subjectsList.setOnMousePressed(new EventHandler<MouseEvent>() {
+		    @Override 
+		    public void handle(MouseEvent event) {
+		        if (event.isPrimaryButtonDown() && event.getClickCount() > 1) {
+		        	Subject selectedSubject = subjectsList.getSelectionModel().getSelectedItem();
+		        	if(selectedSubject != null)
+		        	{
+		        		Stage stage = new Stage();
+		    			stage.setAlwaysOnTop(true);
+		    			stage.initModality(Modality.APPLICATION_MODAL);
+		                stage.setTitle("Modul \"" + selectedSubject.getTitle() + "\" bearbeiten");
+		                stage.setScene(new Scene(new EditSubjectView(stage, presenter, selectedSubject), 450, 450));
+		                stage.show();
+		        	}
+		                               
+		        }
+		    }
+		});
+		
+		
+		
 	}
 
 	private void fillView() {
-		pos = presenter.getPOs();
-		topics = presenter.getTopics();
-		subjects = presenter.getSubjects();
-		
-		posList.setItems(pos);
-		topicsList.setItems(topics);
-		subjectsList.setItems(subjects);
 
-		//TODO Jedes Listenelement soll ein 'x' und ein 'edit' hinter haben zum bearbeiten/löschen
+		posList.setItems(presenter.getPOs());
+		topicsList.setItems(presenter.getTopics());
+		subjectsList.setItems(presenter.getSubjects());
+	}
+
+	public void addNewTopic(Topic newTopic) {
+		topicsList.getItems().add(newTopic);
+	}
+	
+	public void addNewPO(PO newPO) {
+		posList.getItems().add(newPO);
+	}
+	
+	public void addNewSubject(Subject newSubject) {
+		subjectsList.getItems().add(newSubject);
 	}
 
 }

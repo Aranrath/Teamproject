@@ -351,7 +351,7 @@ public class ConcernView extends GridPane {
 			stage.setAlwaysOnTop(true);
 			stage.initModality(Modality.APPLICATION_MODAL);
 			stage.setTitle("Neues Thema");
-			stage.setScene(new Scene(new EditTopicView(stage, presenter), 450, 450));
+			stage.setScene(new Scene(new EditTopicView(stage, presenter, this), 450, 450));
 			stage.show();
 		});
 		
@@ -542,6 +542,12 @@ public class ConcernView extends GridPane {
 	public void addAppointment(Appointment appointment)
 	{
 		appointmentTableView.getItems().add(appointment);
+	}
+	
+	public void addNewTopic(Topic topic)
+	{
+		topicComboBox.getItems().add(topic);
+		topicComboBox.getSelectionModel().select(topic);
 	}
 
 }
