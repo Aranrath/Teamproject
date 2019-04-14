@@ -1680,7 +1680,7 @@ public Image getDefaultStudentImage() {
 			{
 				ects += sub.getEcts();
 			}
-		}
+		}  
 		
 		return ects;
 	}
