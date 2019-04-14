@@ -1123,6 +1123,7 @@ public class Model {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+		return null;
 		
 	}
 	
@@ -1199,9 +1200,9 @@ public class Model {
 
 	public Subject saveNewSubject(Subject subject)
 	{
-		//Gebe gegebenes Subject wieder, aber mit ID!
+		//TODO Gebe gegebenes Subject wieder, aber mit ID!
 		
-		String sql = "INSERT INTO subject(title, ects) VALUES('" + title +"'," + ects +")";
+		String sql = "INSERT INTO subject(title, ects) VALUES('" + subject.getTitle() +"'," + subject.getEcts() +")";
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement())
 		{
@@ -1211,14 +1212,13 @@ public class Model {
 		{
 			e.printStackTrace();
 		}
+		return null;
 		
 	}
 
 	public void saveEditedSubject(Subject subject)
 	{
-		
-		//bekommt jetzt bereits geändertes Subject-Object
-		String sql = "UPDATE subject SET title = "+title+", ects = "+ects + "WHERE id = " + id;
+		String sql = "UPDATE subject SET title = "+subject.getTitle()+", ects = "+subject.getEcts() + "WHERE id = " + subject.getId();
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement())
 		{
@@ -1422,7 +1422,7 @@ public class Model {
 	{
 		//TODO bekommt jetzt bereits erstelltes Topic + muss jetzt das gespeicherte Topic mit id(!) zurückliefern
 		
-		String sql1 = "INSERT INTO topic (title) VALUES ('" + title + "')";
+		String sql1 = "INSERT INTO topic (title) VALUES ('" + newTopic.getTitle() + "')";
 		String sql2 = "SELECT last_insert_rowid()";
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement();)
@@ -1437,7 +1437,7 @@ public class Model {
 				e.printStackTrace();
 			}
 				if(id!=0) {
-					addTopicForms(id, selectedForms);
+					addTopicForms(id, newTopic.getForms());
 				}
 		
 		}
@@ -1445,23 +1445,21 @@ public class Model {
 		{
 			e.printStackTrace();
 		}	
+		return null;
 	}
 
 	public void saveEditedTopic(Topic topic) 
 	{
 		//TODO bekommt jetzt bereits geändertes Topic
 		
-		String sql1 = "UPDATE topic SET title = "  + title + "WHERE id = " + topic.getId();
+		String sql1 = "UPDATE topic SET title = "  + topic.getTitle() + "WHERE id = " + topic.getId();
 		String sql2 = "DELETE FROM topic_forms WHERE topic = " + topic.getId();
 		try (Connection conn = this.connect();
 				Statement stmt = conn.createStatement())
 			{
 				stmt.executeQuery(sql1);
 				stmt.executeQuery(sql2);
-				for (Form form: selectedForms) {
-					int id = form.getId();
-					addTopicForms(id, selectedForms);
-				}
+				addTopicForms(topic.getId(), topic.getForms());
 			}
 			catch (Exception e)
 			{
