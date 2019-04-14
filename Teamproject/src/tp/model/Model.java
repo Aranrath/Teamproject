@@ -1100,9 +1100,6 @@ public class Model {
 
 
 	public PO saveNewPO(PO po) {
-		
-		//TODO muss jetzt gegebene PO zurückliefern mit hinzugefügter id
-		
 		String sql = "INSERT INTO po(name) VALUES ('"+ po.getName() +"')";
 		String sql2 = "SELECT last_insert_rowid()";
 		try (Connection conn = this.connect();
@@ -1113,6 +1110,7 @@ public class Model {
 			try (ResultSet rs = stmt.executeQuery(sql2)){
 				if (rs.next()) {
 					poId = rs.getInt(1);
+					po.setId(poId);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -1123,7 +1121,7 @@ public class Model {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		return null;
+		return po;
 		
 	}
 	
@@ -1142,6 +1140,17 @@ public class Model {
 		}
 		catch (Exception e)
 		{
+			e.printStackTrace();
+		}
+	}
+
+
+	public void deletePO(PO poToDelete) {
+		String sql = "DELETE FROM po WHERE id = " + poToDelete.getId();
+		try (Connection conn = this.connect();
+				Statement stmt = conn.createStatement()) {
+			stmt.executeUpdate(sql);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -1200,20 +1209,27 @@ public class Model {
 
 	public Subject saveNewSubject(Subject subject)
 	{
-		//TODO Gebe gegebenes Subject wieder, aber mit ID!
-		
-		String sql = "INSERT INTO subject(title, ects) VALUES('" + subject.getTitle() +"'," + subject.getEcts() +")";
+		String sql1 = "INSERT INTO subject(title, ects) VALUES('" + subject.getTitle() +"'," + subject.getEcts() +")";
+		String sql2 = "SELECT last_insert_rowid()";
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement())
 		{
-			stmt.executeUpdate(sql);
+			stmt.executeUpdate(sql1);
+			int id = 0;
+			try (ResultSet rs = stmt.executeQuery(sql2)){
+				if (rs.next()) {
+					id = rs.getInt(1);
+					subject.setId(id);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
-		return null;
-		
+		return subject;
 	}
 
 	public void saveEditedSubject(Subject subject)
@@ -1226,6 +1242,17 @@ public class Model {
 		}
 		catch (Exception e)
 		{
+			e.printStackTrace();
+		}
+	}
+
+
+	public void deleteSubject(Subject subjectToDelete) {
+		String sql = "DELETE FROM subject WHERE id = " + subjectToDelete.getId();
+		try (Connection conn = this.connect();
+				Statement stmt = conn.createStatement()) {
+			stmt.executeUpdate(sql);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -1420,8 +1447,6 @@ public class Model {
 
 	public Topic saveNewTopic(Topic newTopic) 
 	{
-		//TODO bekommt jetzt bereits erstelltes Topic + muss jetzt das gespeicherte Topic mit id(!) zurückliefern
-		
 		String sql1 = "INSERT INTO topic (title) VALUES ('" + newTopic.getTitle() + "')";
 		String sql2 = "SELECT last_insert_rowid()";
 		try (Connection conn = this.connect();
@@ -1432,6 +1457,7 @@ public class Model {
 			try (ResultSet rs = stmt.executeQuery(sql2)){
 				if (rs.next()) {
 					id = rs.getInt(1);
+					newTopic.setId(id);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -1445,13 +1471,11 @@ public class Model {
 		{
 			e.printStackTrace();
 		}	
-		return null;
+		return newTopic;
 	}
 
 	public void saveEditedTopic(Topic topic) 
 	{
-		//TODO bekommt jetzt bereits geändertes Topic
-		
 		String sql1 = "UPDATE topic SET title = "  + topic.getTitle() + "WHERE id = " + topic.getId();
 		String sql2 = "DELETE FROM topic_forms WHERE topic = " + topic.getId();
 		try (Connection conn = this.connect();
@@ -1465,6 +1489,17 @@ public class Model {
 			{
 				e.printStackTrace();
 			}
+	}
+
+
+	public void deleteTopic(Topic topicToDelete) {
+		String sql = "DELETE FROM topic WHERE id = " + topicToDelete.getId();
+		try (Connection conn = this.connect();
+				Statement stmt = conn.createStatement()) {
+			stmt.executeUpdate(sql);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 
@@ -1683,23 +1718,5 @@ public Image getDefaultStudentImage() {
 		}  
 		
 		return ects;
-	}
-
-
-	public void deleteTopic(Topic topicToDelete) {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-	public void deletePO(PO poToDelete) {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-	public void deleteSubject(Subject subjectToDelete) {
-		// TODO Auto-generated method stub
-		
 	}
 }
