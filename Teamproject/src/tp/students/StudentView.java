@@ -29,6 +29,7 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
@@ -80,6 +81,9 @@ public class StudentView extends GridPane {
 	
 	//-----------------------------GUI: mailExchange Box
 
+	private StackPane placeholderPane;
+	private Label placeholderLabel;
+	
 	private Label mailExchangeLabel;
 	private GridPane mailGridPane;
 	private ScrollPane mailExchangeScrollPane;
@@ -127,10 +131,6 @@ public class StudentView extends GridPane {
 		searchPictureButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
 		studentImage.minHeight(studentImage.prefHeight(USE_COMPUTED_SIZE));
 		
-	
-
-		
-		
 		nameLabel = new Label("Name");
 		studentName = new Label();
 		mailLabel = new Label("E-Mail Adressen");
@@ -160,6 +160,15 @@ public class StudentView extends GridPane {
 
 		//----------------------------------------------------
 		
+		
+		placeholderLabel = new Label("E-Mails werden geladen");
+		placeholderLabel.setTextFill(Color.WHITE);
+		placeholderPane = new StackPane(placeholderLabel);
+		placeholderPane.setBackground(
+				new Background(new BackgroundFill(Color.CORNFLOWERBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
+		StackPane.setAlignment(placeholderLabel, Pos.CENTER);
+		
+		
 		mailExchangeLabel = new Label("E-Mail Austausch");
 		mailGridPane = new GridPane();
 		
@@ -168,6 +177,7 @@ public class StudentView extends GridPane {
 		//TODO
 //		GridPane.setVgrow(mailGridPane, Priority.SOMETIMES);
 		
+		mailGridPane.setVisible(false);
 		mailGridPane.setBackground(
 				new Background(new BackgroundFill(Color.CORNFLOWERBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
 		mailExchangeScrollPane = new ScrollPane();
@@ -233,6 +243,7 @@ public class StudentView extends GridPane {
 		add(mailExchangeLabel, 1, 9);
 		GridPane.setHalignment(mailExchangeLabel, HPos.LEFT);
 		add(mailGridPane, 1, 10, 5, 1);
+		add(placeholderPane, 1, 10, 5, 1);
 
 		// ================build mailGridPane====================
 
@@ -395,7 +406,6 @@ public class StudentView extends GridPane {
 			concerns.add(presenter.getConcern(id));
 		}
 		studentNotes.setText(student.getNotes());
-		//TODO für Mail nen loading label oder sowas
 
 		
 	}
@@ -434,9 +444,10 @@ public class StudentView extends GridPane {
 			mailExchangeVBox.layout();
 			mailExchangeScrollPane.setVvalue(1.0d);
 		}else {
-			//TODO in loading label: keine E-Mailaddresse vorhanden.
+			placeholderLabel.setText("Keine E-Mails gefunden");
 		}
-		//TODO mail loading label 'ausschalten'
+		placeholderPane.setVisible(false);
+		mailGridPane.setVisible(true);
 	}	
 	
 	public void addMailToView(EMail mail) {
