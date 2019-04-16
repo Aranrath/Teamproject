@@ -1278,7 +1278,26 @@ public class Model {
 		
 	}
 
+//	File file = form.getFile();
+//	pstmt.setString(1, form.getName());
+//	pstmt.setBytes(2, readFile(file.getAbsolutePath()));
 
+//	private byte[] readFile(String file) {
+//        ByteArrayOutputStream bos = null;
+//        File f = new File(file);
+//        try (FileInputStream fis = new FileInputStream(f)){            
+//            byte[] buffer = new byte[1024];
+//            bos = new ByteArrayOutputStream();
+//            for (int len; (len = fis.read(buffer)) != -1;) {
+//                bos.write(buffer, 0, len);
+//            }
+//        } catch (Exception e) {
+//        	e.printStackTrace();
+//        }
+//
+//        return bos != null ? bos.toByteArray() : null;
+//    }
+	
 	public void saveNewStudent(Student student) {
 		Image img = student.getImage();
 		try(ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -1293,14 +1312,21 @@ public class Model {
 				pstmt.setString(2, student.getName());
 				pstmt.setString(3, student.getFirstName());
 				pstmt.setInt(4, student.getSemester());
-				pstmt.setInt(5, student.getPo().getId());
-				pstmt.setBlob(6, is);
+				if(student.getPo()!=null) {
+					pstmt.setInt(5, student.getPo().getId());
+				}
+				else {
+					pstmt.setInt(5, 0);
+				}
+				pstmt.setBytes(6, os.toByteArray());
 				pstmt.setString(7, student.getNotes());
 				pstmt.setString(8, student.getGender());
 				pstmt.executeUpdate();
 				addStudentEmail(student.getMtrNr(), student.geteMailAddresses());
 				addPassedSubjects(student.getMtrNr(), student.getPassedSubjects());
-				addConcernsStudent(student.getConcernIds(), student.getMtrNr());			
+				if (student.getConcernIds()!= null) {
+					addConcernsStudent(student.getConcernIds(), student.getMtrNr());	
+				}
 			}
 			catch(Exception e)
 			{
@@ -1403,7 +1429,7 @@ public class Model {
 
 	public void deleteStudent(Student s) 
 	{
-		String sql = "DELETE FROM student WHERE Matrikelnummer = "+ s.getMtrNr();
+		String sql = "DELETE FROM student WHERE matrNr = "+ s.getMtrNr();
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement())
 		{

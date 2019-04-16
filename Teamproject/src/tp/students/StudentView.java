@@ -3,6 +3,7 @@ package tp.students;
 import java.io.File;
 import java.util.ArrayList;
 
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -98,7 +99,8 @@ public class StudentView extends GridPane {
 		this.tab = tab;
 		buildView();
 		fillView();
-		fillMailView();
+		Thread t = new Thread(()->fillMailView());
+		t.start();
 	}
 	
 	public StudentView(Student student, Presenter presenter, MyTab tab, ArrayList<String> changedMailAddresses) {
@@ -107,7 +109,8 @@ public class StudentView extends GridPane {
 		this.tab = tab;
 		buildView();
 		fillView();
-		fillMailView(changedMailAddresses);
+		Thread t = new Thread(()->fillMailView(changedMailAddresses));
+		t.start();
 	}
 
 	private void buildView() {
@@ -402,8 +405,10 @@ public class StudentView extends GridPane {
 	
 		studentECTS.setText("" + presenter.calculateEcts(student.getPassedSubjects(),student.getPo()));
 		studentSemester.setText("" + student.getSemester());
-		for (int id : student.getConcernIds()){
-			concerns.add(presenter.getConcern(id));
+		if (student.getConcernIds()!=null) {
+			for (int id : student.getConcernIds()){
+				concerns.add(presenter.getConcern(id));
+			}
 		}
 		studentNotes.setText(student.getNotes());
 
@@ -416,33 +421,19 @@ public class StudentView extends GridPane {
 
 	public void fillMailView(ArrayList<String> changedMailAddresses) {
 		for (String address: changedMailAddresses) {
-			try {
-				Thread t = new Thread(()->presenter.checkMail(student, address));
-				t.start();
-				t.join();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+			presenter.checkMail(student, address);
 		}
 		fillMailView();
 	}
 	
 	public void fillMailView() {
 		if(!student.geteMailAddresses().isEmpty()) {
-			try {
-				Thread t = new Thread(()->presenter.checkMail(student));
-				t.start();
-				t.join();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+			presenter.checkMail(student);
 			// Fill MailExchange
 			ArrayList<EMail> mails = presenter.getEMails(student);
 			for (EMail mail : mails) {
-				addMailToView(mail);
+				Platform.runLater(()->addMailToView(mail));
 			}
-			mailExchangeVBox.layout();
-			mailExchangeScrollPane.setVvalue(1.0d);
 		}else {
 			placeholderLabel.setText("Keine E-Mails gefunden");
 		}
@@ -477,6 +468,8 @@ public class StudentView extends GridPane {
 			mailExchangeVBox.getChildren().add(subject);
 			mailExchangeVBox.getChildren().add(content);
 
+			mailExchangeVBox.layout();
+			mailExchangeScrollPane.setVvalue(1.0d);
 			
 		}
 	}
