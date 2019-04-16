@@ -112,7 +112,7 @@ public class Presenter {
 
 	}
 
-	public Concern getConcern(int concernId) {
+	public Concern getConcern(long concernId) {
 		return model.getConcern(concernId);
 	}
 

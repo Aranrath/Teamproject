@@ -406,7 +406,7 @@ public class StudentView extends GridPane {
 		studentECTS.setText("" + presenter.calculateEcts(student.getPassedSubjects(),student.getPo()));
 		studentSemester.setText("" + student.getSemester());
 		if (student.getConcernIds()!=null) {
-			for (int id : student.getConcernIds()){
+			for (long id : student.getConcernIds()){
 				concerns.add(presenter.getConcern(id));
 			}
 		}

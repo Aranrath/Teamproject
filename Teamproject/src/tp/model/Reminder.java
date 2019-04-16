@@ -4,7 +4,7 @@ import java.sql.Date;
 
 public class Reminder {
 	
-	private int id;
+	private long id;
 	private String message;
 	private Date date;
 	
@@ -14,7 +14,7 @@ public class Reminder {
 		this.date = date;
 	}
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 
@@ -26,7 +26,7 @@ public class Reminder {
 		return date;
 	}
 
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 

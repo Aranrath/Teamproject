@@ -4,7 +4,7 @@ import java.sql.Date;
 
 public class EMail {
 
-	private int id;
+	private long id;
 	private Date date;
 	private String subject;
 	private String content;
@@ -19,7 +19,7 @@ public class EMail {
 		this.received = received;
 	}
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 
@@ -43,7 +43,7 @@ public class EMail {
 		return received;
 	}
 
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 

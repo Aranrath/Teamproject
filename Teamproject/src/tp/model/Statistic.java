@@ -2,7 +2,7 @@ package tp.model;
 
 public class Statistic {
 	
-	private int id;
+	private long id;
 	private String title;
 	
 	public Statistic(String title)
@@ -10,11 +10,11 @@ public class Statistic {
 		this.title = title;
 	}
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 

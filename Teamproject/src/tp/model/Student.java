@@ -16,7 +16,7 @@ public class Student {
 	private String notes;
 	private ObservableList<Subject> passedSubjects;
 	private Image image;
-	private ObservableList<Integer> concernIds;
+	private ObservableList<Long> concernIds;
 	private PO po;
 	private String gender;
 	// For TableView
@@ -28,7 +28,7 @@ public class Student {
 	}
 
 	public Student(int mtrNr, String name, String firstName, ArrayList<String> eMailAddresses, int semester,
-			String notes, ObservableList<Subject> passedSubjects, Image image, ObservableList<Integer> concernIds, String gender, Date lastContact) {
+			String notes, ObservableList<Subject> passedSubjects, Image image, ObservableList<Long> concernIds, String gender, Date lastContact) {
 		this.mtrNr = mtrNr;
 		this.name = name;
 		this.firstName = firstName;
@@ -73,7 +73,7 @@ public class Student {
 		return eMailAddresses;
 	}
 
-	public ObservableList<Integer> getConcernIds() {
+	public ObservableList<Long> getConcernIds() {
 		return concernIds;
 	}
 
@@ -109,7 +109,7 @@ public class Student {
 		this.image = image;
 	}
 
-	public void setConcernIds(ObservableList<Integer> concernIds) {
+	public void setConcernIds(ObservableList<Long> concernIds) {
 		this.concernIds = concernIds;
 	}
 

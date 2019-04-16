@@ -5,14 +5,14 @@ import java.sql.Time;
 
 public class Appointment {
 
-	private int id;
-	private int concernId;
+	private long id;
+	private long concernId;
 	private Date date;
 	private long startTime;
 	private long endTime;
 	private String roomNmb;
 
-	public Appointment(int concernId, Date date, long startTime, long endTime, String roomNmb) {
+	public Appointment(long concernId, Date date, long startTime, long endTime, String roomNmb) {
 		this.concernId = concernId;
 		this.date = date;
 		this.startTime = startTime;
@@ -28,11 +28,11 @@ public class Appointment {
 
 	}
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 
-	public int getConcernId() {
+	public long getConcernId() {
 		return concernId;
 	}
 
@@ -53,11 +53,11 @@ public class Appointment {
 	}
 
 
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 
-	public void setConcernId(int concernId) {
+	public void setConcernId(long concernId) {
 		this.concernId = concernId;
 	}
 

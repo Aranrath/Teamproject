@@ -6,7 +6,7 @@ import javafx.collections.ObservableList;
 
 public class Concern {
 
-	private int id;
+	private long id;
 	private String title;
 	private ObservableList<Form> files;
 	private Topic topic;
@@ -23,7 +23,7 @@ public class Concern {
 		this.topic = topic;
 	}
 
-	public Concern(int id, String title, ObservableList<Form> files, Topic topic, ObservableList<Appointment> appointments,
+	public Concern(long id, String title, ObservableList<Form> files, Topic topic, ObservableList<Appointment> appointments,
 			ObservableList<Reminder> reminders, ObservableList<Student> students, String notes) 
 	{
 		this.id = id;
@@ -37,7 +37,7 @@ public class Concern {
 	}
 
 	
-	public int getId() {
+	public long getId() {
 
 		return id;
 
@@ -63,7 +63,7 @@ public class Concern {
 		return reminders;
 	}
 
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 

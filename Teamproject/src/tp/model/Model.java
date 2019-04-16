@@ -290,7 +290,7 @@ public class Model {
 	}
 
 
-	private ObservableList<Appointment> getAppointments(int concernId) {
+	private ObservableList<Appointment> getAppointments(long concernId) {
 		ObservableList<Appointment>  result = FXCollections.observableArrayList();
 		String sql = "SELECT id FROM appointment WHERE concern = " + concernId;
 		try (Connection conn = this.connect();
@@ -309,7 +309,7 @@ public class Model {
 	}
 
 
-	public Concern getConcern(int concernId) 
+	public Concern getConcern(long concernId) 
 	{
 		Concern result = new Concern(null, null);
 		String sql = "SELECT * FROM concern WHERE id = " + concernId;
@@ -359,7 +359,7 @@ public class Model {
 		return result;
 	}
 
-	private ObservableList<Form> getConcernForms(int concernId) {
+	private ObservableList<Form> getConcernForms(long concernId) {
 		ObservableList<Form>  result = FXCollections.observableArrayList();
 		String sql = "SELECT form FROM concern_forms WHERE concern = " + concernId;
 		try (Connection conn = this.connect();
@@ -542,7 +542,7 @@ public class Model {
 	}
 
 
-	private ObservableList<Reminder> getReminders(int concernId) {
+	private ObservableList<Reminder> getReminders(long concernId) {
 		ObservableList<Reminder>  result = FXCollections.observableArrayList();
 		String sql = "SELECT id FROM reminder WHERE concern = " + concernId;
 		try (Connection conn = this.connect();
@@ -633,10 +633,10 @@ public class Model {
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql2))				
 		{
-			ObservableList<Integer> concerns = FXCollections.observableArrayList();
+			ObservableList<Long> concerns = FXCollections.observableArrayList();
 			while(rs.next())
 			{
-				concerns.add(rs.getInt("concern"));
+				concerns.add(rs.getLong("concern"));
 			}
 			result.setConcernIds(concerns);
 		} catch (SQLException e) {
@@ -667,7 +667,7 @@ public class Model {
 	}
 
 
-	private ObservableList<Student> getStudents(int concernId) {
+	private ObservableList<Student> getStudents(long concernId) {
 		ObservableList<Student>  result = FXCollections.observableArrayList();
 		String sql = "SELECT student FROM concern_student WHERE concern = " + concernId;
 		try (Connection conn = this.connect();
@@ -874,7 +874,7 @@ public class Model {
 		try (Connection conn = this.connect();
 			PreparedStatement pstmt = conn.prepareStatement(sql))
 		{
-			pstmt.setInt(1, appointment.getConcernId());
+			pstmt.setLong(1, appointment.getConcernId());
 			pstmt.setDate(2, appointment.getDate());
 			pstmt.setLong(3, appointment.getStartTime());
 			pstmt.setLong(4, appointment.getEndTime());
@@ -920,7 +920,7 @@ public class Model {
 			)
 		{
 			pstmt.setString(1, concern.getTitle());
-			pstmt.setInt(2, concern.getTopic().getId());
+			pstmt.setLong(2, concern.getTopic().getId());
 			pstmt.setString(3, concern.getNotes());
 			pstmt.executeUpdate();
 			try (ResultSet rs = stmt.executeQuery(sql2)){
@@ -985,7 +985,7 @@ public class Model {
 	}
 
 
-	private void addConcernForms(int id, ObservableList<Form> data) {
+	private void addConcernForms(long id, ObservableList<Form> data) {
 		String sql;
 		try (Connection conn = this.connect();
 				Statement stmt = conn.createStatement())
@@ -1000,12 +1000,12 @@ public class Model {
 	}
 
 
-	private void addConcernsStudent(ObservableList<Integer> concernIds, int mtrNr) {
+	private void addConcernsStudent(ObservableList<Long> concernIds, int mtrNr) {
 		String sql;
 		try (Connection conn = this.connect();
 				Statement stmt = conn.createStatement())
 			{
-			for (Integer concern: concernIds){
+			for (Long concern: concernIds){
 				sql="INSERT INTO concern_student (concern, student) VALUES (" + concern + ", " + mtrNr + ")";
 				stmt.executeQuery(sql);
 			}
@@ -1016,7 +1016,7 @@ public class Model {
 	}
 
 
-	private void addConcernStudents(int id, ObservableList<Student> students) {
+	private void addConcernStudents(long id, ObservableList<Student> students) {
 		String sql;
 		try (Connection conn = this.connect();
 				Statement stmt = conn.createStatement())
@@ -1156,7 +1156,7 @@ public class Model {
 	}
 
 
-	private void addPoSubject(int poId, ObservableList<Subject> subjects, boolean optional) {
+	private void addPoSubject(long poId, ObservableList<Subject> subjects, boolean optional) {
 		String sql;
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement())
@@ -1172,14 +1172,14 @@ public class Model {
 	}
 
 
-	private void addReminder(int conId, Reminder reminder) {
+	private void addReminder(long conId, Reminder reminder) {
 		String sql = "INSERT INTO reminder(date, message, concern) values (?, ?, ?)";
 		try (Connection conn = this.connect();
 			PreparedStatement pstmt = conn.prepareStatement(sql))
 		{
 			pstmt.setDate(1, reminder.getDate());
 			pstmt.setString(2, reminder.getMessage());
-			pstmt.setInt(3, conId);
+			pstmt.setLong(3, conId);
 			pstmt.executeUpdate();
 		} 
 		catch(Exception e)
@@ -1189,7 +1189,7 @@ public class Model {
 	}
 
 
-	private void addReminders(int conId, ObservableList<Reminder> reminders) {
+	private void addReminders(long conId, ObservableList<Reminder> reminders) {
 		for (Reminder r: reminders) {
 			addReminder(conId, r);
 		}
@@ -1313,7 +1313,7 @@ public class Model {
 				pstmt.setString(3, student.getFirstName());
 				pstmt.setInt(4, student.getSemester());
 				if(student.getPo()!=null) {
-					pstmt.setInt(5, student.getPo().getId());
+					pstmt.setLong(5, student.getPo().getId());
 				}
 				else {
 					pstmt.setInt(5, 0);
@@ -1529,7 +1529,7 @@ public class Model {
 	}
 
 
-	private void addTopicForms(int id, ObservableList<Form> selectedForms) {
+	private void addTopicForms(long id, ObservableList<Form> selectedForms) {
 		String sql;
 		try (Connection conn = this.connect();
 				Statement stmt = conn.createStatement())

@@ -5,7 +5,7 @@ import javafx.collections.ObservableList;
 public class PO {
 	
 	
-	private int id;
+	private long id;
 	private String name;
 	private ObservableList<Subject> optionalSubjects;
 	private ObservableList<Subject> mandatorySubjects;
@@ -24,11 +24,11 @@ public class PO {
 	
 	//---------------------------------------Getter Setter
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 	
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 	

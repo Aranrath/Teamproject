@@ -426,7 +426,7 @@ public class EditStudentView extends GridPane {
 				student.setPo(po);
 				student.setSemester(semester);
 				student.setPassedSubjects(localPassedSubjects);
-				ObservableList<Integer> concernIds = FXCollections.observableArrayList();
+				ObservableList<Long> concernIds = FXCollections.observableArrayList();
 				for (Concern c : concerns) {
 					concernIds.add(c.getId());
 				}
@@ -485,7 +485,7 @@ public class EditStudentView extends GridPane {
 		studentECTS.setText("" + presenter.calculateEcts(student.getPassedSubjects(), student.getPo()));
 		studentSemester.setText("" + student.getSemester());
 		ObservableList<Concern> concerns = FXCollections.observableArrayList();
-		for (int id : student.getConcernIds()){
+		for (long id : student.getConcernIds()){
 			concerns.add(presenter.getConcern(id));
 		}
 		concernsListView = new ListView<Concern>(concerns);

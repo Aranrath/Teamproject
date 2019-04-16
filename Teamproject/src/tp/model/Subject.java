@@ -6,7 +6,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 public class Subject {
 	private String title;
 	private int ects;
-	private int id;
+	private long id;
 
 	// For TableViews
 	private BooleanProperty optional = new SimpleBooleanProperty();
@@ -33,11 +33,11 @@ public class Subject {
 		this.ects = ects;
 	}
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 

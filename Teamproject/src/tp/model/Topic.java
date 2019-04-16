@@ -6,7 +6,7 @@ public class Topic {
 	
 	private String title;
 	private ObservableList<Form> forms;
-	int id;
+	long id;
 	
 	public Topic(String title)
 	{
@@ -30,13 +30,13 @@ public class Topic {
 	public ObservableList<Form> getForms() {
 		return forms;
 	}
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 	public void setLinkedForms(ObservableList<Form> forms) {
 		this.forms = forms;
 	}
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 	
