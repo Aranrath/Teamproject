@@ -912,7 +912,7 @@ public class Model {
 	public int saveNewConcern(Concern concern) {
 		
 		int id = 0; 
-		String sql1 = "INSERT INTO concern (title, topic, notes) values (?, ?, ?)";
+		String sql1 = "INSERT INTO concern (title, topic, notes, created) values (?, ?, ?, DATE('now'))";
 		String sql2 = "SELECT last_insert_rowid()";
 		try (Connection conn = this.connect();
 			PreparedStatement pstmt = conn.prepareStatement(sql1);
@@ -945,7 +945,7 @@ public class Model {
 
 	public void saveEditedConcern(Concern concern) {
 		String sql1 = "UPDATE concern SET title = " + concern.getTitle() + ", topic = " + concern.getTopic().getId() +
-				", notes = " + concern.getNotes();
+				", notes = " + concern.getNotes() + "WHERE id = " + concern.getId();
 		String sql2 = "DELETE FROM concern_forms WHERE concern = " + concern.getId();
 		String sql3 = "DELETE FROM concern_student WHERE concern = " + concern.getId();
 		String sql4 = "DELETE FROM appointment WHERE concern = " + concern.getId();
@@ -969,6 +969,18 @@ public class Model {
 		}
 	}
 
+	public void setConcernInvisible(Concern c) {
+		String sql = "UPDATE concern SET done = DATE('now') WHERE id = " + c.getId();
+		try (Connection conn = this.connect();
+				Statement stmt = conn.createStatement())
+			{
+				stmt.executeQuery(sql);
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+	}
 
 	public void deleteConcern(Concern c) 
 	{
@@ -1344,9 +1356,7 @@ public class Model {
 		try(ByteArrayOutputStream os = new ByteArrayOutputStream();
 		   InputStream is = new ByteArrayInputStream(os.toByteArray())){
 			ImageIO.write(SwingFXUtils.fromFXImage(img, null),"png", os);
-			String sql1 = "UPDATE student SET name = '"+student.getName()+"', firstname = '"+student.getFirstName()+"', semester = "+student.getSemester()+
-				", notes = '"+student.getNotes()+", img = " +is + 
-				"WHERE matrNr = " + student.getMtrNr();
+			String sql1 = "UPDATE student SET name = ?, firstname = ?, semester = ?, po = ?, image = ?, gender = ? WHERE matrNr = ?";
 			String sql2 = "DELETE FROM concern_student WHERE student = " + student.getMtrNr();
 			String sql3 = "DELETE FROM passed_subjects WHERE student = " + student.getMtrNr();
 			
@@ -1358,9 +1368,23 @@ public class Model {
 			ArrayList<String> oldMailAddresses = oldStudent.geteMailAddresses();
 			oldMailAddresses.removeAll(student.geteMailAddresses());
 			try(Connection conn = this.connect();
+					PreparedStatement pstmt = conn.prepareStatement(sql1);
 					Statement stmt = conn.createStatement())
 			{
-				stmt.executeUpdate(sql1);
+				pstmt.setString(1, student.getName());
+				pstmt.setString(2, student.getFirstName());
+				pstmt.setInt(3, student.getSemester());
+				if(student.getPo()!=null) {
+					pstmt.setLong(4, student.getPo().getId());
+				}
+				else {
+					pstmt.setInt(4, 0);
+				}
+				pstmt.setBytes(5, os.toByteArray());
+				pstmt.setString(6, student.getGender());
+				pstmt.setInt(7, student.getMtrNr());
+				pstmt.executeUpdate();
+				
 				stmt.executeUpdate(sql2);
 				stmt.executeUpdate(sql3);
 				for (String address: oldMailAddresses) {
@@ -1426,6 +1450,18 @@ public class Model {
 		return false;
 	}
 
+	public void setStudentInvisible(Student s) {
+		String sql = "UPDATE student SET invisible = true WHERE matrNr = " + s.getMtrNr();
+		try (Connection conn = this.connect();
+				Statement stmt = conn.createStatement())
+			{
+				stmt.executeQuery(sql);
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+	}
 
 	public void deleteStudent(Student s) 
 	{
