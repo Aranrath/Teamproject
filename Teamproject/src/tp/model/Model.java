@@ -35,6 +35,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
+import tp.model.statistics.Statistic;
 
 public class Model {
 

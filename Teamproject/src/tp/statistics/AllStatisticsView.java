@@ -11,7 +11,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.GridPane;
 import tp.Presenter;
-import tp.model.Statistic;
+import tp.model.statistics.Statistic;
 
 public class AllStatisticsView extends GridPane{
 	

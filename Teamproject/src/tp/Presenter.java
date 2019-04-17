@@ -22,10 +22,10 @@ import tp.model.MyTab;
 import tp.model.Options;
 import tp.model.PO;
 import tp.model.Reminder;
-import tp.model.Statistic;
 import tp.model.Student;
 import tp.model.Subject;
 import tp.model.Topic;
+import tp.model.statistics.Statistic;
 
 public class Presenter {
 	private Model model;

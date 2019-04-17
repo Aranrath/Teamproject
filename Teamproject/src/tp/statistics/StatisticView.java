@@ -2,7 +2,7 @@ package tp.statistics;
 
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
-import tp.model.Statistic;
+import tp.model.statistics.Statistic;
 
 public class StatisticView extends HBox{
 	

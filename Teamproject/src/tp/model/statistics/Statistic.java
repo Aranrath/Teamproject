@@ -1,4 +1,4 @@
-package tp.model;
+package tp.model.statistics;
 
 public class Statistic {
 	
@@ -25,11 +25,4 @@ public class Statistic {
 	public void setTitle(String title) {
 		this.title = title;
 	}
-	
-	
-	
-	
-	
-	
-
 }

@@ -9,7 +9,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import tp.Presenter;
 import tp.model.MyTab;
-import tp.model.Statistic;
+import tp.model.statistics.Statistic;
 
 public class EditStatisticView extends GridPane{
 	
