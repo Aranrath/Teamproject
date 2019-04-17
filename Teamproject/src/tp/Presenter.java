@@ -51,7 +51,7 @@ public class Presenter {
 
 	// =====================Mail==========================
 
-	public EMail sendMail(String userID, String userName, Student recipient, String subject, String content) {
+	public EMail sendMail(String userID, String userName, Student recipient, String mailAddress, String subject, String content) {
 		try {
 			// Create a properties file containing
 			// the host address of your SMTP server
@@ -64,8 +64,7 @@ public class Presenter {
 			MimeMessage message = new MimeMessage(mailSession);
 			// Set the From and the Recipient
 			message.setFrom(new InternetAddress(userID + "@fh-trier.de", userName));
-			// Send to eMailAddress where last received
-			String mailAddress = model.getLastEmail(recipient).getMailAddress();
+			// Send to eMailAddress
 			message.setRecipient(Message.RecipientType.TO,
 					new InternetAddress(mailAddress, recipient.getName()));
 			// Set the subject
@@ -396,6 +395,10 @@ public class Presenter {
 	public void deleteSubject(Subject subjectToDelete) {
 		model.deleteSubject(subjectToDelete);
 		
+	}
+
+	public EMail getLastEmail(Student student) {
+		return model.getLastEmail(student);
 	}
 
 

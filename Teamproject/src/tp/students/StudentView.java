@@ -336,14 +336,12 @@ public class StudentView extends GridPane {
 			presenter.closeThisTab(tab);
 		});
 
-		sendMailButton.setOnAction((event) -> {
-			//TODO Mail an die E-Mail Adresse der ComboBox senden
-			
+		sendMailButton.setOnAction((event) -> {			
 			String mailCC = mailCCTextField.getText();
 			String mailContent = mailContentTextArea.getText();
 			String userID = presenter.getOptions().getUserID();
 			String userName = presenter.getOptions().getUserName();
-			EMail mail = presenter.sendMail(userID, userName, student, mailCC, mailContent);
+			EMail mail = presenter.sendMail(userID, userName, student, mailRecipientAdress.getValue(), mailCC, mailContent);
 			//add new EMail to View
 			addMailToMailExchangeBox(mail);
 			mailExchangeVBox.layout();
@@ -443,16 +441,15 @@ public class StudentView extends GridPane {
 		{
 			//ComboBox für EmpfängerAdresse füllen
 			mailRecipientAdress.setItems(FXCollections.observableArrayList(student.geteMailAddresses()));
-			//Wenn noch vorhanden eMail der letzten erhaltenen E-Mail auswählen
-			//TODO Methode getLastEMail...? (Siehe Presenter sendMail()
-//			if()
-//			{
-//				mailRecipientAdress.getSelectionModel().select(ebend diese E-MailAdresse s.o.);
-//			}
-//			else
-//			{
+			//Wenn vorhanden eMail der letzten erhaltenen E-Mail auswählen
+			if(presenter.getLastEmail(student) != null)
+			{
+				mailRecipientAdress.getSelectionModel().select(presenter.getLastEmail(student).getMailAddress());
+			}
+			else
+			{
 				mailRecipientAdress.getSelectionModel().select(0);
-//			}
+			}
 			
 			
 			//(seit dem letzen pull)
