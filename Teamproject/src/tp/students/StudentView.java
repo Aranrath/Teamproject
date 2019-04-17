@@ -14,6 +14,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
@@ -89,6 +90,7 @@ public class StudentView extends GridPane {
 	private GridPane mailGridPane;
 	private ScrollPane mailExchangeScrollPane;
 	private VBox mailExchangeVBox;
+	private ComboBox<String> mailRecipientAdress;
 	private TextField mailCCTextField;
 	private TextArea mailContentTextArea;
 	private Button sendMailButton;
@@ -193,6 +195,10 @@ public class StudentView extends GridPane {
 		mailExchangeScrollPane.setMaxWidth(Double.MAX_VALUE);
 		GridPane.setHgrow(mailExchangeScrollPane, Priority.ALWAYS);
 		
+		mailRecipientAdress = new ComboBox<String>();
+		mailRecipientAdress.setMaxWidth(Double.MAX_VALUE);
+		GridPane.setHgrow(mailRecipientAdress, Priority.ALWAYS);
+		
 		mailCCTextField = new TextField("");
 		mailCCTextField.setPromptText("Betreff");
 		
@@ -249,10 +255,11 @@ public class StudentView extends GridPane {
 
 		// ================build mailGridPane====================
 
-		mailGridPane.add(mailExchangeScrollPane, 0, 0, 1, 3);
-		mailGridPane.add(mailCCTextField, 1, 0);
-		mailGridPane.add(mailContentTextArea, 1, 1);
-		mailGridPane.add(sendMailButton, 1, 2);
+		mailGridPane.add(mailExchangeScrollPane, 0, 0, 1, 4);
+		mailGridPane.add(mailRecipientAdress, 1, 0);
+		mailGridPane.add(mailCCTextField, 1, 1);
+		mailGridPane.add(mailContentTextArea, 1, 2);
+		mailGridPane.add(sendMailButton, 1, 3);
 		GridPane.setHalignment(sendMailButton, HPos.CENTER);
 
 
@@ -330,6 +337,8 @@ public class StudentView extends GridPane {
 		});
 
 		sendMailButton.setOnAction((event) -> {
+			//TODO Mail an die E-Mail Adresse der ComboBox senden
+			
 			String mailCC = mailCCTextField.getText();
 			String mailContent = mailContentTextArea.getText();
 			String userID = presenter.getOptions().getUserID();
@@ -432,6 +441,20 @@ public class StudentView extends GridPane {
 		//wenn Student E-Mail Adressen hinterlegt hat
 		if(!student.geteMailAddresses().isEmpty())
 		{
+			//ComboBox für EmpfängerAdresse füllen
+			mailRecipientAdress.setItems(FXCollections.observableArrayList(student.geteMailAddresses()));
+			//Wenn noch vorhanden eMail der letzten erhaltenen E-Mail auswählen
+			//TODO Methode getLastEMail...? (Siehe Presenter sendMail()
+//			if()
+//			{
+//				mailRecipientAdress.getSelectionModel().select(ebend diese E-MailAdresse s.o.);
+//			}
+//			else
+//			{
+				mailRecipientAdress.getSelectionModel().select(0);
+//			}
+			
+			
 			//(seit dem letzen pull)
 			presenter.pullNewEMails(student);
 			
