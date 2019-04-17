@@ -348,11 +348,11 @@ public class Presenter {
 		
 	}
 
-	public void checkMail(Student student, String address) {
+	public void pullAllEMails(Student student, String address) {
 		model.checkMail(student, address);
 	}
 
-	public void checkMail(Student student) {
+	public void pullNewEMails(Student student) {
 		model.checkMail(student);
 	}
 

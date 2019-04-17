@@ -171,7 +171,6 @@ public class StudentView extends GridPane {
 				new Background(new BackgroundFill(Color.CORNFLOWERBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
 		StackPane.setAlignment(placeholderLabel, Pos.CENTER);
 		
-		
 		mailExchangeLabel = new Label("E-Mail Austausch");
 		mailGridPane = new GridPane();
 		
@@ -180,6 +179,7 @@ public class StudentView extends GridPane {
 		//TODO
 //		GridPane.setVgrow(mailGridPane, Priority.SOMETIMES);
 		
+		//loadingMailPlaceholderPane zunächst angezeigt bis MailGridPane geladen ist
 		mailGridPane.setVisible(false);
 		mailGridPane.setBackground(
 				new Background(new BackgroundFill(Color.CORNFLOWERBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
@@ -189,7 +189,6 @@ public class StudentView extends GridPane {
 		mailExchangeVBox = new VBox();
 		mailExchangeVBox.setPadding(new Insets(5, 20, 5, 5));
 		mailExchangeVBox.prefWidthProperty().bind(mailExchangeScrollPane.widthProperty());
-		mailExchangeScrollPane.setContent(mailExchangeVBox);
 		
 		mailExchangeScrollPane.setMaxWidth(Double.MAX_VALUE);
 		GridPane.setHgrow(mailExchangeScrollPane, Priority.ALWAYS);
@@ -337,7 +336,7 @@ public class StudentView extends GridPane {
 			String userName = presenter.getOptions().getUserName();
 			EMail mail = presenter.sendMail(userID, userName, student, mailCC, mailContent);
 			//add new EMail to View
-			addMailToView(mail);
+			addMailToMailExchangeBox(mail);
 			mailExchangeVBox.layout();
 			mailExchangeScrollPane.setVvalue(1.0d);
 
@@ -403,7 +402,6 @@ public class StudentView extends GridPane {
 			studentPO.setText(student.getPo().getName());
 		}
 	
-		studentECTS.setText("" + presenter.calculateEcts(student.getPassedSubjects(),student.getPo()));
 		studentSemester.setText("" + student.getSemester());
 		if (student.getConcernIds()!=null) {
 			for (long id : student.getConcernIds()){
@@ -412,51 +410,87 @@ public class StudentView extends GridPane {
 		}
 		studentNotes.setText(student.getNotes());
 
-		
+		studentECTS.setText("" + presenter.calculateEcts(student.getPassedSubjects(),student.getPo()));
 	}
 	
 //	================================================================================================
 //							Mail Stuff
 //	================================================================================================
 
+	//(Wird immer im Thread ausgeführt)
 	public void fillMailView(ArrayList<String> changedMailAddresses) {
-		for (String address: changedMailAddresses) {
-			presenter.checkMail(student, address);
+		for (String address: changedMailAddresses)
+		{
+			presenter.pullAllEMails(student, address);
 		}
+		
 		fillMailView();
 	}
 	
+	//(Wird immer im Thread ausgeführt)
 	public void fillMailView() {
-		if(!student.geteMailAddresses().isEmpty()) {
-			presenter.checkMail(student);
-			// Fill MailExchange
+		//wenn Student E-Mail Adressen hinterlegt hat
+		if(!student.geteMailAddresses().isEmpty())
+		{
+			//(seit dem letzen pull)
+			presenter.pullNewEMails(student);
+			
+			// Fülle E-MailBox
 			ArrayList<EMail> mails = presenter.getEMails(student);
-			for (EMail mail : mails) {
-				Platform.runLater(()->addMailToView(mail));
+			//Wenn Mails gefunden wurden...
+			if(!mails.isEmpty())
+			{
+				Platform.runLater(()->
+				{
+					mailExchangeScrollPane.setContent(mailExchangeVBox);
+					for (EMail mail : mails)
+					{
+							addMailToMailExchangeBox(mail);
+							getChildren().remove(placeholderPane);
+							mailGridPane.setVisible(true);
+					}
+				});
 			}
-		}else {
-			placeholderLabel.setText("Keine E-Mails gefunden");
+			//Wenn keine Mails gefunden wurden...
+			else
+			{
+				Platform.runLater(()->{
+					getChildren().remove(placeholderPane);
+					mailGridPane.setVisible(true);
+					placeholderLabel.setText("Keine E-Mails gefunden");
+					mailExchangeScrollPane.setContent(placeholderPane);
+					
+				});
+			}
+			
 		}
-		placeholderPane.setVisible(false);
-		mailGridPane.setVisible(true);
+		//Wenn zum Studenten keine E-Mail Adressen hinterlegt sind
+		else
+		{
+			Platform.runLater(()->{
+				placeholderLabel.setText("Keine E-Mail Adressen hinterlegt");
+			});
+		}
+		
 	}	
 	
-	public void addMailToView(EMail mail) {
+	public void addMailToMailExchangeBox(EMail mail) {
 		if (mail != null) {
-			Label date = new Label();
-			Label subject = new Label();
-			Label content = new Label();
-
-			date.setText(mail.getDate().toString());
-			subject.setText(mail.getSubject());
-			content.setText(mail.getContent());
-
+			Label date = new Label(mail.getDate().toString());
+			Label subject = new Label(mail.getSubject());
+			Label content = new Label(mail.getContent());
+			
+			//-----------------layouting
+			
+			//Breite an mailExchangeVBox anpassen
 			date.prefWidthProperty().bind(mailExchangeVBox.widthProperty());
 			subject.prefWidthProperty().bind(mailExchangeVBox.widthProperty());
 			content.prefWidthProperty().bind(mailExchangeVBox.widthProperty());
 
+			//Datum steht unten in der Mitte
 			date.setAlignment(Pos.BASELINE_CENTER);
 
+			//Gesendete Mails sind am rechten Rand ausgerichtet
 			if (!mail.isReceived()) {
 				subject.setAlignment(Pos.BASELINE_RIGHT);
 				content.setAlignment(Pos.BASELINE_RIGHT);
@@ -464,25 +498,27 @@ public class StudentView extends GridPane {
 				content.setTextAlignment(TextAlignment.RIGHT);
 			}
 
+			//---------------------------------------
+			
+			//VBox zusammensetzen
 			mailExchangeVBox.getChildren().add(date);
 			mailExchangeVBox.getChildren().add(subject);
 			mailExchangeVBox.getChildren().add(content);
 
+			//nach unten scrollen zu den aktuellen Mails
 			mailExchangeVBox.layout();
 			mailExchangeScrollPane.setVvalue(1.0d);
 			
 		}
 	}
 	
+	
+	//==============================================================================
+	
 	public void updateImage(Image image) {
 		studentImage.setImage(image);
 		student.setImage(image);
 		presenter.saveEditedStudent(student);
-	}
-	
-	public void calculateECTS()
-	{
-		
 	}
 
 }
