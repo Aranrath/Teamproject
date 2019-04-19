@@ -1,6 +1,5 @@
 package tp.statistics;
 
-import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import tp.model.statistics.Statistic;
 
@@ -8,21 +7,22 @@ public class StatisticView extends HBox{
 	
 	Statistic statistic;
 	
+	//=====================0
+	
+	
 	public StatisticView(Statistic statistic)
 	{
 		this.statistic = statistic;
 		buildView();
-		fillView();
 	}
 	
-	private void buildView()
-	{
-		getChildren().addAll(new Label("Dies ist eine Statistic View"));
-	}
 	
-	private void fillView()
-	{
+	//================================================
+	
+	
+	private void buildView(){
 		
 	}
+	
 
 }

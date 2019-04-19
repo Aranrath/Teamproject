@@ -277,8 +277,8 @@ public class Presenter {
 		
 	}
 
-	public boolean saveNewStatistic(Statistic statistic) {
-		return model.saveNewStatistic(statistic);
+	public Statistic calculateAndSaveNewStatistic(Statistic newStatistic) {
+		return model.calculateAndSaveNewStatistic(newStatistic);
 	}
 
 	public void showEditUserDataView(Options options) {

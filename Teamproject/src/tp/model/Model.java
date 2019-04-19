@@ -1271,7 +1271,9 @@ public class Model {
 	}
 
 
-	public boolean saveNewStatistic(Statistic statistic) {
+	public Statistic calculateAndSaveNewStatistic(Statistic statistic) {
+		
+		//TODO Gibt nun neue Statistic mit id zurück
 		boolean successful;
 		try
 		{
@@ -1282,7 +1284,7 @@ public class Model {
 		{
 			successful = false;
 		}
-		return successful;
+		return null;
 	}
 
 
