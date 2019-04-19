@@ -1292,26 +1292,6 @@ public class Model {
 		// TODO Auto-generated method stub
 		
 	}
-
-//	File file = form.getFile();
-//	pstmt.setString(1, form.getName());
-//	pstmt.setBytes(2, readFile(file.getAbsolutePath()));
-
-//	private byte[] readFile(String file) {
-//        ByteArrayOutputStream bos = null;
-//        File f = new File(file);
-//        try (FileInputStream fis = new FileInputStream(f)){            
-//            byte[] buffer = new byte[1024];
-//            bos = new ByteArrayOutputStream();
-//            for (int len; (len = fis.read(buffer)) != -1;) {
-//                bos.write(buffer, 0, len);
-//            }
-//        } catch (Exception e) {
-//        	e.printStackTrace();
-//        }
-//
-//        return bos != null ? bos.toByteArray() : null;
-//    }
 	
 	public void saveNewStudent(Student student) {
 		Image img = student.getImage();
@@ -1730,7 +1710,7 @@ public class Model {
 		}
 	}
 	
-public static String getEmailContent(Part message) throws Exception {
+	public static String getEmailContent(Part message) throws Exception {
 		
 		String result = null;
 	      //check if the content is plain text
@@ -1762,12 +1742,11 @@ public static String getEmailContent(Part message) throws Exception {
 	   }
 
 
-public Image getDefaultStudentImage() {
-	// TODO Auto-generated method stub
-	return new Image("https://i.pinimg.com/originals/e2/69/8e/e2698e465dbf3f13844e896e00f0ea30.jpg");
-//	return null;
-	
-}
+	public Image getDefaultStudentImage() {
+		// TODO Auto-generated method stub
+		return new Image("https://i.pinimg.com/originals/e2/69/8e/e2698e465dbf3f13844e896e00f0ea30.jpg");
+		//	return null;
+	}
 
 
 	public int calculateEcts(ObservableList<Subject> passedSubjects, PO po)
