@@ -4,14 +4,22 @@ import java.util.ArrayList;
 
 import javafx.collections.FXCollections;
 import javafx.geometry.HPos;
+import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import tp.model.statistics.StatisticComponent;
@@ -43,14 +51,28 @@ public class StatisticComponentView extends HBox
 
 	private void buildView()
 	{
+		setPadding(new Insets(5));
+		setSpacing(5);
+		
+		setAlignment(Pos.CENTER_LEFT);
+		
+		setBackground(
+				new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+		
 		basicOptionsGridPane = new GridPane();
-		nameLabel = new Label("Name:");
+		nameLabel = new Label("Name ");
 		nameTextField = new TextField();
-		sourceLabel = new Label("Quelle");
+		sourceLabel = new Label("Quelle ");
 		sourceComboBox = new ComboBox<String>(FXCollections.observableArrayList("Studenten","Anliegen"));
-		colorLabel = new Label("Farbe:");
+		sourceComboBox.setMaxWidth(Double.MAX_VALUE);
+		HBox.setHgrow(sourceComboBox, Priority.ALWAYS);
+		
+		colorLabel = new Label("Farbe ");
 		colorPicker = new ColorPicker();
-		deleteStatisticComponentButton = new Button("Statistik-Objekt löschen");
+		colorPicker.setMaxWidth(Double.MAX_VALUE);
+		HBox.setHgrow(colorPicker, Priority.ALWAYS);
+		
+		deleteStatisticComponentButton = new Button("Löschen");
 		errorLabel = new Label("ERROR");
 		errorLabel.setVisible(false);
 		errorLabel.setTextFill(Color.RED);
@@ -64,8 +86,9 @@ public class StatisticComponentView extends HBox
 		basicOptionsGridPane.add(colorPicker, 1, 2);
 		basicOptionsGridPane.add(errorLabel, 0, 3,2,1);
 		basicOptionsGridPane.add(deleteStatisticComponentButton, 0, 4,2,1);
+		GridPane.setHalignment(deleteStatisticComponentButton, HPos.RIGHT);
 		
-		getChildren().add(basicOptionsGridPane);
+		getChildren().addAll(basicOptionsGridPane, new Separator(Orientation.VERTICAL));
 		getChildren().add(addFilterButton);
 		
 		
@@ -79,21 +102,29 @@ public class StatisticComponentView extends HBox
 			}
 			else
 			{
+				if(errorLabel.getText().equals("Wähle zunächst eine Quelle aus"))
+				{
+					errorLabel.setVisible(false);
+				}
+				
 				getChildren().remove(addFilterButton);
 				FilterView newFilterGridPane = new FilterView();
 				filterGridPanes.add(newFilterGridPane);
-				getChildren().addAll(newFilterGridPane, addFilterButton);
+				getChildren().addAll(newFilterGridPane, new Separator(Orientation.VERTICAL),addFilterButton);
 			}
 
 		});
 		
 		sourceComboBox.setOnAction(event ->{
+			
 			if(!filterGridPanes.isEmpty())
 			{
 				event.consume();
 				errorLabel.setVisible(true);
 				errorLabel.setText("Lösche erst die Filter auf dieser Quelle");
+				return;
 			}
+			
 		});
 		
 		deleteStatisticComponentButton.setOnAction(event -> {
@@ -102,9 +133,10 @@ public class StatisticComponentView extends HBox
 		
 	}
 	
-	public boolean checkStatisticComponentAvailability()
+	public boolean isCreatable()
 	{
 		//TODO kontrolliert ob alle nötigen Felder (richtig) ausgefüllt sind um ein StatisticComponent zu erstellen
+		//Wenn nicht, setzte errorLabel dementsprechend
 		return true;
 	}
 	
@@ -142,7 +174,11 @@ public class StatisticComponentView extends HBox
 		{
 			filterMethodsVBox = new VBox();
 			deleteFilterViewButton = new Button("Filter löschen");
+			GridPane.setHalignment(deleteFilterViewButton, HPos.RIGHT);
+			
 			deleteFilterMethodButton = new Button("-");
+			deleteFilterMethodButton.setVisible(false);
+			
 			if(sourceComboBox.getSelectionModel().getSelectedItem().equals("Studenten"))
 			{
 				filterMethodsComboBox = new ComboBox<String>(FXCollections.observableArrayList(StatisticComponent.STUDENT_FILTER_METHODS));
@@ -150,8 +186,13 @@ public class StatisticComponentView extends HBox
 			else if(sourceComboBox.getSelectionModel().getSelectedItem().equals("Anliegen"))
 			{
 				filterMethodsComboBox = new ComboBox<String>(FXCollections.observableArrayList(StatisticComponent.CONCERN_FILTERS_METHODS));
-			}	
+			}
+			
+			filterMethodsComboBox.setMaxWidth(Double.MAX_VALUE);
+			GridPane.setHgrow(filterMethodsComboBox, Priority.ALWAYS);
+			
 			filterMethodParamGridPane = new GridPane();
+			filterMethodParamGridPane.setVisible(false);
 			errorLabel = new Label("ERROR");
 			errorLabel.setTextFill(Color.RED);
 			errorLabel.setVisible(false);
@@ -172,7 +213,33 @@ public class StatisticComponentView extends HBox
 			
 			//=====================================
 			
-			//TODO Button Anbindung
+			addFilterMethodButton.setOnAction(event -> {
+				deleteFilterMethodButton.setVisible(true);
+				//TODO wenn alle richtig ausgefüllt ein Label damit hinzufügen
+				//TODO Methode aus der Combobox löschen
+				//TODO wenn ComboBox leer ausblenden
+				//TODO wenn ComboBox nicht leer nichts auswählen und MethodGridPane ausblenden
+			});
+			
+			filterMethodsComboBox.setOnAction(event -> {
+				addFilterMethodButton.setVisible(true);
+				
+				//TODO filterMethodParamGridPane einblenden
+				//TODO filterMethodParamGridPane anpassen je möglichen Combobox-Eintrag
+			});
+			
+			deleteFilterViewButton.setOnAction(event -> {
+				//TODO an StatisticComponentView weitergeben
+			});
+			
+			deleteFilterMethodButton.setOnAction(event -> {
+				//TODO wenn keine Filtermethoden mehr da:
+				deleteFilterMethodButton.setVisible(false);
+				
+				//TODO letzte FilterMethod löschen und Methode wieder der ComboBox hinzufügen
+			});
+			
+			
 		}	
 		
 		public StatisticComponent.Filter getFilter()
