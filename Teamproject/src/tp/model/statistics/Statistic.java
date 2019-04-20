@@ -1,13 +1,17 @@
 package tp.model.statistics;
 
+import java.util.List;
+
 public class Statistic {
 	
 	private long id;
-	private String title;
+	private String title; 
+	private List<StatisticValues> values;
 	
-	public Statistic(String title)
+	public Statistic(String title, List<StatisticValues> values)
 	{
 		this.title = title;
+		this.setValues(values);
 	}
 
 	public long getId() {
@@ -24,5 +28,13 @@ public class Statistic {
 
 	public void setTitle(String title) {
 		this.title = title;
+	}
+
+	public List<StatisticValues> getValues() {
+		return values;
+	}
+
+	public void setValues(List<StatisticValues> values) {
+		this.values = values;
 	}
 }

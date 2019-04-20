@@ -1,22 +1,12 @@
 package tp.model.statistics;
 
-import javafx.collections.ObservableMap;
+import javafx.collections.ObservableList;
 
 public class RatioStatistic extends Statistic{
-
-	private ObservableMap<String, Integer> values;
 	
-	public RatioStatistic(String title, ObservableMap<String, Integer> values) {
-		super(title);
-		this.values = values;
-	}
-
-	public ObservableMap<String, Integer> getValues() {
-		return values;
-	}
-
-	public void setValues(ObservableMap<String, Integer> values) {
-		this.values = values;
+	//TODO nessessary???
+	public RatioStatistic(String title, ObservableList<StatisticValues> values) {
+		super(title, values);
 	}
 
 }
