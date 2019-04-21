@@ -14,9 +14,15 @@ public class Concern {
 	private ObservableList<Reminder> reminders;
 	private ObservableList<Student> students;
 	private String notes;
-	
+	/*
+	 * isCompleted = true + closingDate <Date> => Erfolgreich abgeschlossen am <Date>
+	 * isCompleted = false + closingDate <Date> => Abgebrochen am <Date>
+	 * isCompleted = false + closingDate null => Noch am Laufen
+	 * "4. Zustand": Anliegen gelöscht weil Fehleintrag o.Ä., wird dann jedoch aus der DB gelöscht
+	 */
+	private boolean isCompleted;
+	private Date closingDate;
 
-	
 	public Concern(String title, Topic topic)
 	{
 		this.title = title;
@@ -24,7 +30,7 @@ public class Concern {
 	}
 
 	public Concern(long id, String title, ObservableList<Form> files, Topic topic, ObservableList<Appointment> appointments,
-			ObservableList<Reminder> reminders, ObservableList<Student> students, String notes) 
+			ObservableList<Reminder> reminders, ObservableList<Student> students, String notes, Date completionDate, boolean isCompleted) 
 	{
 		this.id = id;
 		this.title= title;
@@ -34,6 +40,8 @@ public class Concern {
 		this.reminders= reminders;
 		this.students= students;
 		this.notes= notes;
+		this.closingDate=completionDate;
+		this.isCompleted = isCompleted;
 	}
 
 	
@@ -102,6 +110,23 @@ public class Concern {
 	public void setNotes(String notes) {
 		this.notes = notes;
 	}
+	
+	public boolean isClosed() {
+		return isCompleted;
+	}
+
+	public Date getCompletionDate() {
+		return closingDate;
+	}
+
+	public void setClosed(boolean isClosed) {
+		this.isCompleted = isClosed;
+	}
+
+	public void setCompletionDate(Date completionDate) {
+		this.closingDate = completionDate;
+	}
+	
 	
 	//For TableView
 	public Date getNextAppointment() {
