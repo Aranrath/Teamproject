@@ -401,6 +401,11 @@ public class Presenter {
 		return model.getLastEmail(student);
 	}
 
+	public void saveEditedForm(Form selectedForm) {
+		model.saveEditedForm(selectedForm);
+		
+	}
+
 
 
 

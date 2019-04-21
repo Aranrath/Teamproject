@@ -2,6 +2,8 @@ package tp.model;
 
 import java.io.File;
 
+import javafx.scene.image.Image;
+
 public class Form {
 	
 	private long id;
@@ -12,9 +14,35 @@ public class Form {
 	{
 		this.file = file;
 		this.name = name;
+		
 	}
 	
-	public long getId() {
+	
+	
+	//================================================private Methods
+	
+	
+    private String getFileExtension(File file) {
+        String extension = "";
+ 
+        try {
+            if (file != null && file.exists()) {
+                String name = file.getName();
+                extension = name.substring(name.lastIndexOf("."));
+            }
+        } catch (Exception e) {
+            extension = "";
+        }
+ 
+        return extension;
+ 
+    }
+    
+    
+  //================================================public Methods
+	//Generic Getter/Setter
+    
+    public long getId() {
 		return id;
 	}
 	
@@ -41,6 +69,37 @@ public class Form {
 	@Override
 	public String toString() {
 		return name;
+	}
+	
+	//---------------------------------------
+    
+	
+	public Image getImage()
+	{
+		try
+		{
+			return new Image(file.toURI().toString());
+		}
+		catch(Exception e)
+		{
+			return null;
+		}
+	}
+	
+	
+	public boolean formIsImage()
+	{
+		String fileExtension = getFileExtension(file);
+		fileExtension.toLowerCase();
+		
+		if(fileExtension.equals("bmp") || fileExtension.equals("gif") || fileExtension.equals("png")|| fileExtension.equals("jpeg")|| fileExtension.equals("jpg"))
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 	
 	
