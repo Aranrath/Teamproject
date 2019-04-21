@@ -8,7 +8,8 @@ public class ContinuousStatistic extends Statistic {
 	// Map(name, Map(date, value))
 	private ObservableMap<String, ObservableMap<Date, Integer>> values;
 
-	public ContinuousStatistic(String title, ObservableMap<String, ObservableMap<Date, Integer>> values) {
+	public ContinuousStatistic(String title, ObservableMap<String, ObservableMap<Date, Integer>> values)
+	{
 		super(title);
 		this.values = values;
 	}

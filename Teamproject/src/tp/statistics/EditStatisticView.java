@@ -24,7 +24,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import tp.Presenter;
 import tp.model.MyTab;
-import tp.model.statistics.Statistic;
 import tp.model.statistics.StatisticComponent;
 
 public class EditStatisticView extends GridPane
@@ -298,11 +297,13 @@ public class EditStatisticView extends GridPane
 			new Thread(() -> {
 
 				//TODO statt Statistik ausgelesene Oberflächenelemente übergeben und Methode dementsprechend anpassen
-				Statistic newStatistic = presenter.calculateAndSaveNewStatistic(new Statistic("hi"));
+//				Statistic newStatistic = presenter.calculateAndSaveNewStatistic(new Statistic("hi"));
 
 				Platform.runLater(()->{
 					presenter.closeThisTab(tab);
-					presenter.openStatisticTab(newStatistic);
+					
+					//TODO hier auch anpassen an Statistik-Klasse
+//					presenter.openStatisticTab(newStatistic);
 				});
 					
 			}).run();

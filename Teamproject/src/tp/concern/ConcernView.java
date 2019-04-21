@@ -2,6 +2,7 @@ package tp.concern;
 
 import java.sql.Date;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 import javafx.collections.FXCollections;
@@ -456,8 +457,13 @@ public class ConcernView extends GridPane {
 	}
 
 	private boolean concernTitleAlreadyExists(String newTitle) {
-		ObservableList<Concern> allConcerns = presenter.getConcerns();
-
+		ArrayList<Concern> allConcerns = new ArrayList<>(presenter.getConcerns());
+		
+		if(concern != null)
+		{
+			allConcerns.remove(concern);
+		}
+		
 		for (Concern c : allConcerns) {
 			if (c.getTitle().equals(newTitle)) {
 				return true;
