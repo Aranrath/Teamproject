@@ -19,6 +19,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.RowConstraints;
 import tp.Presenter;
 import tp.model.Concern;
 
@@ -76,13 +77,19 @@ public class AllConcernsView extends GridPane
 
 
 		//===================================================================
-
-		ColumnConstraints col0 = new ColumnConstraints();
-		col0.setPercentWidth(30);
-		ColumnConstraints col1 = new ColumnConstraints();
-		col1.setPercentWidth(30);
+		//constraints
+		
+		ColumnConstraints col = new ColumnConstraints();
+		col.setPercentWidth(100 / 2);
 		     
-		getColumnConstraints().addAll(col0,col1);
+		getColumnConstraints().addAll(col,col);
+		
+		RowConstraints buttonRow = new RowConstraints();
+		buttonRow.setPercentHeight(20 / 2);
+		RowConstraints tableRow = new RowConstraints();
+		tableRow.setPercentHeight(80);
+		     
+		getRowConstraints().addAll(buttonRow,tableRow,buttonRow);
 		
 		// ======================================================================
 		
