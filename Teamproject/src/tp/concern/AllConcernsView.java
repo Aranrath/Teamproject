@@ -2,6 +2,8 @@ package tp.concern;
 
 import java.sql.Date;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -9,9 +11,10 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
@@ -22,11 +25,14 @@ import tp.model.Concern;
 public class AllConcernsView extends GridPane
 {
 	private Presenter presenter;
+	ObservableList<Concern> allConcerns;
+	ObservableList<Concern> shownConcerns;
 	
 	private TableView<Concern> allConcernsTable;
-	private Label searchBar;
+	private TextField searchTextField;
 	private Button newConcernButton;
 	private Button deleteConcernButton;
+	private CheckBox showClosedConcernsCheckBox;
 	
 	public AllConcernsView(Presenter presenter)
 	{
@@ -40,22 +46,30 @@ public class AllConcernsView extends GridPane
 		setPadding(new Insets(20));
 		setHgap(20);
 		setVgap(20);
+		
+		allConcerns = presenter.getConcerns();
+		shownConcerns = FXCollections.observableArrayList(allConcerns);
+		
 
-		allConcernsTable = new TableView<Concern>(presenter.getConcerns());
-		searchBar = new Label("Hier sollte die SearchBar sein");
+		allConcernsTable = new TableView<Concern>(shownConcerns);
+		searchTextField = new TextField();
+		searchTextField.setPromptText("Suche Anliegen");
 		newConcernButton = new Button("Neues Anliegen hinzufügen");
 		deleteConcernButton = new Button("Anliegen löschen");
-		
+		showClosedConcernsCheckBox = new CheckBox("Zeige abgeschlossene Anliegen");
 		
 		// =====================================================================
 
-		add(searchBar, 0, 0);
-		GridPane.setHalignment(searchBar, HPos.LEFT);
+		add(searchTextField, 0, 0);
+		GridPane.setHalignment(searchTextField, HPos.LEFT);
+		
+		add(newConcernButton, 1, 0);
+		GridPane.setHalignment(newConcernButton, HPos.RIGHT);
 
 		add(allConcernsTable, 0, 1, 2, 1);
 		
-		add(newConcernButton, 1, 2);
-		GridPane.setHalignment(newConcernButton, HPos.RIGHT);
+		add(showClosedConcernsCheckBox, 1, 2);
+		GridPane.setHalignment(showClosedConcernsCheckBox, HPos.RIGHT);
 
 		add(deleteConcernButton, 0, 2);
 		GridPane.setHalignment(deleteConcernButton, HPos.LEFT);
@@ -114,6 +128,15 @@ public class AllConcernsView extends GridPane
 
 		});
 		
+		showClosedConcernsCheckBox.setOnAction(event -> {
+			filterConcerns(searchTextField.getText());
+		});
+		
+		searchTextField.textProperty().addListener((obs, oldText, newText) -> {
+			filterConcerns(newText);
+		});
+		
+		
 		allConcernsTable.setOnMousePressed(new EventHandler<MouseEvent>() {
 		    @Override 
 		    public void handle(MouseEvent event) {
@@ -133,9 +156,71 @@ public class AllConcernsView extends GridPane
 	
 
 
+	private void filterConcerns(String searchTerm) {
+		
+		shownConcerns.clear();
+		
+		if(searchTerm.isEmpty())
+		{
+			
+			if(showClosedConcernsCheckBox.isSelected())
+			{
+				shownConcerns.addAll(allConcerns);
+			}
+			else
+			{
+				for (Concern concern : allConcerns)
+				{
+					if(!concern.isClosed())
+					{
+						shownConcerns.add(concern);
+					}
+					
+				}
+			}
+	
+		}
+		else
+		{
+			
+			String [] searchTerms = searchTerm.toLowerCase().split(" ");
+			
+			if(showClosedConcernsCheckBox.isSelected())
+			{
+				for (Concern concern : allConcerns)
+				{
+					if(ConcernView.containsAll(concern.toString().toLowerCase(), searchTerms))
+					{
+						shownConcerns.add(concern);
+					}
+					
+				}
+			}
+			else
+			{
+				for (Concern concern : allConcerns)
+				{
+					if(!concern.isClosed() && ConcernView.containsAll(concern.toString().toLowerCase(), searchTerms))
+					{
+						shownConcerns.add(concern);
+					}
+					
+				}
+			}
+			
+			
+			
+		}
+		
+		
+		
+	}
+
 	public void updateView() {
-		allConcernsTable.setItems(presenter.getConcerns());
-		//TODO updateSearchbar
+		allConcerns = presenter.getConcerns();
+		shownConcerns = FXCollections.observableArrayList(allConcerns);
+		filterConcerns(searchTextField.getText());
+		
 	}
 
 	

@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Optional;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -12,7 +13,10 @@ import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
@@ -56,6 +60,8 @@ public class ConcernView extends GridPane {
 	private TextField titleTextField;
 	private Label errorLabel;
 	private Button saveButton;
+	private Button closeButton;
+	private Label closeStatusLabel;
 	private HBox topicHBox;
 	private Label topicLabel;
 	private ComboBox<Topic> topicComboBox;
@@ -110,7 +116,8 @@ public class ConcernView extends GridPane {
 
 		
 	}
-
+	
+	//bei bestehendem Concern
 	public ConcernView(Presenter presenter, MyTab tab, Concern concern) {
 		this.presenter = presenter;
 		this.tab = tab;
@@ -136,11 +143,42 @@ public class ConcernView extends GridPane {
 		titleLabel = new Label("Titel:");
 		titleTextField = new TextField("");
 		errorLabel = new Label("");
-		if (concern == null) {
+		if (concern == null)
+		{
 			saveButton = new Button("Anliegen erstellen");
-		} else {
+		}
+		else
+		{
 			saveButton = new Button("Änderungen speichern");
 		}
+
+		
+		closeButton = new Button("Aniegen schließen");
+		closeStatusLabel = new Label();
+		closeStatusLabel.setVisible(false);
+		
+		if(concern == null)
+		{
+			closeButton.setVisible(false);
+		}
+		
+		//Anliegen abgeschlossen
+		else if(concern != null && concern.getClosingDate() != null)
+		{
+			closeButton.setVisible(false);
+			if(concern.isCompleted() == true)
+			{
+				closeStatusLabel.setText("Status: Erledigt (" + concern.getClosingDate() + ")");
+			}
+			else
+			{
+				closeStatusLabel.setText("Status: Abgebrochen (" + concern.getClosingDate() + ")");
+			}
+			
+			closeStatusLabel.setVisible(true);
+		}
+		
+		
 		topicLabel = new Label("Thema:");
 		topicComboBox = new ComboBox<Topic>(presenter.getTopics());
 		newTopicButton = new Button("+");
@@ -235,7 +273,11 @@ public class ConcernView extends GridPane {
 		add(titleTextField, 1, 0, 3, 1);
 		add(errorLabel, 4, 1, 2, 1);
 		GridPane.setHalignment(errorLabel, HPos.LEFT);
-		add(saveButton, 4, 0, 2, 1);
+		add(saveButton, 4, 0);
+		GridPane.setHalignment(saveButton, HPos.LEFT);
+		add(closeButton, 5, 0);
+		GridPane.setHalignment(closeButton, HPos.LEFT);
+		
 		GridPane.setHalignment(saveButton, HPos.LEFT);
 		add(topicLabel, 0, 1);
 		add(topicHBox, 1, 1, 3, 1);
@@ -318,6 +360,7 @@ public class ConcernView extends GridPane {
 
 				int newConcernId = presenter.saveNewConcern(concern);
 				saveButton.setText("Änderungen speichern");
+				closeButton.setVisible(true);
 
 				// Tabbeschriftung anpassen
 				tab.setText(newTitle);
@@ -429,6 +472,49 @@ public class ConcernView extends GridPane {
 			appointmentTableView.getItems().remove(appointmentToDelete);
 			presenter.deleteAppointment(appointmentToDelete);
 		});
+		
+		closeButton.setOnAction(event ->{
+			Alert alert = new Alert(AlertType.CONFIRMATION);
+	        alert.setTitle("Anliegen " +  concern.getTitle() + " abschließen");
+	        alert.setHeaderText("Bitte wählen sie den korrekten Abschluss-Status des Anliegen"
+	        						+"\n" + "INFO: Abgeschlossene Anliegen sind (mit Ausnahme des Fehleintrages) weiterhin einsehbar."
+	        						+"\n" + "ACHTUNG: Das Schließen eines Anliegens ist nicht umkehrbar");
+	 
+	        ButtonType completed = new ButtonType("Erledigt");
+	        ButtonType uncompleted = new ButtonType("Abgebrochen");
+	        ButtonType deletable = new ButtonType("Fehleintrag (Löschen)");
+	 
+	        // Standard ButtonTypes entfernen
+	        alert.getButtonTypes().clear();
+	 
+	        //Eigene ButtonTypes hinzufügen
+	        alert.getButtonTypes().addAll(completed, uncompleted, deletable);
+	 
+	        //Alert anzeigen
+	        Optional<ButtonType> option = alert.showAndWait();
+	 
+	        //Resultat verarbeiten
+	        if (option.get() == completed)
+	        {
+	            concern.isCompleted(true);
+	            concern.setClosingDate(new java.sql.Date(Calendar.getInstance().getTime().getTime()));
+	            presenter.saveEditedConcern(concern);
+	            closeButton.setVisible(false);
+	            
+	        }
+	        else if (option.get() == uncompleted)
+	        {
+	        	concern.setClosingDate(new java.sql.Date(Calendar.getInstance().getTime().getTime()));
+	        	presenter.saveEditedConcern(concern);
+	        	closeButton.setVisible(false);
+	        } 
+	        else if (option.get() == deletable)
+	        {
+	        	presenter.deleteConcern(concern);
+	        	presenter.closeThisTab(tab);
+	        } 
+		});
+		
 
 		topicComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal)->{
 			if(oldVal != null && oldVal.getForms() != null) {

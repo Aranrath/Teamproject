@@ -111,20 +111,28 @@ public class Concern {
 		this.notes = notes;
 	}
 	
-	public boolean isClosed() {
+	public boolean isCompleted() {
 		return isCompleted;
 	}
 
-	public Date getCompletionDate() {
+	public void isCompleted(boolean isCompleted) {
+		this.isCompleted = isCompleted;
+	}
+	
+	public Date getClosingDate() {
 		return closingDate;
 	}
 
-	public void setClosed(boolean isClosed) {
-		this.isCompleted = isClosed;
+	public void setClosingDate(Date closingDate) {
+		this.closingDate = closingDate;
 	}
-
-	public void setCompletionDate(Date completionDate) {
-		this.closingDate = completionDate;
+	
+	public boolean isClosed() {
+		if(closingDate!= null)
+		{
+			return true;
+		}
+		return false;
 	}
 	
 	
@@ -151,7 +159,41 @@ public class Concern {
 
 	@Override
 	public String toString() {
-		return title;
+		
+		String returnString;
+		
+		returnString = title;
+		returnString += " ";
+		returnString += notes;
+		returnString += " ";
+		returnString += topic.getTitle();
+		returnString += " ";
+
+		for(Form f : files)
+		{
+			returnString += f.getName();
+			returnString += " ";
+		}
+		for(Appointment a : appointments)
+		{
+			returnString += a.getRoomNmb();
+			returnString += " ";
+		}
+		for(Reminder r : reminders)
+		{
+			returnString += r.getMessage();
+			returnString += " ";
+		}
+		for(Student s : students)
+		{
+			returnString += s.getFirstName();
+			returnString += " ";
+			returnString += s.getName();
+			returnString += " ";
+		}
+
+		return returnString;
+
 	}
 
 	
