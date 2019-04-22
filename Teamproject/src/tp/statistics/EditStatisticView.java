@@ -254,8 +254,25 @@ public class EditStatisticView extends GridPane
 			}
 			
 			//Fehler mit Statistik-Typen
-			//TODO Kein RadioButton ausgewählt
-			//TODO Typspezifische Einstellungen unvollständig
+			if(toggleGroup.getSelectedToggle() == null) {
+				errorLabel.setText("Kein Statistik-Typ ausgewählt");
+				errorLabel.setTextFill(Color.RED);
+				return;
+			}
+			//Typspezifische Einstellungen unvollständig
+			if(toggleGroup.getSelectedToggle().equals(continuousStatisticRadioButton) &&
+					(continuousStatistictOptionsStartDateDatePicker.getValue()==null || continuousStatistictOptionsEndDateDatePicker.getValue()==null)) {
+				errorLabel.setText("Alle Felder müssen asgefüllt sein");
+				errorLabel.setTextFill(Color.RED);
+				return;
+			}
+			if(toggleGroup.getSelectedToggle().equals(intervalStatisticRadioButton) &&
+					(intervalStatistictOptionsStartDateDatePicker.getValue()==null || intervalStatistictOptionsEndDateDatePicker.getValue()==null ||
+					intervalStatistictOptionsTimeIntervalsInDaysTextField.getText().equals(""))) {
+				errorLabel.setText("Alle Felder müssen asgefüllt sein");
+				errorLabel.setTextFill(Color.RED);
+				return;
+			}
 			
 			//Fehler in den Filtern
 			ArrayList<Node> statisticObjectsList = new ArrayList<Node>(statisticObjectsVBox.getChildren());

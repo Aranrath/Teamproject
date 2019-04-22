@@ -327,8 +327,10 @@ public class Model {
 				ObservableList<Reminder> reminders = getReminders(concernId);
 				ObservableList<Student> students = getStudents(concernId);
 				String notes = rs.getString("notes");	
+				Date closingDate = rs.getDate("done");
+				Boolean isCompleted = rs.getBoolean("complete");
 			
-				result = new Concern (concernId, title, forms, topic, appointments, reminders, students, notes);
+				result = new Concern (concernId, title, forms, topic, appointments, reminders, students, notes, closingDate, isCompleted);
 			}
 	
 		}
@@ -911,7 +913,6 @@ public class Model {
 
 
 	public int saveNewConcern(Concern concern) {
-		
 		int id = 0; 
 		String sql1 = "INSERT INTO concern (title, topic, notes, created) values (?, ?, ?, DATE('now'))";
 		String sql2 = "SELECT last_insert_rowid()";
@@ -946,7 +947,8 @@ public class Model {
 
 	public void saveEditedConcern(Concern concern) {
 		String sql1 = "UPDATE concern SET title = " + concern.getTitle() + ", topic = " + concern.getTopic().getId() +
-				", notes = " + concern.getNotes() + "WHERE id = " + concern.getId();
+				", notes = " + concern.getNotes() + ", done = " + concern.getCompletionDate() + ", complete = " + concern.isClosed() + 
+				"WHERE id = " + concern.getId();
 		String sql2 = "DELETE FROM concern_forms WHERE concern = " + concern.getId();
 		String sql3 = "DELETE FROM concern_student WHERE concern = " + concern.getId();
 		String sql4 = "DELETE FROM appointment WHERE concern = " + concern.getId();
@@ -970,8 +972,8 @@ public class Model {
 		}
 	}
 
-	public void setConcernInvisible(Concern c) {
-		String sql = "UPDATE concern SET done = DATE('now') WHERE id = " + c.getId();
+	public void setConcernCosed(Concern c) {
+		String sql = "UPDATE concern SET done = DATE('now'), complete = " + c.isClosed() + " WHERE id = " + c.getId();
 		try (Connection conn = this.connect();
 				Statement stmt = conn.createStatement())
 			{

@@ -1,25 +1,31 @@
 package tp.model.statistics;
 
 import java.sql.Date;
-import javafx.collections.ObservableMap;
+
+import javafx.collections.ObservableList;
 
 public class ContinuousStatistic extends Statistic {
 
-	// Map(name, Map(date, value))
-	private ObservableMap<String, ObservableMap<Date, Integer>> values;
-
-	public ContinuousStatistic(String title, ObservableMap<String, ObservableMap<Date, Integer>> values)
-	{
-		super(title);
-		this.values = values;
+	private Date startDate;
+	private Date endDate;
+	
+	public ContinuousStatistic(String title, ObservableList<StatisticValues> values) {
+		super(title, values);
 	}
 
-	public ObservableMap<String, ObservableMap<Date, Integer>> getValues() {
-		return values;
+	public Date getStartDate() {
+		return startDate;
 	}
 
-	public void setValues(ObservableMap<String, ObservableMap<Date, Integer>> values) {
-		this.values = values;
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
 	}
 
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
 }
