@@ -268,8 +268,7 @@ public class Presenter {
 
 
 	public ObservableList<Reminder> getDueReminders() {
-		// TODO Auto-generated method stub
-		return null;
+		return model.getDueReminders();
 	}
 
 	public void deleteStatistic(Statistic statisticToDelete) {

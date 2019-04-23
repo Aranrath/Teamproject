@@ -15,7 +15,7 @@ public class RemindersView extends GridPane{
 	
 	//=================================
 	
-	private ListView<Reminder> remindersTableView;
+	private ListView<Reminder> remindersList;
 	private Label remindersLabel;
 	private Button toConcernButton;
 	
@@ -31,7 +31,8 @@ public class RemindersView extends GridPane{
 		setHgap(10);
 		setVgap(10);
 		
-		remindersTableView = new ListView<Reminder>(presenter.getDueReminders());
+		remindersList = new ListView<Reminder>();
+		remindersList.setItems(presenter.getDueReminders());
 		remindersLabel = new Label("Zu bearbeitende Erinnerungen");
 		toConcernButton = new Button("Zum zugehörigen Anliegen");
 		
@@ -39,7 +40,7 @@ public class RemindersView extends GridPane{
 		
 		add(remindersLabel,0,0);
 		GridPane.setHalignment(remindersLabel, HPos.LEFT);
-		add(remindersTableView,0,1);
+		add(remindersList,0,1);
 		add(toConcernButton,0,2);
 		GridPane.setHalignment(toConcernButton, HPos.RIGHT);
 		

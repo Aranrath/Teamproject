@@ -68,8 +68,7 @@ public class Model {
 	//-------------------Calculations--------------------------------------------------------------
 
 	public ArrayList<Appointment> loadNext24hourAppointments() {
-		//TODO Test
-		String sql = "SELECT id FROM appointment WHERE (date == date() AND endTime >= DATE('now')) OR (date == DATE('now', '+1 day') AND startTime<= date())";		
+		String sql = "SELECT * FROM appointment WHERE (date == date() AND endTime >= DATE('now')) OR (date == DATE('now', '+1 day') AND startTime<= date())";		
 		ArrayList<Appointment> result = new ArrayList<Appointment>();
 		try 	(Connection conn = this.connect();
 				Statement stmt = conn.createStatement();
@@ -77,8 +76,17 @@ public class Model {
 		{
 			while(rs.next())
 			{
+				//TODO Date/Time...? in concernView auch komisch angezeigt...
 				int id = rs.getInt("id");
-				result.add(getAppointment(id));
+				Date date = rs.getDate("date");
+				Long startTime = rs.getLong("startTime");
+				Long endTime = rs.getLong("endTime");
+				System.out.println(startTime);
+				System.out.println(endTime);
+				Date now = new Date(System.currentTimeMillis());
+				if(date.equals(now)) {
+					result.add(getAppointment(id));
+				}
 			}
 		}
 		catch (Exception e)
@@ -108,15 +116,18 @@ public class Model {
 	
 	public ObservableList<Reminder> getDueReminders() {
 		ObservableList<Reminder> result = FXCollections.observableArrayList();
-		String sql ="SELECT id FROM reminder WHERE date <= date()";
+		String sql ="SELECT * FROM reminder";
 		try(Connection conn = this.connect();
 				Statement stmt = conn.createStatement();
 				ResultSet rs = stmt.executeQuery(sql))
 		{
 			while(rs.next()) 
 			{
-				int id = rs.getInt("id");
-				result.add(getReminder(id));
+				long id = rs.getInt("id");
+				Date date = rs.getDate("date");
+				if (date.before(new Date(System.currentTimeMillis()))) {
+					result.add(getReminder(id));
+				}
 			}
 			
 		}catch(Exception e) {
@@ -524,7 +535,7 @@ public class Model {
 	}
 
 
-	public Reminder getReminder(int id) {
+	public Reminder getReminder(long id) {
 		Reminder result = new Reminder(null, null);
 		String sql = "SELECT * FROM reminder WHERE id = " + id;
 		try 	(Connection conn = this.connect();
@@ -946,9 +957,9 @@ public class Model {
 
 
 	public void saveEditedConcern(Concern concern) {
-		String sql1 = "UPDATE concern SET title = " + concern.getTitle() + ", topic = " + concern.getTopic().getId() +
-				", notes = " + concern.getNotes() + ", done = " + concern.getClosingDate() + ", complete = " + concern.isClosed() + 
-				"WHERE id = " + concern.getId();
+		String sql1 = "UPDATE concern SET title = '" + concern.getTitle() + "', topic = " + concern.getTopic().getId() +
+				", notes = '" + concern.getNotes() + "', done = " + concern.getClosingDate() + ", complete = " + concern.isClosed() + 
+				" WHERE id = " + concern.getId();
 		String sql2 = "DELETE FROM concern_forms WHERE concern = " + concern.getId();
 		String sql3 = "DELETE FROM concern_student WHERE concern = " + concern.getId();
 		String sql4 = "DELETE FROM appointment WHERE concern = " + concern.getId();
@@ -956,11 +967,11 @@ public class Model {
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement())
 		{
-			stmt.executeQuery(sql1);
-			stmt.executeQuery(sql2);
-			stmt.executeQuery(sql3);
-			stmt.executeQuery(sql4);
-			stmt.executeQuery(sql5);
+			stmt.executeUpdate(sql1);
+			stmt.executeUpdate(sql2);
+			stmt.executeUpdate(sql3);
+			stmt.executeUpdate(sql4);
+			stmt.executeUpdate(sql5);
 			addConcernForms(concern.getId(), concern.getFiles());
 			addConcernStudents(concern.getId(), concern.getStudents());
 			addAppointments(concern.getAppointments());

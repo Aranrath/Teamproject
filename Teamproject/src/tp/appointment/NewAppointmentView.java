@@ -22,6 +22,7 @@ public class NewAppointmentView extends GridPane{
 	private Stage stage;
 	private Presenter presenter;
 	private ConcernView concernView;
+	private Long concernId;
 	
 	//=======================================
 	
@@ -40,10 +41,11 @@ public class NewAppointmentView extends GridPane{
 	private TextField endMinuteTextField;
 	
 
-	public NewAppointmentView(Stage stage, Presenter presenter, ConcernView concernView) {
+	public NewAppointmentView(Stage stage, Presenter presenter, ConcernView concernView, Long concernId) {
 		this.stage = stage;
 		this.presenter = presenter;
 		this.concernView = concernView;
+		this.concernId = concernId;
 		buildView();
 	}
 
@@ -126,6 +128,7 @@ public class NewAppointmentView extends GridPane{
 			String roomNmbr = roomTextField.getText();		
 			
 			Appointment newAppointment = new Appointment(date, startTime, endTime, roomNmbr);
+			newAppointment.setConcernId(concernId);
 			
 			concernView.addAppointment(newAppointment);
 			presenter.saveNewAppointment(newAppointment);
