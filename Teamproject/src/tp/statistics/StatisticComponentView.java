@@ -1,6 +1,7 @@
 package tp.statistics;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -186,14 +187,18 @@ public class StatisticComponentView extends HBox
 		private Label errorLabel;
 		private Button addFilterMethodButton;
 		
+		private List<String> filterMethods;
 		private ComboBox<?> filterMethodParamComboBox;
 		private ComboBox<String> filterMethodParamPrefixComboBox;
+		private DatePicker filterMethodParamDatePicker;
 		private TextField filterMethodParamTextField;
 		
 		public FilterView(StatisticComponentView parentView)
 		{
 			filter = new Filter();
 			this.parentView = parentView;
+			filterMethods = new ArrayList<String>();
+			filter = new Filter();
 			buildFilterGridPane();	
 		}
 		
@@ -231,22 +236,43 @@ public class StatisticComponentView extends HBox
 			
 			//=====================================
 			
-			add(deleteFilterMethodButton,0,0);
+			add(deleteFilterMethodButton,1,0);
 			GridPane.setHalignment(deleteFilterMethodButton, HPos.RIGHT);
 			GridPane.setValignment(deleteFilterMethodButton, VPos.BOTTOM);
-			add(filterMethodsVBox,1,0);
-			add(filterMethodsComboBox,0,1);
-			add(addFilterMethodButton,1,1);
-			add(filterMethodParamHBox,0,2,2,1);
-			add(deleteFilterViewButton, 0,3);
-			add(errorLabel,1,3);
+			add(filterMethodsVBox,0,0);
+			add(filterMethodsComboBox,0,1,2,1);
+			add(addFilterMethodButton,2,1);
+			add(filterMethodParamHBox,0,2,3,1);
+			add(deleteFilterViewButton, 1,3);
+			add(errorLabel,0,3);
 			
 			//=====================================
 			
 			addFilterMethodButton.setOnAction(event -> {
+				//wenn alle richtig ausgefüllt ein Label damit hinzufügen + bei Filter hinzufügen
+				errorLabel.setVisible(false);
+				String filterMethodName = filterMethodsComboBox.getSelectionModel().getSelectedItem();
+				if(!filterMethodParamComboBox.getSelectionModel().isEmpty()){
+					filterMethods.add(filterMethodName);
+					Label filterLabel = new Label(filterMethodName + ": " + filterMethodParamComboBox.getSelectionModel().getSelectedItem()); 
+					filterMethodsVBox.getChildren().add(filterLabel);
+					filter.addFilter(filterMethodName, filterMethodParamComboBox.getSelectionModel().getSelectedItem());
+				}else if(!filterMethodParamPrefixComboBox.getSelectionModel().isEmpty() && !filterMethodParamTextField.getText().equals("")) {
+					filterMethods.add(filterMethodName);
+					Label filterLabel = new Label(filterMethodName + " " + filterMethodParamPrefixComboBox.getSelectionModel().getSelectedItem() + " " + filterMethodParamTextField.getText());
+					filterMethodsVBox.getChildren().add(filterLabel);
+					filter.addFilter(filterMethodName, filterMethodParamPrefixComboBox.getSelectionModel().getSelectedItem(), filterMethodParamTextField.getText());
+				}else if(!filterMethodParamPrefixComboBox.getSelectionModel().isEmpty() && (filterMethodParamDatePicker.getValue()!=null)) {
+					filterMethods.add(filterMethodName);
+					Label filterLabel = new Label(filterMethodName + " " + filterMethodParamPrefixComboBox.getSelectionModel().getSelectedItem() + " " + filterMethodParamDatePicker.getValue());
+					filterMethodsVBox.getChildren().add(filterLabel);
+					filter.addFilter(filterMethodName, filterMethodParamPrefixComboBox.getSelectionModel().getSelectedItem(), filterMethodParamDatePicker.getValue());
+				}else {
+					errorLabel.setVisible(true);
+					errorLabel.setText("Es gibt unvollständige Filter");
+					return;
+				}
 				deleteFilterMethodButton.setVisible(true);
-				//TODO wenn alle richtig ausgefüllt ein Label damit hinzufügen + bei Filter hinzufügen
-				
 				//Methode aus der Combobox löschen
 				//wenn ComboBox leer ausblenden
 				//wenn ComboBox nicht leer nichts auswählen und MethodGridPane ausblenden
@@ -273,7 +299,10 @@ public class StatisticComponentView extends HBox
 			filterMethodsComboBox.setOnAction(event -> {
 				addFilterMethodButton.setVisible(true);
 				//filterMethodParamGridPane anpassen je möglichen Combobox-Eintrag
-				String method = filterMethodsComboBox.getSelectionModel().getSelectedItem();filterMethodParamPrefixComboBox = new ComboBox<String>(FXCollections.observableArrayList("<",">", "="));
+				String method = filterMethodsComboBox.getSelectionModel().getSelectedItem();
+				filterMethodParamComboBox = new ComboBox<Object>();
+				filterMethodParamDatePicker = new DatePicker();
+				filterMethodParamPrefixComboBox = new ComboBox<String>(FXCollections.observableArrayList("<", ">", "="));
 				filterMethodParamTextField = new TextField();
 				// force the field to be numeric only
 				filterMethodParamTextField.textProperty().addListener(new ChangeListener<String>() {
@@ -305,8 +334,9 @@ public class StatisticComponentView extends HBox
 						filterMethodParamHBox.getChildren().add(filterMethodParamComboBox);
 						break;
 					case "Letzter Kontakt":
+						filterMethodParamPrefixComboBox = new ComboBox<String>(FXCollections.observableArrayList("vor", "nach", "am"));
 						filterMethodParamHBox.getChildren().add(filterMethodParamPrefixComboBox);
-						filterMethodParamHBox.getChildren().add(new DatePicker());
+						filterMethodParamHBox.getChildren().add(filterMethodParamDatePicker);
 						break;
 					case "Anzahl der Termine":
 					case "Gesamtlänge der Termine in h":
@@ -330,13 +360,21 @@ public class StatisticComponentView extends HBox
 			
 			
 			deleteFilterMethodButton.setOnAction(event -> {
-				//TODO letzte FilterMethod löschen und Methode wieder der ComboBox hinzufügen
+				//Methode wieder der ComboBox hinzufügen und letzte FilterMethod löschen
+				int filterMethodSize = filterMethods.size();
 				if (sourceComboBox.getValue().equals("Studenten")) {
-					
+					studentFilters.add(filterMethods.get(filterMethodSize-1));
 				}else if (sourceComboBox.getValue().equals("Anliegen")) {
-					
+					concernFilters.add(filterMethods.get(filterMethodSize-1));
 				}
-				//TODO wenn keine Filtermethoden mehr da, deleteButton ausblenden
+				filter.deleteFilter(filterMethods.get(filterMethodSize-1));
+				filterMethods.remove(filterMethodSize-1);
+				filterMethodsVBox.getChildren().remove(filterMethodSize-1);
+				
+				//wenn keine Filtermethoden mehr da, deleteButton ausblenden
+				if (filterMethodSize == 1) {
+					deleteFilterMethodButton.setVisible(false);
+				}
 			});
 			
 			

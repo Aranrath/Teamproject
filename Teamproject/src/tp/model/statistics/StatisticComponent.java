@@ -1,7 +1,9 @@
 package tp.model.statistics;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.paint.Color;
@@ -51,11 +53,18 @@ public class StatisticComponent
 		
 		//========================================
 		
+		public Filter() {
+			filters = new HashMap<String, Object[]>();
+		}
+		
 		public void addFilter(String name, Object...objects)
 		{
 			filters.put(name, objects);
 		}
 
+		public void deleteFilter(String name) {
+			filters.remove(name);
+		}
 	}
 	
 }
