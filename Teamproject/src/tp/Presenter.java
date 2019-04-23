@@ -26,6 +26,7 @@ import tp.model.Student;
 import tp.model.Subject;
 import tp.model.Topic;
 import tp.model.statistics.Statistic;
+import tp.model.statistics.StatisticComponent;
 
 public class Presenter {
 	private Model model;
@@ -276,10 +277,6 @@ public class Presenter {
 		
 	}
 
-	public Statistic calculateAndSaveNewStatistic(Statistic newStatistic) {
-		return model.calculateAndSaveNewStatistic(newStatistic);
-	}
-
 	public void showEditUserDataView(Options options) {
 		mainView.showEditUserDataView(options);
 		
@@ -403,6 +400,21 @@ public class Presenter {
 	public void saveEditedForm(Form selectedForm) {
 		model.saveEditedForm(selectedForm);
 		
+	}
+
+	public Statistic calculateAndSaveNewRatioStatistic(
+			ArrayList<StatisticComponent> statisticComponentsList) {
+		return model.calculateAndSaveNewRatioStatistic(statisticComponentsList);
+	}
+
+	public Statistic calculateAndSaveNewContinuousStatistic(
+			ArrayList<StatisticComponent> statisticComponentsList, Date startDate, Date endDate) {
+		return model.calculateAndSaveNewContinuousStatistic(statisticComponentsList, startDate, endDate);
+	}
+
+	public Statistic calculateAndSaveNewIntervalStatistic(
+			ArrayList<StatisticComponent> statisticComponentsList, Date startDate, Date endDate, int step) {
+		return model.calculateAndSaveNewIntervalStatistic(statisticComponentsList, startDate, endDate, step);
 	}
 
 

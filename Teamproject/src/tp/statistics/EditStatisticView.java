@@ -1,8 +1,11 @@
 package tp.statistics;
 
+import java.sql.Date;
 import java.util.ArrayList;
 
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -24,6 +27,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import tp.Presenter;
 import tp.model.MyTab;
+import tp.model.statistics.Statistic;
 import tp.model.statistics.StatisticComponent;
 
 public class EditStatisticView extends GridPane
@@ -166,6 +170,16 @@ public class EditStatisticView extends GridPane
 		//für Zeitabstände
 		intervalStatistictOptionsTimeIntervalsInDaysLabel = new Label("Zeitabstände (In Tagen)");
 		intervalStatistictOptionsTimeIntervalsInDaysTextField = new TextField();
+		// force the field to be numeric only
+		intervalStatistictOptionsTimeIntervalsInDaysTextField.textProperty().addListener(new ChangeListener<String>() {
+		    @Override
+		    public void changed(ObservableValue<? extends String> observable, String oldValue, 
+		        String newValue) {
+		        if (!newValue.matches("\\d*")) {
+		        	intervalStatistictOptionsTimeIntervalsInDaysTextField.setText(newValue.replaceAll("[^\\d]", ""));
+		        }
+		    }
+		});
 		
 		//Zusammenfügen
 		intervalStatisticOptionsGridPane.add(new Label("Optionen Intervall-Statistik:"), 0, 0);
@@ -297,30 +311,51 @@ public class EditStatisticView extends GridPane
 				
 			//StatisticComponents
 			ArrayList<StatisticComponent> statisticComponentsList = new ArrayList<>();
-				
 			for(Node n : statisticObjectsList)
 			{
 				statisticComponentsList.add(((StatisticComponentView) n).getStatisticComponent());
 			}
-			
-			//TODO defaultFields auslesen
-			//TODO typespecific Fields auslesen je nachdem welcher Radiobutton ausgewählt ist
+			String statisticType;
+			Date startDate;
+			Date endDate;
+			int step;
+			//typespecific Fields auslesen je nachdem welcher Radiobutton ausgewählt ist
+			if(toggleGroup.getSelectedToggle().equals(ratioStatisticRadioButton)) {
+				statisticType = "ratio";
+				startDate = null;
+				endDate = null;
+				step = 0;
+			}else if(toggleGroup.getSelectedToggle().equals(continuousStatisticRadioButton)) {
+				statisticType = "continuous";
+				startDate = Date.valueOf(continuousStatistictOptionsStartDateDatePicker.getValue());
+				endDate = Date.valueOf(continuousStatistictOptionsEndDateDatePicker.getValue());
+				step = 0;
+			}else{
+				statisticType = "interval";
+				startDate = Date.valueOf(intervalStatistictOptionsStartDateDatePicker.getValue());
+				endDate = Date.valueOf(intervalStatistictOptionsEndDateDatePicker.getValue());
+				step = Integer.parseInt(intervalStatistictOptionsTimeIntervalsInDaysTextField.getText());
+			}
 			
 			
 			//===================================================Berechnung der Statistik
-				
-			//TODO Anzeige auf Oberfläche: wird berechnet
+			
+			errorLabel.setText("Statistic wird Berechnet");
+			errorLabel.setTextFill(Color.BLUE);
 				
 			new Thread(() -> {
-
-				//TODO statt Statistik ausgelesene Oberflächenelemente übergeben und Methode dementsprechend anpassen
-//				Statistic newStatistic = presenter.calculateAndSaveNewStatistic(new Statistic("hi"));
+				Statistic newStatistic;
+				if (statisticType.equals("ratio")) {
+					newStatistic = presenter.calculateAndSaveNewRatioStatistic(statisticComponentsList);
+				}else if(statisticType.equals("continuous")) {
+					newStatistic = presenter.calculateAndSaveNewContinuousStatistic(statisticComponentsList, startDate, endDate);
+				}else{
+					newStatistic = presenter.calculateAndSaveNewIntervalStatistic(statisticComponentsList, startDate, endDate, step);
+				}
 
 				Platform.runLater(()->{
 					presenter.closeThisTab(tab);
-					
-					//TODO hier auch anpassen an Statistik-Klasse
-//					presenter.openStatisticTab(newStatistic);
+					presenter.openStatisticTab(newStatistic);
 				});
 					
 			}).run();

@@ -65,6 +65,10 @@ public class StatisticComponent
 		public void deleteFilter(String name) {
 			filters.remove(name);
 		}
+		
+		public Map<String, Object[]> getFilters() {
+			return filters;
+		}
 	}
 	
 }

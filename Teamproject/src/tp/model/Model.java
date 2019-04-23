@@ -36,6 +36,7 @@ import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import tp.model.statistics.Statistic;
+import tp.model.statistics.StatisticComponent;
 
 public class Model {
 
@@ -192,6 +193,22 @@ public class Model {
 	//------------------File: Loader&Saver + Getter/Setter---------------------------------------------------------------
 	
 	
+	public int calculateEcts(ObservableList<Subject> passedSubjects, PO po)
+	{
+		int ects = 0;
+		
+		for(Subject sub : passedSubjects)
+		{
+			if(po.getMandatorySubjects().contains(sub) || po.getOptionalSubjects().contains(sub))
+			{
+				ects += sub.getEcts();
+			}
+		}  
+		
+		return ects;
+	}
+
+
 	public ArrayList<String> getSessionTabsIds() {
 		if (sessionTabsIds == null)
 		{
@@ -1091,6 +1108,12 @@ public class Model {
     }
 
 
+	public void saveEditedForm(Form selectedForm) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
 	public void deleteForm(Form f) 
 	{
 		String sql = "DELETE FROM form WHERE name = "+ f.getId();
@@ -1283,20 +1306,35 @@ public class Model {
 		}
 	}
 
-
-	public Statistic calculateAndSaveNewStatistic(Statistic statistic) {
-		
+	public Statistic calculateAndSaveNewRatioStatistic(ArrayList<StatisticComponent> statisticComponentsList) {
+		// TODO Auto-generated method stub
 		//TODO Gibt nun neue Statistic mit id zurück
-		boolean successful;
-		try
-		{
-			//TODO Save Statistic
-			successful = true;
-		}
-		catch(Exception e)
-		{
-			successful = false;
-		}
+//				boolean successful;
+//				try
+//				{
+//					//TODO Save Statistic
+//					successful = true;
+//				}
+//				catch(Exception e)
+//				{
+//					successful = false;
+//				}
+//				return null;
+		
+		return null;
+	}
+
+
+	public Statistic calculateAndSaveNewContinuousStatistic(ArrayList<StatisticComponent> statisticComponentsList,
+			Date startDate, Date endDate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	public Statistic calculateAndSaveNewIntervalStatistic(ArrayList<StatisticComponent> statisticComponentsList,
+			Date startDate, Date endDate, int step) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -1445,6 +1483,13 @@ public class Model {
 			}
 		return false;
 	}
+
+	public Image getDefaultStudentImage() {
+		// TODO Auto-generated method stub
+		return new Image("https://i.pinimg.com/originals/e2/69/8e/e2698e465dbf3f13844e896e00f0ea30.jpg");
+		//	return null;
+	}
+
 
 	public void setStudentInvisible(Student s) {
 		String sql = "UPDATE student SET invisible = true WHERE matrNr = " + s.getMtrNr();
@@ -1753,33 +1798,4 @@ public class Model {
 	      return result;
 
 	   }
-
-
-	public Image getDefaultStudentImage() {
-		// TODO Auto-generated method stub
-		return new Image("https://i.pinimg.com/originals/e2/69/8e/e2698e465dbf3f13844e896e00f0ea30.jpg");
-		//	return null;
-	}
-
-
-	public int calculateEcts(ObservableList<Subject> passedSubjects, PO po)
-	{
-		int ects = 0;
-		
-		for(Subject sub : passedSubjects)
-		{
-			if(po.getMandatorySubjects().contains(sub) || po.getOptionalSubjects().contains(sub))
-			{
-				ects += sub.getEcts();
-			}
-		}  
-		
-		return ects;
-	}
-
-
-	public void saveEditedForm(Form selectedForm) {
-		// TODO Auto-generated method stub
-		
-	}
 }
