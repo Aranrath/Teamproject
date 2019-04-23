@@ -1,8 +1,9 @@
 package tp.statistics;
 
 import java.util.ArrayList;
-import java.util.List;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
@@ -13,6 +14,7 @@ import javafx.geometry.VPos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
@@ -24,11 +26,15 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import tp.Presenter;
+import tp.model.PO;
+import tp.model.Topic;
 import tp.model.statistics.StatisticComponent;
 import tp.model.statistics.StatisticComponent.Filter;
 
 public class StatisticComponentView extends HBox
 {
+	private Presenter presenter;
 	private ArrayList<FilterView> filterGridPanes;
 	private EditStatisticView editStatisticView;
 	
@@ -45,9 +51,10 @@ public class StatisticComponentView extends HBox
 	private Button deleteStatisticComponentButton;
 	private Button addFilterButton;
 	
-	public StatisticComponentView(EditStatisticView editStatisticView)
+	public StatisticComponentView(EditStatisticView editStatisticView, Presenter presenter)
 	{
 		this.editStatisticView = editStatisticView;
+		this.presenter = presenter;
 		filterGridPanes = new ArrayList<FilterView>();
 		buildView();
 	}
@@ -114,22 +121,13 @@ public class StatisticComponentView extends HBox
 				FilterView newFilterGridPane = new FilterView(this);
 				filterGridPanes.add(newFilterGridPane);
 				getChildren().addAll(newFilterGridPane, new Separator(Orientation.VERTICAL),addFilterButton);
+				if(filterGridPanes.size()==1) {
+					sourceComboBox.setDisable(true);
+				}
 			}
 
 		});
 		
-		sourceComboBox.setOnAction(event ->{
-			
-			if(!filterGridPanes.isEmpty())
-			{
-				//TODO BUUGS
-				event.consume();
-				errorLabel.setVisible(true);
-				errorLabel.setText("Lösche erst die Filter auf dieser Quelle");
-				return;
-			}
-			
-		});
 		
 		deleteStatisticComponentButton.setOnAction(event -> {
 			editStatisticView.deleteStatisticComponent(this);
@@ -141,6 +139,9 @@ public class StatisticComponentView extends HBox
 		filterGridPanes.remove(filterView);
 		getChildren().remove(getChildren().indexOf(filterView) + 1); 	//delete seperator
 		getChildren().remove(filterView);
+		if(filterGridPanes.size()==0) {
+			sourceComboBox.setDisable(false);
+		}
 	}
 	
 	public boolean isCreatable()
@@ -181,9 +182,13 @@ public class StatisticComponentView extends HBox
 		private Button deleteFilterMethodButton;
 		private Button deleteFilterViewButton;
 		private ComboBox<String> filterMethodsComboBox;
-		private GridPane filterMethodParamGridPane;
+		private HBox filterMethodParamHBox;
 		private Label errorLabel;
 		private Button addFilterMethodButton;
+		
+		private ComboBox<?> filterMethodParamComboBox;
+		private ComboBox<String> filterMethodParamPrefixComboBox;
+		private TextField filterMethodParamTextField;
 		
 		public FilterView(StatisticComponentView parentView)
 		{
@@ -216,8 +221,8 @@ public class StatisticComponentView extends HBox
 			filterMethodsComboBox.setMaxWidth(Double.MAX_VALUE);
 			GridPane.setHgrow(filterMethodsComboBox, Priority.ALWAYS);
 			
-			filterMethodParamGridPane = new GridPane();
-			filterMethodParamGridPane.setVisible(false);
+			filterMethodParamHBox = new HBox();
+			filterMethodParamHBox.setVisible(false);
 			errorLabel = new Label("ERROR");
 			errorLabel.setTextFill(Color.RED);
 			errorLabel.setVisible(false);
@@ -232,7 +237,7 @@ public class StatisticComponentView extends HBox
 			add(filterMethodsVBox,1,0);
 			add(filterMethodsComboBox,0,1);
 			add(addFilterMethodButton,1,1);
-			add(filterMethodParamGridPane,0,2,2,1);
+			add(filterMethodParamHBox,0,2,2,1);
 			add(deleteFilterViewButton, 0,3);
 			add(errorLabel,1,3);
 			
@@ -248,33 +253,81 @@ public class StatisticComponentView extends HBox
 				if (sourceComboBox.getValue().equals("Studenten")) {
 					studentFilters.remove(filterMethodsComboBox.getValue());
 					if(studentFilters.isEmpty()) {
-						sourceComboBox.setVisible(false);
+						filterMethodsComboBox.setVisible(false);
 					}
-					sourceComboBox.getSelectionModel().clearSelection();
-					filterMethodParamGridPane.setVisible(false);
+					filterMethodsComboBox.getSelectionModel().clearSelection();
+					filterMethodParamHBox.setVisible(false);
 					
 				}else if (sourceComboBox.getValue().equals("Anliegen")) {
 					concernFilters.remove(filterMethodsComboBox.getValue());
 					if(concernFilters.isEmpty()) {
-						sourceComboBox.setVisible(false);
+						filterMethodsComboBox.setVisible(false);
 					}
-					sourceComboBox.getSelectionModel().clearSelection();
-					filterMethodParamGridPane.setVisible(false);
+					filterMethodsComboBox.getSelectionModel().clearSelection();
+					filterMethodParamHBox.setVisible(false);
 					
 				}
 			});
 			
+			
 			filterMethodsComboBox.setOnAction(event -> {
 				addFilterMethodButton.setVisible(true);
-				
+				//filterMethodParamGridPane anpassen je möglichen Combobox-Eintrag
+				String method = filterMethodsComboBox.getSelectionModel().getSelectedItem();filterMethodParamPrefixComboBox = new ComboBox<String>(FXCollections.observableArrayList("<",">", "="));
+				filterMethodParamTextField = new TextField();
+				// force the field to be numeric only
+				filterMethodParamTextField.textProperty().addListener(new ChangeListener<String>() {
+				    @Override
+				    public void changed(ObservableValue<? extends String> observable, String oldValue, 
+				        String newValue) {
+				        if (!newValue.matches("\\d*")) {
+				            filterMethodParamTextField.setText(newValue.replaceAll("[^\\d]", ""));
+				        }
+				    }
+				});
+				filterMethodParamHBox.getChildren().clear();
+				if(method!=null) {
+					switch (method) {
+					case "Thema":
+						filterMethodParamComboBox = new ComboBox<Topic>(presenter.getTopics());
+						filterMethodParamHBox.getChildren().add(filterMethodParamComboBox);
+						break;
+					case "Status":
+						filterMethodParamComboBox = new ComboBox<String>(FXCollections.observableArrayList("Offen", "Beendet", "Abgebrochen"));
+						filterMethodParamHBox.getChildren().add(filterMethodParamComboBox);
+						break;
+					case "Geschlecht":
+						filterMethodParamComboBox = new ComboBox<String>(FXCollections.observableArrayList("unbekannt", "männlich", "weiblich", "divers"));
+						filterMethodParamHBox.getChildren().add(filterMethodParamComboBox);
+						break;
+					case "PO":
+						filterMethodParamComboBox = new ComboBox<PO>(presenter.getPOs());
+						filterMethodParamHBox.getChildren().add(filterMethodParamComboBox);
+						break;
+					case "Letzter Kontakt":
+						filterMethodParamHBox.getChildren().add(filterMethodParamPrefixComboBox);
+						filterMethodParamHBox.getChildren().add(new DatePicker());
+						break;
+					case "Anzahl der Termine":
+					case "Gesamtlänge der Termine in h":
+					case "Anzahl der Studenten":
+					case "ECTS":
+					case "Betreuungszeit":
+					case "Semester":
+					case "Anzahl zugehöriger Anliegen":
+						filterMethodParamHBox.getChildren().add(filterMethodParamPrefixComboBox);
+						filterMethodParamHBox.getChildren().add(filterMethodParamTextField);
+					}
+				}
 				//filterMethodParamGridPane einblenden
-				filterMethodParamGridPane.setVisible(true);
-				//TODO filterMethodParamGridPane anpassen je möglichen Combobox-Eintrag
+				filterMethodParamHBox.setVisible(true);
 			});
+			
 			
 			deleteFilterViewButton.setOnAction(event -> {
 				parentView.deleteFilter(this);
 			});
+			
 			
 			deleteFilterMethodButton.setOnAction(event -> {
 				//TODO letzte FilterMethod löschen und Methode wieder der ComboBox hinzufügen
@@ -291,7 +344,6 @@ public class StatisticComponentView extends HBox
 		
 		public Filter getFilter()
 		{
-			//TODO is filter geupdated??
 			return filter;
 		}
 	}

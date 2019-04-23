@@ -9,7 +9,7 @@ import javafx.scene.paint.Color;
 public class StatisticComponent
 {
 	public static final ObservableList<String> STUDENT_FILTER_METHODS = FXCollections.observableArrayList("Geschlecht", "ECTS", "Betreuungszeit","Semester", "Anzahl zugehöriger Anliegen", "PO", "Letzter Kontakt");
-	public static final ObservableList<String> CONCERN_FILTERS_METHODS = FXCollections.observableArrayList("Thema", "Anzahl der Termine", "Gesamtlänge der Termine", "Status", "Student", "Anzahl der Studenten");
+	public static final ObservableList<String> CONCERN_FILTERS_METHODS = FXCollections.observableArrayList("Thema", "Anzahl der Termine", "Gesamtlänge der Termine in h", "Status", "Anzahl der Studenten");
 
 	//=====================================================
 	

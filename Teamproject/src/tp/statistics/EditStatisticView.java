@@ -329,7 +329,7 @@ public class EditStatisticView extends GridPane
 		
 		addStatisticObjectButton.setOnAction(event -> {
 			statisticObjectsVBox.getChildren().remove(addStatisticObjectButton);
-			statisticObjectsVBox.getChildren().addAll(new StatisticComponentView(this));
+			statisticObjectsVBox.getChildren().addAll(new StatisticComponentView(this, presenter));
 			statisticObjectsVBox.getChildren().add(addStatisticObjectButton);
 		});
 		
