@@ -20,8 +20,6 @@ public class Main extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		try {
-		
-			System.out.println("send gelb");
 			
 			generateMVP();
 			
