@@ -656,6 +656,8 @@ public class ConcernView extends GridPane {
 	
 	public void addFilesToConcern(ObservableList<Form> files)
 	{
+		
+		//TODO Epischer, gelber Error-Fail mit dem Topic dem Forms geadded werden irgendwoher
 		Topic selectedTopic = topicComboBox.getSelectionModel().getSelectedItem();
 		if(selectedTopic !=  null)
 		{
