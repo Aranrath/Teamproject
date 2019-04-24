@@ -33,7 +33,7 @@ public class Topic {
 	public long getId() {
 		return id;
 	}
-	public void setLinkedForms(ObservableList<Form> forms) {
+	public void setForms(ObservableList<Form> forms) {
 		this.forms = forms;
 	}
 	public void setId(long id) {

@@ -167,7 +167,7 @@ public class EditTopicView extends GridPane {
 				ObservableList<Form> selectedForms = allFormsListView.getCheckModel().getCheckedItems();
 				//UNTERSCHIED: speicher das geänderte Thema
 				topic.setTitle(titleTextField.getText());
-				topic.setLinkedForms(selectedForms);
+				topic.setForms(selectedForms);
 				presenter.saveEditedTopic(topic);
 				stage.close();
 			}

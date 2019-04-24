@@ -80,12 +80,15 @@ public class FormsView extends GridPane
 	
 
 	//Version 2: View gestartet aus einem Concern heraus
-	public FormsView(Presenter presenter, Stage stage, ConcernView concernView, ObservableList<Form> filesAlreadyInConcern)
+	public FormsView(Presenter presenter, Stage stage, ConcernView concernView, ObservableList<Form> filesAlreadyInConcern, ObservableList<Form> topicRelatedFiles)
 	{
-		this(presenter);
+		this.presenter = presenter;
 		this.stage = stage;
 		this.concernView = concernView;
-		buildVersion2GUI(filesAlreadyInConcern);
+		
+		
+		buildView();
+		buildVersion2GUI(filesAlreadyInConcern, topicRelatedFiles);
 	}
 	
 	//===============================================================
@@ -234,34 +237,6 @@ public class FormsView extends GridPane
 			filterForms(newText);
 		});
 		
-		
-		//========================================================================
-		//Column Constraints
-		
-		ColumnConstraints column1 = new ColumnConstraints();
-		column1.setPercentWidth(35/ 2);
-		getColumnConstraints().add(column1);
-		getColumnConstraints().add(column1);
-
-		ColumnConstraints column2 = new ColumnConstraints();
-		column2.setPercentWidth(65 / 2);
-		getColumnConstraints().add(column2);
-		getColumnConstraints().add(column2);
-		
-		//--------------------------------------------------
-		//Row Constraints
-		
-		RowConstraints buttonRow = new RowConstraints();
-		buttonRow.setPercentHeight(15/2);
-		
-		RowConstraints formListRow = new RowConstraints();
-		formListRow.setPercentHeight(85/2);
-		
-		
-		getRowConstraints().add(buttonRow);
-		getRowConstraints().add(formListRow);
-		getRowConstraints().add(formListRow);
-		getRowConstraints().add(buttonRow);
 
 	}
 
@@ -281,8 +256,35 @@ public class FormsView extends GridPane
 		GridPane.setHalignment(noShowableFileFormatLabel, HPos.CENTER);
 		GridPane.setValignment(noShowableFileFormatLabel, VPos.CENTER);
 		
-		//------------------------------------------------------------------------------------
+		//========================================================================
+		//Column Constraints
+				
+		ColumnConstraints column1 = new ColumnConstraints();
+		column1.setPercentWidth(35/ 2);
+		getColumnConstraints().add(column1);
+		getColumnConstraints().add(column1);
+
+		ColumnConstraints column2 = new ColumnConstraints();
+		column2.setPercentWidth(65 / 2);
+		getColumnConstraints().add(column2);
+		getColumnConstraints().add(column2);
 		
+		//--------------------------------------------------
+		//Row Constraints
+				
+		RowConstraints buttonRow = new RowConstraints();
+		buttonRow.setPercentHeight(15/2);
+				
+		RowConstraints formListRow = new RowConstraints();
+		formListRow.setPercentHeight(85/2);
+				
+				
+		getRowConstraints().add(buttonRow);
+		getRowConstraints().add(formListRow);
+		getRowConstraints().add(formListRow);
+		getRowConstraints().add(buttonRow);
+				
+		//========================================================================
 		
 		formListView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Form>() {
 		    @Override
@@ -306,17 +308,43 @@ public class FormsView extends GridPane
 		
 	}
 	
-	private void buildVersion2GUI(ObservableList<Form> filesAlreadyInConcern)
+	private void buildVersion2GUI(ObservableList<Form> filesAlreadyInConcern, ObservableList<Form> topicRelatedFiles)
 	{
-		
 		selectedFormsLabel = new Label("Ausgewählte Dateien");
 		selectedFormsListView = new ListView<Form>();
 		toRightButton = new Button(">");
 		toLeftButton = new Button("<");
 		selectedFormsToConcernButton = new Button("Ausgewählte Dateien zum Concern hinzufügen");
 		
-		shownForms.removeAll(filesAlreadyInConcern);
-		allForms.removeAll(filesAlreadyInConcern);
+		
+		//Funktioniert so nicht, Dateien in den jeweiligen nicht die gleichen Objekte sind -> Vergleich über id!
+		//allForms.removeAll(filesAlreadyInConcern);
+		//shownForms.removeAll(filesAlreadyInConcern);
+		for(Form fileAlreadyInConcern : filesAlreadyInConcern)
+		{
+			//for(Form shownForm : shownForms)
+			for(int i = 0; i<shownForms.size();i++)
+			{
+				if(fileAlreadyInConcern.getId() == shownForms.get(i).getId())
+				{
+					shownForms.remove(shownForms.get(i));
+				}
+			}
+			
+			//for(Form form : allForms)
+			for(int i = 0; i<allForms.size();i++)
+			{
+				if(fileAlreadyInConcern.getId() == allForms.get(i).getId())
+				{
+					allForms.remove(allForms.get(i));
+				}
+			}
+		}
+
+		
+		//Themenbezogene Dateien ausschließen
+		filesAlreadyInConcern.removeAll(topicRelatedFiles);
+
 		selectedFormsListView.getItems().addAll(filesAlreadyInConcern);
 		
 		//------------------------------------------------------------------------------------
@@ -332,12 +360,15 @@ public class FormsView extends GridPane
 		VBox leftRightButtonBox = new VBox();
 		leftRightButtonBox.getChildren().addAll(toLeftButton, toRightButton);
 		leftRightButtonBox.setSpacing(10);
-		toRightButton.setMaxWidth(Double.MAX_VALUE);
-		toLeftButton.setMaxWidth(Double.MAX_VALUE);
+		toRightButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
+		toLeftButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
 		add(leftRightButtonBox, 2, 1);
 		leftRightButtonBox.setAlignment(Pos.CENTER);
 		
-		//------------------------------------------------------------------------------------
+		//===================================================================================
+		//TODO Constraints für diese Version => Fenster hat noch feste Größe...
+		
+		//===================================================================================
 		
 		toRightButton.setOnAction(event -> {
 			ObservableList<Form> itemsToMove = formListView.getSelectionModel().getSelectedItems();

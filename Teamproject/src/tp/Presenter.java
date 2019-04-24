@@ -177,6 +177,10 @@ public class Presenter {
 		return model.getPOs();
 	}
 
+	public Topic getTopic(long topicId) {
+		return model.getTopic(topicId);
+	}
+	
 	public ObservableList<Topic> getTopics() {
 		return model.getTopics();
 	}
@@ -236,7 +240,6 @@ public class Presenter {
 
 	public void deleteForm(Form f) {
 		model.deleteForm(f);
-
 	}
 
 

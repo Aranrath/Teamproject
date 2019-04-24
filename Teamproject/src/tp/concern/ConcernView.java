@@ -180,7 +180,7 @@ public class ConcernView extends GridPane {
 		
 		
 		topicLabel = new Label("Thema:");
-		topicComboBox = new ComboBox<Topic>(presenter.getTopics());
+		topicComboBox = new ComboBox<Topic>(FXCollections.observableArrayList(presenter.getTopics()));   
 		newTopicButton = new Button("+");
 		topicHBox = new HBox(topicComboBox, newTopicButton);
 		newTopicButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
@@ -431,8 +431,13 @@ public class ConcernView extends GridPane {
 
 		deleteReminderButton.setOnAction((event) -> {
 			Reminder reminderToDelete = reminderTableView.getSelectionModel().getSelectedItem();
-			reminderTableView.getItems().remove(reminderToDelete);
-			presenter.deleteReminder(reminderToDelete);
+			
+			if(reminderToDelete!= null)
+			{
+				reminderTableView.getItems().remove(reminderToDelete);
+				presenter.deleteReminder(reminderToDelete);
+			}		
+			
 		});
 
 		addFileButton.setOnAction((event) -> {
@@ -440,7 +445,22 @@ public class ConcernView extends GridPane {
 			stage.setAlwaysOnTop(true);
 			stage.initModality(Modality.APPLICATION_MODAL);
 			stage.setTitle("Datei zum Anliegen hinzufügen");
-			stage.setScene(new Scene(new FormsView(presenter, stage, this, fileTableView.getItems()), 450, 450));
+			
+			ObservableList<Form> topicRelatedFiles;
+			Topic selectedTopic = topicComboBox.getSelectionModel().getSelectedItem();
+			if(selectedTopic != null)
+			{
+				//TODO fehler... selectedTopic.getForms = filesAlreadyInConcern
+				topicRelatedFiles = FXCollections.observableArrayList(selectedTopic.getForms());
+			}
+			else
+			{
+				topicRelatedFiles = FXCollections.observableArrayList();
+			}
+
+			ObservableList<Form> filesAlreadyInConcern =FXCollections.observableArrayList(fileTableView.getItems());
+
+			stage.setScene(new Scene(new FormsView(presenter, stage, this, filesAlreadyInConcern, topicRelatedFiles), 450, 450));
 			stage.show();
 		});
 
@@ -448,13 +468,17 @@ public class ConcernView extends GridPane {
 		deleteFileButton.setOnAction((event) -> {
 			Form fileToDelete = fileTableView.getSelectionModel().getSelectedItem();
 			
-			//Wenn die Datei nicht zum ausgewählten Topic gehört
-			if(topicComboBox.getSelectionModel().getSelectedItem()!= null && !topicComboBox.getSelectionModel().getSelectedItem().getForms().contains(fileToDelete))
+			if(fileToDelete!= null)
 			{
-				presenter.deleteForm(fileToDelete);
-			}	
-			
-			fileTableView.getItems().remove(fileToDelete);
+				//Wenn die Datei nicht zum ausgewählten Topic gehört
+				if(topicComboBox.getSelectionModel().getSelectedItem()!= null && !topicComboBox.getSelectionModel().getSelectedItem().getForms().contains(fileToDelete))
+				{
+					presenter.deleteForm(fileToDelete);
+				}	
+				
+				fileTableView.getItems().remove(fileToDelete);
+			}
+
 
 		});
 
@@ -469,8 +493,12 @@ public class ConcernView extends GridPane {
 
 		deleteAppointmentButton.setOnAction((event) -> {
 			Appointment appointmentToDelete = appointmentTableView.getSelectionModel().getSelectedItem();
-			appointmentTableView.getItems().remove(appointmentToDelete);
-			presenter.deleteAppointment(appointmentToDelete);
+			if(appointmentToDelete != null)
+			{
+				appointmentTableView.getItems().remove(appointmentToDelete);
+				presenter.deleteAppointment(appointmentToDelete);
+			}
+			
 		});
 		
 		closeButton.setOnAction(event ->{
@@ -628,7 +656,16 @@ public class ConcernView extends GridPane {
 	
 	public void addFilesToConcern(ObservableList<Form> files)
 	{
-		fileTableView.setItems(files);
+		Topic selectedTopic = topicComboBox.getSelectionModel().getSelectedItem();
+		if(selectedTopic !=  null)
+		{
+			fileTableView.setItems(selectedTopic.getForms());
+		}
+		else
+		{
+			fileTableView.getItems().clear();
+		}
+		fileTableView.getItems().addAll(files);
 	}
 	
 	public void addAppointment(Appointment appointment)

@@ -818,7 +818,7 @@ public class Model {
 	}
 
 
-	public Topic getTopic(int topicId) {
+	public Topic getTopic(long topicId) {
 		Topic result = new Topic(null);
 		String sql = "SELECT * FROM topic WHERE id = " + topicId;
 		try(Connection conn = this.connect();
@@ -887,7 +887,7 @@ public class Model {
 	}
 
 
-	private ObservableList<Form> getTopicForms(int topicId) {
+	private ObservableList<Form> getTopicForms(long topicId) {
 		ObservableList<Form>  result = FXCollections.observableArrayList();
 		String sql = "SELECT form FROM topic_forms WHERE topic = " + topicId;
 		try (Connection conn = this.connect();
