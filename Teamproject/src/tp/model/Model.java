@@ -982,7 +982,7 @@ public class Model {
 
 	public void saveEditedConcern(Concern concern) {
 		String sql1 = "UPDATE concern SET title = '" + concern.getTitle() + "', topic = " + concern.getTopic().getId() +
-				", notes = '" + concern.getNotes() + "', done = " + concern.getClosingDate() + ", complete = " + concern.isClosed() + 
+				", notes = '" + concern.getNotes() + "', done = " + concern.getClosingDate() + ", complete = " + concern.isCompleted() + 
 				" WHERE id = " + concern.getId();
 		String sql2 = "DELETE FROM concern_forms WHERE concern = " + concern.getId();
 		String sql3 = "DELETE FROM concern_student WHERE concern = " + concern.getId();
@@ -1008,7 +1008,7 @@ public class Model {
 	}
 
 	public void setConcernCosed(Concern c) {
-		String sql = "UPDATE concern SET done = DATE('now'), complete = " + c.isClosed() + " WHERE id = " + c.getId();
+		String sql = "UPDATE concern SET done = DATE('now'), complete = " + c.isCompleted() + " WHERE id = " + c.getId();
 		try (Connection conn = this.connect();
 				Statement stmt = conn.createStatement())
 			{
@@ -2067,4 +2067,16 @@ public class Model {
 	      return result;
 
 	   }
+
+
+	public Appointment checkAppointmentAvailability(Date date, long startTime, long endTime) {
+		// TODO return entsprechenden Termin der sich überschneidet oder NULL (!!!) wenn sich nix überschneidet
+		return null;
+	}
+
+
+	public Concern getConcern(Appointment clashingAppointment) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

@@ -417,6 +417,14 @@ public class Presenter {
 		return model.calculateAndSaveNewIntervalStatistic(title, statisticComponentsList, startDate, endDate, step);
 	}
 
+	public Appointment checkAppointmentAvailability(Date date, long startTime, long endTime) {
+		return model.checkAppointmentAvailability(date, startTime, endTime);
+	}
+
+	public Concern getConcern(Appointment clashingAppointment) {
+		return model.getConcern(clashingAppointment);
+	}
+
 
 
 

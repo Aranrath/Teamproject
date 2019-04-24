@@ -83,7 +83,7 @@ public class Appointment {
 	}
 	
 	public String getEndTimeString() {
-		return new Time(startTime).toString();
+		return new Time(endTime).toString();
 	}
 
 }

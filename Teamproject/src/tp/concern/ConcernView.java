@@ -463,7 +463,7 @@ public class ConcernView extends GridPane {
 			stage.setAlwaysOnTop(true);
 			stage.initModality(Modality.APPLICATION_MODAL);
 			stage.setTitle("Neuen Termin hinzufügen");
-			stage.setScene(new Scene(new NewAppointmentView(stage, presenter, this, concern.getId()), 450, 450));
+			stage.setScene(new Scene(new NewAppointmentView(stage, presenter, this), 450, 450));
 			stage.show();
 		});
 
@@ -496,7 +496,7 @@ public class ConcernView extends GridPane {
 	        //Resultat verarbeiten
 	        if (option.get() == completed)
 	        {
-	            concern.isCompleted(true);
+	            concern.setCompleted(true);
 	            concern.setClosingDate(new java.sql.Date(Calendar.getInstance().getTime().getTime()));
 	            presenter.saveEditedConcern(concern);
 	            closeButton.setVisible(false);

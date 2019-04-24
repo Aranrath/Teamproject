@@ -111,20 +111,20 @@ public class Concern {
 		this.notes = notes;
 	}
 	
-	public boolean isClosed() {
+	public boolean isCompleted() {
 		return isCompleted;
 	}
+	
+	public void setCompleted(boolean isCompleted) {
+		this.isCompleted = isCompleted;
+	}
 
-	public Date getCompletionDate() {
+	public Date getClosingDate() {
 		return closingDate;
 	}
 
-	public void setClosed(boolean isClosed) {
-		this.isCompleted = isClosed;
-	}
-
-	public void setCompletionDate(Date completionDate) {
-		this.closingDate = completionDate;
+	public void setClosingDate(Date closingDate) {
+		this.closingDate = closingDate;
 	}
 	
 	

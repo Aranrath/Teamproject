@@ -18,6 +18,7 @@ public class RemindersView extends GridPane{
 	private ListView<Reminder> remindersList;
 	private Label remindersLabel;
 	private Button toConcernButton;
+	private Button deleteReminderButton;
 	
 	public RemindersView(Presenter presenter)
 	{
@@ -35,13 +36,20 @@ public class RemindersView extends GridPane{
 		remindersList.setItems(presenter.getDueReminders());
 		remindersLabel = new Label("Zu bearbeitende Erinnerungen");
 		toConcernButton = new Button("Zum zugehörigen Anliegen");
+		deleteReminderButton = new Button("Erinnerung löschen");
+		
+		//==============================================
+		
+		
 		
 		//==============================================
 		
 		add(remindersLabel,0,0);
 		GridPane.setHalignment(remindersLabel, HPos.LEFT);
-		add(remindersList,0,1);
+		add(remindersList,0,1,2,1);
 		add(toConcernButton,0,2);
+		GridPane.setHalignment(toConcernButton, HPos.LEFT);
+		add(deleteReminderButton,1,2);
 		GridPane.setHalignment(toConcernButton, HPos.RIGHT);
 		
 	}

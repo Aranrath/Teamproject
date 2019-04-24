@@ -12,17 +12,18 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import tp.Presenter;
 import tp.concern.ConcernView;
 import tp.model.Appointment;
+import tp.model.Concern;
 
 public class NewAppointmentView extends GridPane{
 	
 	private Stage stage;
 	private Presenter presenter;
 	private ConcernView concernView;
-	private Long concernId;
 	
 	//=======================================
 	
@@ -39,13 +40,13 @@ public class NewAppointmentView extends GridPane{
 	private TextField startMinuteTextField;
 	private TextField endHourTextField;
 	private TextField endMinuteTextField;
+	private Label errorLabel;
 	
 
-	public NewAppointmentView(Stage stage, Presenter presenter, ConcernView concernView, Long concernId) {
+	public NewAppointmentView(Stage stage, Presenter presenter, ConcernView concernView) {
 		this.stage = stage;
 		this.presenter = presenter;
 		this.concernView = concernView;
-		this.concernId = concernId;
 		buildView();
 	}
 
@@ -62,6 +63,8 @@ public class NewAppointmentView extends GridPane{
 		roomLabel = new Label("Raum:");
 		roomTextField = new TextField();
 		saveButton = new Button("Speichern");
+		errorLabel = new Label("");
+		errorLabel.setTextFill(Color.RED);
 		
 		startTimeHBox = new HBox();
 		startHourTextField = new TextField("00");
@@ -77,13 +80,20 @@ public class NewAppointmentView extends GridPane{
 			
 		add(dateLabel,0,0);
 		add(datePicker,1,0);
-		add(timeLabel,0,1);
-		add(startTimeHBox,1,1);
-		add(toLabel, 2,1);
-		add(endTimeHBox,3,1);
-		add(roomLabel,0,2);
-		add(roomTextField,1,2);
-		add(saveButton,3,2);
+		
+		add(roomLabel,0,1);
+		add(roomTextField,1,1);
+		
+		add(timeLabel,0,2);
+		add(startTimeHBox,1,2);
+		
+		add(toLabel, 0,3);
+		add(endTimeHBox,1,3);
+		
+		add(errorLabel,0,4,2,1);
+		GridPane.setHalignment(errorLabel, HPos.RIGHT);
+		
+		add(saveButton,1,5);
 		GridPane.setHalignment(saveButton, HPos.RIGHT);
 		
 		//=======================================
@@ -122,16 +132,73 @@ public class NewAppointmentView extends GridPane{
 	    });
 		
 		saveButton.setOnAction(event -> {
+			
+			
+			int startHour;
+			int startMinute;
+			int endHour;
+			int endMinute;
+			
+			
+			//---------------------------------------------------------
+			
+			
+			try
+			{
+				startHour = Integer.parseInt(startHourTextField.getText());
+				startMinute = Integer.parseInt(startMinuteTextField.getText());
+				endHour = Integer.parseInt(endHourTextField.getText());
+				endMinute = Integer.parseInt(endMinuteTextField.getText());
+			}
+			//error check beim Auslesen
+			catch(Exception e)
+			{
+				errorLabel.setText("Fehler bei der Zeit-Eingabe");
+				return;
+			}
+			
+			//Ausgelesene Zeiten nicht legitim
+			if(startHour > 23 || startHour <0 || startMinute > 59 || startMinute < 0)
+			{
+				errorLabel.setText("Die ausgewählte Start-Zeit ist nicht legitim");
+				return;
+			}
+			if(endHour > 23 || endHour <0 || endMinute > 59 || endMinute < 0)
+			{
+				errorLabel.setText("Die ausgewählte End-Zeit ist nicht legitim");
+				return;
+			}
+			
+			long startTime = Time.valueOf( startHour + ":"+ startMinute +":00").getTime();
+			long endTime = Time.valueOf( endHour + ":"+ endMinute +":00").getTime();
 			Date date = Date.valueOf(datePicker.getValue());
-			long startTime = Time.valueOf( startHourTextField.getText() + ":"+ startMinuteTextField.getText() +":00").getTime();
-			long endTime = Time.valueOf( endHourTextField.getText() + ":"+ endMinuteTextField.getText() +":00").getTime();
-			String roomNmbr = roomTextField.getText();		
 			
+			//Test: Start- vor Endzeit
+			if(startTime > endTime)
+			{
+				errorLabel.setText("Die Start-Zeit muss vor der End-Zeit liegen");
+				return;
+			}
+			
+			//Test: überschneidende Termine
+			Appointment clashingAppointment = presenter.checkAppointmentAvailability(date, startTime, endTime);
+			
+			//Es gibt eine Überschneidung mit einem Termin im Anliegen clashingConcern
+			if(clashingAppointment != null)
+			{
+				Concern clashingConcern = presenter.getConcern(clashingAppointment);
+				errorLabel.setText("Überschneidung mit einem Termin im Anliegen " + clashingConcern.getTitle() + "\n"
+									+ "in der Zeit von " + clashingAppointment.getStartTimeString() + " bis " + clashingAppointment.getEndTimeString());
+				return;
+			}
+			
+			//End:errorCheck
+			//---------------------------------------------------------
+			
+			
+			String roomNmbr = roomTextField.getText();
 			Appointment newAppointment = new Appointment(date, startTime, endTime, roomNmbr);
-			newAppointment.setConcernId(concernId);
-			
 			concernView.addAppointment(newAppointment);
-			presenter.saveNewAppointment(newAppointment);
 			stage.close();
 		});
 		

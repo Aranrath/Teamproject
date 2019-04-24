@@ -178,7 +178,7 @@ public class AllConcernsView extends GridPane
 			{
 				for (Concern concern : allConcerns)
 				{
-					if(!concern.isClosed())
+					if(!concern.isCompleted())
 					{
 						shownConcerns.add(concern);
 					}
@@ -207,7 +207,7 @@ public class AllConcernsView extends GridPane
 			{
 				for (Concern concern : allConcerns)
 				{
-					if(!concern.isClosed() && ConcernView.containsAll(concern.toString().toLowerCase(), searchTerms))
+					if(!concern.isCompleted() && ConcernView.containsAll(concern.toString().toLowerCase(), searchTerms))
 					{
 						shownConcerns.add(concern);
 					}
