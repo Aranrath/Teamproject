@@ -19,6 +19,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Properties;
 
 import javax.imageio.ImageIO;
@@ -35,8 +36,13 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
+import tp.model.statistics.ContinuousStatistic;
+import tp.model.statistics.IntervalStatistic;
+import tp.model.statistics.RatioStatistic;
 import tp.model.statistics.Statistic;
 import tp.model.statistics.StatisticComponent;
+import tp.model.statistics.StatisticValues;
 
 public class Model {
 
@@ -1306,42 +1312,184 @@ public class Model {
 		}
 	}
 
-	public Statistic calculateAndSaveNewRatioStatistic(ArrayList<StatisticComponent> statisticComponentsList) {
-		// TODO Auto-generated method stub
-		//TODO Gibt nun neue Statistic mit id zurück
-//				boolean successful;
-//				try
-//				{
-//					//TODO Save Statistic
-//					successful = true;
-//				}
-//				catch(Exception e)
-//				{
-//					successful = false;
-//				}
-//				return null;
+	
+	public Statistic calculateAndSaveNewRatioStatistic(String title, ArrayList<StatisticComponent> statisticComponentsList) {
+		//calculate
+		List<StatisticValues> values = new ArrayList<StatisticValues>();
+		for (StatisticComponent comp: statisticComponentsList) {
+			values.add(getRatioStatisticValue(comp));
+		}
+		Statistic result = new RatioStatistic(title, values);
 		
+		//save
+		String sql1 = "INSERT INTO statistic(name, charttype) VALUES('" + title +", ratio)";
+		String sql2 = "SELECT last_insert_rowid()";
+		try (Connection conn = this.connect();
+			Statement stmt = conn.createStatement())
+		{
+			stmt.executeUpdate(sql1);
+			int id = 0;
+			try (ResultSet rs = stmt.executeQuery(sql2)){
+				if (rs.next()) {
+					id = rs.getInt(1);
+					result.setId(id);
+					saveStatisticValues(id, values);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		return result;
+	}
+
+
+	private StatisticValues getRatioStatisticValue(StatisticComponent comp) {
+		// TODO Auto-generated method stub
+		//add Standard Werte
+		//anz = 0;
+		//for(filter f: selectedFilter){
+			//SELECT....
+			//FROM
+			//WHERE
+		
+			//anz + newAnz;
+		//}
+		//new StatisticValues
 		return null;
 	}
 
 
-	public Statistic calculateAndSaveNewContinuousStatistic(ArrayList<StatisticComponent> statisticComponentsList,
+	public Statistic calculateAndSaveNewContinuousStatistic(String title, ArrayList<StatisticComponent> statisticComponentsList,
 			Date startDate, Date endDate) {
+		//calculate
+		List<StatisticValues> values = new ArrayList<StatisticValues>();
+		for (StatisticComponent comp: statisticComponentsList) {
+			values.add(getContinuousStatisticValue(comp, startDate, endDate));
+		}
+		Statistic result = new ContinuousStatistic(title, values, startDate, endDate);
+
+		//save
+		String sql1 = "INSERT INTO statistic(name, charttype, startDate, endDate) VALUES('" + title +", ratio, " + startDate + ", " + endDate + ")";
+		String sql2 = "SELECT last_insert_rowid()";
+		try (Connection conn = this.connect();
+			Statement stmt = conn.createStatement())
+		{
+			stmt.executeUpdate(sql1);
+			int id = 0;
+			try (ResultSet rs = stmt.executeQuery(sql2)){
+				if (rs.next()) {
+					id = rs.getInt(1);
+					result.setId(id);
+					saveStatisticValues(id, values);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+
+	private StatisticValues getContinuousStatisticValue(StatisticComponent comp, Date startDate, Date endDate) {
 		// TODO Auto-generated method stub
+		//add Standard Werte
+		//values[] = newArrayList<Integer>;
+		//for (dates...)
+			//anz = 0;
+			//for(filter f: selectedFilter){
+				//SELECT....
+				//FROM
+				//WHERE
+		
+				//anz + newAnz;
+			//values.add(anz)
+		//}
+		//newStatVals
+		return null;
+	}
+
+	public Statistic calculateAndSaveNewIntervalStatistic(String title, ArrayList<StatisticComponent> statisticComponentsList,
+			Date startDate, Date endDate, int step) {
+		List<StatisticValues> values = new ArrayList<StatisticValues>();
+		for (StatisticComponent comp: statisticComponentsList) {
+			values.add(getIntervalStatisticValue(comp, startDate, endDate, step));
+		}
+		Statistic result = new IntervalStatistic(title, values, startDate, endDate, step);
+
+		//save
+		String sql1 = "INSERT INTO statistic(name, charttype, startDate, endDate, step) VALUES('" + title +", ratio, " + startDate + ", " + endDate + ", " + step + ")";
+		String sql2 = "SELECT last_insert_rowid()";
+		try (Connection conn = this.connect();
+			Statement stmt = conn.createStatement())
+		{
+			stmt.executeUpdate(sql1);
+			int id = 0;
+			try (ResultSet rs = stmt.executeQuery(sql2)){
+				if (rs.next()) {
+					id = rs.getInt(1);
+					result.setId(id);
+					saveStatisticValues(id, values);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		return result;
+	}
+
+
+	private StatisticValues getIntervalStatisticValue(StatisticComponent comp, Date startDate, Date endDate, int step) {
+		// TODO Auto-generated method stub
+		//add Standard Werte
+		//values[] = newArrayList<Integer>;
+		//for (dates...steps)
+			//anz = 0;
+			//for(filter f: selectedFilter){
+				//SELECT....
+				//FROM
+				//WHERE
+		
+				//anz + newAnz;
+			//values.add(anz)
+		//}
+		//newStatVals
 		return null;
 	}
 
 
-	public Statistic calculateAndSaveNewIntervalStatistic(ArrayList<StatisticComponent> statisticComponentsList,
-			Date startDate, Date endDate, int step) {
+	private void saveStatisticValues(int statId, List<StatisticValues> StatValues) {
 		// TODO Auto-generated method stub
-		return null;
+		//sql = Insert INTO statisticComponent..... statId, name, color
+//		System.out.println(Color.RED.toString());
+//		Color red = Color.valueOf(Color.WHITE.toString());
+		//For(i = 0; i<values.length; i++){
+			//sql=INSERT INTO statisticValues .... statCompId, value, valueNr (i)
+		//}
 	}
 
 
 	public void deleteStatistic(Statistic statisticToDelete) {
-		// TODO Auto-generated method stub
-		
+		String sql = "DELETE FROM statistic WHERE id = " + statisticToDelete.getId();
+		try (Connection conn = this.connect();
+				Statement stmt = conn.createStatement()) {
+			stmt.executeUpdate(sql);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void saveNewStudent(Student student) {

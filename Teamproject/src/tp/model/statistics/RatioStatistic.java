@@ -1,11 +1,11 @@
 package tp.model.statistics;
 
-import javafx.collections.ObservableList;
+import java.util.List;
 
 public class RatioStatistic extends Statistic{
 	
 	//TODO nessessary???
-	public RatioStatistic(String title, ObservableList<StatisticValues> values) {
+	public RatioStatistic(String title, List<StatisticValues> values) {
 		super(title, values);
 	}
 

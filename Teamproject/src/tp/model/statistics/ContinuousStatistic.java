@@ -1,16 +1,17 @@
 package tp.model.statistics;
 
 import java.sql.Date;
-
-import javafx.collections.ObservableList;
+import java.util.List;
 
 public class ContinuousStatistic extends Statistic {
 
 	private Date startDate;
 	private Date endDate;
 	
-	public ContinuousStatistic(String title, ObservableList<StatisticValues> values) {
+	public ContinuousStatistic(String title, List<StatisticValues> values, Date startDate, Date endDate) {
 		super(title, values);
+		this.startDate = startDate;
+		this.endDate = endDate;
 	}
 
 	public Date getStartDate() {

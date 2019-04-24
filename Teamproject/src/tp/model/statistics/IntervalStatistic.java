@@ -1,8 +1,7 @@
 package tp.model.statistics;
 
 import java.sql.Date;
-
-import javafx.collections.ObservableList;
+import java.util.List;
 
 public class IntervalStatistic extends Statistic{
 
@@ -10,8 +9,11 @@ public class IntervalStatistic extends Statistic{
 	private Date endDate;
 	private int step;
 	
-	public IntervalStatistic(String title, ObservableList<StatisticValues> values, int step) {
+	public IntervalStatistic(String title, List<StatisticValues> values, Date startDate, Date endDate, int step) {
 		super(title, values);
+		this.startDate = startDate;
+		this.endDate = endDate;
+		this.step = step;
 	}
 
 	public Date getStartDate() {

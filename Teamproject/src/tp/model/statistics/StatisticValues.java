@@ -3,15 +3,14 @@ package tp.model.statistics;
 import java.util.List;
 
 import javafx.scene.paint.Color;
-import javafx.util.Pair;
 
 public class StatisticValues {
 	
 	private String name;
 	private Color color;
-	private List<Pair<Integer, Integer>> values;
+	private List<Integer> values;
 	
-	public StatisticValues(String name, Color color, List<Pair<Integer, Integer>> values) {
+	public StatisticValues(String name, Color color, List<Integer> values) {
 		super();
 		this.name = name;
 		this.color = color;
@@ -34,11 +33,11 @@ public class StatisticValues {
 		this.color = color;
 	}
 
-	public List<Pair<Integer, Integer>> getValues() {
+	public List<Integer> getValues() {
 		return values;
 	}
 
-	public void setValues(List<Pair<Integer, Integer>> values) {
+	public void setValues(List<Integer> values) {
 		this.values = values;
 	}
 

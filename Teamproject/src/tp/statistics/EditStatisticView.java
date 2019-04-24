@@ -304,6 +304,7 @@ public class EditStatisticView extends GridPane
 			{
 				errorLabel.setText("Es gibt unvollständige Filter");
 				errorLabel.setVisible(true);
+				errorLabel.setTextFill(Color.RED);
 				return;
 			}
 				
@@ -346,17 +347,25 @@ public class EditStatisticView extends GridPane
 			new Thread(() -> {
 				Statistic newStatistic;
 				if (statisticType.equals("ratio")) {
-					newStatistic = presenter.calculateAndSaveNewRatioStatistic(statisticComponentsList);
+					newStatistic = presenter.calculateAndSaveNewRatioStatistic(title, statisticComponentsList);
 				}else if(statisticType.equals("continuous")) {
-					newStatistic = presenter.calculateAndSaveNewContinuousStatistic(statisticComponentsList, startDate, endDate);
+					newStatistic = presenter.calculateAndSaveNewContinuousStatistic(title, statisticComponentsList, startDate, endDate);
 				}else{
-					newStatistic = presenter.calculateAndSaveNewIntervalStatistic(statisticComponentsList, startDate, endDate, step);
+					newStatistic = presenter.calculateAndSaveNewIntervalStatistic(title, statisticComponentsList, startDate, endDate, step);
 				}
 
-				Platform.runLater(()->{
-					presenter.closeThisTab(tab);
-					presenter.openStatisticTab(newStatistic);
-				});
+				if(newStatistic!=null) {
+					Platform.runLater(()->{
+						presenter.closeThisTab(tab);
+						presenter.openStatisticTab(newStatistic);
+					});
+				}else {
+					Platform.runLater(()->{
+						errorLabel.setText("Statistik ist nicht berechenbar");
+						errorLabel.setVisible(true);
+						errorLabel.setTextFill(Color.RED);
+					});
+				}
 					
 			}).run();
 

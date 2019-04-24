@@ -402,19 +402,19 @@ public class Presenter {
 		
 	}
 
-	public Statistic calculateAndSaveNewRatioStatistic(
+	public Statistic calculateAndSaveNewRatioStatistic(String title, 
 			ArrayList<StatisticComponent> statisticComponentsList) {
-		return model.calculateAndSaveNewRatioStatistic(statisticComponentsList);
+		return model.calculateAndSaveNewRatioStatistic(title, statisticComponentsList);
 	}
 
-	public Statistic calculateAndSaveNewContinuousStatistic(
+	public Statistic calculateAndSaveNewContinuousStatistic(String title, 
 			ArrayList<StatisticComponent> statisticComponentsList, Date startDate, Date endDate) {
-		return model.calculateAndSaveNewContinuousStatistic(statisticComponentsList, startDate, endDate);
+		return model.calculateAndSaveNewContinuousStatistic(title, statisticComponentsList, startDate, endDate);
 	}
 
-	public Statistic calculateAndSaveNewIntervalStatistic(
+	public Statistic calculateAndSaveNewIntervalStatistic(String title, 
 			ArrayList<StatisticComponent> statisticComponentsList, Date startDate, Date endDate, int step) {
-		return model.calculateAndSaveNewIntervalStatistic(statisticComponentsList, startDate, endDate, step);
+		return model.calculateAndSaveNewIntervalStatistic(title, statisticComponentsList, startDate, endDate, step);
 	}
 
 
