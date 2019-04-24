@@ -353,7 +353,7 @@ public class ConcernView extends GridPane {
 				concern.setAppointments(appointmentTableView.getItems());
 				
 				//Speicher nur Files die nicht zum Topic gehören
-				ObservableList<Form> newFiles = fileTableView.getItems();
+				ObservableList<Form> newFiles = FXCollections.observableArrayList(fileTableView.getItems());
 				newFiles.removeAll(newTopic.getForms());
 				concern.setFiles(newFiles);
 				
@@ -378,7 +378,7 @@ public class ConcernView extends GridPane {
 				concern.setAppointments(appointmentTableView.getItems());
 				
 				//Speicher nur Files die nicht zum Topic gehören
-				ObservableList<Form> newFiles = fileTableView.getItems();
+				ObservableList<Form> newFiles = FXCollections.observableArrayList(fileTableView.getItems());
 				newFiles.removeAll(newTopic.getForms());
 				concern.setFiles(newFiles);
 
