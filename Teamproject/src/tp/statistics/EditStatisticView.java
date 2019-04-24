@@ -52,25 +52,33 @@ public class EditStatisticView extends GridPane
 	
 	//--------------------------------------Typspezifische-Felder
 
+	//RatioStatistic
+	private GridPane ratioStatisticOptionsGridPane;
+	
+	//Für Zeit
+	private Label ratioStatisticOptionsTimePeriodLabel;
+	private Label ratioStatisticOptionsDateLabel;
+	private DatePicker ratioStatisticOptionsDatePicker;
+	
 	//ContinuousStatistic-------------------------------
 	private GridPane continuousStatisticOptionsGridPane;
 	
 	//für Zeiträume
-	private Label continuousStatistictOptionsTmePeriodLabel;
-	private Label continuousStatistictOptionsStartDateLabel;
-	private DatePicker continuousStatistictOptionsStartDateDatePicker;
-	private Label continuousStatistictOptionsEndDateLabel;
-	private DatePicker continuousStatistictOptionsEndDateDatePicker;
+	private Label continuousStatisticOptionsTimePeriodLabel;
+	private Label continuousStatisticOptionsStartDateLabel;
+	private DatePicker continuousStatisticOptionsStartDateDatePicker;
+	private Label continuousStatisticOptionsEndDateLabel;
+	private DatePicker continuousStatisticOptionsEndDateDatePicker;
 	
 	//IntervalStatistic-------------------------------
 	private GridPane intervalStatisticOptionsGridPane;
 	
 	//für Zeiträume
-	private Label intervalStatistictOptionsTmePeriodLabel;
-	private Label intervalStatistictOptionsStartDateLabel;
-	private DatePicker intervalStatistictOptionsStartDateDatePicker;
-	private Label intervalStatistictOptionsEndDateLabel;
-	private DatePicker intervalStatistictOptionsEndDateDatePicker;
+	private Label intervalStatisticOptionsTimePeriodLabel;
+	private Label intervalStatisticOptionsStartDateLabel;
+	private DatePicker intervalStatisticOptionsStartDateDatePicker;
+	private Label intervalStatisticOptionsEndDateLabel;
+	private DatePicker intervalStatisticOptionsEndDateDatePicker;
 	
 	//für Zeitabstände
 	private Label intervalStatistictOptionsTimeIntervalsInDaysLabel;
@@ -131,6 +139,22 @@ public class EditStatisticView extends GridPane
 		
 		//--------------------------------------Typspezifische-Felder
 
+		//---------------------------------------------------------RatioStatisticOptionsGridPane
+		ratioStatisticOptionsGridPane = new GridPane();
+		ratioStatisticOptionsGridPane.setHgap(10);
+		ratioStatisticOptionsGridPane.setVgap(10);
+		ratioStatisticOptionsGridPane.setVisible(false);
+		
+		//für Zeiträume
+		ratioStatisticOptionsTimePeriodLabel = new Label("Zeitraum");
+		ratioStatisticOptionsDateLabel = new Label("zum Datum");
+		ratioStatisticOptionsDatePicker = new DatePicker();
+		
+		//Zusammenfügen
+		ratioStatisticOptionsGridPane.add(new Label("Optionen Verhältnis-Statistik:"), 0, 0);
+		ratioStatisticOptionsGridPane.add(ratioStatisticOptionsTimePeriodLabel, 0, 1);
+		ratioStatisticOptionsGridPane.add(ratioStatisticOptionsDateLabel, 0, 2);
+		ratioStatisticOptionsGridPane.add(ratioStatisticOptionsDatePicker, 1, 2);	
 		
 		//------------------------------------------------------ContinuousStatisticOptionsGridPane
 		continuousStatisticOptionsGridPane = new GridPane();
@@ -139,19 +163,19 @@ public class EditStatisticView extends GridPane
 		continuousStatisticOptionsGridPane.setVisible(false);
 		
 		//für Zeiträume
-		continuousStatistictOptionsTmePeriodLabel = new Label("Zeitraum");
-		continuousStatistictOptionsStartDateLabel = new Label("Start-Datum");
-		continuousStatistictOptionsStartDateDatePicker = new DatePicker();
-		continuousStatistictOptionsEndDateLabel = new Label("End-Datum");
-		continuousStatistictOptionsEndDateDatePicker = new DatePicker();
+		continuousStatisticOptionsTimePeriodLabel = new Label("Zeitraum");
+		continuousStatisticOptionsStartDateLabel = new Label("Start-Datum");
+		continuousStatisticOptionsStartDateDatePicker = new DatePicker();
+		continuousStatisticOptionsEndDateLabel = new Label("End-Datum");
+		continuousStatisticOptionsEndDateDatePicker = new DatePicker();
 		
 		//Zusammenfügen
 		continuousStatisticOptionsGridPane.add(new Label("Optionen Verlaufs-Statistik:"), 0	, 0);
-		continuousStatisticOptionsGridPane.add(continuousStatistictOptionsTmePeriodLabel, 0, 1);
-		continuousStatisticOptionsGridPane.add(continuousStatistictOptionsStartDateLabel, 0, 2);
-		continuousStatisticOptionsGridPane.add(continuousStatistictOptionsStartDateDatePicker, 1, 2);
-		continuousStatisticOptionsGridPane.add(continuousStatistictOptionsEndDateLabel, 0, 3);
-		continuousStatisticOptionsGridPane.add(continuousStatistictOptionsEndDateDatePicker, 1, 3);
+		continuousStatisticOptionsGridPane.add(continuousStatisticOptionsTimePeriodLabel, 0, 1);
+		continuousStatisticOptionsGridPane.add(continuousStatisticOptionsStartDateLabel, 0, 2);
+		continuousStatisticOptionsGridPane.add(continuousStatisticOptionsStartDateDatePicker, 1, 2);
+		continuousStatisticOptionsGridPane.add(continuousStatisticOptionsEndDateLabel, 0, 3);
+		continuousStatisticOptionsGridPane.add(continuousStatisticOptionsEndDateDatePicker, 1, 3);
 		
 		//------------------------------------------------------IntervalStatisticOptionsGridPane
 		
@@ -161,11 +185,11 @@ public class EditStatisticView extends GridPane
 		intervalStatisticOptionsGridPane.setVisible(false);
 		
 		//für Zeiträume
-		intervalStatistictOptionsTmePeriodLabel = new Label("Zeitraum");
-		intervalStatistictOptionsStartDateLabel = new Label("Start-Datum");
-		intervalStatistictOptionsStartDateDatePicker = new DatePicker();
-		intervalStatistictOptionsEndDateLabel = new Label("End-Datum");
-		intervalStatistictOptionsEndDateDatePicker = new DatePicker();
+		intervalStatisticOptionsTimePeriodLabel = new Label("Zeitraum");
+		intervalStatisticOptionsStartDateLabel = new Label("Start-Datum");
+		intervalStatisticOptionsStartDateDatePicker = new DatePicker();
+		intervalStatisticOptionsEndDateLabel = new Label("End-Datum");
+		intervalStatisticOptionsEndDateDatePicker = new DatePicker();
 		
 		//für Zeitabstände
 		intervalStatistictOptionsTimeIntervalsInDaysLabel = new Label("Zeitabstände (In Tagen)");
@@ -183,11 +207,11 @@ public class EditStatisticView extends GridPane
 		
 		//Zusammenfügen
 		intervalStatisticOptionsGridPane.add(new Label("Optionen Intervall-Statistik:"), 0, 0);
-		intervalStatisticOptionsGridPane.add(intervalStatistictOptionsTmePeriodLabel, 0, 1);
-		intervalStatisticOptionsGridPane.add(intervalStatistictOptionsStartDateLabel, 0, 2);
-		intervalStatisticOptionsGridPane.add(intervalStatistictOptionsStartDateDatePicker, 1, 2);
-		intervalStatisticOptionsGridPane.add(intervalStatistictOptionsEndDateLabel, 0, 3);
-		intervalStatisticOptionsGridPane.add(intervalStatistictOptionsEndDateDatePicker, 1, 3);
+		intervalStatisticOptionsGridPane.add(intervalStatisticOptionsTimePeriodLabel, 0, 1);
+		intervalStatisticOptionsGridPane.add(intervalStatisticOptionsStartDateLabel, 0, 2);
+		intervalStatisticOptionsGridPane.add(intervalStatisticOptionsStartDateDatePicker, 1, 2);
+		intervalStatisticOptionsGridPane.add(intervalStatisticOptionsEndDateLabel, 0, 3);
+		intervalStatisticOptionsGridPane.add(intervalStatisticOptionsEndDateDatePicker, 1, 3);
 		intervalStatisticOptionsGridPane.add(new Label(""), 0, 4);
 		intervalStatisticOptionsGridPane.add(intervalStatistictOptionsTimeIntervalsInDaysLabel, 0, 5);
 		intervalStatisticOptionsGridPane.add(intervalStatistictOptionsTimeIntervalsInDaysTextField, 1, 5);
@@ -225,6 +249,7 @@ public class EditStatisticView extends GridPane
 
 		
 		add(defaultFields,0,0);
+		add(ratioStatisticOptionsGridPane, 0, 1);
 		add(continuousStatisticOptionsGridPane,0,1);
 		add(intervalStatisticOptionsGridPane,0,1);
 		add(calculateHBox,0,2);
@@ -274,14 +299,17 @@ public class EditStatisticView extends GridPane
 				return;
 			}
 			//Typspezifische Einstellungen unvollständig
-			if(toggleGroup.getSelectedToggle().equals(continuousStatisticRadioButton) &&
-					(continuousStatistictOptionsStartDateDatePicker.getValue()==null || continuousStatistictOptionsEndDateDatePicker.getValue()==null)) {
+			if(toggleGroup.getSelectedToggle().equals(ratioStatisticRadioButton) && ratioStatisticOptionsDatePicker.getValue()==null) {
 				errorLabel.setText("Alle Felder müssen asgefüllt sein");
 				errorLabel.setTextFill(Color.RED);
 				return;
-			}
-			if(toggleGroup.getSelectedToggle().equals(intervalStatisticRadioButton) &&
-					(intervalStatistictOptionsStartDateDatePicker.getValue()==null || intervalStatistictOptionsEndDateDatePicker.getValue()==null ||
+			}else if(toggleGroup.getSelectedToggle().equals(continuousStatisticRadioButton) &&
+					(continuousStatisticOptionsStartDateDatePicker.getValue()==null || continuousStatisticOptionsEndDateDatePicker.getValue()==null)) {
+				errorLabel.setText("Alle Felder müssen asgefüllt sein");
+				errorLabel.setTextFill(Color.RED);
+				return;
+			}else if(toggleGroup.getSelectedToggle().equals(intervalStatisticRadioButton) &&
+					(intervalStatisticOptionsStartDateDatePicker.getValue()==null || intervalStatisticOptionsEndDateDatePicker.getValue()==null ||
 					intervalStatistictOptionsTimeIntervalsInDaysTextField.getText().equals(""))) {
 				errorLabel.setText("Alle Felder müssen asgefüllt sein");
 				errorLabel.setTextFill(Color.RED);
@@ -323,18 +351,18 @@ public class EditStatisticView extends GridPane
 			//typespecific Fields auslesen je nachdem welcher Radiobutton ausgewählt ist
 			if(toggleGroup.getSelectedToggle().equals(ratioStatisticRadioButton)) {
 				statisticType = "ratio";
-				startDate = null;
+				startDate = Date.valueOf(ratioStatisticOptionsDatePicker.getValue());
 				endDate = null;
 				step = 0;
 			}else if(toggleGroup.getSelectedToggle().equals(continuousStatisticRadioButton)) {
 				statisticType = "continuous";
-				startDate = Date.valueOf(continuousStatistictOptionsStartDateDatePicker.getValue());
-				endDate = Date.valueOf(continuousStatistictOptionsEndDateDatePicker.getValue());
+				startDate = Date.valueOf(continuousStatisticOptionsStartDateDatePicker.getValue());
+				endDate = Date.valueOf(continuousStatisticOptionsEndDateDatePicker.getValue());
 				step = 0;
 			}else{
 				statisticType = "interval";
-				startDate = Date.valueOf(intervalStatistictOptionsStartDateDatePicker.getValue());
-				endDate = Date.valueOf(intervalStatistictOptionsEndDateDatePicker.getValue());
+				startDate = Date.valueOf(intervalStatisticOptionsStartDateDatePicker.getValue());
+				endDate = Date.valueOf(intervalStatisticOptionsEndDateDatePicker.getValue());
 				step = Integer.parseInt(intervalStatistictOptionsTimeIntervalsInDaysTextField.getText());
 			}
 			
@@ -347,7 +375,7 @@ public class EditStatisticView extends GridPane
 			new Thread(() -> {
 				Statistic newStatistic;
 				if (statisticType.equals("ratio")) {
-					newStatistic = presenter.calculateAndSaveNewRatioStatistic(title, statisticComponentsList);
+					newStatistic = presenter.calculateAndSaveNewRatioStatistic(title, statisticComponentsList, startDate);
 				}else if(statisticType.equals("continuous")) {
 					newStatistic = presenter.calculateAndSaveNewContinuousStatistic(title, statisticComponentsList, startDate, endDate);
 				}else{
@@ -379,18 +407,21 @@ public class EditStatisticView extends GridPane
 		
 		ratioStatisticRadioButton.setOnAction(event ->
 		{
+			ratioStatisticOptionsGridPane.setVisible(true);
 			continuousStatisticOptionsGridPane.setVisible(false);
 			intervalStatisticOptionsGridPane.setVisible(false);
 		});
 		
 		continuousStatisticRadioButton.setOnAction(event ->
 		{
+			ratioStatisticOptionsGridPane.setVisible(false);
 			continuousStatisticOptionsGridPane.setVisible(true);
 			intervalStatisticOptionsGridPane.setVisible(false);
 		});
 		
 		intervalStatisticRadioButton.setOnAction(event ->
 		{
+			ratioStatisticOptionsGridPane.setVisible(false);
 			continuousStatisticOptionsGridPane.setVisible(false);
 			intervalStatisticOptionsGridPane.setVisible(true);
 		});

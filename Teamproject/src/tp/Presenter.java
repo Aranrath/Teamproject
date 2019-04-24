@@ -403,8 +403,8 @@ public class Presenter {
 	}
 
 	public Statistic calculateAndSaveNewRatioStatistic(String title, 
-			ArrayList<StatisticComponent> statisticComponentsList) {
-		return model.calculateAndSaveNewRatioStatistic(title, statisticComponentsList);
+			ArrayList<StatisticComponent> statisticComponentsList, Date date) {
+		return model.calculateAndSaveNewRatioStatistic(title, statisticComponentsList, date);
 	}
 
 	public Statistic calculateAndSaveNewContinuousStatistic(String title, 
