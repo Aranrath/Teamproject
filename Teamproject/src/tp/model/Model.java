@@ -17,6 +17,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Time;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -76,7 +78,22 @@ public class Model {
 	//-------------------Calculations--------------------------------------------------------------
 
 	public ArrayList<Appointment> getNext24hourAppointments() {
-		String sql = "SELECT * FROM appointment WHERE (date == date() AND endTime >= DATE('now')) OR (date == DATE('now', '+1 day') AND startTime<= date())";		
+		//For SQL-Query
+		Date now = new Date(System.currentTimeMillis());
+		//To be able to compare the date to the one in the dataBase, set Time to 0.
+		now = setTimeToZero(now);
+		
+		Calendar c = Calendar.getInstance();
+        c.setTime(now);
+        c.add(Calendar.DATE, 1);
+        Date nextDay = new Date(c.getTimeInMillis());
+        nextDay = setTimeToZero(nextDay);
+		
+        java.util.Date utilDate = new java.util.Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+        Long time = Time.valueOf(sdf.format(utilDate)).getTime();
+        
+		String sql = "SELECT * FROM appointment WHERE (date = "+ now.getTime() + " AND endTime >= " + time + ") OR (date = " + nextDay.getTime() + " AND startTime <= " + time + ")";		
 		ArrayList<Appointment> result = new ArrayList<Appointment>();
 		try 	(Connection conn = this.connect();
 				Statement stmt = conn.createStatement();
@@ -84,17 +101,8 @@ public class Model {
 		{
 			while(rs.next())
 			{
-				//TODO Date/Time...? in concernView auch komisch angezeigt...
 				int id = rs.getInt("id");
-				Date date = rs.getDate("date");
-				Long startTime = rs.getLong("startTime");
-				Long endTime = rs.getLong("endTime");
-				System.out.println(startTime);
-				System.out.println(endTime);
-				Date now = new Date(System.currentTimeMillis());
-				if(date.equals(now)) {
-					result.add(getAppointment(id));
-				}
+				result.add(getAppointment(id));
 			}
 		}
 		catch (Exception e)
@@ -104,7 +112,10 @@ public class Model {
 		return result;
 	}
 	
+
 	public Date[] getWorkWeekOfDate(Date date) {
+		//To be able to compare the date to the one in the dataBase, set Time to 0.
+		date = setTimeToZero(date);
 		Date[] d = new Date[5];
 		Calendar cal = Calendar.getInstance();
 		cal.clear();
@@ -122,9 +133,21 @@ public class Model {
 		return d;
 	}
 	
+	private Date setTimeToZero(Date date) {
+		//To be able to compare the date to the one in the dataBase, set Time to 0.
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);	
+		cal.set(Calendar.HOUR_OF_DAY, 0);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0);
+		cal.set(Calendar.MILLISECOND, 0);
+		return new Date(cal.getTime().getTime());
+	}
+	
 	public ObservableList<Reminder> getDueReminders() {
 		ObservableList<Reminder> result = FXCollections.observableArrayList();
-		String sql ="SELECT * FROM reminder";
+		Date date = new Date(System.currentTimeMillis());
+		String sql ="SELECT * FROM reminder WHERE date < " + date.getTime();
 		try(Connection conn = this.connect();
 				Statement stmt = conn.createStatement();
 				ResultSet rs = stmt.executeQuery(sql))
@@ -132,10 +155,7 @@ public class Model {
 			while(rs.next()) 
 			{
 				long id = rs.getInt("id");
-				Date date = rs.getDate("date");
-				if (date.before(new Date(System.currentTimeMillis()))) {
-					result.add(getReminder(id));
-				}
+				result.add(getReminder(id));
 			}
 			
 		}catch(Exception e) {
@@ -150,22 +170,9 @@ public class Model {
 		return cal.get(Calendar.WEEK_OF_YEAR);
 	}
 	
-	//TODO Test am Jahresübergang
 	public ArrayList<Appointment> getAppointments(Date date) {
-		/*TODO !!!!! Verlangt jetzt nicht mehr alle Appointments der ganzen Woche sondern nur von einem einzelnen TAG!!!
-		 * Sortiert nach Startzeit wenn möglich...
-		*/
-		
-		Calendar cal = Calendar.getInstance();
-		cal.clear();
-		cal.setTime(date);
-		cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-		Date weekStart = new Date(cal.getTime().getTime());
-		cal.set(Calendar.DAY_OF_WEEK, Calendar.FRIDAY);
-		Date weekEnd = new Date(cal.getTime().getTime());
-		
-		ObservableList<Appointment> result = FXCollections.observableArrayList();
-		String sql = "SELECT * FROM appointment WHERE date >= " + weekStart + " AND date <= " + weekEnd;
+		ArrayList<Appointment> result = new ArrayList<Appointment>();
+		String sql = "SELECT * FROM appointment WHERE date = " + date.getTime() + " ORDER BY startTime ASC";
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql))
@@ -604,8 +611,10 @@ public class Model {
 	public ObservableList<Reminder> getNewReminders(Date lastReminderCheck) {
 		
 		ObservableList<Reminder> result = FXCollections.observableArrayList();
-
-		String sql ="SELECT id FROM reminder WHERE date >= date() AND date <= " + lastReminderCheck;
+		Date now = new Date(System.currentTimeMillis());
+		now = setTimeToZero(now);
+		
+		String sql ="SELECT id FROM reminder WHERE date <= " + now.getTime() + " AND date >= " + lastReminderCheck.getTime();
 		try(Connection conn = this.connect();
 				Statement stmt = conn.createStatement();
 				ResultSet rs = stmt.executeQuery(sql))
