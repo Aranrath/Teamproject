@@ -1,6 +1,7 @@
 package tp;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 import javafx.collections.ObservableList;
@@ -44,13 +45,27 @@ public class MainView extends BorderPane {
 
 	private Presenter presenter;
 	private ArrayList<String> sessionTabsIds;
-	private ArrayList<Appointment> next24hourAppointments;
 	
 	//=======================================
 	
 	private ToolBar leftToolBar;
 	private ToolBar rightToolBar;
 	private TabPane tabPane;
+	
+	
+	//======================================
+	
+	private Button optionsButton;
+	private Button allConcernsButton;
+	private Button newConcernButton;
+	private Button allStudentensButton;
+	private Button newStudentButton;
+	private Button formsButton;
+	private Button allStatisticsButton;
+	private Button newStatisticButton;
+	private Button remindersButton;
+	private Button weeklyScheduleButton;
+	private Label nextAppointmentsLabel;
 
 
 	public MainView(Presenter presenter) {
@@ -64,15 +79,27 @@ public class MainView extends BorderPane {
 	private void buildView() {
 
 		// Buttons
-		Button optionsButton = new Button("Optionen");
-		Button allConcernsButton = new Button("Alle Anliegen");
-		Button newConcernButton = new Button("Neues Anliegen");
-		Button allStudentensButton = new Button("Alle Studenten");
-		Button newStudentButton = new Button("Neuer Student");
-		Button formsButton = new Button("Formulare");
-		Button allStatisticsButton = new Button("Alle Statistiken");
-		Button newStatisticButton = new Button("Neue Statistik");
-		Button remindersButton = new Button("Erinnerungen");
+		optionsButton = new Button("Optionen");
+		allConcernsButton = new Button("Alle Anliegen");
+		newConcernButton = new Button("Neues Anliegen");
+		allStudentensButton = new Button("Alle Studenten");
+		newStudentButton = new Button("Neuer Student");
+		formsButton = new Button("Formulare");
+		allStatisticsButton = new Button("Alle Statistiken");
+		newStatisticButton = new Button("Neue Statistik");
+		remindersButton = new Button("Erinnerungen");
+		
+		
+		//-------------------------------------------------------
+		//rightToolbar
+		
+		weeklyScheduleButton = new Button("Wochenkalendar");
+		weeklyScheduleButton.setMaxWidth(Double.MAX_VALUE);
+		weeklyScheduleButton.setStyle("-fx-base: #ee2211");
+		
+		 nextAppointmentsLabel = new Label("Nächste Termine");
+		 nextAppointmentsLabel.setMaxWidth(Double.MAX_VALUE);;
+		nextAppointmentsLabel.setAlignment(Pos.CENTER);
 		
 		//========================================================
 		
@@ -115,18 +142,26 @@ public class MainView extends BorderPane {
 		remindersButton.setOnAction((event) -> {
 			openRemindersTab();
 		});
+		
+		weeklyScheduleButton.setOnAction((event) -> {
+			openWeekScheduleTab();
+		});
 
+		//===========================================================
 		// Toolbars
+		
 		leftToolBar = new ToolBar();
 		leftToolBar.setOrientation(Orientation.VERTICAL);
 		rightToolBar = new ToolBar();
 		rightToolBar.setOrientation(Orientation.VERTICAL);
 
+		//Zusammenfügen
 		leftToolBar.getItems().addAll(optionsButton, new Separator(), allConcernsButton, newConcernButton,
 				new Separator(), allStudentensButton, newStudentButton, new Separator(), allStatisticsButton,
 				newStatisticButton, new Separator(), formsButton, new Separator(), remindersButton);
 
-		// -------------------Zusammenfügen---------------------------------------
+		//===========================================================
+		//View zusammenfügen
 
 		setLeft(leftToolBar);
 		setRight(rightToolBar);
@@ -141,20 +176,13 @@ public class MainView extends BorderPane {
 
 	public void updateRightToolBar() {
 		rightToolBar.getItems().clear();
-		//------------------------------------------------------------
-		Button weeklyScheduleButton = new Button("Wochenkalendar");
-		weeklyScheduleButton.setMaxWidth(Double.MAX_VALUE);
-		weeklyScheduleButton.setOnAction((event) -> {
-			openWeekScheduleTab();
-		});
-		Label nextAppointmentsLabel = new Label("Nächste Termine");
-		nextAppointmentsLabel.setMaxWidth(Double.MAX_VALUE);;
-		nextAppointmentsLabel.setAlignment(Pos.CENTER);
 		rightToolBar.getItems().addAll(weeklyScheduleButton,nextAppointmentsLabel);
 		// -----------------------------------------------------------
-		this.next24hourAppointments = presenter.getNext24hourAppointments();
+		ArrayList<Appointment> next24hourAppointments = presenter.getNext24hourAppointments();
+		
 		if (next24hourAppointments != null) {
-			for (Appointment a : next24hourAppointments) {
+			for (Appointment a : next24hourAppointments)
+			{
 				Button newAppointmentButton = new Button(a.getStartTime() + " - " + a.getEndTime() + "\n"
 						+ presenter.getConcern(a.getConcernId()).getTitle() + "\n" + a.getRoomNmb());
 				newAppointmentButton.setOnAction((event) -> {
@@ -163,6 +191,8 @@ public class MainView extends BorderPane {
 				rightToolBar.getItems().addAll(newAppointmentButton);
 			}
 		}
+		
+		
 	}
 
 	/**
@@ -514,7 +544,26 @@ public class MainView extends BorderPane {
 	}
 
 	public void showNewReminderView(Options options) {
-		ObservableList<Reminder> newReminders = presenter.getNewReminders(options.getLastReminderCheck());
+		
+//		ObservableList<Reminder> newReminders = presenter.getNewReminders(options.getLastReminderCheck());
+		
+		//--------------------------------------------------------------
+		//TODO TEST
+		Date sqlDate = options.getLastReminderCheck();
+		System.out.println("ursprüngliches sqlDate: " + sqlDate);
+		
+		//10 Tage abziehen im LocalDate Format
+		LocalDate localDate = sqlDate.toLocalDate();
+		localDate = localDate.minusDays(10);
+		sqlDate = java.sql.Date.valueOf( localDate );
+		
+		//Ausm Model holen
+		ObservableList<Reminder> newReminders = presenter.getNewReminders(sqlDate);
+		
+		System.out.println("New Reminders since: " + sqlDate + " : " + newReminders);
+		
+		//--------------------------------------------------------------
+		
 		if(newReminders!= null)
 		{
 			Stage stage = new Stage();

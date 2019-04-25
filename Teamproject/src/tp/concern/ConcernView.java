@@ -387,6 +387,8 @@ public class ConcernView extends GridPane {
 				// Tabbeschriftung anpassen
 				tab.setText(newTitle);
 			}
+			
+			presenter.updateRightToolbar();
 
 		});
 

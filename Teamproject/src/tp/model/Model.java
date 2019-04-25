@@ -75,7 +75,7 @@ public class Model {
 	
 	//-------------------Calculations--------------------------------------------------------------
 
-	public ArrayList<Appointment> loadNext24hourAppointments() {
+	public ArrayList<Appointment> getNext24hourAppointments() {
 		String sql = "SELECT * FROM appointment WHERE (date == date() AND endTime >= DATE('now')) OR (date == DATE('now', '+1 day') AND startTime<= date())";		
 		ArrayList<Appointment> result = new ArrayList<Appointment>();
 		try 	(Connection conn = this.connect();
@@ -151,7 +151,11 @@ public class Model {
 	}
 	
 	//TODO Test am Jahresübergang
-	public ObservableList<Appointment> getWeeksAppointments(Date date) {
+	public ArrayList<Appointment> getAppointments(Date date) {
+		/*TODO !!!!! Verlangt jetzt nicht mehr alle Appointments der ganzen Woche sondern nur von einem einzelnen TAG!!!
+		 * Sortiert nach Startzeit wenn möglich...
+		*/
+		
 		Calendar cal = Calendar.getInstance();
 		cal.clear();
 		cal.setTime(date);
@@ -600,6 +604,7 @@ public class Model {
 	public ObservableList<Reminder> getNewReminders(Date lastReminderCheck) {
 		
 		ObservableList<Reminder> result = FXCollections.observableArrayList();
+
 		String sql ="SELECT id FROM reminder WHERE date >= date() AND date <= " + lastReminderCheck;
 		try(Connection conn = this.connect();
 				Statement stmt = conn.createStatement();

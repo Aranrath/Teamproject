@@ -104,7 +104,7 @@ public class Presenter {
 	}
 
 	public ArrayList<Appointment> getNext24hourAppointments() {
-		return model.loadNext24hourAppointments();
+		return model.getNext24hourAppointments();
 	}
 
 	public Student getStudent(int mtrNr) {
@@ -161,8 +161,8 @@ public class Presenter {
 		return model.getKwOfDate(date);
 	}
 
-	public ObservableList<Appointment> getWeeksAppointments(Date date) {
-		return model.getWeeksAppointments(date);
+	public ArrayList<Appointment> getAppointments(Date date) {
+		return model.getAppointments(date);
 	}
 
 	public Date getStartOfNextWeek(Date date) {
