@@ -342,7 +342,7 @@ public class StatisticComponentView extends HBox
 					case "Gesamtlänge der Termine in h":
 					case "Anzahl der Studenten":
 					case "ECTS":
-					case "Betreuungszeit":
+					case "Betreuungszeit in h":
 					case "Semester":
 					case "Anzahl zugehöriger Anliegen":
 						filterMethodParamHBox.getChildren().add(filterMethodParamPrefixComboBox);

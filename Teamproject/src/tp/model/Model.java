@@ -39,6 +39,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 import tp.model.statistics.ContinuousStatistic;
 import tp.model.statistics.IntervalStatistic;
 import tp.model.statistics.RatioStatistic;
@@ -388,6 +389,27 @@ public class Model {
 	}
 
 
+	public Concern getConcern(Appointment clashingAppointment) {
+		Concern result = null;
+		String sql = "SELECT concern FROM appointment WHERE id = " + clashingAppointment.getId();
+		try (Connection conn = this.connect();
+				Statement stmt = conn.createStatement();
+				ResultSet rs = stmt.executeQuery(sql))
+			{
+				while(rs.next())
+				{
+					long conId = rs.getLong("concern");
+					result = getConcern(conId);
+				}
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+		return result;
+	}
+
+
 	public ObservableList<Concern> getConcerns() {
 		ObservableList<Concern> result = FXCollections.observableArrayList();
 		String sql = "SELECT * FROM concern";
@@ -397,7 +419,7 @@ public class Model {
 		{
 			while(rs.next())
 			{
-				int id = rs.getInt("id");
+				long id = rs.getLong("id");
 				result.add(getConcern(id));
 			}
 		}
@@ -637,8 +659,71 @@ public class Model {
 
 	public Statistic getStatistic(int statisticId) 
 	{
-		// TODO Auto-generated method stub
-		return null;
+		Statistic result = null;
+		String sql = "SELECT * FROM statistic WHERE id = " + statisticId;
+		try (Connection conn = this.connect();
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(sql))
+		{
+			if(rs.next()) {
+				String title = rs.getString("title");
+				String charttype = rs.getString("charttype");
+				List<StatisticValues> values = getStatisticValues(statisticId);
+				Date startDate = rs.getDate("startDate");
+				if (charttype.equals("ratio")) {
+					result = new RatioStatistic(title, values, startDate);
+				}else if(charttype.equals("continuous")) {
+					Date endDate = rs.getDate("endDate");
+					result = new ContinuousStatistic(title, values, startDate, endDate);
+				}else if(charttype.equals("interval")) {
+					Date endDate = rs.getDate("endDate");
+					int step = rs.getInt("step");
+					result = new IntervalStatistic(title, values, startDate, endDate, step);
+				}
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+
+	private List<StatisticValues> getStatisticValues(int statisticId) {
+		List<StatisticValues> result = new ArrayList<StatisticValues>();
+		String sql = "SELECT * FROM statistic_component WHERE statistic = " + statisticId;
+		try (Connection conn = this.connect();
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(sql))
+		{
+			while(rs.next()) {
+				long id = rs.getLong("id");
+				String name = rs.getString("name");
+				Color color = Color.valueOf(rs.getString("color"));
+				List<Integer> values = getStatisticValues(id);
+				StatisticValues statVal = new StatisticValues(name, color, values);
+				result.add(statVal);
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+
+	private List<Integer> getStatisticValues(long statCompId) {
+		List<Integer> result = new ArrayList<Integer>();
+		String sql = "SELECT * FROM statistic_values WHERE statCompId = " + statCompId + " ORDER BY valuNr ASC";
+		try (Connection conn = this.connect();
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(sql))
+		{
+			while(rs.next()) {
+				result.add(rs.getInt("value"));
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return result;
 	}
 
 
@@ -647,28 +732,28 @@ public class Model {
 	Student result = new Student(0, null, null, null, 0, null, null, null, null, null, null);
 	String sql1 = "SELECT * FROM student WHERE matrNr = " + mtrNr;
 	String sql2 = "SELECT concern FROM concern_student WHERE student = " + mtrNr;
-	
+	System.out.println("do");
 	try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery(sql1))				
+			ResultSet rs1 = stmt.executeQuery(sql1))				
 		{
-			if (rs.next()) {
+			if (rs1.next()) {
 			
-				String name = rs.getString("name");
-				String firstname = rs.getString("firstname");
+				String name = rs1.getString("name");
+				String firstname = rs1.getString("firstname");
 				ArrayList<String> eMailAddressess = getEMailAddressess(mtrNr);
-				int semester = rs.getInt("semester");
-				String notes = rs.getString("notes");
+				int semester = rs1.getInt("semester");
+				String notes = rs1.getString("notes");
 				ObservableList<Subject> passedSubjects= getPassedSubjects(mtrNr);
 				Image img = null;
-				try(InputStream is= rs.getBinaryStream("image")){
+				try(InputStream is= rs1.getBinaryStream("image")){
 					if (is!=null) {
 						img = new Image(is);		
 					}
 				}catch(Exception e) {
 					e.printStackTrace();
 				}
-				String gender = rs.getString("gender");
+				String gender = rs1.getString("gender");
 				
 				result = new Student(mtrNr, name, firstname, eMailAddressess, semester, notes, passedSubjects, img, null, gender, null);
 				if(getLastEmail(result)!=null) {
@@ -676,24 +761,22 @@ public class Model {
 					result.setLastContact(lastContact);
 				}
 			}
-		}	
+			try (ResultSet rs2 = stmt.executeQuery(sql2))				
+			{
+				ObservableList<Long> concerns = FXCollections.observableArrayList();
+				while(rs2.next())
+				{
+					concerns.add(rs2.getLong("concern"));
+				}
+				result.setConcernIds(concerns);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 		catch(Exception e)
 		{
 			e.printStackTrace();
 		}	
-		try (Connection conn = this.connect();
-			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery(sql2))				
-		{
-			ObservableList<Long> concerns = FXCollections.observableArrayList();
-			while(rs.next())
-			{
-				concerns.add(rs.getLong("concern"));
-			}
-			result.setConcernIds(concerns);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}		
 		return result;
 	}
 
@@ -961,6 +1044,24 @@ public class Model {
 	}
 
 
+	public Appointment checkAppointmentAvailability(Date date, long startTime, long endTime) {
+		String sql = "SELECT id FROM appointment WHERE date = " + date.getTime() + " AND (startTime < " + endTime + " OR endTime > " + startTime + ")";
+		try (Connection conn = this.connect();
+				Statement stmt = conn.createStatement();
+				ResultSet rs = stmt.executeQuery(sql))
+			{
+				if (rs.next()) {
+					int id = rs.getInt("id");
+					return getAppointment(id);				}
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+		return null;
+	}
+
+
 	public int saveNewConcern(Concern concern) {
 		int id = 0; 
 		String sql1 = "INSERT INTO concern (title, topic, notes, created) values (?, ?, ?, DATE('now'))";
@@ -1130,8 +1231,19 @@ public class Model {
 
 
 	public void saveEditedForm(Form selectedForm) {
-		// TODO Auto-generated method stub
-		
+		String sql = "UPDATE form SET title = ?, file = ? WHERE id = " + selectedForm.getId();
+		try (Connection conn = this.connect();
+			PreparedStatement pstmt = conn.prepareStatement(sql))
+		{	
+			File file = selectedForm.getFile();
+			pstmt.setString(1, selectedForm.getName());
+			pstmt.setBytes(2, readFile(file.getAbsolutePath()));
+			pstmt.executeUpdate();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 
@@ -1337,7 +1449,7 @@ public class Model {
 		Statistic result = new RatioStatistic(title, values, date);
 		
 		//save
-		String sql1 = "INSERT INTO statistic(name, charttype) VALUES('" + title +"', ratio)";
+		String sql1 = "INSERT INTO statistic(name, charttype, startDate) VALUES('" + title +"', ratio, " + date + ")";
 		String sql2 = "SELECT last_insert_rowid()";
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement())
@@ -1481,19 +1593,19 @@ public class Model {
 	}
 
 
+	//TODO extensive Tests....
 	private int calculateFilterValue(String source, Filter f, Date date) {
 		int result = 0;
 		Map<String, Object[]> filterMap = f.getFilters();
-		String select = "SELECT *";
-		String from = "";
-		String where = "";
 		try (Connection conn = this.connect();
 				Statement stmt = conn.createStatement())
 		{	
+			//-----------------------student----------------------
 			if(source.equals("Studenten")) {
-				from = " FROM student";
-				//always true, needed to append other filters with AND
-				where = " matrNr > 0";
+				//create sql query
+				String select = "SELECT matrNr";
+				String from = " FROM student";
+				String where = " WHERE created < " + date.getTime() + " AND (invisible IS NULL OR invisible > " + date.getTime();
 			
 				if (filterMap.containsKey("Geschlecht")){
 					where += " AND gender = " + filterMap.get("Geschlecht")[0];
@@ -1514,23 +1626,119 @@ public class Model {
 					where += " AND po = " + poId;
 				}
 
-				//TODO
-				if (filterMap.containsKey("ECTS")) {
-					
+				//Sql query
+				String sql = select + from + where;
+				ArrayList<Integer> students = new ArrayList<Integer>();
+				try (ResultSet rs = stmt.executeQuery(sql)){
+					while (rs.next()) {
+						int matrNr = rs.getInt("matrNr");	
+						students.add(matrNr);
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
-				if (filterMap.containsKey("Betreuungszeit")) {
-					
+
+				//other filters
+				if (filterMap.containsKey("ECTS")) {
+					for (Integer matrNr: students) {
+						Student stu = getStudent(matrNr);
+						int ECTS = calculateEcts(stu.getPassedSubjects(), stu.getPo());
+						String op = (String)filterMap.get("ECTS")[0];
+						if (op.equals(">")) {
+							if (ECTS <= Integer.parseInt((String)filterMap.get("ECTS")[1])) {
+								students.remove(matrNr);
+							}
+						}else if (op.equals("=")) {
+							if (ECTS != Integer.parseInt((String)filterMap.get("ECTS")[1])) {
+								students.remove(matrNr);
+							}
+						}else if (op.equals("<")) {
+							if (ECTS >= Integer.parseInt((String)filterMap.get("ECTS")[1])) {
+								students.remove(matrNr);
+							}
+						}
+					}
+				}
+				if (filterMap.containsKey("Betreuungszeit in h")) {
+					for (Integer matrNr: students) {
+						Student stu = getStudent(matrNr);
+						//time in milliseconds
+						long betrZeit = 0;
+						for (Long conId: stu.getConcernIds()) {
+							Concern con = getConcern(conId);
+							for (Appointment app: con.getAppointments()) {
+								betrZeit += app.getDuration();
+							}
+						}
+						//convert betrZeit to hours: /1000 -> seconds /60 -> minutes /60 -> hours
+						betrZeit = betrZeit /1000 /60 /60;
+						String op = (String)filterMap.get("Betreuungszeit in h")[0];
+						if (op.equals(">")) {
+							if (betrZeit <= Integer.parseInt((String)filterMap.get("Betreuungszeit in h")[1])) {
+								students.remove(matrNr);
+							}
+						}else if (op.equals("=")) {
+							if (betrZeit != Integer.parseInt((String)filterMap.get("Betreuungszeit in h")[1])) {
+								students.remove(matrNr);
+							}
+						}else if (op.equals("<")) {
+							if (betrZeit >= Integer.parseInt((String)filterMap.get("Betreuungszeit in h")[1])) {
+								students.remove(matrNr);
+							}
+						}
+					}
 				}
 				if (filterMap.containsKey("Anzahl zugehöriger Anliegen")) {
-					
+					for (Integer matrNr: students) {
+						Student stu = getStudent(matrNr);
+						int anzAnl = stu.getConcernIds().size();
+						String op = (String)filterMap.get("Anzahl zugehöriger Anliegen")[0];
+						if (op.equals(">")) {
+							if (anzAnl <= Integer.parseInt((String)filterMap.get("Anzahl zugehöriger Anliegen")[1])) {
+								students.remove(matrNr);
+							}
+						}else if (op.equals("=")) {
+							if (anzAnl != Integer.parseInt((String)filterMap.get("Anzahl zugehöriger Anliegen")[1])) {
+								students.remove(matrNr);
+							}
+						}else if (op.equals("<")) {
+							if (anzAnl >= Integer.parseInt((String)filterMap.get("Anzahl zugehöriger Anliegen")[1])) {
+								students.remove(matrNr);
+							}
+						}
+					}
 				}
 				if (filterMap.containsKey("Letzter Kontakt")) {
-					
+					for (Integer matrNr: students) {
+						Student stu = getStudent(matrNr);
+						Date lastCon = getLastEmail(stu).getDate();
+						String op = (String)filterMap.get("Letzter Kontakt")[0];
+						if (op.equals(">")) {
+							if (!lastCon.after((Date)filterMap.get("Letzter Kontakt")[1])) {
+								students.remove(matrNr);
+							}
+						}else if (op.equals("=")) {
+							if (!lastCon.equals((Date)filterMap.get("Letzter Kontakt")[1])) {
+								students.remove(matrNr);
+							}
+						}else if (op.equals("<")) {
+							if (!lastCon.before((Date)filterMap.get("Letzter Kontakt")[1])) {
+								students.remove(matrNr);
+							}
+						}
+					}
 				}
+				
+				result = students.size();
+				
+				
+				
+			//-----------------------concern----------------------
 			}else {
-				from = " FROM concern";
-				//always true, needed to append other filters with AND
-				where = " id > 0";
+				//create sql query
+				String select = "SELECT id";
+				String from = " FROM concern";
+				String where = " WHERE created < " + date.getTime() + " AND (done IS NULL OR done > " + date.getTime();
 			
 				if (filterMap.containsKey("Thema")) {
 					String sql = "SELECT id FROM topic WHERE title = " + filterMap.get("Thema")[0];
@@ -1548,35 +1756,96 @@ public class Model {
 					if(filterMap.get("Status")[0].equals("Offen")) {
 						where += " AND done IS NULL";
 					}else if(filterMap.get("Status")[0].equals("Beendet")) {
-						//TODO test
 						where += " AND done IS NOT NULL AND complete = true";
 					}else {
 						where += " AND done IS NOT NULL AND complete = false";
 					}
 				}
-			
+				
+				
+				//Sql query
+				String sql = select + from + where;
+				ArrayList<Long> concerns = new ArrayList<Long>();
+				try (ResultSet rs = stmt.executeQuery(sql)){
+					while (rs.next()) {
+						long id = rs.getLong("id");	
+						concerns.add(id);
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+				
+				//other filters
 				if (filterMap.containsKey("Anzahl der Termine")) {
-					
+					for (Long conId: concerns) {
+						Concern con = getConcern(conId);
+						int numApp = con.getAppointments().size();
+						String op = (String)filterMap.get("Anzahl der Termine")[0];
+						if (op.equals(">")) {
+							if (numApp <= Integer.parseInt((String)filterMap.get("Anzahl der Termine")[1])) {
+								concerns.remove(conId);
+							}
+						}else if (op.equals("=")) {
+							if (numApp != Integer.parseInt((String)filterMap.get("Anzahl der Termine")[1])) {
+								concerns.remove(conId);
+							}
+						}else if (op.equals("<")) {
+							if (numApp >= Integer.parseInt((String)filterMap.get("Anzahl der Termine")[1])) {
+								concerns.remove(conId);
+							}
+						}
+					}
 				}
 				if (filterMap.containsKey("Gesamtlänge der Termine in h")) {
-					
+					for (Long conId: concerns) {
+						//time in milliseconds
+						long betrZeit = 0;
+						Concern con = getConcern(conId);
+						for (Appointment app: con.getAppointments()) {
+							betrZeit += app.getDuration();
+						}
+						//convert betrZeit to hours: /1000 -> seconds /60 -> minutes /60 -> hours
+						betrZeit = betrZeit /1000 /60 /60;
+						String op = (String)filterMap.get("Gesamtlänge der Termine in h")[0];
+						if (op.equals(">")) {
+							if (betrZeit <= Integer.parseInt((String)filterMap.get("Gesamtlänge der Termine in h")[1])) {
+								concerns.remove(conId);
+							}
+						}else if (op.equals("=")) {
+							if (betrZeit != Integer.parseInt((String)filterMap.get("Gesamtlänge der Termine in h")[1])) {
+								concerns.remove(conId);
+							}
+						}else if (op.equals("<")) {
+							if (betrZeit >= Integer.parseInt((String)filterMap.get("Gesamtlänge der Termine in h")[1])) {
+								concerns.remove(conId);
+							}
+						}
+					}
 				}
 				if (filterMap.containsKey("Anzahl der Studenten")) {
-					
+					for (Long conId: concerns) {
+						Concern con = getConcern(conId);
+						int numStu = con.getStudents().size();
+						String op = (String)filterMap.get("Anzahl der Termine")[0];
+						if (op.equals(">")) {
+							if (numStu <= Integer.parseInt((String)filterMap.get("Anzahl der Termine")[1])) {
+								concerns.remove(conId);
+							}
+						}else if (op.equals("=")) {
+							if (numStu != Integer.parseInt((String)filterMap.get("Anzahl der Termine")[1])) {
+								concerns.remove(conId);
+							}
+						}else if (op.equals("<")) {
+							if (numStu >= Integer.parseInt((String)filterMap.get("Anzahl der Termine")[1])) {
+								concerns.remove(conId);
+							}
+						}
+					}
 				}
+				
+				result = concerns.size();
 			}
-			
-			
-//			stmt.executeUpdate(sql1);
-//			int id = 0;
-//			try (ResultSet rs = stmt.executeQuery(sql2)){
-//				if (rs.next()) {
-//					id = rs.getInt(1);
-//					
-//				}
-//			} catch (Exception e) {
-//				e.printStackTrace();
-//			}
 		}
 		catch (Exception e)
 		{
@@ -1768,7 +2037,7 @@ public class Model {
 	}
 
 	public Image getDefaultStudentImage() {
-		// TODO Auto-generated method stub
+		// TODO Bild ändern...?
 		return new Image("https://i.pinimg.com/originals/e2/69/8e/e2698e465dbf3f13844e896e00f0ea30.jpg");
 		//	return null;
 	}
@@ -2081,16 +2350,4 @@ public class Model {
 	      return result;
 
 	   }
-
-
-	public Appointment checkAppointmentAvailability(Date date, long startTime, long endTime) {
-		// TODO return entsprechenden Termin der sich überschneidet oder NULL (!!!) wenn sich nix überschneidet
-		return null;
-	}
-
-
-	public Concern getConcern(Appointment clashingAppointment) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }

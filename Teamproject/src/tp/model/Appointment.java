@@ -2,6 +2,9 @@ package tp.model;
 
 import java.sql.Date;
 import java.sql.Time;
+import java.time.Duration;
+import java.time.LocalTime;
+import java.time.temporal.Temporal;
 
 public class Appointment {
 
@@ -77,7 +80,7 @@ public class Appointment {
 		this.roomNmb = roomNmb;
 	}
 	
-	//For TableVIews
+	//For TableViews
 	public String getStartTimeString() {
 		return new Time(startTime).toString();
 	}
@@ -86,4 +89,9 @@ public class Appointment {
 		return new Time(endTime).toString();
 	}
 
+	//For Statistic
+	//getDuration in milliseconds
+	public Long getDuration(){
+		return Math.abs(endTime - startTime);
+	}
 }
