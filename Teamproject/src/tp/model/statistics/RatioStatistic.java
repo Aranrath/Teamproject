@@ -12,4 +12,18 @@ public class RatioStatistic extends Statistic{
 		this.date = date;
 	}
 
+	
+	//=====================================
+	
+	
+	public Date getDate() {
+		return date;
+	}
+
+	public void setDate(Date date) {
+		this.date = date;
+	}
+	
+	
+
 }

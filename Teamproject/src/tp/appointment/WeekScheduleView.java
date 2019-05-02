@@ -1,6 +1,10 @@
 package tp.appointment;
 
 import java.sql.Date;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 
 import javafx.geometry.HPos;
@@ -16,18 +20,25 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import tp.Presenter;
 import tp.model.Appointment;
+import tp.model.Concern;
 
 public class WeekScheduleView extends GridPane
 {
-	Presenter presenter;
+	private Presenter presenter;
 
 	private int shownKw;
 	private Date[] shownWorkWeek;
+	
+	private LocalTime earliestTime;
+	private LocalTime latestTime;
+	
 	
 	//==============================================
 	
@@ -37,11 +48,13 @@ public class WeekScheduleView extends GridPane
 	private Button showCurrentWeekButton;
 	private DatePicker datePicker;
 	private Label dateLabel;
-	private HBox timeTableHBox;
+	private GridPane timeTableGridPane;
 	
 	//==============================================
 	
+	//zum drüber iterieren
 	private VBox [] weeksAppointmentsVBoxes;
+	private Label [] weeksDateLabels;
 	
 	private VBox mondayAppointmentsVBox;
 	private VBox thuesdayAppointmentsVBox;
@@ -67,33 +80,76 @@ public class WeekScheduleView extends GridPane
 		leftButton = new Button("<");
 		rightButton = new Button(">");
 		showCurrentWeekButton = new Button("Zurück zur aktuellen Woche");
-		timeTableHBox = new HBox();
 		dateLabel = new Label("Zeige Woche des Datums: ");
-		
-		//TODO Abstand zwischen Spalten ??
-//		timeTableHBox.setSpacing(40);
-//		timeTableHBox.setPadding(new Insets(20,20,20,20));
-		
-		timeTableHBox.setBackground(
-				new Background(new BackgroundFill(Color.AQUAMARINE, CornerRadii.EMPTY, Insets.EMPTY)));
 		datePicker = new DatePicker();
 		
-		mondayAppointmentsVBox = new VBox(new Label("Montag"));
-		thuesdayAppointmentsVBox = new VBox(new Label("Dienstag"));
-		wednesdayAppointmentsVBox = new VBox(new Label("Mittwoch"));
-		thursdayAppointmentsVBox = new VBox(new Label("Donnerstag"));
-		fridayAppointmentsVBox = new VBox(new Label("Freitag"));
+		HBox datePickerAndLabelBox = new HBox(dateLabel, datePicker);
+		HBox navigationBox = new HBox(leftButton, kwLabel, rightButton);
+		
+		earliestTime = LocalTime.of(5, 59);
+		latestTime = LocalTime.of(20, 1);
+		
+		//-------------------------------------------------
+		//ScheduleTable erstellen
+		
+		timeTableGridPane = new GridPane();
+		timeTableGridPane.setBackground(
+		new Background(new BackgroundFill(Color.ALICEBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
+		timeTableGridPane.setHgap(10);
+//		timeTableGridPane.setVgap(5);
+		timeTableGridPane.setPadding(new Insets(10,10,10,10));
+		
+		//Wochentagsspalten erstellen
+		mondayAppointmentsVBox = new VBox();
+		thuesdayAppointmentsVBox = new VBox();
+		wednesdayAppointmentsVBox = new VBox();
+		thursdayAppointmentsVBox = new VBox();
+		fridayAppointmentsVBox = new VBox();
 		
 		weeksAppointmentsVBoxes = new VBox[] {mondayAppointmentsVBox, thuesdayAppointmentsVBox, wednesdayAppointmentsVBox, thursdayAppointmentsVBox, fridayAppointmentsVBox};
+		weeksDateLabels = new Label[] {new Label("<Datum Montag>"),new Label("<Datum Dienstag>"),new Label("<Datum Mittwoch>"),new Label("<Datum Donnerstag>"),new Label("<Datum Freitag>")};
 		
-		timeTableHBox = new HBox(mondayAppointmentsVBox, thuesdayAppointmentsVBox, wednesdayAppointmentsVBox, thursdayAppointmentsVBox, fridayAppointmentsVBox);
-		timeTableHBox.setBackground(
-				new Background(new BackgroundFill(Color.CORNFLOWERBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
+		//Zusammenfügen
+		timeTableGridPane.add(new Label("Montag"), 0, 0);
+		timeTableGridPane.add(new Label("Dienstag"), 1, 0);
+		timeTableGridPane.add(new Label("Mittwoch"), 2, 0);
+		timeTableGridPane.add(new Label("Donnerstag"), 3, 0);
+		timeTableGridPane.add(new Label("Freitag"), 4, 0);
 		
 		
-		HBox datePickerAndLabelBox = new HBox(dateLabel, datePicker);
+		for(int i = 0; i<5; i++)
+		{
+			timeTableGridPane.add(weeksDateLabels[i], i, 1);
+		}
 		
-		HBox navigationBox = new HBox(leftButton, kwLabel, rightButton);
+		timeTableGridPane.add(new Label(""), 0, 2);
+		
+		for(int i = 0; i<5; i++)
+		{
+			timeTableGridPane.add(weeksAppointmentsVBoxes[i], i, 3);
+			
+			weeksAppointmentsVBoxes[i].setBackground(
+					new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
+			
+			weeksAppointmentsVBoxes[i].setMaxHeight(Double.MAX_VALUE);
+		}
+		
+		//------------------------------------------
+		//ScheduleTable Column Constraints
+		ColumnConstraints tableCol = new ColumnConstraints();
+		tableCol.setPercentWidth(100/5);
+		timeTableGridPane.getColumnConstraints().addAll(tableCol, tableCol,tableCol,tableCol,tableCol);
+		
+		//------------------------------------------
+		//ScheduleTable Row Constraints
+		
+		RowConstraints topLineRow = new RowConstraints();
+		topLineRow.setPercentHeight(10/3);
+				
+		RowConstraints appointmentsRow = new RowConstraints();
+		appointmentsRow.setPercentHeight(90);
+				
+		timeTableGridPane.getRowConstraints().addAll(topLineRow, topLineRow,topLineRow, appointmentsRow);
 		
 		
 		//==============================================
@@ -109,7 +165,7 @@ public class WeekScheduleView extends GridPane
 		add(navigationBox,0,1,2,1);
 		navigationBox.setAlignment(Pos.CENTER);
 		
-		add(timeTableHBox,0,2,2,1);
+		add(timeTableGridPane,0,2,2,1);
 		
 		//========================================================================
 				//Column Constraints
@@ -122,10 +178,10 @@ public class WeekScheduleView extends GridPane
 				//Row Constraints
 						
 				RowConstraints buttonRow = new RowConstraints();
-				buttonRow.setPercentHeight(15/2);
+				buttonRow.setPercentHeight(10/2);
 						
 				RowConstraints scheduleHBoxRow = new RowConstraints();
-				scheduleHBoxRow.setPercentHeight(85);
+				scheduleHBoxRow.setPercentHeight(90);
 						
 				getRowConstraints().add(buttonRow);
 				getRowConstraints().add(buttonRow);
@@ -138,7 +194,7 @@ public class WeekScheduleView extends GridPane
 					fillView(date);
 				});
 				rightButton.setOnAction((event)->{
-					Date date = presenter.getStartOfNextWeek(shownWorkWeek[shownWorkWeek.length-1]);
+					Date date = presenter.getStartOfNextWeek(shownWorkWeek[4]);
 					fillView(date);
 				});
 				showCurrentWeekButton.setOnAction((event)->{});
@@ -149,19 +205,27 @@ public class WeekScheduleView extends GridPane
 	
 	private void fillView(Date date)
 	{
+		//Je Wochentag ein Datum erhalten
 		shownWorkWeek = presenter.getWorkWeekOfDate(date);
 		
-		if(shownWorkWeek.length != 5)
+		//Nummer der Kalendarwoche holen
+		shownKw = presenter.getKwOfDate(date);
+		
+		//Anzeige an kw und Wochendaten anpassen
+		kwLabel.setText(" " + shownKw + ". KW von " + shownWorkWeek[0] + " bis " + shownWorkWeek[4] + " ");
+		
+
+		//Wochentagsspalten leeren
+		for(int i = 0; i <weeksAppointmentsVBoxes.length;i++)
 		{
-			System.out.println("ERROR: Wochendaten falsch erhalten: " +  shownWorkWeek);
+			weeksAppointmentsVBoxes[i].getChildren().clear();
 		}
 		
-		shownKw = presenter.getKwOfDate(date);
-		kwLabel.setText(shownKw + ". KW von " + shownWorkWeek[0] + " bis " + shownWorkWeek[4]);
 		
 		for(int i = 0; i<5; i++)
 		{
-			weeksAppointmentsVBoxes[i].getChildren().add(new Label("(" + shownWorkWeek[i] + ")"));
+			
+			weeksDateLabels[i].setText(shownWorkWeek[i] + "");
 			
 			ArrayList<Appointment> thisDayAppointments = presenter.getAppointments(shownWorkWeek[i]);
 			
@@ -169,16 +233,63 @@ public class WeekScheduleView extends GridPane
 			//TODO Maße anpassen
 			for(Appointment a : thisDayAppointments)
 			{
-				Button appointmentButton = new Button(a.getStartTimeString() + " - " + a.getEndTimeString() + " (" + a.getRoomNmb() + ")");
-				appointmentButton.setOnAction(event -> {
-					presenter.openConcernTab(presenter.getConcern(a.getConcernId()));
-				});
-				appointmentButton.setStyle("-fx-base: #C5EFF7");
 				
-				weeksAppointmentsVBoxes[i].getChildren().add(appointmentButton);
+				LocalTime appointmentStartTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(a.getStartTime()), ZoneId.systemDefault()).toLocalTime();
+				LocalTime appointmentEndTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(a.getEndTime()), ZoneId.systemDefault()).toLocalTime();
+		
+
+				//Wenn Termin zwischen 6 und 20 Uhr ist:
+				if(appointmentStartTime.isAfter(earliestTime) && appointmentEndTime.isBefore(latestTime))
+				{
+					Concern concernOfAppointment = presenter.getConcern(a.getConcernId());
+					
+					Button appointmentButton = new Button(a.getStartTimeString() + " - " + a.getEndTimeString() + " " +concernOfAppointment.getTitle());
+					if(!a.getRoomNmb().isEmpty())
+					{
+						appointmentButton.setText(appointmentButton.getText() + " (" + a.getRoomNmb() + ")");
+					}
+					
+					appointmentButton.setMaxWidth(Double.MAX_VALUE);
+					
+					appointmentButton.setOnAction(event -> {
+						presenter.openConcernTab(concernOfAppointment);
+					});
+					appointmentButton.setStyle("-fx-base: #C5EFF7");
+					
+					weeksAppointmentsVBoxes[i].getChildren().add(appointmentButton);
+				}
+				
+				
 			}
 			
 		}
+		
+		//TODO Zeiten = Buttonhöhe + Position
+		//TEST:
+		
+		weeksAppointmentsVBoxes[0].setVisible(false);
+		Pane pane = new Pane();
+		
+		pane.setBackground(
+				new Background(new BackgroundFill(Color.BEIGE, CornerRadii.EMPTY, Insets.EMPTY)));
+		timeTableGridPane.add(pane, 0, 3);
+		
+		Button label = new Button("2");
+		
+		pane.getChildren().addAll(label);
+
+		pane.setMaxWidth(Double.MAX_VALUE);
+		GridPane.setHgrow(pane, Priority.ALWAYS);
+		
+		
+		
+		label.setMaxWidth(Double.MAX_VALUE);
+		GridPane.setHgrow(label, Priority.ALWAYS);
+		
+		label.setMaxHeight(Double.MAX_VALUE);
+		
+		System.out.println(label.localToScene(pane.getBoundsInLocal()));
+		
 		
 		
 			

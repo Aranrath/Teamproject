@@ -196,7 +196,6 @@ public class Model {
 		cal.setTime(date);
 		cal.add(Calendar.WEEK_OF_YEAR, +1);
 		cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-		cal.setTime(date);
 		return new Date(cal.getTime().getTime());
 		
 	}
@@ -355,7 +354,6 @@ public class Model {
 		}
 		return result;
 	}
-
 
 	public Concern getConcern(long concernId) 
 	{
@@ -732,7 +730,6 @@ public class Model {
 	Student result = new Student(0, null, null, null, 0, null, null, null, null, null, null);
 	String sql1 = "SELECT * FROM student WHERE matrNr = " + mtrNr;
 	String sql2 = "SELECT concern FROM concern_student WHERE student = " + mtrNr;
-	System.out.println("do");
 	try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement();
 			ResultSet rs1 = stmt.executeQuery(sql1))				

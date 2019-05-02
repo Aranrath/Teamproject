@@ -2,9 +2,6 @@ package tp.model;
 
 import java.sql.Date;
 import java.sql.Time;
-import java.time.Duration;
-import java.time.LocalTime;
-import java.time.temporal.Temporal;
 
 public class Appointment {
 
@@ -82,11 +79,12 @@ public class Appointment {
 	
 	//For TableViews
 	public String getStartTimeString() {
-		return new Time(startTime).toString();
+		return new Time(startTime).toString().substring(0, 5);
 	}
 	
 	public String getEndTimeString() {
-		return new Time(endTime).toString();
+		
+		return new Time(endTime).toString().substring(0, 5);
 	}
 
 	//For Statistic

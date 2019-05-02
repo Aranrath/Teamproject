@@ -1,7 +1,6 @@
 package tp;
 
 import java.sql.Date;
-import java.time.LocalDate;
 import java.util.ArrayList;
 
 import javafx.collections.ObservableList;
@@ -545,24 +544,24 @@ public class MainView extends BorderPane {
 
 	public void showNewReminderView(Options options) {
 		
-//		ObservableList<Reminder> newReminders = presenter.getNewReminders(options.getLastReminderCheck());
+		ObservableList<Reminder> newReminders = presenter.getNewReminders(options.getLastReminderCheck());
 		
-		//--------------------------------------------------------------
-		//TODO TEST
-		Date sqlDate = options.getLastReminderCheck();
-		System.out.println("ursprüngliches sqlDate: " + sqlDate);
-		
-		//10 Tage abziehen im LocalDate Format
-		LocalDate localDate = sqlDate.toLocalDate();
-		localDate = localDate.minusDays(10);
-		sqlDate = java.sql.Date.valueOf( localDate );
-		
-		//Ausm Model holen
-		ObservableList<Reminder> newReminders = presenter.getNewReminders(sqlDate);
-		
-		System.out.println("New Reminders since: " + sqlDate + " : " + newReminders);
-		
-		//--------------------------------------------------------------
+//		//--------------------------------------------------------------
+//		//TEST
+//		Date sqlDate = options.getLastReminderCheck();
+//		System.out.println("ursprüngliches sqlDate: " + sqlDate);
+//		
+//		//10 Tage abziehen im LocalDate Format 
+//		LocalDate localDate = sqlDate.toLocalDate();
+//		localDate = localDate.minusDays(10);
+//		sqlDate = java.sql.Date.valueOf( localDate );
+//		
+//		//Ausm Model holen
+//		ObservableList<Reminder> newReminders = presenter.getNewReminders(sqlDate);
+//		
+//		System.out.println("New Reminders since: " + sqlDate + " : " + newReminders);
+//		
+//		//--------------------------------------------------------------
 		
 		if(newReminders!= null)
 		{
