@@ -647,6 +647,9 @@ public class ConcernView extends GridPane {
 		}
 		
 	}
+	
+	
+	//==============================================================
 
 	public void addStudentsToConcern(ObservableList<Student> students) {
 		localStudents.clear();

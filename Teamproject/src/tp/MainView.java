@@ -4,17 +4,21 @@ import java.sql.Date;
 import java.util.ArrayList;
 
 import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.Separator;
 import javafx.scene.control.SingleSelectionModel;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.ToolBar;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -45,12 +49,14 @@ public class MainView extends BorderPane {
 	private Presenter presenter;
 	private ArrayList<String> sessionTabsIds;
 	
+	public static final String TOOLBAR_COLOR = Color.LIGHTBLUE.toString();
+	public static final String BUTTON_COLOR = "#FFFFFF";
+	
 	//=======================================
 	
 	private ToolBar leftToolBar;
 	private ToolBar rightToolBar;
 	private TabPane tabPane;
-	
 	
 	//======================================
 	
@@ -112,6 +118,20 @@ public class MainView extends BorderPane {
 		newStatisticButton.setMaxWidth(Double.MAX_VALUE);
 		remindersButton.setMaxWidth(Double.MAX_VALUE);
 		
+		
+		//----------------------------------------------------
+		
+		optionsButton.setStyle("-fx-base: "+ BUTTON_COLOR);
+		allConcernsButton.setStyle("-fx-base: "+ BUTTON_COLOR);
+		newConcernButton.setStyle("-fx-base: "+ BUTTON_COLOR);
+		allStudentensButton.setStyle("-fx-base: "+ BUTTON_COLOR);
+		newStudentButton.setStyle("-fx-base: "+ BUTTON_COLOR);
+		formsButton.setStyle("-fx-base: "+ BUTTON_COLOR);
+		allStatisticsButton.setStyle("-fx-base: "+ BUTTON_COLOR);
+		newStatisticButton.setStyle("-fx-base: "+ BUTTON_COLOR);
+		remindersButton.setStyle("-fx-base: "+ BUTTON_COLOR);
+		
+		
 		//========================================================
 
 		optionsButton.setOnAction((event) -> {
@@ -151,13 +171,36 @@ public class MainView extends BorderPane {
 		
 		leftToolBar = new ToolBar();
 		leftToolBar.setOrientation(Orientation.VERTICAL);
+		leftToolBar.setBackground(
+				new Background(new BackgroundFill(Color.valueOf(TOOLBAR_COLOR), CornerRadii.EMPTY, Insets.EMPTY)));
 		rightToolBar = new ToolBar();
+		rightToolBar.setBackground(
+				new Background(new BackgroundFill(Color.valueOf(TOOLBAR_COLOR), CornerRadii.EMPTY, Insets.EMPTY)));
 		rightToolBar.setOrientation(Orientation.VERTICAL);
 
+		
+//		Separator sep_1 = new Separator();
+//		Separator sep_2 = new Separator();
+//		Separator sep_3 = new Separator();
+//		Separator sep_4 = new Separator();
+//		Separator sep_5 = new Separator();
+//		
+//		sep_1.setVisible(false);
+//		sep_2.setVisible(false);
+//		sep_3.setVisible(false);
+//		sep_4.setVisible(false);
+//		sep_5.setVisible(false);
+//		
+//		//Zusammenfügen
+//		leftToolBar.getItems().addAll(optionsButton, sep_1, allConcernsButton, newConcernButton,
+//				sep_2, allStudentensButton, newStudentButton, sep_3, allStatisticsButton,
+//				newStatisticButton, sep_4, formsButton, sep_5, remindersButton);
+		
 		//Zusammenfügen
-		leftToolBar.getItems().addAll(optionsButton, new Separator(), allConcernsButton, newConcernButton,
-				new Separator(), allStudentensButton, newStudentButton, new Separator(), allStatisticsButton,
-				newStatisticButton, new Separator(), formsButton, new Separator(), remindersButton);
+		leftToolBar.getItems().addAll(optionsButton, allConcernsButton, newConcernButton,
+				allStudentensButton, newStudentButton, allStatisticsButton,
+				newStatisticButton, formsButton, remindersButton);
+		
 
 		//===========================================================
 		//View zusammenfügen
@@ -182,8 +225,10 @@ public class MainView extends BorderPane {
 		if (next24hourAppointments != null) {
 			for (Appointment a : next24hourAppointments)
 			{
-				Button newAppointmentButton = new Button(a.getStartTime() + " - " + a.getEndTime() + "\n"
+				Button newAppointmentButton = new Button(a.getStartTimeString().substring(0, 5) + " - " + a.getEndTimeString().substring(0, 5) + "\n"
 						+ presenter.getConcern(a.getConcernId()).getTitle() + "\n" + a.getRoomNmb());
+				newAppointmentButton.setMaxWidth(Double.MAX_VALUE);
+				newAppointmentButton.setStyle("-fx-base: "+ BUTTON_COLOR);
 				newAppointmentButton.setOnAction((event) -> {
 					openConcernTab(presenter.getConcern(a.getConcernId()));
 				});

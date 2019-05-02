@@ -30,12 +30,14 @@ public class AddStudentToConcernView extends GridPane{
 	
 	TableView<Student> allStudentsTable;
 	TableView<Student> selectedStudentsTable;
-	Label searchBar;
 	Label selectionLabel;
 	Button toRightButton;
 	Button toLeftButton;
 	Button allToLeftButton;
 	Button saveButton;
+	
+	//TODO
+	Label searchBar;
 	
 	public AddStudentToConcernView(Presenter presenter, Stage stage, ConcernView concernView, ObservableList<Student> alreadyInConcernStudents)
 	{
@@ -123,6 +125,9 @@ public class AddStudentToConcernView extends GridPane{
 				selectedStudentsTable.getColumns().addAll(mtrNrCol2, lastNameCol2, firstNameCol2);
 
 				// =====================================================================
+				//TODO Constraints
+				
+				// ======================================================================
 				
 				toRightButton.setOnAction((event) -> {
 					List<Student> studentsToMove = allStudentsTable.getSelectionModel().getSelectedItems();
