@@ -341,11 +341,6 @@ public class Presenter {
 		
 	}
 
-	public void saveNewAppointment(Appointment newAppointment) {
-		model.saveNewAppointment(newAppointment);
-		
-	}
-
 	public void pullAllEMails(Student student, String address) {
 		model.checkMail(student, address);
 	}

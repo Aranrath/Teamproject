@@ -1001,12 +1001,12 @@ public class Model {
 
 	// ------------Datenbank Datenännderungen------------------------------------------------------------
 	
-	public void saveNewAppointment(Appointment appointment) {
+	public void saveNewAppointment(long conId, Appointment appointment) {
 		String sql = "INSERT INTO appointment(concern, date, startTime, endTime, roomNmb) values (?, ?, ?, ?, ?)";
 		try (Connection conn = this.connect();
 			PreparedStatement pstmt = conn.prepareStatement(sql))
 		{
-			pstmt.setLong(1, appointment.getConcernId());
+			pstmt.setLong(1, conId);
 			pstmt.setDate(2, appointment.getDate());
 			pstmt.setLong(3, appointment.getStartTime());
 			pstmt.setLong(4, appointment.getEndTime());
@@ -1020,9 +1020,9 @@ public class Model {
 	}
 
 
-	private void addAppointments(ObservableList<Appointment> appointments) {
+	private void addAppointments(long conId, ObservableList<Appointment> appointments) {
 		for (Appointment a: appointments) {
-			saveNewAppointment(a);
+			saveNewAppointment(conId, a);
 		}
 	}
 
@@ -1081,7 +1081,7 @@ public class Model {
 			}
 			addConcernForms(concern.getId(), concern.getFiles());
 			addConcernStudents(concern.getId(), concern.getStudents());
-			addAppointments(concern.getAppointments());
+			addAppointments(concern.getId(), concern.getAppointments());
 			addReminders(concern.getId(), concern.getReminders());
 		}
 		catch(Exception e)
@@ -1110,7 +1110,7 @@ public class Model {
 			stmt.executeUpdate(sql5);
 			addConcernForms(concern.getId(), concern.getFiles());
 			addConcernStudents(concern.getId(), concern.getStudents());
-			addAppointments(concern.getAppointments());
+			addAppointments(concern.getId(), concern.getAppointments());
 			addReminders(concern.getId(), concern.getReminders());
 		}
 		catch(Exception e)
