@@ -313,7 +313,7 @@ public class Model {
 	// ------------Datenbank Getter----------------------------------------------------------------------
 
 	
-	public Appointment getAppointment(int id) {
+	public Appointment getAppointment(long id) {
 		Appointment result = new Appointment(0, null, 0, 0, null);
 		String sql = "SELECT * FROM appointment WHERE id = " + id;
 		try 	(Connection conn = this.connect();
@@ -322,7 +322,7 @@ public class Model {
 		{
 			if (rs.next()) {
 			
-				int concernId = rs.getInt("concern");
+				long concernId = rs.getInt("concern");
 				Date date = rs.getDate("date");
 				long startTime = rs.getLong("startTime");
 				long endTime = rs.getLong("endTime");
@@ -655,10 +655,10 @@ public class Model {
 	}
 
 
-	public Statistic getStatistic(int statisticId) 
+	public Statistic getStatistic(long id) 
 	{
 		Statistic result = null;
-		String sql = "SELECT * FROM statistic WHERE id = " + statisticId;
+		String sql = "SELECT * FROM statistic WHERE id = " + id;
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql))
@@ -666,7 +666,7 @@ public class Model {
 			if(rs.next()) {
 				String title = rs.getString("title");
 				String charttype = rs.getString("charttype");
-				List<StatisticValues> values = getStatisticValues(statisticId);
+				List<StatisticValues> values = getStatisticComponents(id);
 				Date startDate = rs.getDate("startDate");
 				if (charttype.equals("ratio")) {
 					result = new RatioStatistic(title, values, startDate);
@@ -686,7 +686,28 @@ public class Model {
 	}
 
 
-	private List<StatisticValues> getStatisticValues(int statisticId) {
+	public ObservableList<Statistic> getStatistics() {
+		ObservableList<Statistic> result = FXCollections.observableArrayList();
+		String sql = "SELECT id FROM statistic";
+		try (Connection conn = this.connect();
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(sql))
+		{
+			while(rs.next())
+			{
+				long id = rs.getLong("id");
+				result.add(getStatistic(id));
+			}
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+
+	private List<StatisticValues> getStatisticComponents(long statisticId) {
 		List<StatisticValues> result = new ArrayList<StatisticValues>();
 		String sql = "SELECT * FROM statistic_component WHERE statistic = " + statisticId;
 		try (Connection conn = this.connect();
@@ -710,7 +731,7 @@ public class Model {
 
 	private List<Integer> getStatisticValues(long statCompId) {
 		List<Integer> result = new ArrayList<Integer>();
-		String sql = "SELECT * FROM statistic_values WHERE statCompId = " + statCompId + " ORDER BY valuNr ASC";
+		String sql = "SELECT * FROM statistic_values WHERE statCompId = " + statCompId + " ORDER BY valueNr ASC";
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql))
@@ -1446,7 +1467,7 @@ public class Model {
 		Statistic result = new RatioStatistic(title, values, date);
 		
 		//save
-		String sql1 = "INSERT INTO statistic(name, charttype, startDate) VALUES('" + title +"', ratio, " + date + ")";
+		String sql1 = "INSERT INTO statistic(title, charttype, startDate) VALUES('" + title +"', 'ratio', " + date + ")";
 		String sql2 = "SELECT last_insert_rowid()";
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement())
@@ -1602,7 +1623,7 @@ public class Model {
 				//create sql query
 				String select = "SELECT matrNr";
 				String from = " FROM student";
-				String where = " WHERE created < " + date.getTime() + " AND (invisible IS NULL OR invisible > " + date.getTime();
+				String where = " WHERE created < " + date.getTime() + " AND (invisible IS NULL OR invisible > " + date.getTime() + ")";
 			
 				if (filterMap.containsKey("Geschlecht")){
 					where += " AND gender = " + filterMap.get("Geschlecht")[0];
@@ -1626,6 +1647,7 @@ public class Model {
 				//Sql query
 				String sql = select + from + where;
 				ArrayList<Integer> students = new ArrayList<Integer>();
+				System.out.println("TEST " + sql);
 				try (ResultSet rs = stmt.executeQuery(sql)){
 					while (rs.next()) {
 						int matrNr = rs.getInt("matrNr");	

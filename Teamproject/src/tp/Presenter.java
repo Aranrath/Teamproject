@@ -423,6 +423,10 @@ public class Presenter {
 		return model.getConcern(clashingAppointment);
 	}
 
+	public ObservableList<Statistic> getStatistics() {
+		return model.getStatistics();
+	}
+
 
 
 
