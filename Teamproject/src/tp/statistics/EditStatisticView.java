@@ -81,7 +81,8 @@ public class EditStatisticView extends GridPane
 	private DatePicker intervalStatisticOptionsEndDateDatePicker;
 	
 	//für Zeitabstände
-	private Label intervalStatistictOptionsTimeIntervalsInDaysLabel;
+	private Label intervalStatistictOptionsTimeIntervalsInDaysLabel1;
+	private Label intervalStatistictOptionsTimeIntervalsInDaysLabel2;
 	private TextField intervalStatistictOptionsTimeIntervalsInDaysTextField;
 	
 	//--------------------------------------Abschließen
@@ -192,7 +193,8 @@ public class EditStatisticView extends GridPane
 		intervalStatisticOptionsEndDateDatePicker = new DatePicker();
 		
 		//für Zeitabstände
-		intervalStatistictOptionsTimeIntervalsInDaysLabel = new Label("Zeitabstände (In Tagen)");
+		intervalStatistictOptionsTimeIntervalsInDaysLabel1 = new Label("Zusammengefasstes");
+		intervalStatistictOptionsTimeIntervalsInDaysLabel2 = new Label(" Intervall (In Tagen)");
 		intervalStatistictOptionsTimeIntervalsInDaysTextField = new TextField();
 		// force the field to be numeric only
 		intervalStatistictOptionsTimeIntervalsInDaysTextField.textProperty().addListener(new ChangeListener<String>() {
@@ -213,8 +215,9 @@ public class EditStatisticView extends GridPane
 		intervalStatisticOptionsGridPane.add(intervalStatisticOptionsEndDateLabel, 0, 3);
 		intervalStatisticOptionsGridPane.add(intervalStatisticOptionsEndDateDatePicker, 1, 3);
 		intervalStatisticOptionsGridPane.add(new Label(""), 0, 4);
-		intervalStatisticOptionsGridPane.add(intervalStatistictOptionsTimeIntervalsInDaysLabel, 0, 5);
-		intervalStatisticOptionsGridPane.add(intervalStatistictOptionsTimeIntervalsInDaysTextField, 1, 5);
+		intervalStatisticOptionsGridPane.add(intervalStatistictOptionsTimeIntervalsInDaysLabel1, 0, 5);
+		intervalStatisticOptionsGridPane.add(intervalStatistictOptionsTimeIntervalsInDaysLabel2, 0, 6);
+		intervalStatisticOptionsGridPane.add(intervalStatistictOptionsTimeIntervalsInDaysTextField, 1, 6);
 		
 		
 		//--------------------------------------Abschließen

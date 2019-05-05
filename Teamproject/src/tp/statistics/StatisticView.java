@@ -1,10 +1,13 @@
 package tp.statistics;
 
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.Calendar;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
+import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
@@ -53,16 +56,6 @@ public class StatisticView extends HBox{
 			pieChart.setLabelsVisible(true);
 			pieChart.setLegendVisible(false);
 			
-			for(int i = 0; i < pieChartData.size(); i++) {
-				String color = "#" + statistic.getValues().get(i).getColor().toString().substring(2, 8).toUpperCase(); 
-				pieChartData.get(i).getNode().setStyle("-fx-pie-color: " + color + ";");
-				//TODO legendenFarbe....
-//				Node pie = pieChart.lookup(".default-color" + i + ".chart-pie");
-//				pie.setStyle("-fx-pie-color: " + color + ";");
-//				Node legend = pieChart.lookup(".default-color" + i + ".chart-legend-item");
-//				legend.setStyle("-fx-backround-color: " + color + ";");
-			}
-			
 			getChildren().add(pieChart);
 			
 		}else if (statistic instanceof ContinuousStatistic) {
@@ -71,7 +64,7 @@ public class StatisticView extends HBox{
 			long end = ((ContinuousStatistic) statistic).getEndDate().getTime()/100000000;
 			NumberAxis xAxis = new NumberAxis(start, end, 10);
 //			CategoryAxis xAxis = new CategoryAxis();
-			xAxis.setLabel("Zeit"); 
+			xAxis.setLabel("Datum"); 
 			StringConverter<Number> converter = new StringConverter<Number>() {
 				@Override
 				public String toString(Number object) {
@@ -94,9 +87,9 @@ public class StatisticView extends HBox{
 					}
 				}
 			}
-			//TODO Überarbeiten
-			int step = 10;
-			NumberAxis yAxis = new NumberAxis(0, yMax, step); 
+			int yAxisMax = yMax + (yMax/8) + 1;
+			int step = yAxisMax/10;
+			NumberAxis yAxis = new NumberAxis(0, yAxisMax, step); 
 			yAxis.setLabel("Anzahl");
 			
 			
@@ -112,50 +105,60 @@ public class StatisticView extends HBox{
 			getChildren().add(lineChart);
 			
 		}else if (statistic instanceof IntervalStatistic) {
-			CategoryAxis xAxis = new CategoryAxis();   
-			ObservableList<String> barChartCategories = FXCollections.observableArrayList();
-			// barChartCategories .... startTime... startTime+step.... startTime+2step.... endTime
+			CategoryAxis xAxis = new CategoryAxis();
 			
+			//create possible bars   
+			ObservableList<String> barChartCategories = FXCollections.observableArrayList();
 			for (StatisticValues statVal: statistic.getValues()) {
-				
+				barChartCategories.add(statVal.getName());
 			}
 			
 			xAxis.setCategories(barChartCategories); 
-//			xAxis.setLabel("category");  
-//
-//			//Defining the y axis 
-//			NumberAxis yAxis = new NumberAxis(); 
-//			yAxis.setLabel("score");
-//			
-//			BarChart<String, Number> barChart = new BarChart<>(xAxis, yAxis);  
-//			barChart.setTitle("Comparison between various cars"); 
-//			
-//			
-//			//Prepare XYChart.Series objects by setting data        
-//			XYChart.Series<String, Number> series1 = new XYChart.Series<>(); 
-//			series1.setName("Fiat"); 
-//			series1.getData().add(new XYChart.Data<>("Speed", 1.0)); 
-//			series1.getData().add(new XYChart.Data<>("User rating", 3.0)); 
-//			series1.getData().add(new XYChart.Data<>("Milage", 5.0)); 
-//			series1.getData().add(new XYChart.Data<>("Safety", 5.0));   
-//
-//			XYChart.Series<String, Number> series2 = new XYChart.Series<>(); 
-//			series2.setName("Audi"); 
-//			series2.getData().add(new XYChart.Data<>("Speed", 5.0)); 
-//			series2.getData().add(new XYChart.Data<>("User rating", 6.0));  
-//
-//			series2.getData().add(new XYChart.Data<>("Milage", 10.0)); 
-//			series2.getData().add(new XYChart.Data<>("Safety", 4.0));  
-//
-//			XYChart.Series<String, Number> series3 = new XYChart.Series<>(); 
-//			series3.setName("Ford"); 
-//			series3.getData().add(new XYChart.Data<>("Speed", 4.0)); 
-//			series3.getData().add(new XYChart.Data<>("User rating", 2.0)); 
-//			series3.getData().add(new XYChart.Data<>("Milage", 3.0)); 
-//			series3.getData().add(new XYChart.Data<>("Safety", 6.0));
-//			
-//			//Setting the data to bar chart        
-//			barChart.getData().addAll(series1, series2, series3);
+			xAxis.setLabel("Datum");  
+
+			
+			int yMax = 0;
+			for (StatisticValues statVal: statistic.getValues()){
+				for(Pair<Date, Integer> value: statVal.getValues()) {
+					if (value.getValue() > yMax) {
+						yMax = value.getValue();
+					}
+				}
+			}
+			int yAxisMax = yMax + (yMax/8) + 1;
+			int step = yAxisMax/10;
+			NumberAxis yAxis = new NumberAxis(0, yAxisMax, step); 
+			yAxis.setLabel("Anzahl");
+			
+			
+			BarChart<String, Number> barChart = new BarChart<>(xAxis, yAxis);  
+			barChart.setTitle(statistic.getTitle()); 
+			
+			//TODO date Intervals get the dates form the value Pairs keys..... dumbass
+//			//create Date intervals
+			ArrayList<XYChart.Series<String, Number>> chartSeriesList = new ArrayList<>();
+//			for(Date date = ((IntervalStatistic) statistic).getStartDate(); date.before(((IntervalStatistic) statistic).getEndDate());) {	
+//				XYChart.Series<String, Number> series = new XYChart.Series<>(); 
+//				//increment the date by step days
+//				Calendar c = Calendar.getInstance();
+//		        c.setTime(date);
+//		        c.add(Calendar.DATE, ((IntervalStatistic) statistic).getStep());
+//		        Date newDate = new Date(c.getTimeInMillis());
+//		        series.setName(date.toString() + " - " + newDate.toString());
+//		        chartSeriesList.add(series);
+//		        date = newDate;
+//			}
+			
+			//add Data
+			for (StatisticValues statVal: statistic.getValues()) {
+				for(int i = 0; i < statVal.getValues().size(); i++) {
+					chartSeriesList.get(i).getData().add(new XYChart.Data<String, Number>(statVal.getName(), statVal.getValues().get(i).getValue()));
+				}
+			}
+			
+			for (XYChart.Series<String, Number> series: chartSeriesList) {
+				barChart.getData().add(series);
+			}
 		}
 		
 		

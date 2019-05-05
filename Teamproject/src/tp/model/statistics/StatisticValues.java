@@ -9,13 +9,11 @@ import javafx.util.Pair;
 public class StatisticValues {
 	
 	private String name;
-	private Color color;
 	private List<Pair<Date, Integer>> values;
 	
-	public StatisticValues(String name, Color color, List<Pair<Date, Integer>> values) {
+	public StatisticValues(String name, List<Pair<Date, Integer>> values) {
 		super();
 		this.name = name;
-		this.color = color;
 		this.values = values;
 	}
 
@@ -25,14 +23,6 @@ public class StatisticValues {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public Color getColor() {
-		return color;
-	}
-
-	public void setColor(Color color) {
-		this.color = color;
 	}
 
 	public List<Pair<Date, Integer>> getValues() {

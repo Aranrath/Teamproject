@@ -198,7 +198,6 @@ public class StatisticComponentView extends HBox
 			filter = new Filter();
 			this.parentView = parentView;
 			filterMethods = new ArrayList<String>();
-			filter = new Filter();
 			buildFilterGridPane();	
 		}
 		
