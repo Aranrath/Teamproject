@@ -1,16 +1,18 @@
 package tp.model.statistics;
 
+import java.sql.Date;
 import java.util.List;
 
 import javafx.scene.paint.Color;
+import javafx.util.Pair;
 
 public class StatisticValues {
 	
 	private String name;
 	private Color color;
-	private List<Integer> values;
+	private List<Pair<Date, Integer>> values;
 	
-	public StatisticValues(String name, Color color, List<Integer> values) {
+	public StatisticValues(String name, Color color, List<Pair<Date, Integer>> values) {
 		super();
 		this.name = name;
 		this.color = color;
@@ -33,11 +35,11 @@ public class StatisticValues {
 		this.color = color;
 	}
 
-	public List<Integer> getValues() {
+	public List<Pair<Date, Integer>> getValues() {
 		return values;
 	}
 
-	public void setValues(List<Integer> values) {
+	public void setValues(List<Pair<Date, Integer>> values) {
 		this.values = values;
 	}
 

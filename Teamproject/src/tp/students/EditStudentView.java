@@ -310,6 +310,7 @@ public class EditStudentView extends GridPane {
 			int semester;
 			ObservableList<Concern> concerns;
 			String notes;
+			String gender;
 			
 			
 			//-----------------------------Auslesen (und evtl. Werte checken)
@@ -388,6 +389,9 @@ public class EditStudentView extends GridPane {
 			
 			concerns = concernsListView.getItems();
 			notes = studentNotes.getText();
+			gender = genderComboBox.getValue();
+			
+			
 			
 			//----------------------------Speichern
 			
@@ -404,6 +408,7 @@ public class EditStudentView extends GridPane {
 				student.setSemester(semester);
 				student.setPassedSubjects(localPassedSubjects);
 				student.setNotes(notes);
+				student.setGender(gender);
 				
 				presenter.saveNewStudent(student);
 				
@@ -432,6 +437,7 @@ public class EditStudentView extends GridPane {
 				}
 				student.setConcernIds(concernIds);
 				student.setNotes(notes);
+				student.setGender(gender);
 
 				presenter.saveEditedStudent(student);
 			}

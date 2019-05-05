@@ -40,6 +40,7 @@ import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
+import javafx.util.Pair;
 import tp.model.statistics.ContinuousStatistic;
 import tp.model.statistics.IntervalStatistic;
 import tp.model.statistics.RatioStatistic;
@@ -718,7 +719,7 @@ public class Model {
 				long id = rs.getLong("id");
 				String name = rs.getString("name");
 				Color color = Color.valueOf(rs.getString("color"));
-				List<Integer> values = getStatisticValues(id);
+				List<Pair<Date, Integer>> values = getStatisticValues(id);
 				StatisticValues statVal = new StatisticValues(name, color, values);
 				result.add(statVal);
 			}
@@ -729,15 +730,15 @@ public class Model {
 	}
 
 
-	private List<Integer> getStatisticValues(long statCompId) {
-		List<Integer> result = new ArrayList<Integer>();
-		String sql = "SELECT * FROM statistic_values WHERE statCompId = " + statCompId + " ORDER BY valueNr ASC";
+	private List<Pair<Date, Integer>> getStatisticValues(long statCompId) {
+		List<Pair<Date, Integer>> result = new ArrayList<Pair<Date, Integer>>();
+		String sql = "SELECT * FROM statistic_values WHERE statCompId = " + statCompId + " ORDER BY valueDate ASC";
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql))
 		{
 			while(rs.next()) {
-				result.add(rs.getInt("value"));
+				result.add(new Pair<Date, Integer>(rs.getDate("valueDate"), rs.getInt("value")));
 			}
 		}catch(Exception e) {
 			e.printStackTrace();
@@ -1494,12 +1495,12 @@ public class Model {
 
 
 	private StatisticValues calculateRatioStatisticValue(StatisticComponent comp, Date date) {
-		List<Integer> values = new ArrayList<Integer>();
+		List<Pair<Date, Integer>> values = new ArrayList<Pair<Date, Integer>>();
 		int value = 0;
 		for(Filter f: comp.getSelectedFilter()) {
 			value += calculateFilterValue(comp.getSource(), f, date);
 		}
-		values.add(value);
+		values.add(new Pair<Date, Integer>(date, value));
 		return new StatisticValues(comp.getName(), comp.getColor(), values);
 	}
 
@@ -1514,7 +1515,7 @@ public class Model {
 		Statistic result = new ContinuousStatistic(title, values, startDate, endDate);
 
 		//save
-		String sql1 = "INSERT INTO statistic(name, charttype, startDate, endDate) VALUES('" + title +"', continuous, " + startDate + ", " + endDate + ")";
+		String sql1 = "INSERT INTO statistic(title, charttype, startDate, endDate) VALUES('" + title +"', 'continuous', " + startDate + ", " + endDate + ")";
 		String sql2 = "SELECT last_insert_rowid()";
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement())
@@ -1540,19 +1541,19 @@ public class Model {
 
 
 	private StatisticValues calculateContinuousStatisticValue(StatisticComponent comp, Date startDate, Date endDate) {
-		List<Integer> values = new ArrayList<Integer>();
+		List<Pair<Date, Integer>> values = new ArrayList<Pair<Date, Integer>>();
 		for(Date date = startDate; date.before(endDate);) {	
 			int value = 0;
 			for(Filter f: comp.getSelectedFilter()) {
 				value += calculateFilterValue(comp.getSource(), f, date);
 			}
-			values.add(value);
+			values.add(new Pair<Date, Integer>(date, value));
 			
 			//increment the date
 			Calendar c = Calendar.getInstance();
 	        c.setTime(date);
 	        c.add(Calendar.DATE, 1);
-	        startDate = new Date(c.getTimeInMillis());
+	        date = new Date(c.getTimeInMillis());
 		}
 		return new StatisticValues(comp.getName(), comp.getColor(), values);
 	}
@@ -1566,7 +1567,7 @@ public class Model {
 		Statistic result = new IntervalStatistic(title, values, startDate, endDate, step);
 
 		//save
-		String sql1 = "INSERT INTO statistic(title, charttype, startDate, endDate, step) VALUES('" + title +"', interval, " + startDate + ", " + endDate + ", " + step + ")";
+		String sql1 = "INSERT INTO statistic(title, charttype, startDate, endDate, step) VALUES('" + title +"', 'interval', " + startDate + ", " + endDate + ", " + step + ")";
 		String sql2 = "SELECT last_insert_rowid()";
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement())
@@ -1593,25 +1594,29 @@ public class Model {
 
 
 	private StatisticValues calculateIntervalStatisticValue(StatisticComponent comp, Date startDate, Date endDate, int step) {
-		List<Integer> values = new ArrayList<Integer>();
+		List<Pair<Date, Integer>> values = new ArrayList<Pair<Date, Integer>>();
 		for(Date date = startDate; date.before(endDate);) {	
 			int value = 0;
 			for(Filter f: comp.getSelectedFilter()) {
 				value += calculateFilterValue(comp.getSource(), f, date);
 			}
-			values.add(value);
+			values.add(new Pair<Date, Integer>(date, value));
 			
 			//increment the date by step days
 			Calendar c = Calendar.getInstance();
 	        c.setTime(date);
 	        c.add(Calendar.DATE, step);
-	        startDate = new Date(c.getTimeInMillis());
+	        date = new Date(c.getTimeInMillis());
 		}
 		return new StatisticValues(comp.getName(), comp.getColor(), values);
 	}
 
 
 	//TODO extensive Tests....
+	
+	
+	//TODO Filter f does not have anyfilters. (f.getFilters)
+	//Date wird komishcin DB gespeichert -> erneutes anzeigen der Statistik is murks. erstes mal funzt aber.
 	private int calculateFilterValue(String source, Filter f, Date date) {
 		int result = 0;
 		Map<String, Object[]> filterMap = f.getFilters();
@@ -1624,7 +1629,7 @@ public class Model {
 				String select = "SELECT matrNr";
 				String from = " FROM student";
 				String where = " WHERE created < " + date.getTime() + " AND (invisible IS NULL OR invisible > " + date.getTime() + ")";
-			
+				
 				if (filterMap.containsKey("Geschlecht")){
 					where += " AND gender = " + filterMap.get("Geschlecht")[0];
 				}
@@ -1757,7 +1762,7 @@ public class Model {
 				//create sql query
 				String select = "SELECT id";
 				String from = " FROM concern";
-				String where = " WHERE created < " + date.getTime() + " AND (done IS NULL OR done > " + date.getTime();
+				String where = " WHERE created < " + date.getTime() + " AND (done IS NULL OR done > " + date.getTime() + ")";
 			
 				if (filterMap.containsKey("Thema")) {
 					String sql = "SELECT id FROM topic WHERE title = " + filterMap.get("Thema")[0];
@@ -1892,8 +1897,8 @@ public class Model {
 					e.printStackTrace();
 				}
 				String sql3;
-				for (int i = 0; i < statValue.getValues().size(); i++) {
-					sql3 = "INSERT INTO statistic_values(statCompId, value, valueNr) VALUES("+ statCompId + ", " + statValue.getValues().get(i) + ", " + i + ")";
+				for (Pair<Date, Integer> value: statValue.getValues()) {
+					sql3 = "INSERT INTO statistic_values(statCompId, value, valueDate) VALUES("+ statCompId + ", " + value.getValue() + ", " + value.getKey().getTime() + ")";
 					stmt.executeUpdate(sql3);
 				}				
 			}
@@ -1921,7 +1926,7 @@ public class Model {
 		   InputStream is = new ByteArrayInputStream(os.toByteArray())){
 			ImageIO.write(SwingFXUtils.fromFXImage(img, null),"png", os); 
 		
-			String sql = "INSERT INTO student(matrNr, name, firstName, semester, po, image, notes, gender) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+			String sql = "INSERT INTO student(matrNr, name, firstName, semester, po, image, notes, gender, created) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 			try(Connection conn = this.connect();
 					PreparedStatement pstmt = conn.prepareStatement(sql))
 			{
@@ -1938,6 +1943,7 @@ public class Model {
 				pstmt.setBytes(6, os.toByteArray());
 				pstmt.setString(7, student.getNotes());
 				pstmt.setString(8, student.getGender());
+				pstmt.setDate(9, new Date(System.currentTimeMillis()));
 				pstmt.executeUpdate();
 				addStudentEmail(student.getMtrNr(), student.geteMailAddresses());
 				addPassedSubjects(student.getMtrNr(), student.getPassedSubjects());
@@ -2096,7 +2102,7 @@ public class Model {
 				Statement stmt = conn.createStatement())
 			{
 			for (String mail: geteMailAddresses){
-				sql="INSERT INTO student_emailAddress (student, emailAddress) VALUES (" + mtrNr + ", " + mail + ")";
+				sql="INSERT INTO student_emailAddress (student, emailAddress) VALUES (" + mtrNr + ", '" + mail + "')";
 				stmt.executeQuery(sql);
 			}
 			}catch (Exception e) {

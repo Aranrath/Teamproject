@@ -1,5 +1,7 @@
 package tp.statistics;
 
+import java.sql.Date;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -10,6 +12,8 @@ import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.HBox;
+import javafx.util.Pair;
+import javafx.util.StringConverter;
 import tp.Presenter;
 import tp.model.statistics.ContinuousStatistic;
 import tp.model.statistics.IntervalStatistic;
@@ -41,7 +45,7 @@ public class StatisticView extends HBox{
 		if (statistic instanceof RatioStatistic) {
 			ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList(); 
 			for (StatisticValues statVal: statistic.getValues()) {
-				PieChart.Data pieData = new PieChart.Data(statVal.getName(), statVal.getValues().get(0));
+				PieChart.Data pieData = new PieChart.Data(statVal.getName(), statVal.getValues().get(0).getValue());
 				pieChartData.add(pieData);		
 			}
 			PieChart pieChart = new PieChart(pieChartData);
@@ -52,6 +56,7 @@ public class StatisticView extends HBox{
 			for(int i = 0; i < pieChartData.size(); i++) {
 				String color = "#" + statistic.getValues().get(i).getColor().toString().substring(2, 8).toUpperCase(); 
 				pieChartData.get(i).getNode().setStyle("-fx-pie-color: " + color + ";");
+				//TODO legendenFarbe....
 //				Node pie = pieChart.lookup(".default-color" + i + ".chart-pie");
 //				pie.setStyle("-fx-pie-color: " + color + ";");
 //				Node legend = pieChart.lookup(".default-color" + i + ".chart-legend-item");
@@ -62,21 +67,45 @@ public class StatisticView extends HBox{
 			
 		}else if (statistic instanceof ContinuousStatistic) {
 			//TODO überarbeiten
-			int end = 100; // zu anz Tage zw startDate und EndDate...
-			NumberAxis xAxis = new NumberAxis(0, end, 10);
+			long start = ((ContinuousStatistic) statistic).getStartDate().getTime()/100000000;
+			long end = ((ContinuousStatistic) statistic).getEndDate().getTime()/100000000;
+			NumberAxis xAxis = new NumberAxis(start, end, 10);
+//			CategoryAxis xAxis = new CategoryAxis();
 			xAxis.setLabel("Zeit"); 
-			
-			//TODO Überarbeiten
-			int max = 100;
-			int step = 10;
-			NumberAxis yAxis = new NumberAxis(0, max, step); 
-			yAxis.setLabel("Anzahl");
-			LineChart lineChart = new LineChart(xAxis, yAxis);
+			StringConverter<Number> converter = new StringConverter<Number>() {
+				@Override
+				public String toString(Number object) {
+					Date date = new Date(object.longValue()*100000000);
+					return date.toString();
+				}
+				@Override
+				public Number fromString(String string) {
+					//Not needed
+					return null;
+				}
+			};
+			xAxis.setTickLabelFormatter(converter);
+
+			int yMax = 0;
 			for (StatisticValues statVal: statistic.getValues()){
-				XYChart.Series series = new XYChart.Series(); 
+				for(Pair<Date, Integer> value: statVal.getValues()) {
+					if (value.getValue() > yMax) {
+						yMax = value.getValue();
+					}
+				}
+			}
+			//TODO Überarbeiten
+			int step = 10;
+			NumberAxis yAxis = new NumberAxis(0, yMax, step); 
+			yAxis.setLabel("Anzahl");
+			
+			
+			LineChart<Number, Number> lineChart = new LineChart<Number, Number>(xAxis, yAxis);
+			for (StatisticValues statVal: statistic.getValues()){
+				XYChart.Series<Number, Number> series = new XYChart.Series<Number, Number>(); 
 				series.setName(statVal.getName()); 
-				for (int i = 0; i < statVal.getValues().size(); i++) {
-					series.getData().add(new XYChart.Data(i, statVal.getValues().get(i))); 
+				for(Pair<Date, Integer> value: statVal.getValues()) {
+					series.getData().add(new XYChart.Data<Number, Number>(value.getKey().getTime()/100000000, value.getValue()));
 				}
 				lineChart.getData().add(series);
 			}
