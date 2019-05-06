@@ -17,14 +17,12 @@ public class StatisticComponent
 	
 	private String name;
 	private String source;
-	private Color color;
 	private List<Filter> selectedFilter;
 
-	public StatisticComponent (String name, String source, Color color, List<Filter> selectedFilter)
+	public StatisticComponent (String name, String source, List<Filter> selectedFilter)
 	{
 		this.name = name;
 		this.source = source;
-		this.color = color;
 		this.selectedFilter = selectedFilter;
 	}
 
@@ -34,10 +32,6 @@ public class StatisticComponent
 
 	public String getSource() {
 		return source;
-	}
-
-	public Color getColor() {
-		return color;
 	}
 
 	public List<Filter> getSelectedFilter() {

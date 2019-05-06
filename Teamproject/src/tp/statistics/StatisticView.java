@@ -107,16 +107,23 @@ public class StatisticView extends HBox{
 		}else if (statistic instanceof IntervalStatistic) {
 			CategoryAxis xAxis = new CategoryAxis();
 			
-			//create possible bars   
+			//create Date intervals
 			ObservableList<String> barChartCategories = FXCollections.observableArrayList();
-			for (StatisticValues statVal: statistic.getValues()) {
-				barChartCategories.add(statVal.getName());
+			Date startDate = ((IntervalStatistic) statistic).getStartDate();
+			StatisticValues statValue = statistic.getValues().get(0);
+			
+			for (int i = 1; i < statValue.getValues().size(); i++) {
+				Pair<Date, Integer> value =  statValue.getValues().get(i);
+				Date newDate = value.getKey();
+				barChartCategories.add(startDate.toString() + " - " + newDate.toString());
+		        startDate = newDate;
 			}
+			barChartCategories.add(startDate.toString() + " - " + ((IntervalStatistic) statistic).getEndDate().toString());
 			
 			xAxis.setCategories(barChartCategories); 
 			xAxis.setLabel("Datum");  
 
-			
+			//get max of y Axis
 			int yMax = 0;
 			for (StatisticValues statVal: statistic.getValues()){
 				for(Pair<Date, Integer> value: statVal.getValues()) {
@@ -130,35 +137,25 @@ public class StatisticView extends HBox{
 			NumberAxis yAxis = new NumberAxis(0, yAxisMax, step); 
 			yAxis.setLabel("Anzahl");
 			
-			
 			BarChart<String, Number> barChart = new BarChart<>(xAxis, yAxis);  
 			barChart.setTitle(statistic.getTitle()); 
 			
-			//TODO date Intervals get the dates form the value Pairs keys..... dumbass
-//			//create Date intervals
-			ArrayList<XYChart.Series<String, Number>> chartSeriesList = new ArrayList<>();
-//			for(Date date = ((IntervalStatistic) statistic).getStartDate(); date.before(((IntervalStatistic) statistic).getEndDate());) {	
-//				XYChart.Series<String, Number> series = new XYChart.Series<>(); 
-//				//increment the date by step days
-//				Calendar c = Calendar.getInstance();
-//		        c.setTime(date);
-//		        c.add(Calendar.DATE, ((IntervalStatistic) statistic).getStep());
-//		        Date newDate = new Date(c.getTimeInMillis());
-//		        series.setName(date.toString() + " - " + newDate.toString());
-//		        chartSeriesList.add(series);
-//		        date = newDate;
-//			}
 			
-			//add Data
+			//create bars and add data  
+			ArrayList<XYChart.Series<String, Number>> chartSeriesList = new ArrayList<>();
 			for (StatisticValues statVal: statistic.getValues()) {
-				for(int i = 0; i < statVal.getValues().size(); i++) {
-					chartSeriesList.get(i).getData().add(new XYChart.Data<String, Number>(statVal.getName(), statVal.getValues().get(i).getValue()));
+				XYChart.Series<String, Number> series = new XYChart.Series<>();
+				series.setName(statVal.getName());
+				for (int i = 0; i < statVal.getValues().size(); i++) {
+					series.getData().add(new XYChart.Data<String, Number>(barChartCategories.get(i), statVal.getValues().get(i).getValue()));
 				}
+				chartSeriesList.add(series);
 			}
 			
 			for (XYChart.Series<String, Number> series: chartSeriesList) {
 				barChart.getData().add(series);
 			}
+			getChildren().add(barChart);
 		}
 		
 		

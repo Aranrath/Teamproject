@@ -13,7 +13,6 @@ import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.control.Button;
-import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
@@ -46,8 +45,6 @@ public class StatisticComponentView extends HBox
 	private TextField nameTextField;
 	private Label sourceLabel;
 	private ComboBox<String> sourceComboBox;
-	private Label colorLabel;
-	private ColorPicker colorPicker;
 	private Label errorLabel;
 	private Button deleteStatisticComponentButton;
 	private Button addFilterButton;
@@ -77,12 +74,7 @@ public class StatisticComponentView extends HBox
 		sourceComboBox = new ComboBox<String>(FXCollections.observableArrayList("Studenten","Anliegen"));
 		sourceComboBox.setMaxWidth(Double.MAX_VALUE);
 		HBox.setHgrow(sourceComboBox, Priority.ALWAYS);
-		
-		colorLabel = new Label("Farbe ");
-		colorPicker = new ColorPicker();
-		colorPicker.setMaxWidth(Double.MAX_VALUE);
-		HBox.setHgrow(colorPicker, Priority.ALWAYS);
-		
+				
 		deleteStatisticComponentButton = new Button("Löschen");
 		errorLabel = new Label("ERROR");
 		errorLabel.setVisible(false);
@@ -93,8 +85,6 @@ public class StatisticComponentView extends HBox
 		basicOptionsGridPane.add(nameTextField, 1, 0);
 		basicOptionsGridPane.add(sourceLabel, 0, 1);
 		basicOptionsGridPane.add(sourceComboBox, 1, 1);
-		basicOptionsGridPane.add(colorLabel, 0, 2);
-		basicOptionsGridPane.add(colorPicker, 1, 2);
 		basicOptionsGridPane.add(errorLabel, 0, 3,2,1);
 		basicOptionsGridPane.add(deleteStatisticComponentButton, 0, 4,2,1);
 		GridPane.setHalignment(deleteStatisticComponentButton, HPos.RIGHT);
@@ -160,12 +150,11 @@ public class StatisticComponentView extends HBox
 	{
 		String name = nameTextField.getText();
 		String source = sourceComboBox.getSelectionModel().getSelectedItem();
-		Color color = colorPicker.getValue();
 		ArrayList<Filter> selectedFilter = new ArrayList<Filter>();
 		for(FilterView filter: filterGridPanes) {
 			selectedFilter.add(filter.getFilter());
 		}
-		StatisticComponent result = new StatisticComponent(name, source, color, selectedFilter);
+		StatisticComponent result = new StatisticComponent(name, source, selectedFilter);
 		return result;
 	}
 	

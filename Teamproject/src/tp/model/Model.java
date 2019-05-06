@@ -1556,6 +1556,7 @@ public class Model {
 		return new StatisticValues(comp.getName(), values);
 	}
 
+
 	public Statistic calculateAndSaveNewIntervalStatistic(String title, ArrayList<StatisticComponent> statisticComponentsList,
 			Date startDate, Date endDate, int step) {
 		List<StatisticValues> values = new ArrayList<StatisticValues>();
@@ -1593,32 +1594,32 @@ public class Model {
 
 	private StatisticValues calculateIntervalStatisticValue(StatisticComponent comp, Date startDate, Date endDate, int step) {
 		List<Pair<Date, Integer>> values = new ArrayList<Pair<Date, Integer>>();
-		int numberDates = 0;
-		int value = 0;
-		for(Date date = startDate; date.before(endDate);) {	
-			if (numberDates == step) {
-				values.add(new Pair<Date, Integer>(startDate, value));
-				startDate = date;
-				numberDates = 0;
-				value = 0;
-			}
-			for(Filter f: comp.getSelectedFilter()) {
-				value += calculateFilterValue(comp.getSource(), f, date);
-			}
-			
-			//increment the date
+		for(Date intervStartDate = startDate; intervStartDate.before(endDate) || intervStartDate.equals(endDate);) {	
+			//get End date of interval
 			Calendar c = Calendar.getInstance();
-	        c.setTime(date);
-	        c.add(Calendar.DATE, 1);
-	        date = new Date(c.getTimeInMillis());
-	        numberDates ++;
+	        c.setTime(intervStartDate);
+	        c.add(Calendar.DATE, -1);
+	        Date intervEndDate = new Date(c.getTimeInMillis());
+			int value = 0;
+			for(Filter f: comp.getSelectedFilter()) {
+				value += calculateFilterValue(comp.getSource(), f, intervStartDate, intervEndDate);
+			}
+			values.add(new Pair<Date, Integer>(intervStartDate, value));
+			//increment the date
+	        c.setTime(intervStartDate);
+	        c.add(Calendar.DATE, step);
+	        intervStartDate = new Date(c.getTimeInMillis());
 		}
 		return new StatisticValues(comp.getName(), values);
 	}
 
-
-	//TODO extensive Tests....
+	
 	private int calculateFilterValue(String source, Filter f, Date date) {
+		return calculateFilterValue(source, f, date, date);
+	}
+	
+	//TODO extensive Tests....
+	private int calculateFilterValue(String source, Filter f, Date startDate, Date endDate) {
 		int result = 0;
 		Map<String, Object[]> filterMap = f.getFilters();
 		try (Connection conn = this.connect();
@@ -1629,7 +1630,7 @@ public class Model {
 				//create sql query
 				String select = "SELECT matrNr";
 				String from = " FROM student";
-				String where = " WHERE created < " + date.getTime() + " AND (invisible IS NULL OR invisible > " + date.getTime() + ")";
+				String where = " WHERE created < " + startDate.getTime() + " AND (invisible IS NULL OR invisible > " + endDate.getTime() + ")";
 				
 				if (filterMap.containsKey("Geschlecht")){
 					where += " AND gender = '" + filterMap.get("Geschlecht")[0] + "'";
@@ -1762,7 +1763,7 @@ public class Model {
 				//create sql query
 				String select = "SELECT id";
 				String from = " FROM concern";
-				String where = " WHERE created < " + date.getTime() + " AND (done IS NULL OR done > " + date.getTime() + ")";
+				String where = " WHERE created < " + startDate.getTime() + " AND (done IS NULL OR done > " + endDate.getTime() + ")";
 			
 				if (filterMap.containsKey("Thema")) {
 					String sql = "SELECT id FROM topic WHERE title = '" + filterMap.get("Thema")[0] + "'";
