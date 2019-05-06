@@ -3,7 +3,6 @@ package tp.model.statistics;
 import java.sql.Date;
 import java.util.List;
 
-import javafx.scene.paint.Color;
 import javafx.util.Pair;
 
 public class StatisticValues {

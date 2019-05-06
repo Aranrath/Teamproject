@@ -14,6 +14,7 @@ import javafx.geometry.VPos;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.ColumnConstraints;
@@ -231,6 +232,9 @@ public class WeekScheduleView extends GridPane
 						appointmentButton.setText(appointmentButton.getText() + " (" + a.getRoomNmb() + ")");
 					}
 					appointmentButton.setText(appointmentButton.getText() +  "\n" +concernOfAppointment.getTitle());
+					
+					appointmentButton.setTooltip(new Tooltip(appointmentButton.getText()));
+					
 					
 					appointmentButton.setStyle("-fx-base: #C5EFF7");
 					
