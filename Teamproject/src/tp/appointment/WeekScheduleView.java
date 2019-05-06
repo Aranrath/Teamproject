@@ -21,9 +21,7 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import tp.Presenter;
 import tp.model.Appointment;
@@ -31,14 +29,18 @@ import tp.model.Concern;
 
 public class WeekScheduleView extends GridPane
 {
+	public static final int EARLIEST_TIME = 6;
+	public static final int LATEST_TIME = 20;
+	
+	public static final int MILLI_PER_HOUR = 3600000;
+	
+	
+	//==============================================
+	
 	private Presenter presenter;
 
 	private int shownKw;
 	private Date[] shownWorkWeek;
-	
-	private LocalTime earliestTime;
-	private LocalTime latestTime;
-	
 	
 	//==============================================
 	
@@ -53,14 +55,8 @@ public class WeekScheduleView extends GridPane
 	//==============================================
 	
 	//zum drüber iterieren
-	private VBox [] weeksAppointmentsVBoxes;
+	private Pane[] appointmentButtonsPanes;
 	private Label [] weeksDateLabels;
-	
-	private VBox mondayAppointmentsVBox;
-	private VBox thuesdayAppointmentsVBox;
-	private VBox wednesdayAppointmentsVBox;
-	private VBox thursdayAppointmentsVBox;
-	private VBox fridayAppointmentsVBox;
 
 	public WeekScheduleView(Presenter presenter)
 	{
@@ -75,6 +71,8 @@ public class WeekScheduleView extends GridPane
 		setPadding(new Insets(10,10,10,10));
 		setHgap(10);
 		setVgap(10);
+		setBackground(
+				new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
 		
 		kwLabel = new Label("<Some strange>. KW von <whenever> bis <forever>");
 		leftButton = new Button("<");
@@ -86,30 +84,19 @@ public class WeekScheduleView extends GridPane
 		HBox datePickerAndLabelBox = new HBox(dateLabel, datePicker);
 		HBox navigationBox = new HBox(leftButton, kwLabel, rightButton);
 		
-		earliestTime = LocalTime.of(5, 59);
-		latestTime = LocalTime.of(20, 1);
-		
 		//-------------------------------------------------
 		//ScheduleTable erstellen
 		
 		timeTableGridPane = new GridPane();
 		timeTableGridPane.setBackground(
-		new Background(new BackgroundFill(Color.ALICEBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
+		new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
 		timeTableGridPane.setHgap(10);
-//		timeTableGridPane.setVgap(5);
 		timeTableGridPane.setPadding(new Insets(10,10,10,10));
 		
-		//Wochentagsspalten erstellen
-		mondayAppointmentsVBox = new VBox();
-		thuesdayAppointmentsVBox = new VBox();
-		wednesdayAppointmentsVBox = new VBox();
-		thursdayAppointmentsVBox = new VBox();
-		fridayAppointmentsVBox = new VBox();
-		
-		weeksAppointmentsVBoxes = new VBox[] {mondayAppointmentsVBox, thuesdayAppointmentsVBox, wednesdayAppointmentsVBox, thursdayAppointmentsVBox, fridayAppointmentsVBox};
+		appointmentButtonsPanes = new Pane[] {new Pane(), new Pane(), new Pane(), new Pane(), new Pane()};
 		weeksDateLabels = new Label[] {new Label("<Datum Montag>"),new Label("<Datum Dienstag>"),new Label("<Datum Mittwoch>"),new Label("<Datum Donnerstag>"),new Label("<Datum Freitag>")};
 		
-		//Zusammenfügen
+		
 		timeTableGridPane.add(new Label("Montag"), 0, 0);
 		timeTableGridPane.add(new Label("Dienstag"), 1, 0);
 		timeTableGridPane.add(new Label("Mittwoch"), 2, 0);
@@ -126,12 +113,10 @@ public class WeekScheduleView extends GridPane
 		
 		for(int i = 0; i<5; i++)
 		{
-			timeTableGridPane.add(weeksAppointmentsVBoxes[i], i, 3);
+			timeTableGridPane.add(appointmentButtonsPanes[i], i, 3);
 			
-			weeksAppointmentsVBoxes[i].setBackground(
-					new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
-			
-			weeksAppointmentsVBoxes[i].setMaxHeight(Double.MAX_VALUE);
+			appointmentButtonsPanes[i].setBackground(
+					new Background(new BackgroundFill(Color.ALICEBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
 		}
 		
 		//------------------------------------------
@@ -214,20 +199,15 @@ public class WeekScheduleView extends GridPane
 		//Anzeige an kw und Wochendaten anpassen
 		kwLabel.setText(" " + shownKw + ". KW von " + shownWorkWeek[0] + " bis " + shownWorkWeek[4] + " ");
 		
-
-		//Wochentagsspalten leeren
-		for(int i = 0; i <weeksAppointmentsVBoxes.length;i++)
-		{
-			weeksAppointmentsVBoxes[i].getChildren().clear();
-		}
-		
 		
 		for(int i = 0; i<5; i++)
 		{
-			
+			//Daten der Wochentage anpassen
 			weeksDateLabels[i].setText(shownWorkWeek[i] + "");
 			
 			ArrayList<Appointment> thisDayAppointments = presenter.getAppointments(shownWorkWeek[i]);
+			
+			appointmentButtonsPanes[i].getChildren().clear();
 			
 			
 			//TODO Maße anpassen
@@ -236,27 +216,46 @@ public class WeekScheduleView extends GridPane
 				
 				LocalTime appointmentStartTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(a.getStartTime()), ZoneId.systemDefault()).toLocalTime();
 				LocalTime appointmentEndTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(a.getEndTime()), ZoneId.systemDefault()).toLocalTime();
-		
-
+				
 				//Wenn Termin zwischen 6 und 20 Uhr ist:
-				if(appointmentStartTime.isAfter(earliestTime) && appointmentEndTime.isBefore(latestTime))
+				if(appointmentStartTime.isAfter(LocalTime.of(EARLIEST_TIME,0).minusMinutes(1)) && appointmentEndTime.isBefore(LocalTime.of(LATEST_TIME,0).plusMinutes(1)))
 				{
 					Concern concernOfAppointment = presenter.getConcern(a.getConcernId());
 					
-					Button appointmentButton = new Button(a.getStartTimeString() + " - " + a.getEndTimeString() + " " +concernOfAppointment.getTitle());
+					//---------------------------------------------------------------------
+					//Beschriftung, Aussehen und Verhalten
+					
+					Button appointmentButton = new Button(a.getStartTimeString() + " - " + a.getEndTimeString());
 					if(!a.getRoomNmb().isEmpty())
 					{
 						appointmentButton.setText(appointmentButton.getText() + " (" + a.getRoomNmb() + ")");
 					}
+					appointmentButton.setText(appointmentButton.getText() +  "\n" +concernOfAppointment.getTitle());
 					
-					appointmentButton.setMaxWidth(Double.MAX_VALUE);
+					appointmentButton.setStyle("-fx-base: #C5EFF7");
 					
 					appointmentButton.setOnAction(event -> {
 						presenter.openConcernTab(concernOfAppointment);
 					});
-					appointmentButton.setStyle("-fx-base: #C5EFF7");
 					
-					weeksAppointmentsVBoxes[i].getChildren().add(appointmentButton);
+					//---------------------------------------------------------------------
+					//Größe und Position
+
+					appointmentButton.prefWidthProperty().bind(appointmentButtonsPanes[i].widthProperty());
+					
+					int paneHeightInMillis = (LATEST_TIME - EARLIEST_TIME) *  MILLI_PER_HOUR;
+					
+					appointmentButton.prefHeightProperty().bind(appointmentButtonsPanes[i].heightProperty().divide(paneHeightInMillis).multiply(a.getDuration().intValue()));
+					
+					int yTranslationInMilli =  ((appointmentStartTime.getHour() +  appointmentStartTime.getMinute()/60) - EARLIEST_TIME) * MILLI_PER_HOUR;
+					
+					appointmentButton.translateYProperty().bind(appointmentButtonsPanes[i].heightProperty().divide(paneHeightInMillis).multiply(yTranslationInMilli));
+					
+					//---------------------------------------------------------------------
+					
+					appointmentButtonsPanes[i].getChildren().add(appointmentButton);
+
+					
 				}
 				
 				
@@ -264,35 +263,6 @@ public class WeekScheduleView extends GridPane
 			
 		}
 		
-		//TODO Zeiten = Buttonhöhe + Position
-		//TEST:
-		
-		weeksAppointmentsVBoxes[0].setVisible(false);
-		Pane pane = new Pane();
-		
-		pane.setBackground(
-				new Background(new BackgroundFill(Color.BEIGE, CornerRadii.EMPTY, Insets.EMPTY)));
-		timeTableGridPane.add(pane, 0, 3);
-		
-		Button label = new Button("2");
-		
-		pane.getChildren().addAll(label);
-
-		pane.setMaxWidth(Double.MAX_VALUE);
-		GridPane.setHgrow(pane, Priority.ALWAYS);
-		
-		
-		
-		label.setMaxWidth(Double.MAX_VALUE);
-		GridPane.setHgrow(label, Priority.ALWAYS);
-		
-		label.setMaxHeight(Double.MAX_VALUE);
-		
-		System.out.println(label.localToScene(pane.getBoundsInLocal()));
-		
-		
-		
-			
 		
 		
 		
