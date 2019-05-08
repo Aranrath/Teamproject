@@ -36,18 +36,25 @@ public class Presenter {
 		this.model = model;
 
 	}
+	
+	// ======================Klassen (Static) Methoden======================
+	
+	public static boolean containsAll(String searchText, String ...searchTerm) {
+	    for (String s : searchTerm)
+	    {
+	    	if (!searchText.contains(s)) 
+	        {
+	        	return false;
+	        }
+	    }
+	        
+	    return true;
+	}
 
 	// ======================Updater======================
-	public void updateWeekView() {
-		// TODO
-	}
 
 	public void updateRightToolbar() {
 		mainView.updateRightToolBar();
-	}
-
-	public void updateTabViews() {
-		// TODO
 	}
 
 	// =====================Mail==========================
@@ -294,8 +301,8 @@ public class Presenter {
 		return model.getNewReminders(lastReminderCheck);
 	}
 
-	public void openStatisticTab(Statistic newStatistic) {
-		mainView.openStatisticTab(newStatistic);
+	public void openStatisticTab(Statistic statistic) {
+		mainView.openStatisticTab(statistic);
 		
 	}
 

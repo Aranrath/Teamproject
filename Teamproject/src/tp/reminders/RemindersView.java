@@ -53,6 +53,11 @@ public class RemindersView extends GridPane{
 		GridPane.setHalignment(toConcernButton, HPos.RIGHT);
 		
 	}
+
+	public void updateView() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 	
 

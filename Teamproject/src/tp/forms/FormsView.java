@@ -410,7 +410,7 @@ public class FormsView extends GridPane
 			
 			for (Form form : allForms)
 			{
-				if(ConcernView.containsAll(form.getName().toLowerCase(), searchTerms))
+				if(Presenter.containsAll(form.getName().toLowerCase(), searchTerms))
 				{
 					shownForms.add(form);
 				}
@@ -430,6 +430,12 @@ public class FormsView extends GridPane
 	public void addNewForm(Form newForm)
 	{
 		formListView.getItems().add(newForm);
+		
+	}
+
+
+	public void updateView() {
+		// TODO Auto-generated method stub
 		
 	}
 

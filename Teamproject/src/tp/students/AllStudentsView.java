@@ -11,12 +11,13 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
@@ -33,8 +34,8 @@ public class AllStudentsView extends GridPane {
 	
 	private TableView<Student> allStudentsTable;
 	private TableView<Student> selectedStudentsTable;
-	private Label searchBar;
 	private Label selectionLabel;
+	private TextField searchTextField;
 	private Button newStudentButton;
 	private Button toRightButton;
 	private Button toLeftButton;
@@ -58,7 +59,9 @@ public class AllStudentsView extends GridPane {
 		selectedStudents = FXCollections.observableArrayList();
 		allStudentsTable = new TableView<Student>(allStudents);
 		selectedStudentsTable = new TableView<Student>(selectedStudents);
-		searchBar = new Label("Hier sollte die SearchBar sein");
+		searchTextField = new TextField();
+		searchTextField.setPromptText("Suche Student");
+		
 		selectionLabel = new Label("Auswahl");
 		newStudentButton = new Button("Neuen Studenten hinzufügen");
 		toRightButton = new Button(">");
@@ -69,8 +72,8 @@ public class AllStudentsView extends GridPane {
 
 		// =====================================================================
 
-		add(searchBar, 0, 0);
-		GridPane.setHalignment(searchBar, HPos.LEFT);
+		add(searchTextField, 0, 0);
+		GridPane.setHalignment(searchTextField, HPos.LEFT);
 
 		add(newStudentButton, 1, 0);
 		GridPane.setHalignment(newStudentButton, HPos.RIGHT);

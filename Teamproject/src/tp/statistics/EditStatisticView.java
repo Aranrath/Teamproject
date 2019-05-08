@@ -437,4 +437,9 @@ public class EditStatisticView extends GridPane
 		
 	}
 
+	public void updateView() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

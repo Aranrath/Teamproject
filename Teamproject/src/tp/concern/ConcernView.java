@@ -606,7 +606,7 @@ public class ConcernView extends GridPane {
 			
 			for (Student student : localStudents)
 			{
-				if(containsAll(student.toString().toLowerCase(), searchTerms))
+				if(Presenter.containsAll(student.toString().toLowerCase(), searchTerms))
 				{
 					filteredStudents.add(student);
 				}
@@ -616,17 +616,7 @@ public class ConcernView extends GridPane {
 		}
 	}
 	
-	public static boolean containsAll(String searchText, String ...searchTerm) {
-	    for (String s : searchTerm)
-	    {
-	    	if (!searchText.contains(s)) 
-	        {
-	        	return false;
-	        }
-	    }
-	        
-	    return true;
-	}
+
 
 
 	private void fillView() {
@@ -684,6 +674,11 @@ public class ConcernView extends GridPane {
 	{
 		topicComboBox.getItems().add(topic);
 		topicComboBox.getSelectionModel().select(topic);
+	}
+
+	public void updateView() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

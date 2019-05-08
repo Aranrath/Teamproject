@@ -520,6 +520,11 @@ public class EditStudentView extends GridPane {
 		studentPO.getItems().add(po);
 		studentPO.getSelectionModel().select(po);
 	}
+
+	public void updateView() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 	
 }

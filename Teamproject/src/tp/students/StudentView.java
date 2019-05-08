@@ -541,4 +541,8 @@ public class StudentView extends GridPane {
 		presenter.saveEditedStudent(student);
 	}
 
+	public void updateView() {
+		// TODO Auto-generated method stub
+	}
+
 }

@@ -160,6 +160,12 @@ public class StatisticView extends HBox{
 		
 		allStatisticsTable = new TableView<StatisticValues>();
 	}
+
+
+	public void updateView() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 
 }

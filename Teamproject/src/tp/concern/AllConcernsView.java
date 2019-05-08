@@ -26,8 +26,10 @@ import tp.model.Concern;
 public class AllConcernsView extends GridPane
 {
 	private Presenter presenter;
-	ObservableList<Concern> allConcerns;
-	ObservableList<Concern> shownConcerns;
+	private ObservableList<Concern> allConcerns;
+	private ObservableList<Concern> shownConcerns;
+	
+	//-----------GUI
 	
 	private TableView<Concern> allConcernsTable;
 	private TextField searchTextField;
@@ -41,7 +43,7 @@ public class AllConcernsView extends GridPane
 		buildView();
 	}
 
-	//TODO ?
+	
 	@SuppressWarnings("unchecked")
 	private void buildView() {
 		setPadding(new Insets(20));
@@ -64,13 +66,13 @@ public class AllConcernsView extends GridPane
 		add(searchTextField, 0, 0);
 		GridPane.setHalignment(searchTextField, HPos.LEFT);
 		
-		add(newConcernButton, 1, 0);
-		GridPane.setHalignment(newConcernButton, HPos.RIGHT);
+		add(showClosedConcernsCheckBox, 1, 0);
+		GridPane.setHalignment(showClosedConcernsCheckBox, HPos.RIGHT);
 
 		add(allConcernsTable, 0, 1, 2, 1);
 		
-		add(showClosedConcernsCheckBox, 1, 2);
-		GridPane.setHalignment(showClosedConcernsCheckBox, HPos.RIGHT);
+		add(newConcernButton, 1, 2);
+		GridPane.setHalignment(newConcernButton, HPos.RIGHT);
 
 		add(deleteConcernButton, 0, 2);
 		GridPane.setHalignment(deleteConcernButton, HPos.LEFT);
@@ -161,7 +163,8 @@ public class AllConcernsView extends GridPane
 		
 	}
 	
-
+	// ======================================================================
+	//(private) Hilfs-Methoden
 
 	private void filterConcerns(String searchTerm) {
 		
@@ -182,10 +185,8 @@ public class AllConcernsView extends GridPane
 					{
 						shownConcerns.add(concern);
 					}
-					
 				}
 			}
-	
 		}
 		else
 		{
@@ -196,7 +197,7 @@ public class AllConcernsView extends GridPane
 			{
 				for (Concern concern : allConcerns)
 				{
-					if(ConcernView.containsAll(concern.toString().toLowerCase(), searchTerms))
+					if(Presenter.containsAll(concern.toString().toLowerCase(), searchTerms))
 					{
 						shownConcerns.add(concern);
 					}
@@ -207,21 +208,18 @@ public class AllConcernsView extends GridPane
 			{
 				for (Concern concern : allConcerns)
 				{
-					if(!concern.isCompleted() && ConcernView.containsAll(concern.toString().toLowerCase(), searchTerms))
+					if(!concern.isCompleted() && Presenter.containsAll(concern.toString().toLowerCase(), searchTerms))
 					{
 						shownConcerns.add(concern);
 					}
 					
 				}
-			}
-			
-			
-			
+			}	
 		}
-		
-		
-		
 	}
+	
+	// ======================================================================
+	//öffentliche Methoden
 
 	public void updateView() {
 		allConcerns = presenter.getConcerns();

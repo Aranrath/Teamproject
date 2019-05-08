@@ -300,7 +300,8 @@ public class MainView extends BorderPane {
 		return null;
 	}
 
-	// ------------------------openingTabs-----------------------------------
+	//=====================================================================
+	//open_Tab Methoden
 
 	public void openAllStudentsTab() {
 		MyTab newTab = tabAlreadyOpen("a");
@@ -318,7 +319,7 @@ public class MainView extends BorderPane {
 		selectionModel.select(newTab);
 		
 		
-		
+		//updateView wenn zum Tab gewechselt wird
 		final MyTab innerTab = newTab;
 		newTab.setOnSelectionChanged((event) -> {
 			if(innerTab.isSelected())
@@ -344,6 +345,17 @@ public class MainView extends BorderPane {
 		SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
 		selectionModel.select(newTab);
 		
+		//updateView wenn zum Tab gewechselt wird
+		final MyTab innerTab = newTab;
+		newTab.setOnSelectionChanged((event) -> {
+			if(innerTab.isSelected())
+			{
+				StudentView view = (StudentView) innerTab.getContent();
+				view.updateView();
+				
+			}
+		});
+		
 	}
 	
 	public void openStudentTabFromEditStudentView(Student student, ArrayList<String> changedMailAddresses) {
@@ -360,6 +372,17 @@ public class MainView extends BorderPane {
 		SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
 		selectionModel.select(newTab);
 		
+		//updateView wenn zum Tab gewechselt wird
+		final MyTab innerTab = newTab;
+		newTab.setOnSelectionChanged((event) -> {
+			if(innerTab.isSelected())
+			{
+				StudentView view = (StudentView) innerTab.getContent();
+				view.updateView();
+				
+			}
+		});
+		
 	}
 
 	public void openOptionsTab() {
@@ -375,6 +398,17 @@ public class MainView extends BorderPane {
 		}
 		SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
 		selectionModel.select(newTab);
+		
+		//updateView wenn zum Tab gewechselt wird
+		final MyTab innerTab = newTab;
+		newTab.setOnSelectionChanged((event) -> {
+			if(innerTab.isSelected())
+			{
+				OptionsView view = (OptionsView) innerTab.getContent();
+				view.updateView();
+				
+			}
+		});
 
 	}
 
@@ -393,6 +427,17 @@ public class MainView extends BorderPane {
 
 		SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
 		selectionModel.select(newTab);
+		
+		//updateView wenn zum Tab gewechselt wird
+		final MyTab innerTab = newTab;
+		newTab.setOnSelectionChanged((event) -> {
+			if(innerTab.isSelected())
+			{
+				WeekScheduleView view = (WeekScheduleView) innerTab.getContent();
+				view.updateView();
+						
+			}
+		});
 	}
 
 	public void openFormsTab() {
@@ -408,6 +453,17 @@ public class MainView extends BorderPane {
 		}
 		SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
 		selectionModel.select(newTab);
+		
+		//updateView wenn zum Tab gewechselt wird
+		final MyTab innerTab = newTab;
+		newTab.setOnSelectionChanged((event) -> {
+			if(innerTab.isSelected())
+			{
+				FormsView view = (FormsView) innerTab.getContent();
+				view.updateView();
+						
+			}
+		});
 
 	}
 
@@ -425,6 +481,7 @@ public class MainView extends BorderPane {
 		SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
 		selectionModel.select(newTab);
 		
+		//updateView wenn zum Tab gewechselt wird
 		final MyTab innerTab = newTab;
 		newTab.setOnSelectionChanged((event) -> {
 			if(innerTab.isSelected())
@@ -450,7 +507,17 @@ public class MainView extends BorderPane {
 		}
 		SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
 		selectionModel.select(newTab);
-
+		
+		//updateView wenn zum Tab gewechselt wird
+		final MyTab innerTab = newTab;
+		newTab.setOnSelectionChanged((event) -> {
+			if(innerTab.isSelected())
+			{
+				StatisticView view = (StatisticView) innerTab.getContent();
+				view.updateView();
+				
+			}
+		});
 	}
 
 	public void openAllStatisticsTab() {
@@ -467,6 +534,16 @@ public class MainView extends BorderPane {
 		SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
 		selectionModel.select(newTab);
 
+		//updateView wenn zum Tab gewechselt wird
+		final MyTab innerTab = newTab;
+		newTab.setOnSelectionChanged((event) -> {
+			if(innerTab.isSelected())
+			{
+				AllStatisticsView view = (AllStatisticsView) innerTab.getContent();
+				view.updateView();
+				
+			}
+		});
 	}
 
 	public void openConcernTab(Concern concern) {
@@ -482,6 +559,17 @@ public class MainView extends BorderPane {
 		}
 		SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
 		selectionModel.select(newTab);
+		
+		//updateView wenn zum Tab gewechselt wird
+		final MyTab innerTab = newTab;
+		newTab.setOnSelectionChanged((event) -> {
+			if(innerTab.isSelected())
+			{
+				ConcernView view = (ConcernView) innerTab.getContent();
+				view.updateView();
+				
+			}
+		});
 	}
 	
 	public void openRemindersTab() {
@@ -497,6 +585,17 @@ public class MainView extends BorderPane {
 		}
 		SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
 		selectionModel.select(newTab);
+		
+		//updateView wenn zum Tab gewechselt wird
+		final MyTab innerTab = newTab;
+		newTab.setOnSelectionChanged((event) -> {
+			if(innerTab.isSelected())
+			{
+				RemindersView view = (RemindersView) innerTab.getContent();
+				view.updateView();
+				
+			}
+		});
 	}
 	
 	//--------------------Tabs für die Eingabe neuer(!!!) Objekte. Diese Tabs werden nicht gemerkt für die nächste Sitzung
@@ -513,6 +612,16 @@ public class MainView extends BorderPane {
 		SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
 		selectionModel.select(newTab);
 
+		//updateView wenn zum Tab gewechselt wird
+		final MyTab innerTab = newTab;
+		newTab.setOnSelectionChanged((event) -> {
+			if(innerTab.isSelected())
+			{
+				ConcernView view = (ConcernView) innerTab.getContent();
+				view.updateView();
+				
+			}
+		});
 	}
 	
 	public void openNewConcernTab(ObservableList<Student> students) {
@@ -527,6 +636,16 @@ public class MainView extends BorderPane {
 		SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
 		selectionModel.select(newTab);
 
+		//updateView wenn zum Tab gewechselt wird
+		final MyTab innerTab = newTab;
+		newTab.setOnSelectionChanged((event) -> {
+			if(innerTab.isSelected())
+			{
+				ConcernView view = (ConcernView) innerTab.getContent();
+				view.updateView();
+				
+			}
+		});
 	}
 
 	public void openNewStudentTab() {
@@ -540,6 +659,17 @@ public class MainView extends BorderPane {
 
 		SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
 		selectionModel.select(newTab);
+		
+		//updateView wenn zum Tab gewechselt wird
+		final MyTab innerTab = newTab;
+		newTab.setOnSelectionChanged((event) -> {
+			if(innerTab.isSelected())
+			{
+				EditStudentView view = (EditStudentView) innerTab.getContent();
+				view.updateView();
+				
+			}
+		});
 
 	}
 	
@@ -554,11 +684,19 @@ public class MainView extends BorderPane {
 
 		SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
 		selectionModel.select(newTab);
+		
+		//updateView wenn zum Tab gewechselt wird
+		final MyTab innerTab = newTab;
+		newTab.setOnSelectionChanged((event) -> {
+			if(innerTab.isSelected())
+			{
+				EditStudentView view = (EditStudentView) innerTab.getContent();
+				view.updateView();
+				
+			}
+		});
 
 	}
-	
-	
-	
 
 	public void openNewStatisticTab() {
 		MyTab newTab = new MyTab("new");
@@ -571,9 +709,21 @@ public class MainView extends BorderPane {
 
 		SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
 		selectionModel.select(newTab);
+		
+		//updateView wenn zum Tab gewechselt wird
+		final MyTab innerTab = newTab;
+		newTab.setOnSelectionChanged((event) -> {
+			if(innerTab.isSelected())
+			{
+				EditStatisticView view = (EditStatisticView) innerTab.getContent();
+				view.updateView();
+				
+			}
+		});
 	}
 
-	//=========================================================================00
+	//ENDE: open_Tab Methoden
+	//=========================================================================
 	
 
 	public void showEditUserDataView(Options options) {

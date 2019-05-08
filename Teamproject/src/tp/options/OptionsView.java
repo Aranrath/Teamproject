@@ -279,4 +279,9 @@ public class OptionsView extends GridPane {
 		subjectsList.getItems().add(newSubject);
 	}
 
+	public void updateView() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

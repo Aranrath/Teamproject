@@ -37,4 +37,9 @@ public class Statistic {
 	public void setValues(List<StatisticValues> values) {
 		this.values = values;
 	}
+	
+	@Override
+	public String toString() {
+		return title;
+	}
 }
