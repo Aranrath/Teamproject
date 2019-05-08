@@ -434,7 +434,9 @@ public class Presenter {
 		return model.getStatistics();
 	}
 
-
+	/*TODO Bei den delete Methoden gucken ob entsprechende Objekte noch offen sind.
+		-> wenn: Tabs schließen
+	*/
 
 
 }

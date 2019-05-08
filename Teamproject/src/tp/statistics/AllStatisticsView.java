@@ -69,7 +69,6 @@ public class AllStatisticsView extends GridPane{
 
 		//===================================================================
 		//constraints
-		//TODO
 				
 		ColumnConstraints col = new ColumnConstraints();
 		col.setPercentWidth(100 / 2);

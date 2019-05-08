@@ -19,7 +19,9 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
 import tp.Presenter;
 import tp.model.Student;
@@ -29,8 +31,9 @@ public class AllStudentsView extends GridPane {
 	private Presenter presenter;
 	private ObservableList<Student> selectedStudents;
 	private ObservableList<Student> allStudents;
+	private ObservableList<Student> shownStudents;
 
-	//================================
+	//-------------------GUI
 	
 	private TableView<Student> allStudentsTable;
 	private TableView<Student> selectedStudentsTable;
@@ -48,17 +51,20 @@ public class AllStudentsView extends GridPane {
 		buildView();
 	}
 
-	//TODO ?
 	@SuppressWarnings("unchecked")
 	private void buildView() {
 		
 		setPadding(new Insets(20));
 		setHgap(20);
 		setVgap(20);
+		
 		allStudents = presenter.getStudents();
+		shownStudents = FXCollections.observableArrayList(allStudents);
+		allStudentsTable = new TableView<Student>(shownStudents);
+		
 		selectedStudents = FXCollections.observableArrayList();
-		allStudentsTable = new TableView<Student>(allStudents);
 		selectedStudentsTable = new TableView<Student>(selectedStudents);
+		
 		searchTextField = new TextField();
 		searchTextField.setPromptText("Suche Student");
 		
@@ -67,7 +73,7 @@ public class AllStudentsView extends GridPane {
 		toRightButton = new Button(">");
 		toLeftButton = new Button("<");
 		allToLeftButton = new Button("<<");
-		deleteStudentButton = new Button("Studenten löschen");
+		deleteStudentButton = new Button("Ausgewählte Studenten löschen");
 		studentToNewConcernButton = new Button("Zu neuem Anliegen hinzufügen");
 
 		// =====================================================================
@@ -80,23 +86,27 @@ public class AllStudentsView extends GridPane {
 
 		add(selectionLabel, 3, 0);
 
+		add(deleteStudentButton, 4, 0);
+		GridPane.setHalignment(deleteStudentButton, HPos.RIGHT);
+		
 		VBox leftRightButtonBox = new VBox();
 		leftRightButtonBox.getChildren().addAll(toLeftButton, toRightButton, allToLeftButton);
 		leftRightButtonBox.setSpacing(10);
 		toRightButton.setMaxWidth(Double.MAX_VALUE);
 		toLeftButton.setMaxWidth(Double.MAX_VALUE);
 		allToLeftButton.setMaxWidth(Double.MAX_VALUE);
-		add(leftRightButtonBox, 2, 1,1,3);
+		toRightButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
+		toLeftButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
+		allToLeftButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
+		
+		add(leftRightButtonBox, 2, 1);
 		leftRightButtonBox.setAlignment(Pos.CENTER);
 
-		add(deleteStudentButton, 4, 0);
-		GridPane.setHalignment(deleteStudentButton, HPos.RIGHT);
+		add(allStudentsTable, 0, 1, 2, 3);
+		add(selectedStudentsTable, 3, 1, 2, 1);
 
-		add(studentToNewConcernButton, 3, 4, 2, 1);
+		add(studentToNewConcernButton, 3, 2, 2, 1);
 		GridPane.setHalignment(studentToNewConcernButton, HPos.RIGHT);
-
-		add(allStudentsTable, 0, 1, 2, 5);
-		add(selectedStudentsTable, 3, 1, 2, 3);
 
 		// ======================================================================
 
@@ -126,6 +136,30 @@ public class AllStudentsView extends GridPane {
 		
 		selectedStudentsTable.getColumns().addAll(mtrNrCol2, lastNameCol2, firstNameCol2);
 
+		
+		//===================================================================
+		//constraints
+		//TODO
+				
+		ColumnConstraints leftTableCol = new ColumnConstraints();
+		leftTableCol.setPercentWidth(55 / 2);
+		ColumnConstraints buttonCol = new ColumnConstraints();
+		buttonCol.setPercentWidth(5);
+		ColumnConstraints rightTableCol = new ColumnConstraints();
+		rightTableCol.setPercentWidth(40 / 2);
+		
+		getColumnConstraints().addAll(leftTableCol, leftTableCol,buttonCol, rightTableCol, rightTableCol);
+				
+		//-------------------------------------------------
+		
+		RowConstraints buttonRow = new RowConstraints();
+		buttonRow.setPercentHeight(20 / 3);
+		
+		RowConstraints tableRow = new RowConstraints();
+		tableRow.setPercentHeight(80);
+				     
+		getRowConstraints().addAll(buttonRow, tableRow, buttonRow, buttonRow);
+		
 		// =====================================================================
 
 		newStudentButton.setOnAction((event) -> {
@@ -136,19 +170,18 @@ public class AllStudentsView extends GridPane {
 			List<Student> studentsToMove = allStudentsTable.getSelectionModel().getSelectedItems();
 			// First addAll, because studentsToMove will be empty after they have been deleted from allStudents
 			selectedStudents.addAll(studentsToMove);
-			allStudents.removeAll(studentsToMove); 
+			shownStudents.removeAll(studentsToMove); 
 		});
 		
 		toLeftButton.setOnAction((event) -> {
 			List<Student> studentsToMove = selectedStudentsTable.getSelectionModel().getSelectedItems();
-			allStudents.addAll(studentsToMove);
+			shownStudents.addAll(studentsToMove);
 			selectedStudents.removeAll(studentsToMove);
 		});
 		
 		allToLeftButton.setOnAction((event) -> {
-			allStudents.addAll(selectedStudents);
+			shownStudents.addAll(selectedStudents);
 			selectedStudents.clear();
-			
 		});
 		
 		deleteStudentButton.setOnAction((event) -> {
@@ -157,9 +190,10 @@ public class AllStudentsView extends GridPane {
 			alert.showAndWait();
 
 			if (alert.getResult() == ButtonType.YES) {
-				for (Student s : selectedStudentsTable.getItems()) {
+				for (Student s : selectedStudents) {
 					presenter.deleteStudent(s);
 				}
+				selectedStudents.clear();
 			}
 
 
@@ -196,15 +230,48 @@ public class AllStudentsView extends GridPane {
 		        }
 		    }
 		});
+		
+		searchTextField.textProperty().addListener((obs, oldText, newText) -> {
+			filterStudents(newText);
+		});
 
 	}
+	
+	//============================================================
+	//(private) Hilfs-Methode
 
 	
+	private void filterStudents(String searchTerm)
+	{
+		shownStudents.clear();
+		
+		if(searchTerm.isEmpty())
+		{
+				shownStudents.addAll(allStudents);
+		}
+		else
+		{
+			
+			String [] searchTerms = searchTerm.toLowerCase().split(" ");
+			for (Student student : allStudents)
+			{
+				if(Presenter.containsAll(student.toString().toLowerCase(), searchTerms))
+				{
+					shownStudents.add(student);
+				}	
+			}
+		}
+		shownStudents.removeAll(selectedStudents);
+	}
+	
+	//============================================================
+		//(private) Hilfs-Methode
+
 	public void updateView()
 	{
-		allStudentsTable.setItems(presenter.getStudents());
-		allStudentsTable.getItems().removeAll(selectedStudentsTable.getItems());
-		
+		allStudents = presenter.getStudents();
+		shownStudents = FXCollections.observableArrayList(allStudents);
+		filterStudents(searchTextField.getText());	
 	}
 
 }
