@@ -12,8 +12,12 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import tp.Presenter;
@@ -25,27 +29,31 @@ public class AddStudentToConcernView extends GridPane{
 	private ConcernView concernView;
 	private ObservableList<Student> selectedStudents;
 	private ObservableList<Student> allStudents;
+	private ObservableList<Student> shownStudents;
 	
-	//=====================================
+	//-------------------------GUI
 	
-	TableView<Student> allStudentsTable;
-	TableView<Student> selectedStudentsTable;
-	Label selectionLabel;
-	Button toRightButton;
-	Button toLeftButton;
-	Button allToLeftButton;
-	Button saveButton;
-	
-	//TODO
-	Label searchBar;
+	private TableView<Student> allStudentsTable;
+	private TableView<Student> selectedStudentsTable;
+	private Label selectionLabel;
+	private Button toRightButton;
+	private Button toLeftButton;
+	private Button allToLeftButton;
+	private Button saveButton;
+	private TextField searchTextField;
 	
 	public AddStudentToConcernView(Presenter presenter, Stage stage, ConcernView concernView, ObservableList<Student> alreadyInConcernStudents)
 	{
 		this.stage = stage;
 		this.concernView = concernView;
-		this.selectedStudents = FXCollections.observableArrayList(alreadyInConcernStudents);
+		
 		this.allStudents = presenter.getStudents();
-		//Remove all doesn't work, as the students are equal, not the same Object.
+		this.selectedStudents = FXCollections.observableArrayList(alreadyInConcernStudents);
+		/*
+		 * Remove all funktioniert an dieser Stelle nicht.
+		 * Da die Studentenobjekte getrennt aus der Datenbank ausgelesen wurden sind es nicht die selben Objekte
+		 * -> manuelles Vergleichen der Student-id und löschen
+		*/
 		for (Student inStu: selectedStudents) {
 			for (Student allStu: allStudents) {
 				if(inStu.getMtrNr() == allStu.getMtrNr()) {
@@ -54,7 +62,7 @@ public class AddStudentToConcernView extends GridPane{
 				}
 			}
 		}
-		allStudents.removeAll(selectedStudents);
+		this.shownStudents = FXCollections.observableArrayList(allStudents);
 		
 		buildView();
 	}
@@ -65,9 +73,10 @@ public class AddStudentToConcernView extends GridPane{
 		setHgap(10);
 		setVgap(10);
 		
-		allStudentsTable = new TableView<Student>(allStudents);
+		allStudentsTable = new TableView<Student>(shownStudents);
 		selectedStudentsTable = new TableView<Student>(selectedStudents);
-		searchBar = new Label("Hier sollte die SearchBar sein");
+		searchTextField = new TextField();
+		searchTextField.setPromptText("Suche Studenten");
 		selectionLabel = new Label("Auswahl");
 		toRightButton = new Button(">");
 		toLeftButton = new Button("<");
@@ -76,10 +85,10 @@ public class AddStudentToConcernView extends GridPane{
 		
 		// =====================================================================
 
-				add(searchBar, 0, 0);
-				GridPane.setHalignment(searchBar, HPos.LEFT);
-
-				add(selectionLabel, 3, 0);
+				add(searchTextField, 0, 0);
+				GridPane.setHalignment(searchTextField, HPos.LEFT);
+				
+				add(allStudentsTable, 0, 1, 1, 2);
 
 				VBox leftRightButtonBox = new VBox();
 				leftRightButtonBox.getChildren().addAll(toLeftButton, toRightButton, allToLeftButton);
@@ -87,14 +96,20 @@ public class AddStudentToConcernView extends GridPane{
 				toRightButton.setMaxWidth(Double.MAX_VALUE);
 				toLeftButton.setMaxWidth(Double.MAX_VALUE);
 				allToLeftButton.setMaxWidth(Double.MAX_VALUE);
-				add(leftRightButtonBox, 2, 1,1,3);
+				toRightButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
+				toLeftButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
+				allToLeftButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
 				leftRightButtonBox.setAlignment(Pos.CENTER);
+				add(leftRightButtonBox, 1, 1);
 
-				add(saveButton, 3, 4, 2, 1);
+				add(selectionLabel, 2, 0);
+				selectionLabel.setMinSize(Label.USE_PREF_SIZE, Label.USE_PREF_SIZE);
+				
+				add(selectedStudentsTable, 2, 1);
+				
+				add(saveButton, 2, 2);
+				saveButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
 				GridPane.setHalignment(saveButton, HPos.RIGHT);
-
-				add(allStudentsTable, 0, 1, 2, 5);
-				add(selectedStudentsTable, 3, 1, 2, 3);
 
 				// ======================================================================
 
@@ -125,7 +140,21 @@ public class AddStudentToConcernView extends GridPane{
 				selectedStudentsTable.getColumns().addAll(mtrNrCol2, lastNameCol2, firstNameCol2);
 
 				// =====================================================================
-				//TODO Constraints
+				//Constraints
+				
+				ColumnConstraints tableCol = new ColumnConstraints();
+				tableCol.setHgrow(Priority.ALWAYS);
+				ColumnConstraints buttonCol = new ColumnConstraints();
+				
+				getColumnConstraints().addAll(tableCol, buttonCol,tableCol);
+						
+				RowConstraints buttonRow = new RowConstraints();
+				RowConstraints tableRow = new RowConstraints();
+				tableRow.setVgrow(Priority.ALWAYS);
+				
+				setMinHeight(leftRightButtonBox.getPrefHeight() + selectionLabel.getPrefHeight() + saveButton.getPrefHeight());
+						     
+				getRowConstraints().addAll(buttonRow,tableRow,buttonRow);
 				
 				// ======================================================================
 				
@@ -133,17 +162,17 @@ public class AddStudentToConcernView extends GridPane{
 					List<Student> studentsToMove = allStudentsTable.getSelectionModel().getSelectedItems();
 					// First addAll, because studentsToMove will be empty after they have been deleted from allStudents
 					selectedStudents.addAll(studentsToMove);
-					allStudents.removeAll(studentsToMove); 
+					shownStudents.removeAll(studentsToMove);
 				});
 				
 				toLeftButton.setOnAction((event) -> {
 					List<Student> studentsToMove = selectedStudentsTable.getSelectionModel().getSelectedItems();
-					allStudents.addAll(studentsToMove);
+					shownStudents.addAll(studentsToMove);
 					selectedStudents.removeAll(studentsToMove);
 				});
 				
 				allToLeftButton.setOnAction((event) -> {
-					allStudents.addAll(selectedStudents);
+					shownStudents.addAll(selectedStudents);
 					selectedStudents.clear();
 					
 				});
@@ -152,8 +181,32 @@ public class AddStudentToConcernView extends GridPane{
 					concernView.addStudentsToConcern(selectedStudentsTable.getItems());
 					stage.close();
 				});
+				
+				searchTextField.textProperty().addListener((obs, oldText, newText) -> {
+					filterStudents(newText);
+				});
+	}
+
+	private void filterStudents(String searchTerm) {
+		shownStudents.clear();
 		
-		
+		if(searchTerm.isEmpty())
+		{
+				shownStudents.addAll(allStudents);
+		}
+		else
+		{
+			
+			String [] searchTerms = searchTerm.toLowerCase().split(" ");
+			for (Student student : allStudents)
+			{
+				if(Presenter.containsAll(student.toString().toLowerCase(), searchTerms))
+				{
+					shownStudents.add(student);
+				}	
+			}
+		}
+		shownStudents.removeAll(selectedStudents);
 		
 	}
 

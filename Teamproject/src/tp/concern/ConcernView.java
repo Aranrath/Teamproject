@@ -411,8 +411,9 @@ public class ConcernView extends GridPane {
 			stage.setAlwaysOnTop(true);
 			stage.initModality(Modality.APPLICATION_MODAL);
 			stage.setTitle("Studenten hinzufügen");
+			stage.setResizable(false);
 			stage.setScene(new Scene(new AddStudentToConcernView(presenter, stage, this, studentTableView.getItems()),
-					450, 450));
+					getWidth()*(0.6), getHeight()*(0.7)));
 			stage.show();
 		});
 
