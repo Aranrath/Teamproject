@@ -2,6 +2,7 @@ package tp.appointment;
 
 import java.sql.Date;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -185,7 +186,7 @@ public class WeekScheduleView extends GridPane
 				});
 				showCurrentWeekButton.setOnAction((event)->{});
 				datePicker.setOnAction((event)->{
-					fillView(new Date(datePicker.getValue().toEpochDay()));
+					fillView(Date.valueOf(datePicker.getValue()));
 				});
 	}
 	
@@ -210,8 +211,6 @@ public class WeekScheduleView extends GridPane
 			
 			appointmentButtonsPanes[i].getChildren().clear();
 			
-			
-			//TODO Maﬂe anpassen
 			for(Appointment a : thisDayAppointments)
 			{
 				
@@ -266,15 +265,19 @@ public class WeekScheduleView extends GridPane
 			}
 			
 		}
-		
-		
-		
-		
-		
 	}
 
 	public void updateView() {
-		// TODO Auto-generated method stub
+		LocalDate pickerDate = datePicker.getValue();
+		if(pickerDate != null)
+		{
+			fillView(Date.valueOf(pickerDate));
+		}
+		else
+		{
+			fillView(shownWorkWeek[0]);
+		}
+		
 		
 	}
 
