@@ -3,6 +3,9 @@ package tp.statistics;
 import java.sql.Date;
 import java.util.ArrayList;
 
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -11,23 +14,25 @@ import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.PieChart;
+import javafx.scene.chart.PieChart.Data;
 import javafx.scene.chart.XYChart;
+import javafx.scene.chart.XYChart.Series;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.util.Callback;
 import javafx.util.Pair;
 import javafx.util.StringConverter;
-import tp.Presenter;
 import tp.model.statistics.ContinuousStatistic;
 import tp.model.statistics.IntervalStatistic;
 import tp.model.statistics.RatioStatistic;
 import tp.model.statistics.Statistic;
 import tp.model.statistics.StatisticValues;
 
-public class StatisticView extends HBox{
+public class StatisticView extends VBox{
 
-	private Presenter presenter;
 	Statistic statistic;
-	private TableView<StatisticValues> allStatisticsTable;
 	//=====================0
 	
 	
@@ -53,16 +58,14 @@ public class StatisticView extends HBox{
 			PieChart pieChart = new PieChart(pieChartData);
 			pieChart.setTitle(statistic.getTitle());
 			pieChart.setLabelsVisible(true);
-			pieChart.setLegendVisible(false);
 			
-			getChildren().add(pieChart);
+			getChildren().addAll(pieChart, createPieChartTableView(pieChart));
 			
 		}else if (statistic instanceof ContinuousStatistic) {
 			//TODO überarbeiten
 			long start = ((ContinuousStatistic) statistic).getStartDate().getTime()/100000000;
 			long end = ((ContinuousStatistic) statistic).getEndDate().getTime()/100000000;
 			NumberAxis xAxis = new NumberAxis(start, end, 10);
-//			CategoryAxis xAxis = new CategoryAxis();
 			xAxis.setLabel("Datum"); 
 			StringConverter<Number> converter = new StringConverter<Number>() {
 				@Override
@@ -101,7 +104,7 @@ public class StatisticView extends HBox{
 				}
 				lineChart.getData().add(series);
 			}
-			getChildren().add(lineChart);
+			getChildren().addAll(lineChart, createLineChartTableView(lineChart));
 			
 		}else if (statistic instanceof IntervalStatistic) {
 			CategoryAxis xAxis = new CategoryAxis();
@@ -154,18 +157,109 @@ public class StatisticView extends HBox{
 			for (XYChart.Series<String, Number> series: chartSeriesList) {
 				barChart.getData().add(series);
 			}
-			getChildren().add(barChart);
+			getChildren().addAll(barChart, createBarChartTableView(barChart));
+		}
+	}
+
+	private TableView<Data> createPieChartTableView(PieChart chart) {
+		TableView<PieChart.Data> chartTable = new TableView<Data>();
+		
+		if(!chart.getData().isEmpty()) {
+			TableColumn<Data, String> legendCol = new TableColumn<Data, String>("Name");
+			legendCol.setCellValueFactory(new Callback<CellDataFeatures<PieChart.Data, String>, ObservableValue<String>>() {
+			     public ObservableValue<String> call(CellDataFeatures<PieChart.Data, String> param) {
+			    	 return new SimpleStringProperty(param.getValue().getName());
+			     }
+			  });
+			chartTable.getColumns().add(legendCol);
+			
+			TableColumn<Data, Integer> valueCol = new TableColumn<Data, Integer>("Wert");
+			valueCol.setCellValueFactory(new Callback<CellDataFeatures<PieChart.Data, Integer>, ObservableValue<Integer>>() {
+			     public ObservableValue<Integer> call(CellDataFeatures<PieChart.Data, Integer> param) {
+			    	 return new SimpleObjectProperty<Integer>((int) param.getValue().getPieValue());
+			     }
+			  });
+			chartTable.getColumns().add(valueCol);
+			
+		}
+		for (Data d: chart.getData()) {
+			chartTable.getItems().add(d);
 		}
 		
-		
-		allStatisticsTable = new TableView<StatisticValues>();
-	}
-
-
-	public void updateView() {
-		// TODO Auto-generated method stub
-		
+		return chartTable;
 	}
 	
+	private TableView<Series<Number, Number>> createLineChartTableView(LineChart<Number, Number> chart) {
+		TableView<XYChart.Series<Number, Number>> chartTable = new TableView<Series<Number, Number>>();
+		
+		if(!chart.getData().isEmpty()) {
+			TableColumn<XYChart.Series<Number, Number>, String> legendCol = new TableColumn<XYChart.Series<Number, Number>, String>("Name");
+			legendCol.setCellValueFactory(new Callback<CellDataFeatures<XYChart.Series<Number, Number>, String>, ObservableValue<String>>() {
+			     public ObservableValue<String> call(CellDataFeatures<XYChart.Series<Number, Number>, String> param) {
+			    	 return new SimpleStringProperty(param.getValue().getName());
+			     }
+			  });
+			chartTable.getColumns().add(legendCol);
+			
+			final ObservableList<XYChart.Data<Number, Number>> firstSeriesData = chart.getData().get(0).getData();
+		    for (final XYChart.Data<Number, Number> item: firstSeriesData) {
+		    	Date itemDate = new Date(item.getXValue().longValue()*100000000);
+		    	TableColumn<Series<Number, Number>, Number> col = new TableColumn<Series<Number, Number>, Number>(itemDate.toString());
+		    	col.setSortable(false);
+		    	col.setCellValueFactory(new Callback<CellDataFeatures<XYChart.Series<Number,Number>, Number>, ObservableValue<Number>>() {
+		    		public ObservableValue<Number> call(CellDataFeatures<XYChart.Series<Number,Number>, Number> param) {
+		    			for (XYChart.Data<Number, Number> currentItem: param.getValue().getData()) {
+		    				if (currentItem.getXValue().equals(item.getXValue())) {
+		    					return currentItem.YValueProperty();
+		    				}
+		    			}
+		    			return null;
+		    		}
+		    	 });
+		    	 chartTable.getColumns().add(col);
+		      }
+		}
+		for (XYChart.Series<Number,Number> series: chart.getData()) {
+		  	  chartTable.getItems().add(series);
+		}  
+		
+		return chartTable;
+	}
+	
+	private TableView<XYChart.Series<String, Number>> createBarChartTableView(BarChart<String, Number> chart) {
+		TableView<XYChart.Series<String, Number>> chartTable = new TableView<Series<String, Number>>();
+		
+		if(!chart.getData().isEmpty()) {
+			TableColumn<XYChart.Series<String, Number>, String> legendCol = new TableColumn<XYChart.Series<String, Number>, String>("Name");
+			legendCol.setCellValueFactory(new Callback<CellDataFeatures<XYChart.Series<String, Number>, String>, ObservableValue<String>>() {
+			     public ObservableValue<String> call(CellDataFeatures<XYChart.Series<String, Number>, String> param) {
+			    	 return new SimpleStringProperty(param.getValue().getName());
+			     }
+			  });
+			chartTable.getColumns().add(legendCol);
+			
+			final ObservableList<XYChart.Data<String, Number>> firstSeriesData = chart.getData().get(0).getData();
+		    for (final XYChart.Data<String, Number> item: firstSeriesData) {
+		    	TableColumn<Series<String, Number>, Number> col = new TableColumn<Series<String, Number>, Number>(item.getXValue().toString());
+		    	col.setSortable(false);
+		    	col.setCellValueFactory(new Callback<CellDataFeatures<XYChart.Series<String,Number>, Number>, ObservableValue<Number>>() {
+		    		public ObservableValue<Number> call(CellDataFeatures<XYChart.Series<String,Number>, Number> param) {
+		    			for (XYChart.Data<String, Number> currentItem: param.getValue().getData()) {
+		    				if (currentItem.getXValue().equals(item.getXValue())) {
+		    					return currentItem.YValueProperty();
+		    				}
+		    			}
+		    			return null;
+		    		}
+		    	 });
+		    	 chartTable.getColumns().add(col);
+		      }
+		}
+		for (XYChart.Series<String,Number> series: chart.getData()) {
+		  	  chartTable.getItems().add(series);
+		}  
+		
+		return chartTable;
+	}
 
 }

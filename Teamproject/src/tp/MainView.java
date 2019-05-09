@@ -507,17 +507,6 @@ public class MainView extends BorderPane {
 		}
 		SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
 		selectionModel.select(newTab);
-		
-		//updateView wenn zum Tab gewechselt wird
-		final MyTab innerTab = newTab;
-		newTab.setOnSelectionChanged((event) -> {
-			if(innerTab.isSelected())
-			{
-				StatisticView view = (StatisticView) innerTab.getContent();
-				view.updateView();
-				
-			}
-		});
 	}
 
 	public void openAllStatisticsTab() {

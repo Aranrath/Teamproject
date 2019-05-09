@@ -678,6 +678,7 @@ public class Model {
 					int step = rs.getInt("step");
 					result = new IntervalStatistic(title, values, startDate, endDate, step);
 				}
+				result.setId(rs.getLong("id"));
 			}
 		}catch(Exception e) {
 			e.printStackTrace();
