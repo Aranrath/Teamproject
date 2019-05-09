@@ -397,7 +397,8 @@ public class ConcernView extends GridPane {
 			stage.setAlwaysOnTop(true);
 			stage.initModality(Modality.APPLICATION_MODAL);
 			stage.setTitle("Neues Thema");
-			stage.setScene(new Scene(new EditTopicView(stage, presenter, this), 450, 450));
+			stage.setResizable(false);
+			stage.setScene(new Scene(new EditTopicView(stage, presenter, this), getWidth()*(0.6), getHeight()*(0.7)));
 			stage.show();
 		});
 		
@@ -428,7 +429,8 @@ public class ConcernView extends GridPane {
 			stage.setAlwaysOnTop(true);
 			stage.initModality(Modality.APPLICATION_MODAL);
 			stage.setTitle("Neue Erinnerung hinzufügen");
-			stage.setScene(new Scene(new NewReminderView(stage, reminderTableView.getItems()), 450, 450));
+			stage.setResizable(false);
+			stage.setScene(new Scene(new NewReminderView(stage, reminderTableView.getItems()), getWidth()*(0.6), getHeight()*(0.7)));
 			stage.show();
 		});
 
@@ -463,7 +465,8 @@ public class ConcernView extends GridPane {
 
 			ObservableList<Form> filesAlreadyInConcern =FXCollections.observableArrayList(fileTableView.getItems());
 
-			stage.setScene(new Scene(new FormsView(presenter, stage, this, filesAlreadyInConcern, topicRelatedFiles), 450, 450));
+			stage.setResizable(false);
+			stage.setScene(new Scene(new FormsView(presenter, stage, this, filesAlreadyInConcern, topicRelatedFiles), getWidth()*(0.6), getHeight()*(0.7)));
 			stage.show();
 		});
 
@@ -490,7 +493,8 @@ public class ConcernView extends GridPane {
 			stage.setAlwaysOnTop(true);
 			stage.initModality(Modality.APPLICATION_MODAL);
 			stage.setTitle("Neuen Termin hinzufügen");
-			stage.setScene(new Scene(new NewAppointmentView(stage, presenter, this), 450, 450));
+			stage.setResizable(false);
+			stage.setScene(new Scene(new NewAppointmentView(stage, presenter, this), getWidth()*(0.6), getHeight()*(0.7)));
 			stage.show();
 		});
 

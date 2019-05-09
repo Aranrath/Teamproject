@@ -152,7 +152,8 @@ public class FormsView extends GridPane
 			stage.setAlwaysOnTop(true);
 			stage.initModality(Modality.APPLICATION_MODAL);
 			stage.setTitle("Neues Formular hinzufügen");
-			stage.setScene(new Scene(new NewFormView(stage, presenter, this, allForms), 450, 450));
+			stage.setResizable(false);
+			stage.setScene(new Scene(new NewFormView(stage, presenter, this, allForms), getWidth()*(0.6), getHeight()*(0.7)));
 			stage.show();
 		});
 		deleteFormButton.setOnAction((event) -> {

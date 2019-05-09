@@ -732,7 +732,8 @@ public class MainView extends BorderPane {
 		stage.setAlwaysOnTop(true);
 		stage.initStyle(StageStyle.UNDECORATED);
         stage.setTitle("Nutzerdaten");
-        stage.setScene(new Scene(new EditUserDataView(presenter, stage, options), 450, 450));
+        stage.setResizable(false);
+        stage.setScene(new Scene(new EditUserDataView(presenter, stage, options), getWidth()*(0.6), getHeight()*(0.7)));
         stage.show();
 		
 	}
@@ -764,7 +765,8 @@ public class MainView extends BorderPane {
 			stage.initModality(Modality.APPLICATION_MODAL);
 			stage.setAlwaysOnTop(true);
 	        stage.setTitle("Neue Erinnerungen");
-	        stage.setScene(new Scene(new NewReminderAlertView(presenter,stage, newReminders), 450, 450));
+	        stage.setResizable(false);
+	        stage.setScene(new Scene(new NewReminderAlertView(presenter,stage, newReminders), getWidth()*(0.6), getHeight()*(0.7)));
 	        stage.show();
 		}
 		options.setLastReminderCheck(new Date(System.currentTimeMillis()));

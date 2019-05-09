@@ -287,7 +287,8 @@ public class StudentView extends GridPane {
 			stage.setAlwaysOnTop(true);
 			stage.initModality(Modality.APPLICATION_MODAL);
 			stage.setTitle("Foto aufnehmen");
-			stage.setScene(new Scene(new TakeImageView(stage, presenter, this), 450, 450));
+			stage.setResizable(false);
+			stage.setScene(new Scene(new TakeImageView(stage, presenter, this), getWidth()*(0.6), getHeight()*(0.7)));
 			stage.show();
 		});
 		

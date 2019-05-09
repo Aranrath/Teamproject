@@ -243,7 +243,8 @@ public class EditStudentView extends GridPane {
 			stage.setAlwaysOnTop(true);
 			stage.initModality(Modality.APPLICATION_MODAL);
 			stage.setTitle("Foto aufnehmen");
-			stage.setScene(new Scene(new TakeImageView(stage, presenter, this), 450, 450));
+			stage.setResizable(false);
+			stage.setScene(new Scene(new TakeImageView(stage, presenter, this), getWidth()*(0.6), getHeight()*(0.7)));
 			stage.show();
 		});
 		
@@ -264,13 +265,14 @@ public class EditStudentView extends GridPane {
                 
                 if(localPassedSubjects == null)
                 {
-                	stage.setScene(new Scene(new SelectPassedSubjectsView(stage, presenter, this, studentPO.getSelectionModel().getSelectedItem()), 450, 450));
+                	stage.setScene(new Scene(new SelectPassedSubjectsView(stage, presenter, this, studentPO.getSelectionModel().getSelectedItem()), getWidth()*(0.6), getHeight()*(0.7)));
                 }
                 else
                 {
-                	stage.setScene(new Scene(new SelectPassedSubjectsView(stage, presenter, this, studentPO.getSelectionModel().getSelectedItem(), localPassedSubjects), 450, 450));
+                	stage.setScene(new Scene(new SelectPassedSubjectsView(stage, presenter, this, studentPO.getSelectionModel().getSelectedItem(), localPassedSubjects),getWidth()*(0.6), getHeight()*(0.7)));
                 }
-
+                
+                stage.setResizable(false);
                 stage.show();
             }
             
@@ -452,7 +454,8 @@ public class EditStudentView extends GridPane {
 			stage.setAlwaysOnTop(true);
 			stage.initModality(Modality.APPLICATION_MODAL);
 			stage.setTitle("Neue PO");
-			stage.setScene(new Scene(new EditPOView(stage, presenter, (EditStudentView) newPOButton.getParent()), 450, 450));
+			stage.setResizable(false);
+			stage.setScene(new Scene(new EditPOView(stage, presenter, (EditStudentView) newPOButton.getParent()), getWidth()*(0.6), getHeight()*(0.7)));
 			stage.show();
 		});
 		
