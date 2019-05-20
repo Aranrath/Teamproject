@@ -342,7 +342,7 @@ public class StudentView extends GridPane {
 			String mailContent = mailContentTextArea.getText();
 			String userID = presenter.getOptions().getUserID();
 			String userName = presenter.getOptions().getUserName();
-			EMail mail = presenter.sendMail(userID, userName, student, mailRecipientAdress.getValue(), mailCC, mailContent);
+			EMail mail = presenter.sendMail(userID, userName, student.getName(), mailRecipientAdress.getValue(), mailCC, mailContent);
 			//add new EMail to View
 			addMailToMailExchangeBox(mail);
 			mailExchangeVBox.layout();
@@ -441,16 +441,22 @@ public class StudentView extends GridPane {
 		if(!student.geteMailAddresses().isEmpty())
 		{
 			//ComboBox für EmpfängerAdresse füllen
-			mailRecipientAdress.setItems(FXCollections.observableArrayList(student.geteMailAddresses()));
-			//Wenn vorhanden eMail der letzten erhaltenen E-Mail auswählen
-			if(presenter.getLastEmail(student) != null)
-			{
-				mailRecipientAdress.getSelectionModel().select(presenter.getLastEmail(student).getMailAddress());
-			}
-			else
-			{
-				mailRecipientAdress.getSelectionModel().select(0);
-			}
+			Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                	mailRecipientAdress.setItems(FXCollections.observableArrayList(student.geteMailAddresses()));
+        			//Wenn vorhanden eMail der letzten erhaltenen E-Mail auswählen
+        			if(presenter.getLastEmail(student) != null)
+        			{
+        				mailRecipientAdress.getSelectionModel().select(presenter.getLastEmail(student).getMailAddress());
+        			}
+        			else
+        			{
+        				mailRecipientAdress.getSelectionModel().select(0);
+        			}
+                }
+            });
+			
 			
 			
 			//(seit dem letzen pull)

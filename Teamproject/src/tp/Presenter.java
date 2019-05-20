@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Properties;
 
 import javax.mail.Message;
+import javax.mail.SendFailedException;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
@@ -59,41 +60,43 @@ public class Presenter {
 
 	// =====================Mail==========================
 
-	public EMail sendMail(String userID, String userName, Student recipient, String mailAddress, String subject, String content) {
+	public EMail sendMail(String userID, String userName, String recipientName, String mailAddress, String subject, String content) {
 		try {
 			// Create a properties file containing
 			// the host address of your SMTP server
 			Properties mailProps = new Properties();
+			//TODO warum zum fick funzt das Put host hier net aber im Testprogg??!!!
 			mailProps.put("mail.smtp.host", "mail.fh-trier.de");
 
 			// Create a session with the Java Mail API
 			Session mailSession = Session.getDefaultInstance(mailProps);
+			mailSession.setDebug(true);
 			// Create a new mail message
 			MimeMessage message = new MimeMessage(mailSession);
 			// Set the From and the Recipient
 			message.setFrom(new InternetAddress(userID + "@fh-trier.de", userName));
-			// Send to eMailAddress
 			message.setRecipient(Message.RecipientType.TO,
-					new InternetAddress(mailAddress, recipient.getName()));
+					new InternetAddress(mailAddress, recipientName));
 			// Set the subject
 			message.setSubject(subject);
 			// Set the message text
+			//TODO Test wg. Zeilenumbruch
 			message.setText(content);
 			// Save all the changes you have made
 			// to the message
 			message.saveChanges();
-			// Create a transport object for sending mail
-			Transport transport = mailSession.getTransport("smtp");
 			// Send the message
-			transport.connect();
-			transport.sendMessage(message, message.getAllRecipients());
-			transport.close();
+			Transport.send(message);
 
 			// save E-mail to Database
 			EMail email = new EMail(content, subject, mailAddress, new Date(System.currentTimeMillis()), false);
 			model.saveMail(email);
 
 			return email;
+		}catch (SendFailedException e){
+			//TODO Popup, VPN eingeschaltet???
+			System.out.println("VPN?");
+			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;

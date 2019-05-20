@@ -2001,7 +2001,7 @@ public class Model {
 				stmt.executeUpdate(sql2);
 				stmt.executeUpdate(sql3);
 				for (String address: oldMailAddresses) {
-					String sql = "DELETE FROM student_emailAddress WHERE emailAddress = " + address;
+					String sql = "DELETE FROM student_emailAddress WHERE emailAddress = '" + address +"'";
 					stmt.executeUpdate(sql);
 				}
 				addStudentEmail(student.getMtrNr(), newMailAddresses);
@@ -2105,7 +2105,7 @@ public class Model {
 			{
 			for (String mail: geteMailAddresses){
 				sql="INSERT INTO student_emailAddress (student, emailAddress) VALUES (" + mtrNr + ", '" + mail + "')";
-				stmt.executeQuery(sql);
+				stmt.executeUpdate(sql);
 			}
 			}catch (Exception e) {
 				e.printStackTrace();
@@ -2204,12 +2204,17 @@ public class Model {
 	
 	// ------------EMail--------------------------------------------------------------------
 	//TODO kommt das überhaupt ins Model? SendMail is ja auch im Presenter....
+	//TODO E-Mails werden net gefunden... Meeeeeehhhh....
 	
 	public void checkMail(Student student) {
-		// For filtering the eMails
-		Date lastEmail = getLastEmail(student).getDate();
-		if (lastEmail == null) {
-			lastEmail = new Date(Long.MIN_VALUE);
+		//get Date of the last EMail Check, for filtering the eMails. If first Check, Date = minValue
+		EMail lastEmail = getLastEmail(student);
+		Date lastEmailDate = null;
+		if (lastEmail != null) {
+			lastEmailDate = getLastEmail(student).getDate();
+		}
+		if (lastEmailDate == null) {
+			lastEmailDate = new Date(Long.MIN_VALUE);
 		}
 		try {
 			// Prepare connection to the Mail Server
@@ -2226,7 +2231,7 @@ public class Model {
 				Message msg = inbox.getMessage(i);
 				// Filter eMails for unprocessed ones with Date lastEmail
 				Date sendDate = new Date(msg.getSentDate().getTime());
-				if (sendDate.compareTo(lastEmail) > 0 ) {
+				if (sendDate.compareTo(lastEmailDate) > 0 ) {
 					// Filter eMails for the corresponding student
 					ArrayList<String> fromAddresses = new ArrayList<String>();
 					Address senders[] = msg.getFrom();
@@ -2249,6 +2254,7 @@ public class Model {
 					}					
 				}else {
 					//eMails prior to this one have already been processed
+					//TODO entweder hier oder beim anderen falsch gezählt -> zu früher abbruch. Änderung der for-Schleife
 					break;
 				}
 			}
@@ -2259,7 +2265,7 @@ public class Model {
 			for (int i = outbox.getMessageCount(); i>0; i--) {
 				Message msg = outbox.getMessage(i);
 				Date sendDate = new Date(msg.getSentDate().getTime());
-				if (sendDate.compareTo(lastEmail) > 0 ) {
+				if (sendDate.compareTo(lastEmailDate) > 0 ) {
 					ArrayList<String> toAddresses = new ArrayList<String>();
 					Address[] recipients = msg.getAllRecipients();
 					for (Address address : recipients) {
@@ -2289,9 +2295,10 @@ public class Model {
 	
 	//does the same as checkMail(Sudent) just for retrieving eMails from a specific eMailadress before the last known eMail
 	public void checkMail(Student student, String mailAddress) {
-		Date lastEmail = getLastEmail(student).getDate();
-		if (lastEmail == null) {
-			lastEmail = new Date(System.currentTimeMillis());
+		EMail lastEmail = getLastEmail(student);
+		Date lastEmailDate = null;
+		if (lastEmail != null) {
+			lastEmailDate = getLastEmail(student).getDate();
 		}
 		try {
 			Properties mailProps = new Properties();
@@ -2303,7 +2310,7 @@ public class Model {
 			for (int i = inbox.getMessageCount(); i>0; i--) {
 				Message msg = inbox.getMessage(i);
 				Date sendDate = new Date(msg.getSentDate().getTime());
-				if (sendDate.compareTo(lastEmail) < 0 ) {
+				if (sendDate.compareTo(lastEmailDate) < 0 ) {
 					ArrayList<String> fromAddresses = new ArrayList<String>();
 					Address senders[] = msg.getFrom();
 					for (Address address : senders) {
@@ -2325,7 +2332,7 @@ public class Model {
 			for (int i = outbox.getMessageCount(); i>0; i--) {
 				Message msg = outbox.getMessage(i);
 				Date sendDate = new Date(msg.getSentDate().getTime());
-				if (sendDate.compareTo(lastEmail) < 0 ) {
+				if (sendDate.compareTo(lastEmailDate) < 0 ) {
 					ArrayList<String> toAddresses = new ArrayList<String>();
 					Address[] recipients = msg.getAllRecipients();
 					for (Address address : recipients) {
