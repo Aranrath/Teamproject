@@ -68,7 +68,6 @@ public class EditTopicView extends GridPane {
 	// =================================================================
 
 
-
 	private void buildView() {
 		setPadding(new Insets(10,10,10,10));
 		setHgap(10);
@@ -89,6 +88,9 @@ public class EditTopicView extends GridPane {
 		{
 			allFormsListView = new CheckListView<Form>();
 		}
+		
+		
+		// =================================================================
 		
 		add(titleLabel,0,0);
 		add(titleTextField,1,0);
@@ -141,10 +143,19 @@ public class EditTopicView extends GridPane {
 	// Bearbeite existierendes Thema -> Trage aktuelle Daten des Themas in der Oberfläche ein
 	private void fillView(Topic topic) {
 		
+		// =================================================================
+		//TODO Test ob Kästchen richtig angekreuzt werden
+		System.out.println("Zugehörige Forms von: " + topic.getTitle());
+		for(Form form : topic.getForms())
+		{
+			form.getName();
+		}
+		
+		// =================================================================
+		
 		titleTextField.setText(topic.getTitle());
 		
 		for(Form f: topic.getForms()) {
-			//TODO Auswahl failed weil Topic-Object nach Laden aus der Datenbank nicht dasselbe....? evtl? ....Maybe?
 			allFormsListView.getSelectionModel().select(f);
 		}
 		

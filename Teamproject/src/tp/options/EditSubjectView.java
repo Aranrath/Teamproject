@@ -5,7 +5,9 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.RowConstraints;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import tp.Presenter;
@@ -13,18 +15,18 @@ import tp.model.Subject;
 
 public class EditSubjectView extends GridPane {
 
-	Presenter presenter;
-	Stage stage;
-	OptionsView optionsView;
+	private Presenter presenter;
+	private Stage stage;
+	private OptionsView optionsView;
 	
-	int ects;
+	private int ects;
 
-	Button minusEctsButton;
-	Button plusEctsButton;
-	Button saveButton;
-	TextField titleTextField;
-	Label ectsLabel;
-	Label errorLabel;
+	private Button minusEctsButton;
+	private Button plusEctsButton;
+	private Button saveButton;
+	private TextField titleTextField;
+	private Label ectsLabel;
+	private Label errorLabel;
 
 	public EditSubjectView(Stage stage, Presenter presenter, OptionsView optionsView) {
 		this.stage = stage;
@@ -44,9 +46,9 @@ public class EditSubjectView extends GridPane {
 	}
 
 	private void buildView() {
-		setPadding(new Insets(10, 10, 10, 10));
-		setHgap(10);
-		setVgap(10);
+		setPadding(new Insets(20, 20, 20, 20));
+		setHgap(20);
+		setVgap(20);
 
 		titleTextField = new TextField();
 		minusEctsButton = new Button("-");
@@ -55,16 +57,23 @@ public class EditSubjectView extends GridPane {
 		ectsLabel = new Label();
 		errorLabel = new Label();
 		errorLabel.setTextFill(Color.RED);
+		
+		//=====================================================
 
 		add(new Label("Titel"), 0, 0);
 		add(titleTextField, 1, 0, 3, 1);
 		add(new Label("ECTS"), 0, 1);
 		add(minusEctsButton, 1, 1);
 		add(ectsLabel, 2, 1);
+		GridPane.setHalignment(ectsLabel, HPos.CENTER);
 		add(plusEctsButton, 3, 1);
-		add(saveButton, 0, 2, 4, 1);
+		GridPane.setHalignment(plusEctsButton, HPos.RIGHT);
+		add(errorLabel, 0,2,4,1);
+		GridPane.setHalignment(errorLabel, HPos.RIGHT);
+		add(saveButton, 0, 3, 4, 1);
 		GridPane.setHalignment(saveButton, HPos.RIGHT);
-		add(errorLabel, 0,3,4,1);
+		
+		//=====================================================
 
 		minusEctsButton.setOnAction((event) -> {
 			if (ects > 1) {
@@ -76,12 +85,29 @@ public class EditSubjectView extends GridPane {
 			ects++;
 			ectsLabel.setText(String.valueOf(ects));
 		});
+		
+		//=====================================================
+		//Constraints
+		
+		ColumnConstraints col = new ColumnConstraints();
+		col.setPercentWidth(100 / 4);
+		
+		getColumnConstraints().addAll(col, col,col, col);
+		
+		//-----------------------------------------------------
+		
+		RowConstraints row = new RowConstraints();
+		row.setPercentHeight(100 / 4);
+				     
+		getRowConstraints().addAll(row, row, row, row);
+		
 
 	}
 
 	private void fillView() {
 		ects = 5;
 		ectsLabel.setText(String.valueOf(ects));
+		
 		saveButton.setOnAction((event) -> {
 			if(subjectTitleAlreadyInUse(titleTextField.getText()))
 			{
@@ -106,8 +132,11 @@ public class EditSubjectView extends GridPane {
 
 	private void fillView(Subject subjectToEdit)
 	{
+		
 		ects = subjectToEdit.getEcts();
-		ectsLabel.setText(String.valueOf(ects));;
+		ectsLabel.setText(String.valueOf(ects));
+		titleTextField.setText(subjectToEdit.getTitle());
+		
 		saveButton.setOnAction((event) -> {
 			if(subjectTitleAlreadyInUse(subjectToEdit, titleTextField.getText()))
 			{
