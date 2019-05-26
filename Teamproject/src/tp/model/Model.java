@@ -1282,7 +1282,7 @@ public class Model {
 
 	public void saveMail(EMail email) 
 	{
-		String sql = "INSERT INTO eMail(subject, content, eMailAddress, recived) values (?, ?, ?, ?)";
+		String sql = "INSERT INTO eMail(subject, content, eMailAddress, received, date) values (?, ?, ?, ?, ?)";
 		try (Connection conn = this.connect();
 			PreparedStatement pstmt = conn.prepareStatement(sql))
 		{
@@ -1290,6 +1290,7 @@ public class Model {
 			pstmt.setString(2, email.getContent());
 			pstmt.setString(3, email.getMailAddress());
 			pstmt.setBoolean(4, email.isReceived());
+			pstmt.setDate(5, email.getDate());
 			pstmt.executeUpdate();
 		} 
 		catch(Exception e)
@@ -2204,7 +2205,6 @@ public class Model {
 	
 	// ------------EMail--------------------------------------------------------------------
 	//TODO kommt das überhaupt ins Model? SendMail is ja auch im Presenter....
-	//TODO E-Mails werden net gefunden... Meeeeeehhhh....
 	
 	public void checkMail(Student student) {
 		//get Date of the last EMail Check, for filtering the eMails. If first Check, Date = minValue
@@ -2231,17 +2231,17 @@ public class Model {
 				Message msg = inbox.getMessage(i);
 				// Filter eMails for unprocessed ones with Date lastEmail
 				Date sendDate = new Date(msg.getSentDate().getTime());
-				if (sendDate.compareTo(lastEmailDate) > 0 ) {
+				if (sendDate.after(lastEmailDate)) {
 					// Filter eMails for the corresponding student
 					ArrayList<String> fromAddresses = new ArrayList<String>();
 					Address senders[] = msg.getFrom();
 					for (Address address : senders) {
-					    fromAddresses.add(((InternetAddress)address).getAddress());
+					    fromAddresses.add(((InternetAddress)address).getAddress().toLowerCase());
 					}
 					// If a MailAddress of sender and student are the same 
 					String mailAddress = null;
 					for (String address: student.geteMailAddresses()) {
-						if (fromAddresses.contains(address)){
+						if (fromAddresses.contains(address.toLowerCase())){
 							mailAddress = address;
 						}
 					}
@@ -2254,7 +2254,6 @@ public class Model {
 					}					
 				}else {
 					//eMails prior to this one have already been processed
-					//TODO entweder hier oder beim anderen falsch gezählt -> zu früher abbruch. Änderung der for-Schleife
 					break;
 				}
 			}
@@ -2265,15 +2264,15 @@ public class Model {
 			for (int i = outbox.getMessageCount(); i>0; i--) {
 				Message msg = outbox.getMessage(i);
 				Date sendDate = new Date(msg.getSentDate().getTime());
-				if (sendDate.compareTo(lastEmailDate) > 0 ) {
+				if (sendDate.after(lastEmailDate)) {
 					ArrayList<String> toAddresses = new ArrayList<String>();
 					Address[] recipients = msg.getAllRecipients();
 					for (Address address : recipients) {
-					    toAddresses.add(((InternetAddress)address).getAddress());
+					    toAddresses.add(((InternetAddress)address).getAddress().toLowerCase());
 					}
 					String mailAddress = null;
 					for (String address: student.geteMailAddresses()) {
-						if (toAddresses.contains(address)){
+						if (toAddresses.contains(address.toLowerCase())){
 							mailAddress = address;
 						}
 					}
@@ -2307,16 +2306,16 @@ public class Model {
 			store.connect("mail.fh-trier.de", options.getUserID(), options.getPassword());
 			Folder inbox = store.getFolder("INBOX");
 			inbox.open(Folder.READ_ONLY);
-			for (int i = inbox.getMessageCount(); i>0; i--) {
+			for (int i = 0; i < inbox.getMessageCount(); i++) {
 				Message msg = inbox.getMessage(i);
 				Date sendDate = new Date(msg.getSentDate().getTime());
-				if (sendDate.compareTo(lastEmailDate) < 0 ) {
+				if (sendDate.before(lastEmailDate)) {
 					ArrayList<String> fromAddresses = new ArrayList<String>();
 					Address senders[] = msg.getFrom();
 					for (Address address : senders) {
-					    fromAddresses.add(((InternetAddress)address).getAddress());
+					    fromAddresses.add(((InternetAddress)address).getAddress().toLowerCase());
 					}
-					if (fromAddresses.contains(mailAddress)) {
+					if (fromAddresses.contains(mailAddress.toLowerCase())) {
 						String subject = msg.getSubject();
 						String content = getEmailContent(msg);
 						EMail email = new EMail(content, subject, mailAddress, sendDate, true);
@@ -2329,16 +2328,16 @@ public class Model {
 			
 			Folder outbox = store.getFolder("sent-mail");
 			outbox.open(Folder.READ_ONLY);
-			for (int i = outbox.getMessageCount(); i>0; i--) {
+			for (int i = 0; i < inbox.getMessageCount(); i++) {
 				Message msg = outbox.getMessage(i);
 				Date sendDate = new Date(msg.getSentDate().getTime());
-				if (sendDate.compareTo(lastEmailDate) < 0 ) {
+				if (sendDate.before(lastEmailDate)) {
 					ArrayList<String> toAddresses = new ArrayList<String>();
 					Address[] recipients = msg.getAllRecipients();
 					for (Address address : recipients) {
-					    toAddresses.add(((InternetAddress)address).getAddress());
+					    toAddresses.add(((InternetAddress)address).getAddress().toLowerCase());
 					}
-					if(toAddresses.contains(mailAddress)){
+					if(toAddresses.contains(mailAddress.toLowerCase())){
 						String subject = msg.getSubject();
 						String content = getEmailContent(msg);
 						EMail email = new EMail(content, subject, mailAddress, sendDate, false);
@@ -2365,8 +2364,9 @@ public class Model {
 	      else if (message.isMimeType("multipart/*")) {
 	         Multipart mp = (Multipart) message.getContent();
 	         int count = mp.getCount();
-	         for (int i = 0; i < count; i++)
-	            result += getEmailContent(mp.getBodyPart(i));
+	         result = getEmailContent(mp.getBodyPart(0));
+//	         for (int i = 0; i < count; i++)
+//	            //result += getEmailContent(mp.getBodyPart(i));
 	      } 
 	      //check if the content is a nested message
 	      else if (message.isMimeType("message/rfc822")) {

@@ -67,7 +67,9 @@ public class Presenter {
 			Properties mailProps = new Properties();
 			//TODO warum zum fick funzt das Put host hier net aber im Testprogg??!!!
 			mailProps.put("mail.smtp.host", "mail.fh-trier.de");
-
+			// debug
+//			mailProps.put("mail.debug", "true");
+			
 			// Create a session with the Java Mail API
 			Session mailSession = Session.getDefaultInstance(mailProps);
 			mailSession.setDebug(true);
