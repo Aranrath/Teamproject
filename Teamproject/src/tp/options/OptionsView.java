@@ -242,7 +242,6 @@ public class OptionsView extends GridPane {
 		});
 		
 		
-		
 		subjectsList.setOnMousePressed(new EventHandler<MouseEvent>() {
 		    @Override 
 		    public void handle(MouseEvent event) {
@@ -287,8 +286,7 @@ public class OptionsView extends GridPane {
 	}
 
 	public void updateView() {
-		// TODO Auto-generated method stub
-		
+		fillView();
 	}
 
 }
