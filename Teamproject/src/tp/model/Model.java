@@ -1364,7 +1364,7 @@ public class Model {
 		{
 			for (Subject subject: subjects) {
 				sql = "INSERT INTO po_subject (subject, po, optional) VALUES ("+ subject.getId() + ", " + poId + ", " + optional + ")";
-				stmt.executeQuery(sql);
+				stmt.executeUpdate(sql);
 			}
 		}catch (Exception e)
 		{
@@ -1435,7 +1435,7 @@ public class Model {
 
 	public void saveEditedSubject(Subject subject)
 	{
-		String sql = "UPDATE subject SET title = "+subject.getTitle()+", ects = "+subject.getEcts() + "WHERE id = " + subject.getId();
+		String sql = "UPDATE subject SET title = "+subject.getTitle()+", ects = "+subject.getEcts() + " WHERE id = " + subject.getId();
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement())
 		{
@@ -2159,13 +2159,13 @@ public class Model {
 
 	public void saveEditedTopic(Topic topic) 
 	{
-		String sql1 = "UPDATE topic SET title = "  + topic.getTitle() + "WHERE id = " + topic.getId();
+		String sql1 = "UPDATE topic SET title = '"  + topic.getTitle() + "' WHERE id = " + topic.getId();
 		String sql2 = "DELETE FROM topic_forms WHERE topic = " + topic.getId();
 		try (Connection conn = this.connect();
 				Statement stmt = conn.createStatement())
 			{
-				stmt.executeQuery(sql1);
-				stmt.executeQuery(sql2);
+				stmt.executeUpdate(sql1);
+				stmt.executeUpdate(sql2);
 				addTopicForms(topic.getId(), topic.getForms());
 			}
 			catch (Exception e)
