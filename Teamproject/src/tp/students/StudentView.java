@@ -345,8 +345,9 @@ public class StudentView extends GridPane {
 			EMail mail = presenter.sendMail(userID, userName, student.getName(), mailRecipientAdress.getValue(), mailCC, mailContent);
 			//add new EMail to View
 			addMailToMailExchangeBox(mail);
-			mailExchangeVBox.layout();
-			mailExchangeScrollPane.setVvalue(1.0d);
+			//clear sendMail fields
+			mailCCTextField.clear();
+			mailContentTextArea.clear();
 
 			
 		});

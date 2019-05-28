@@ -63,16 +63,12 @@ public class Presenter {
 	public EMail sendMail(String userID, String userName, String recipientName, String mailAddress, String subject, String content) {
 		try {
 			// Create a properties file containing
-			// the host address of your SMTP server
+			// the host address of the SMTP server
 			Properties mailProps = new Properties();
-			//TODO warum zum fick funzt das Put host hier net aber im Testprogg??!!!
 			mailProps.put("mail.smtp.host", "mail.fh-trier.de");
-			// debug
-//			mailProps.put("mail.debug", "true");
 			
 			// Create a session with the Java Mail API
-			Session mailSession = Session.getDefaultInstance(mailProps);
-			mailSession.setDebug(true);
+			Session mailSession = Session.getInstance(mailProps);
 			// Create a new mail message
 			MimeMessage message = new MimeMessage(mailSession);
 			// Set the From and the Recipient
@@ -82,10 +78,8 @@ public class Presenter {
 			// Set the subject
 			message.setSubject(subject);
 			// Set the message text
-			//TODO Test wg. Zeilenumbruch
 			message.setText(content);
-			// Save all the changes you have made
-			// to the message
+			// Save all the changes made to the message
 			message.saveChanges();
 			// Send the message
 			Transport.send(message);
