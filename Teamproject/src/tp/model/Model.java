@@ -1761,7 +1761,7 @@ public class Model {
 				
 				
 			//-----------------------concern----------------------
-			}else {
+			}else if(source.equals("Anliegen")){
 				//create sql query
 				String select = "SELECT id";
 				String from = " FROM concern";
@@ -1872,6 +1872,40 @@ public class Model {
 				}
 				
 				result = concerns.size();
+			//-----------------------concern----------------------
+			}else if(source.equals("Terminlängen")){
+				String select = "SELECT startTime, endTime";
+				String from = " FROM appointment";
+				String where = " WHERE date >= " + startDate.getTime() + " AND date <= " + endDate.getTime();
+				
+				if (filterMap.containsKey("Thema")) {
+					String sql = "SELECT id FROM topic WHERE title = '" + filterMap.get("Thema")[0] + "'";
+					int topicId = 0;
+					try (ResultSet rs = stmt.executeQuery(sql)){
+						if (rs.next()) {
+							topicId = rs.getInt("id");
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					from += ", concern";
+					where += " AND concern = concern.id AND topic = " + topicId;
+				}
+				
+				//Sql query
+				String sql = select + from + where;
+				long duration = 0;
+				try (ResultSet rs = stmt.executeQuery(sql)){
+					while (rs.next()) {
+						long startTime = rs.getLong("startTime");	
+						long endTime = rs.getLong("endTime");
+						duration += (endTime - startTime);
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				
+				result = (int) (duration/1000/60);
 			}
 		}
 		catch (Exception e)

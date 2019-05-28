@@ -71,7 +71,7 @@ public class StatisticComponentView extends HBox
 		nameLabel = new Label("Name ");
 		nameTextField = new TextField();
 		sourceLabel = new Label("Quelle ");
-		sourceComboBox = new ComboBox<String>(FXCollections.observableArrayList("Studenten","Anliegen"));
+		sourceComboBox = new ComboBox<String>(FXCollections.observableArrayList("Studenten","Anliegen","Terminlängen"));
 		sourceComboBox.setMaxWidth(Double.MAX_VALUE);
 		HBox.setHgrow(sourceComboBox, Priority.ALWAYS);
 				
@@ -197,7 +197,8 @@ public class StatisticComponentView extends HBox
 			deleteFilterViewButton = new Button("Filter löschen");
 			GridPane.setHalignment(deleteFilterViewButton, HPos.RIGHT);
 			ObservableList<String> studentFilters = FXCollections.observableArrayList(StatisticComponent.STUDENT_FILTER_METHODS);
-			ObservableList<String> concernFilters = FXCollections.observableArrayList(StatisticComponent.CONCERN_FILTERS_METHODS);
+			ObservableList<String> concernFilters = FXCollections.observableArrayList(StatisticComponent.CONCERN_FILTER_METHODS);
+			ObservableList<String> appointmentLengthFilters = FXCollections.observableArrayList(StatisticComponent.APPOINTMENT_LENGTH_FILTER_METHODS);
 			
 			deleteFilterMethodButton = new Button("-");
 			deleteFilterMethodButton.setVisible(false);
@@ -209,6 +210,10 @@ public class StatisticComponentView extends HBox
 			else if(sourceComboBox.getSelectionModel().getSelectedItem().equals("Anliegen"))
 			{
 				filterMethodsComboBox = new ComboBox<String>(concernFilters);
+			}
+			else if(sourceComboBox.getSelectionModel().getSelectedItem().equals("Terminlängen"))
+			{
+				filterMethodsComboBox = new ComboBox<String>(appointmentLengthFilters);
 			}
 			
 			filterMethodsComboBox.setMaxWidth(Double.MAX_VALUE);
@@ -275,6 +280,14 @@ public class StatisticComponentView extends HBox
 				}else if (sourceComboBox.getValue().equals("Anliegen")) {
 					concernFilters.remove(filterMethodsComboBox.getValue());
 					if(concernFilters.isEmpty()) {
+						filterMethodsComboBox.setVisible(false);
+					}
+					filterMethodsComboBox.getSelectionModel().clearSelection();
+					filterMethodParamHBox.setVisible(false);
+					
+				}else if (sourceComboBox.getValue().equals("Terminlängen")) {
+					appointmentLengthFilters.remove(filterMethodsComboBox.getValue());
+					if(appointmentLengthFilters.isEmpty()) {
 						filterMethodsComboBox.setVisible(false);
 					}
 					filterMethodsComboBox.getSelectionModel().clearSelection();
@@ -354,6 +367,8 @@ public class StatisticComponentView extends HBox
 					studentFilters.add(filterMethods.get(filterMethodSize-1));
 				}else if (sourceComboBox.getValue().equals("Anliegen")) {
 					concernFilters.add(filterMethods.get(filterMethodSize-1));
+				}else if (sourceComboBox.getValue().equals("Terminlängen")) {
+					appointmentLengthFilters.add(filterMethods.get(filterMethodSize-1));
 				}
 				filter.deleteFilter(filterMethods.get(filterMethodSize-1));
 				filterMethods.remove(filterMethodSize-1);

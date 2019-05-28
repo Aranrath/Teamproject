@@ -10,7 +10,8 @@ import javafx.collections.ObservableList;
 public class StatisticComponent
 {
 	public static final ObservableList<String> STUDENT_FILTER_METHODS = FXCollections.observableArrayList("Geschlecht", "ECTS", "Betreuungszeit in h","Semester", "Anzahl zugehöriger Anliegen", "PO", "Letzter Kontakt");
-	public static final ObservableList<String> CONCERN_FILTERS_METHODS = FXCollections.observableArrayList("Thema", "Anzahl der Termine", "Gesamtlänge der Termine in h", "Status", "Anzahl der Studenten");
+	public static final ObservableList<String> CONCERN_FILTER_METHODS = FXCollections.observableArrayList("Thema", "Anzahl der Termine", "Gesamtlänge der Termine in h", "Status", "Anzahl der Studenten");
+	public static final ObservableList<String> APPOINTMENT_LENGTH_FILTER_METHODS = FXCollections.observableArrayList("Thema");
 
 	//=====================================================
 	
