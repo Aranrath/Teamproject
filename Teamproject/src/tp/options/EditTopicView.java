@@ -148,15 +148,24 @@ public class EditTopicView extends GridPane {
 		System.out.println("Zugehörige Forms von: " + topic.getTitle());
 		for(Form form : topic.getForms())
 		{
-			form.getName();
+			System.out.println(form.getName());
 		}
 		
 		// =================================================================
 		
 		titleTextField.setText(topic.getTitle());
 		
-		for(Form f: topic.getForms()) {
-			allFormsListView.getSelectionModel().select(f);
+		for(Form topicForm: topic.getForms())
+		{
+			for(Form form: allFormsListView.getItems())
+			{
+				if(topicForm.getId() == form.getId())
+				{
+					allFormsListView.getCheckModel().check(form);
+				}
+	
+			}
+			
 		}
 		
 		saveButton.setOnAction((event)->{

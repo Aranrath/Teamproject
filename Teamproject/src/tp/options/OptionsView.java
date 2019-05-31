@@ -254,7 +254,7 @@ public class OptionsView extends GridPane {
 		    			stage.initModality(Modality.APPLICATION_MODAL);
 		                stage.setTitle("Modul \"" + selectedSubject.getTitle() + "\" bearbeiten");
 		                stage.setResizable(false);
-		                stage.setScene(new Scene(new EditSubjectView(stage, presenter, selectedSubject), getWidth()*(0.6), getHeight()*(0.7)));
+		                stage.setScene(new Scene(new EditSubjectView(stage, presenter, selectedSubject), getWidth()*(0.3), getHeight()*(0.3)));
 		                stage.show();
 		        	}
 		                               
