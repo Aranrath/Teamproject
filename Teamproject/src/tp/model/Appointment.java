@@ -87,7 +87,7 @@ public class Appointment {
 		return new Time(endTime).toString().substring(0, 5);
 	}
 
-	//For Statistic
+	//Für Statistiken
 	//getDuration in milliseconds
 	public Long getDuration(){
 		return Math.abs(endTime - startTime);
