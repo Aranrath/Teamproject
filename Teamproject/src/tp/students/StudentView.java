@@ -404,7 +404,7 @@ public class StudentView extends GridPane {
 			studentMail_3.setText(student.geteMailAddresses().get(2));
 		}	
 
-		studentMtrNr.setText("" + student.getMtrNr());
+		studentMtrNr.setText(student.getMtrNrString());
 		
 		if(student.getPo() != null)
 		{

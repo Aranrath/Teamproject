@@ -2,6 +2,7 @@ package tp.students;
 
 import org.controlsfx.control.CheckListView;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -72,7 +73,7 @@ public class SelectPassedSubjectsView extends GridPane
 		
 		//====================================
 		
-		
+		//TODO Maße
 		
 		//====================================
 		
@@ -89,8 +90,10 @@ public class SelectPassedSubjectsView extends GridPane
 		
 		saveButton.setOnAction((event) -> {
 			
-			ObservableList<Subject> updatedPassedSubjects = mandatorySubjectsListView.getCheckModel().getCheckedItems();
+			ObservableList<Subject> updatedPassedSubjects = FXCollections.observableArrayList(mandatorySubjectsListView.getCheckModel().getCheckedItems());
+			
 			updatedPassedSubjects.addAll(optionalSubjectsListView.getCheckModel().getCheckedItems());
+			
 			updatedPassedSubjects.addAll(otherSubjectsListView.getCheckModel().getCheckedItems());
 			
 			editStudentView.updatePassedSubjects(updatedPassedSubjects);
@@ -101,19 +104,41 @@ public class SelectPassedSubjectsView extends GridPane
 	}
 	
 	private void fillView(ObservableList<Subject> passedSubjects) {
-		for(Subject sub : passedSubjects)
+		
+		//TODO Noch gehen bestandene Fächer nach Wechsel der PO verloren.... :(
+		
+		
+		for(Subject passedSubject : passedSubjects)
 		{
-			if(mandatorySubjectsListView.getItems().contains(sub))
+			checkSubject(passedSubject);
+
+		}
+		
+	}
+
+	private void checkSubject(Subject passedSubject) {
+		for(Subject mandatorySubject: mandatorySubjectsListView.getItems())
+		{
+			if(mandatorySubject.getId() == passedSubject.getId())
 			{
-				mandatorySubjectsListView.getCheckModel().check(sub);
+				mandatorySubjectsListView.getCheckModel().check(passedSubject);
+				return;
 			}
-			else if(optionalSubjectsListView.getItems().contains(sub))
+		}
+		for(Subject optionalSubject: optionalSubjectsListView.getItems())
+		{
+			if(optionalSubject.getId() == passedSubject.getId())
 			{
-				optionalSubjectsListView.getCheckModel().check(sub);
+				optionalSubjectsListView.getCheckModel().check(passedSubject);
+				return;
 			}
-			else if(otherSubjectsListView.getItems().contains(sub))
+		}
+		for(Subject otherSubject: otherSubjectsListView.getItems())
+		{
+			if(otherSubject.getId() == passedSubject.getId())
 			{
-				otherSubjectsListView.getCheckModel().check(sub);
+				otherSubjectsListView.getCheckModel().check(passedSubject);
+				return;
 			}
 		}
 		

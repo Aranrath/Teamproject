@@ -8,6 +8,9 @@ public class Options implements Serializable{
 
 	private static final long serialVersionUID = 7924155370404919520L;
 	
+	public static final int usualNumberOfMtrNrDigits = 6;
+	public static final boolean saveWarningAtClose = true;
+	
 	//TODO Sicherheit!!!!!!!!
 	private String userName; //Name of the User, send together with E-Mail.
 	private String userID; //Hochschulkennung

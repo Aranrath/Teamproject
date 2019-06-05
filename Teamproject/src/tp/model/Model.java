@@ -235,6 +235,11 @@ public class Model {
 		return sessionTabsIds;
 	}
 	
+	public void setSessionTabsIds(ArrayList<String> newSessionTabsIds) {
+		this.sessionTabsIds = newSessionTabsIds;
+		saveSessionTabsIds();
+	}
+	
 	public void saveSessionTabsIds() 
 	{
 		try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(standardDirectory +"SessionTabsIds.ser")))

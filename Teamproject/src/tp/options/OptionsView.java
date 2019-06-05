@@ -24,6 +24,7 @@ import tp.model.Subject;
 import tp.model.Topic;
 
 public class OptionsView extends GridPane {
+	
 
 	private Presenter presenter;
 	private Options options;

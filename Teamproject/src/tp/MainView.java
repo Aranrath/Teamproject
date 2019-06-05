@@ -245,14 +245,24 @@ public class MainView extends BorderPane {
 	 * w = weekly, r = all reminders, n<ew> = new(unsaved)ObjectViews //diese Tabs werden nicht gespeichert
 	 */
 	private void openSessionTabs() {
+		
 		if (sessionTabsIds == null) {
 			sessionTabsIds = presenter.getSessionTabsIds();
 		}
 		if (sessionTabsIds != null) {
+			
+			//----------------------------------------------------------------TODO TEST, funkt noch nicht...
+			System.out.println("SessionTabs beim öffnen: " + sessionTabsIds);
+			//----------------------------------------------------------------
+			
 			for (String s : sessionTabsIds) {
 				char firstLetter = s.charAt(0);
 
 				if (firstLetter == 's') {
+					//------------------------------------
+					//TODO
+					System.out.println(presenter.getStudent(Integer.parseInt(s.substring(1))));
+					//------------------------------------
 					openStudentTab(presenter.getStudent(Integer.parseInt(s.substring(1))));
 				}
 				else if (firstLetter == 'c') {
@@ -764,6 +774,23 @@ public class MainView extends BorderPane {
 
 	public void closeThisTab(MyTab tab) {
 		tabPane.getTabs().remove(tab);
+	}
+	
+	public ArrayList<String> getCurrentTabs()
+	{
+		ArrayList<String> currentTabs = new ArrayList<>();
+		
+		for(Tab tab : tabPane.getTabs())
+		{
+			MyTab myTab = (MyTab) tab;
+			
+			if(!myTab.getTabId().equals("new"))
+			{
+				currentTabs.add(myTab.getTabId());
+			}
+		}
+		
+		return currentTabs;
 	}
 
 

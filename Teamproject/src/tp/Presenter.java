@@ -13,6 +13,9 @@ import javax.mail.internet.MimeMessage;
 
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import tp.model.Appointment;
 import tp.model.Concern;
@@ -272,8 +275,30 @@ public class Presenter {
 	}
 
 	public void handleUnsavedTabs() {
-		//TODO Tabs durchgehen nach ungespeicherten Tabs und dann nacheinander mit Alerts abfragen -> boolean unsafed bei Views einfügen?
-		Platform.exit();
+		//TODO Möglicher Zusatz: Tabs durchgehen nach ungespeicherten Tabs und dann nacheinander mit Alerts abfragen -> boolean unsafed bei Views einfügen?
+		
+		if(Options.saveWarningAtClose)
+		{
+			Alert alert = new Alert(AlertType.WARNING, "Ungespeicherte Änderungen gehen verloren." + "\n" + "\n" + "Sind Sie sich sicher, dass alle Änderungen gespeichert wurde?",
+					ButtonType.YES, ButtonType.CANCEL);
+			alert.showAndWait();
+
+			if (alert.getResult() == ButtonType.YES) {
+				
+				//speichere die Tabs der aktuellen Session über deren ID
+				model.setSessionTabsIds(mainView.getCurrentTabs());
+				
+				Platform.exit();
+			}
+		}
+		else
+		{
+			//speichere die Tabs der aktuellen Session über deren ID
+			model.setSessionTabsIds(mainView.getCurrentTabs());
+			
+			Platform.exit();
+		}
+
 	}
 
 

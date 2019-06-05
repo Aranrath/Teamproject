@@ -109,6 +109,8 @@ public class AllStudentsView extends GridPane {
 		GridPane.setHalignment(studentToNewConcernButton, HPos.RIGHT);
 
 		// ======================================================================
+		
+		
 
 		TableColumn<Student, String> lastNameCol = new TableColumn<Student, String>("Nachname");
 		lastNameCol.setCellValueFactory(new PropertyValueFactory<Student, String>("name"));
@@ -116,14 +118,16 @@ public class AllStudentsView extends GridPane {
 		TableColumn<Student, String> firstNameCol = new TableColumn<Student, String>("Vorname");
 		firstNameCol.setCellValueFactory(new PropertyValueFactory<Student, String>("firstName"));
 		
-		TableColumn<Student, Integer> mtrNrCol = new TableColumn<Student, Integer>("Matrikelnr.");
-		mtrNrCol.setCellValueFactory(new PropertyValueFactory<>("mtrNr"));
+		TableColumn<Student, String> mtrNrCol = new TableColumn<Student, String>("Matrikelnr.");
+		mtrNrCol.setCellValueFactory(new PropertyValueFactory<Student, String>("mtrNrString"));
 		
 		TableColumn<Student, Date> lastContactCol = new TableColumn<Student, Date>("Letzter Kontakt");
 		lastContactCol.setCellValueFactory(new PropertyValueFactory<>("lastContact"));
 		
-		allStudentsTable.getColumns().addAll(mtrNrCol, lastNameCol,firstNameCol,lastContactCol);
+		TableColumn<Student, Date> poCol = new TableColumn<Student, Date>("Studiengang");
+		lastContactCol.setCellValueFactory(new PropertyValueFactory<>("po"));
 		
+		allStudentsTable.getColumns().addAll(mtrNrCol, lastNameCol,firstNameCol,poCol, lastContactCol);
 		
 		TableColumn<Student, String> lastNameCol2 = new TableColumn<Student, String>("Nachname");
 		lastNameCol2.setCellValueFactory(new PropertyValueFactory<Student, String>("name"));
@@ -131,8 +135,8 @@ public class AllStudentsView extends GridPane {
 		TableColumn<Student, String> firstNameCol2 = new TableColumn<Student, String>("Vorname");
 		firstNameCol2.setCellValueFactory(new PropertyValueFactory<Student, String>("firstName"));
 		
-		TableColumn<Student, Integer> mtrNrCol2 = new TableColumn<Student, Integer>("Matrikelnr.");
-		mtrNrCol2.setCellValueFactory(new PropertyValueFactory<>("mtrNr"));
+		TableColumn<Student, String> mtrNrCol2 = new TableColumn<Student, String>("Matrikelnr.");
+		mtrNrCol2.setCellValueFactory(new PropertyValueFactory<Student, String>("mtrNrString"));
 		
 		selectedStudentsTable.getColumns().addAll(mtrNrCol2, lastNameCol2, firstNameCol2);
 
@@ -195,7 +199,6 @@ public class AllStudentsView extends GridPane {
 				}
 				selectedStudents.clear();
 			}
-
 
 		});
 		studentToNewConcernButton.setOnAction((event) -> {

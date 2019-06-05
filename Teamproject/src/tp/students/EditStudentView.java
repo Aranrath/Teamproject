@@ -314,7 +314,6 @@ public class EditStudentView extends GridPane {
 			String notes;
 			String gender;
 			
-			
 			//-----------------------------Auslesen (und evtl. Werte checken)
 			
 			ArrayList<String> changedMailAddresses;
@@ -369,6 +368,7 @@ public class EditStudentView extends GridPane {
 				image = null;
 			}
 			po = studentPO.getSelectionModel().getSelectedItem();
+
 			if(!studentSemester.getText().isEmpty())
 			{
 				try
@@ -455,7 +455,7 @@ public class EditStudentView extends GridPane {
 			stage.initModality(Modality.APPLICATION_MODAL);
 			stage.setTitle("Neue PO");
 			stage.setResizable(false);
-			stage.setScene(new Scene(new EditPOView(stage, presenter, (EditStudentView) newPOButton.getParent()), getWidth()*(0.6), getHeight()*(0.7)));
+			stage.setScene(new Scene(new EditPOView(stage, presenter, (EditStudentView) newPOButton.getParent().getParent()), getWidth()*(0.6), getHeight()*(0.7)));
 			stage.show();
 		});
 		
@@ -489,7 +489,9 @@ public class EditStudentView extends GridPane {
 		if (student.geteMailAddresses().size() == 3) {
 			studentMail_3.setText(student.geteMailAddresses().get(2));
 		}
-		studentMtrNr.setText("" + student.getMtrNr());
+		
+		studentMtrNr.setText(student.getMtrNrString());
+		
 		studentPO.getSelectionModel().select(student.getPo());
 		studentECTS.setText("" + presenter.calculateEcts(student.getPassedSubjects(), student.getPo()));
 		studentSemester.setText("" + student.getSemester());
@@ -509,12 +511,14 @@ public class EditStudentView extends GridPane {
 	}
 
 	public void updateEctsDisplay() {
+		//TODO funkt noch nicht....
+		
 		studentECTS.setText("" + presenter.calculateEcts(localPassedSubjects, studentPO.getSelectionModel().getSelectedItem()));
 	}
 	
 	public void updatePassedSubjects(ObservableList<Subject> updatedPassedSubjects)
 	{
-		localPassedSubjects = updatedPassedSubjects;
+		localPassedSubjects = FXCollections.observableArrayList(updatedPassedSubjects);
 		updateEctsDisplay();
 	}
 	

@@ -21,10 +21,15 @@ public class Student {
 	private String gender;
 	// For TableView
 	private Date lastContact;
+	
+	//============================ neu gespeichert
+	
+	private String mtrNrString;
 
 	public Student(int mtrNr, String name) {
 		this.mtrNr = mtrNr;
 		this.name = name;
+		mtrNrString = mtrToString();
 	}
 
 	public Student(int mtrNr, String name, String firstName, ArrayList<String> eMailAddresses, int semester,
@@ -40,7 +45,8 @@ public class Student {
 		this.concernIds = concernIds;
 		this.gender = gender;
 		this.lastContact = lastContact;
-
+		
+		mtrNrString = mtrToString();
 	}
 
 	// ------------------------------------GetterSetter
@@ -83,6 +89,7 @@ public class Student {
 
 	public void setMtrNr(int mtrNr) {
 		this.mtrNr = mtrNr;
+		mtrNrString = mtrToString();
 	}
 
 	public void setName(String name) {
@@ -142,9 +149,14 @@ public class Student {
 		this.passedSubjects = passedSubjects;
 	}
 	
+	public String getMtrNrString() {
+		return mtrNrString;
+	}
 	
 	//=====================================================
 
+
+	//für die Suche
 	public String toString()
 	{
 		String studentString = mtrNr + " " + name;
@@ -159,6 +171,21 @@ public class Student {
 		}
 		
 		return studentString;
+	}
+	
+	//für eine einheitlichere Darstellung, da die vorderen 0en nicht mitgespeichert werden
+	private String mtrToString() {
+		int mtrLength = String.valueOf(getMtrNr()).length();
+		int missingZeros = Options.usualNumberOfMtrNrDigits - mtrLength;
+		
+		String mtrString = "";
+		for(int i = 0; i < missingZeros; i++)
+		{
+			mtrString += "0";
+		}
+		mtrString += getMtrNr();
+		
+		return mtrString;
 	}
 
 
