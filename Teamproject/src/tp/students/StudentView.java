@@ -343,12 +343,14 @@ public class StudentView extends GridPane {
 			String userID = presenter.getOptions().getUserID();
 			String userName = presenter.getOptions().getUserName();
 			EMail mail = presenter.sendMail(userID, userName, student.getName(), mailRecipientAdress.getValue(), mailCC, mailContent);
-			//add new EMail to View
-			addMailToMailExchangeBox(mail);
-			//clear sendMail fields
-			mailCCTextField.clear();
-			mailContentTextArea.clear();
-
+			//if mailSend succsessful
+			if (mail != null) {
+				//add new EMail to View
+				addMailToMailExchangeBox(mail);
+				//clear sendMail fields 
+				mailCCTextField.clear();
+				mailContentTextArea.clear();
+			}
 			
 		});
 		

@@ -93,8 +93,11 @@ public class Presenter {
 
 			return email;
 		}catch (SendFailedException e){
-			//TODO Popup, VPN eingeschaltet???
-			System.out.println("VPN?");
+			Alert alert = new Alert(AlertType.INFORMATION);
+	        alert.setTitle("Warnung");
+	        alert.setHeaderText("VPN!");
+	        alert.setContentText("Zum senden von E-Mails wird eine VPN-Verbindung zur Hochschule benötigt.");
+	        alert.showAndWait();
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
