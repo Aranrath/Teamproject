@@ -577,8 +577,8 @@ public class Model {
 			{
 				int id = rs.getInt("id");
 				String name = rs.getString("name");
-				ObservableList<Subject> optional = getSubjects(id, true);
-				ObservableList<Subject> mandatory = getSubjects(id, false);
+				ObservableList<Subject> optional = getSubjects(id, 1);
+				ObservableList<Subject> mandatory = getSubjects(id, 0);
 				PO po = new PO(name);
 				po.setId(id);
 				po.setOptionalSubjects(optional);
@@ -843,7 +843,7 @@ public class Model {
 	}
 
 
-	private Subject getSubject(int id) {
+	private Subject getSubject(long id) {
 		Subject result = new Subject(null, 0);
 		String sql = "SELECT * FROM subject WHERE id = " + id;
 		try (Connection conn = this.connect();
@@ -902,7 +902,6 @@ public class Model {
 				while(rs.next())
 				{
 					int id = rs.getInt("subject");
-					System.out.println(id);
 					boolean optional = rs.getBoolean("optional");
 					for (Subject s: result) {
 						if(s.getId() == id) {
@@ -921,7 +920,7 @@ public class Model {
 	}
 	
 
-	private ObservableList<Subject> getSubjects(int poId, boolean optional) {
+	private ObservableList<Subject> getSubjects(int poId, int optional) {
 		ObservableList<Subject> result = FXCollections.observableArrayList();
 		String sql = "SELECT subject FROM po_subject WHERE po = " + poId + " AND optional = " + optional;
 		try (Connection conn = this.connect();
@@ -929,7 +928,7 @@ public class Model {
 			ResultSet rs = stmt.executeQuery(sql))
 		{
 			while(rs.next()) {
-				result.add(getSubject(rs.getInt("subject")));
+				result.add(getSubject(rs.getLong("subject")));
 			}
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -1195,7 +1194,7 @@ public class Model {
 			{
 			for (Long concern: concernIds){
 				sql="INSERT INTO concern_student (concern, student) VALUES (" + concern + ", " + mtrNr + ")";
-				stmt.executeQuery(sql);
+				stmt.executeUpdate(sql);
 			}
 			}catch (Exception e) {
 				e.printStackTrace();
@@ -1334,13 +1333,13 @@ public class Model {
 	public void saveEditedPO(String newPOName, ObservableList<Subject> selectedMandatorySubjects,
 			ObservableList<Subject> selectedOptionalSubjects, PO po) 
 	{
-		String sql1 = "UPDATE po SET name = "+ newPOName +" WHERE id = " + po.getId();
+		String sql1 = "UPDATE po SET name = '"+ newPOName +"' WHERE id = " + po.getId();
 		String sql2 = "DELETE FROM po_subject WHERE po = " + po.getId();
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement())
 		{
-			stmt.executeQuery(sql1);
-			stmt.executeQuery(sql2);
+			stmt.executeUpdate(sql1);
+			stmt.executeUpdate(sql2);
 			addPoSubject(po.getId(), selectedOptionalSubjects, true);
 			addPoSubject(po.getId(), selectedMandatorySubjects, false);
 		}
@@ -2402,7 +2401,7 @@ public class Model {
 	      //check if the content has attachment
 	      else if (message.isMimeType("multipart/*")) {
 	         Multipart mp = (Multipart) message.getContent();
-	         int count = mp.getCount();
+//	         int count = mp.getCount();
 	         result = getEmailContent(mp.getBodyPart(0));
 //	         for (int i = 0; i < count; i++)
 //	            //result += getEmailContent(mp.getBodyPart(i));
