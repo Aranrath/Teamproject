@@ -192,31 +192,6 @@ public class EditPOView extends GridPane {
 		
 		poNameTextField.setText(po.getName());
 		
-		//=================================
-		//TODO TEST: Subjects der PO im subjectsTable ankreuzen
-		
-		System.out.println("---------------------");
-		
-		System.out.println(po.getName());
-		
-		System.out.println("Mandatorys:");
-		
-		for(Subject subject: po.getMandatorySubjects())
-		{
-			System.out.println(subject.getTitle());
-		}
-		
-		System.out.println("Optionals:");
-		
-		for(Subject subject: po.getOptionalSubjects())
-		{
-			System.out.println(subject.getTitle());
-		}
-		
-		System.out.println("---------------------");
-		
-		//=================================
-		
 		saveButton.setOnAction((event) -> {
 			if (poNameTextField.getText().equals("")) {
 				poNameErrorLabel.setText("Titel muss ausgefüllt sein");

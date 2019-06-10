@@ -248,7 +248,6 @@ public class Model {
 		}
 		catch (Exception e)
 		{
-			System.out.println("saving sessionTabsIds failed");
 		}
 
 	}
@@ -262,7 +261,6 @@ public class Model {
 		} 
 		catch (IOException e) 
 		{
-			System.out.println("saving options failed");
 		}
 	}
 	

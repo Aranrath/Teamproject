@@ -1,5 +1,8 @@
 package tp.students;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.controlsfx.control.CheckListView;
 
 import javafx.collections.FXCollections;
@@ -65,8 +68,24 @@ public class SelectPassedSubjectsView extends GridPane
 		otherSubjectsLabel = new Label("Andere Module (ungewertet)");
 		
 		ObservableList<Subject> otherSubjects = presenter.getSubjects();
-		otherSubjects.removeAll(mandatorySubjectsListView.getItems());
-		otherSubjects.removeAll(optionalSubjectsListView.getItems());
+
+		List<Subject> subjectsToRemoveFromOther = new ArrayList<>();
+		
+		for(int i = 0; i < otherSubjects.size(); i++)
+		{
+			
+			if(isSubjectMandatoryOrOptional(otherSubjects.get(i)))
+			{
+				subjectsToRemoveFromOther.add(otherSubjects.get(i));
+			}	
+		}
+		
+		for(Subject sToDelete: subjectsToRemoveFromOther)
+		{
+			otherSubjects.remove(sToDelete);
+		}
+		
+			
 		otherSubjectsListView = new CheckListView<Subject>(otherSubjects);
 
 		saveButton = new Button("Speichern");
@@ -103,6 +122,30 @@ public class SelectPassedSubjectsView extends GridPane
 
 	}
 	
+
+
+	private boolean isSubjectMandatoryOrOptional(Subject s) {
+		
+		for(Subject mS: mandatorySubjectsListView.getItems())
+		{
+			
+			if(s.getId() == mS.getId())
+			{
+				return true;
+			}
+		}
+		
+		for(Subject oS: optionalSubjectsListView.getItems())
+		{
+			
+			if(s.getId() == oS.getId())
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
 	private void fillView(ObservableList<Subject> passedSubjects) {
 		
 		//TODO Noch gehen bestandene Fächer nach Wechsel der PO verloren.... :(

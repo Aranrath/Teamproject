@@ -511,7 +511,6 @@ public class EditStudentView extends GridPane {
 	}
 
 	public void updateEctsDisplay() {
-		//TODO funkt noch nicht....
 		
 		studentECTS.setText("" + presenter.calculateEcts(localPassedSubjects, studentPO.getSelectionModel().getSelectedItem()));
 	}

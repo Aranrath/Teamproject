@@ -251,18 +251,10 @@ public class MainView extends BorderPane {
 		}
 		if (sessionTabsIds != null) {
 			
-			//----------------------------------------------------------------TODO TEST, funkt noch nicht...
-			System.out.println("SessionTabs beim öffnen: " + sessionTabsIds);
-			//----------------------------------------------------------------
-			
 			for (String s : sessionTabsIds) {
 				char firstLetter = s.charAt(0);
 
 				if (firstLetter == 's') {
-					//------------------------------------
-					//TODO
-					System.out.println(presenter.getStudent(Integer.parseInt(s.substring(1))));
-					//------------------------------------
 					openStudentTab(presenter.getStudent(Integer.parseInt(s.substring(1))));
 				}
 				else if (firstLetter == 'c') {

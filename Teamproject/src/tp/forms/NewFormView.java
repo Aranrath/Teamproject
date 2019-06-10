@@ -98,7 +98,6 @@ public class NewFormView extends GridPane {
 					filePathError.setText("Datei ist bereits im Formular \"" + samePathForm.getName() + "\" gespeichert");
 					filePathError.setTextFill(Color.RED);
 					filePathError.setVisible(true);
-					System.out.println("eh");
 				}
 
 				else {
@@ -127,6 +126,7 @@ public class NewFormView extends GridPane {
 			}
 			catch(Exception e)
 			{
+				//TODO sollte nur zum testen benutzt werden -> später raus wenn Ordner Pfad funkt
 				System.out.println("Dateipfad konnte nicht notiert werden");
 			}
 

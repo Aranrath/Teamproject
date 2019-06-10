@@ -282,7 +282,7 @@ public class Presenter {
 		
 		if(Options.saveWarningAtClose)
 		{
-			Alert alert = new Alert(AlertType.WARNING, "Ungespeicherte Änderungen gehen verloren." + "\n" + "\n" + "Sind Sie sich sicher, dass alle Änderungen gespeichert wurde?",
+			Alert alert = new Alert(AlertType.WARNING, "Ungespeicherte Änderungen gehen verloren." + "\n" + "\n" + "Sind Sie sicher, dass alle Änderungen gespeichert wurden?",
 					ButtonType.YES, ButtonType.CANCEL);
 			alert.showAndWait();
 
