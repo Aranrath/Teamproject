@@ -16,7 +16,6 @@ public class Main extends Application {
 	private MainView mainView;
 
 	
-	
 	@Override
 	public void start(Stage primaryStage) {
 		try {
@@ -39,11 +38,9 @@ public class Main extends Application {
 			primaryStage.show();
 			Options options = presenter.getOptions();
 			if(options.getUserName() == null || options.getUserID() == null || options.getPassword()== null)
-			{
-	            
+			{  
 				presenter.showEditUserDataView(options);
-				
-				
+	
 			}
 			else
 			{
@@ -57,13 +54,12 @@ public class Main extends Application {
 	}
 	
 	
-private void generateMVP() {
-		
+private void generateMVP()
+	{
 		model = new Model();
 		presenter = new Presenter (model);
 		mainView = new MainView (presenter);
 		presenter.setMainView(mainView);
-		
 	}
 
 
