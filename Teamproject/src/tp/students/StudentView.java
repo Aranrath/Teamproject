@@ -120,21 +120,27 @@ public class StudentView extends GridPane {
 		setPadding(new Insets(10, 10, 10, 10));
 		setHgap(10);
 		setVgap(10);
+		
+		//Student Image------------------------------------
 		studentImage = new ImageView();
 		
 		//TODO
 		studentImage.setFitWidth(300);
 		
 		studentImage.setPreserveRatio(true);
-		studentImage.setSmooth(true);
-		studentImage.setCache(true);
+		studentImage.fitHeightProperty().bind(heightProperty().divide(3));
+		
+		GridPane.setHalignment(studentImage, HPos.CENTER);
+//		studentImage.minHeight(studentImage.prefHeight(USE_COMPUTED_SIZE));
+		
+		//--------------------------------------------------
+		
 		
 		takePictureButton = new Button("Bild aufnehmen");
 		searchPictureButton = new Button("Bild laden");
-		
 		takePictureButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
 		searchPictureButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
-		studentImage.minHeight(studentImage.prefHeight(USE_COMPUTED_SIZE));
+		
 		
 		nameLabel = new Label("Name");
 		studentName = new Label();
@@ -177,9 +183,8 @@ public class StudentView extends GridPane {
 		mailGridPane = new GridPane();
 		
 		mailGridPane.setMaxHeight(Double.MAX_VALUE);
-		
-		//TODO
-//		GridPane.setVgrow(mailGridPane, Priority.SOMETIMES);
+
+		GridPane.setVgrow(mailGridPane, Priority.SOMETIMES);
 		
 		//loadingMailPlaceholderPane zunächst angezeigt bis MailGridPane geladen ist
 		mailGridPane.setVisible(false);
@@ -206,10 +211,7 @@ public class StudentView extends GridPane {
 		mailContentTextArea.setPromptText("Inhalt");
 		sendMailButton = new Button("Senden");
 		
-
-		mailContentTextArea.prefWidthProperty().bind(mailGridPane.widthProperty().divide(2));
 		mailContentTextArea.prefHeightProperty().bind(mailGridPane.heightProperty());
-		
 		
 		sendMailButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
 		sendMailButton.setMaxWidth(Double.MAX_VALUE);
@@ -261,7 +263,13 @@ public class StudentView extends GridPane {
 		mailGridPane.add(mailContentTextArea, 1, 2);
 		mailGridPane.add(sendMailButton, 1, 3);
 		GridPane.setHalignment(sendMailButton, HPos.CENTER);
-
+		
+		ColumnConstraints mailCol0 = new ColumnConstraints();
+		mailCol0.setPercentWidth(60);
+		ColumnConstraints mailCol1 = new ColumnConstraints();
+		mailCol1.setPercentWidth(40);
+		
+		mailGridPane.getColumnConstraints().addAll(mailCol0, mailCol1);
 
 		// ===================================================================
 
