@@ -2367,6 +2367,7 @@ public class Model {
 	
 	//does the same as checkMail(Sudent) just for retrieving eMails from a specific eMailaddress before the last known eMail(last complete check)
 	//checks beforehand if eMailAddress was already in database and just gets e-Mails after the last known Mail of that Address
+	
 	public void checkMail(Student student, String mailAddress) {
 		EMail lastStudentEmail = getLastStudentEmail(student);
 		EMail lastAddressEmail = getLastAddressEmail(mailAddress);
