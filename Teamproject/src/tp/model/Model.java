@@ -450,18 +450,17 @@ public class Model {
 	}
 
 
-	public ArrayList<EMail> getEMails(Student student) {
+	public ArrayList<EMail> getEMails(ArrayList<String> mailAddress) {
 		ArrayList<EMail> mail = new ArrayList<EMail>();
-		ArrayList<String> mailAddress = student.geteMailAddresses();
 		String sql = null;
 		if(mailAddress.size()==3) {
 			sql = "SELECT * FROM eMail WHERE eMailAddress = '"+ mailAddress.get(0) + "' OR eMailAddress = '" 
-					+ mailAddress.get(1) + "' OR eMailAddress = '"+ mailAddress.get(2) + "' ORDER BY date ASC";
+					+ mailAddress.get(1) + "' OR eMailAddress = '"+ mailAddress.get(2) + "' ORDER BY date DESC";
 		}else if(mailAddress.size()==2) {
 			sql = "SELECT * FROM eMail WHERE eMailAddress = '"+ mailAddress.get(0) + "' OR eMailAddress = '" 
-					+mailAddress.get(1) + "' ORDER BY date ASC";
+					+mailAddress.get(1) + "' ORDER BY date DESC";
 		}else if (mailAddress.size()==1) {
-			sql = "SELECT * FROM eMail WHERE eMailAddress = '"+ mailAddress.get(0) +"' ORDER BY date ASC";
+			sql = "SELECT * FROM eMail WHERE eMailAddress = '"+ mailAddress.get(0) +"' ORDER BY date DESC";
 		}else {
 			return mail;
 		}
@@ -486,10 +485,20 @@ public class Model {
 		return mail;
 	}
 	
-	public EMail getLastEmail(Student student) {
-		ArrayList<EMail> mails = getEMails(student);
+	public EMail getLastAddressEmail(String mailAddress) {
+		ArrayList<String> mailAddressList = new ArrayList<String>();
+		mailAddressList.add(mailAddress);
+		ArrayList<EMail> mails = getEMails(mailAddressList);
 		if(!mails.isEmpty()) {
-			return mails.get(mails.size() - 1);
+			return mails.get(0);
+		}
+		return null;
+	}
+	
+	public EMail getLastStudentEmail(Student student) {
+		ArrayList<EMail> mails = getEMails(student.geteMailAddresses());
+		if(!mails.isEmpty()) {
+			return mails.get(0);
 		}
 		return null;
 	}
@@ -561,6 +570,33 @@ public class Model {
 			e.printStackTrace();
 		}
 		return result;
+	}
+	
+	public PO getPO(long poId) {
+		PO result = null;
+		String sql = "SELECT * from po WHERE id = " + poId;
+		try (Connection conn = this.connect();
+				Statement stmt = conn.createStatement();
+				ResultSet rs = stmt.executeQuery(sql))
+			{
+				if(rs.next())
+				{
+					int id = rs.getInt("id");
+					String name = rs.getString("name");
+					ObservableList<Subject> optional = getSubjects(id, 1);
+					ObservableList<Subject> mandatory = getSubjects(id, 0);
+					PO po = new PO(name);
+					po.setId(id);
+					po.setOptionalSubjects(optional);
+					po.setMandatorySubjects(mandatory);
+					result = po;
+				}
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+			return result;
 	}
 
 	public ObservableList<PO> getPOs() 
@@ -751,7 +787,7 @@ public class Model {
 
 	public Student getStudent(int mtrNr) 
 	{
-	Student result = new Student(0, null, null, null, 0, null, null, null, null, null, null);
+	Student result = new Student(0, null, null, null, 0, null, null, null, null, null, null, null);
 	String sql1 = "SELECT * FROM student WHERE matrNr = " + mtrNr;
 	String sql2 = "SELECT concern FROM concern_student WHERE student = " + mtrNr;
 	try (Connection conn = this.connect();
@@ -764,6 +800,7 @@ public class Model {
 				String firstname = rs1.getString("firstname");
 				ArrayList<String> eMailAddressess = getEMailAddressess(mtrNr);
 				int semester = rs1.getInt("semester");
+				PO po = getPO(rs1.getLong("po"));
 				String notes = rs1.getString("notes");
 				ObservableList<Subject> passedSubjects= getPassedSubjects(mtrNr);
 				Image img = null;
@@ -776,9 +813,9 @@ public class Model {
 				}
 				String gender = rs1.getString("gender");
 				
-				result = new Student(mtrNr, name, firstname, eMailAddressess, semester, notes, passedSubjects, img, null, gender, null);
-				if(getLastEmail(result)!=null) {
-					Date lastContact = getLastEmail(result).getDate();
+				result = new Student(mtrNr, name, firstname, eMailAddressess, semester, po, notes, passedSubjects, img, null, gender, null);
+				if(getLastStudentEmail(result)!=null) {
+					Date lastContact = getLastStudentEmail(result).getDate();
 					result.setLastContact(lastContact);
 				}
 			}
@@ -1740,7 +1777,7 @@ public class Model {
 				if (filterMap.containsKey("Letzter Kontakt")) {
 					for (Integer matrNr: students) {
 						Student stu = getStudent(matrNr);
-						Date lastCon = getLastEmail(stu).getDate();
+						Date lastCon = getLastStudentEmail(stu).getDate();
 						String op = (String)filterMap.get("Letzter Kontakt")[0];
 						if (op.equals(">")) {
 							if (!lastCon.after((Date)filterMap.get("Letzter Kontakt")[1])) {
@@ -2012,7 +2049,7 @@ public class Model {
 			
 			Student oldStudent = getStudent(student.getMtrNr());
 			//get MailAddresses to be added
-			ArrayList<String> newMailAddresses = student.geteMailAddresses();
+			ArrayList<String> newMailAddresses = new ArrayList<String>(student.geteMailAddresses());
 			newMailAddresses.removeAll(oldStudent.geteMailAddresses());
 			//get MailAddresses to be deleted
 			ArrayList<String> oldMailAddresses = oldStudent.geteMailAddresses();
@@ -2244,10 +2281,10 @@ public class Model {
 	
 	public void checkMail(Student student) {
 		//get Date of the last EMail Check, for filtering the eMails. If first Check, Date = minValue
-		EMail lastEmail = getLastEmail(student);
+		EMail lastEmail = getLastStudentEmail(student);
 		Date lastEmailDate = null;
 		if (lastEmail != null) {
-			lastEmailDate = getLastEmail(student).getDate();
+			lastEmailDate = getLastStudentEmail(student).getDate();
 		}
 		if (lastEmailDate == null) {
 			lastEmailDate = new Date(Long.MIN_VALUE);
@@ -2328,37 +2365,47 @@ public class Model {
 		}
 	}
 	
-	//does the same as checkMail(Sudent) just for retrieving eMails from a specific eMailadress before the last known eMail
+	//does the same as checkMail(Sudent) just for retrieving eMails from a specific eMailaddress before the last known eMail(last complete check)
+	//checks beforehand if eMailAddress was already in database and just gets e-Mails after the last known Mail of that Address
 	public void checkMail(Student student, String mailAddress) {
-		EMail lastEmail = getLastEmail(student);
-		Date lastEmailDate = null;
-		if (lastEmail != null) {
-			lastEmailDate = getLastEmail(student).getDate();
+		EMail lastStudentEmail = getLastStudentEmail(student);
+		EMail lastAddressEmail = getLastAddressEmail(mailAddress);
+		Date lastStudentEmailDate = null;
+		if (lastStudentEmail != null) {
+			lastStudentEmailDate = lastStudentEmail.getDate();
+		}
+		Date lastAddressEmailDate = null;
+		if (lastAddressEmail != null) {
+			lastAddressEmailDate = lastAddressEmail.getDate();
 		}
 		try {
 			Properties mailProps = new Properties();
 			Session mailSession = Session.getDefaultInstance(mailProps);
 			Store store = mailSession.getStore("imaps");
 			store.connect("mail.fh-trier.de", options.getUserID(), options.getPassword());
+			
+			
 			Folder inbox = store.getFolder("INBOX");
 			inbox.open(Folder.READ_ONLY);
 			for (int i = 0; i < inbox.getMessageCount(); i++) {
 				Message msg = inbox.getMessage(i);
 				Date sendDate = new Date(msg.getSentDate().getTime());
-				if (sendDate.before(lastEmailDate)) {
-					ArrayList<String> fromAddresses = new ArrayList<String>();
-					Address senders[] = msg.getFrom();
-					for (Address address : senders) {
-					    fromAddresses.add(((InternetAddress)address).getAddress().toLowerCase());
+				if (sendDate.after(lastAddressEmailDate)) {
+					if (sendDate.before(lastStudentEmailDate)) {
+						ArrayList<String> fromAddresses = new ArrayList<String>();
+						Address senders[] = msg.getFrom();
+						for (Address address : senders) {
+					    	fromAddresses.add(((InternetAddress)address).getAddress().toLowerCase());
+						}
+						if (fromAddresses.contains(mailAddress.toLowerCase())) {
+							String subject = msg.getSubject();
+							String content = getEmailContent(msg);
+							EMail email = new EMail(content, subject, mailAddress, sendDate, true);
+							saveMail(email);
+						}					
+					}else {
+						break;
 					}
-					if (fromAddresses.contains(mailAddress.toLowerCase())) {
-						String subject = msg.getSubject();
-						String content = getEmailContent(msg);
-						EMail email = new EMail(content, subject, mailAddress, sendDate, true);
-						saveMail(email);
-					}					
-				}else {
-					break;
 				}
 			}
 			
@@ -2367,22 +2414,23 @@ public class Model {
 			for (int i = 0; i < inbox.getMessageCount(); i++) {
 				Message msg = outbox.getMessage(i);
 				Date sendDate = new Date(msg.getSentDate().getTime());
-				if (sendDate.before(lastEmailDate)) {
-					ArrayList<String> toAddresses = new ArrayList<String>();
-					Address[] recipients = msg.getAllRecipients();
-					for (Address address : recipients) {
-					    toAddresses.add(((InternetAddress)address).getAddress().toLowerCase());
+				if (sendDate.after(lastAddressEmailDate)) {
+					if (sendDate.before(lastStudentEmailDate)) {
+						ArrayList<String> toAddresses = new ArrayList<String>();
+						Address[] recipients = msg.getAllRecipients();
+						for (Address address : recipients) {
+							toAddresses.add(((InternetAddress)address).getAddress().toLowerCase());
+						}
+						if(toAddresses.contains(mailAddress.toLowerCase())){
+							String subject = msg.getSubject();
+							String content = getEmailContent(msg);
+							EMail email = new EMail(content, subject, mailAddress, sendDate, false);
+							saveMail(email);
+						}
+					}else {
+						break;
 					}
-					if(toAddresses.contains(mailAddress.toLowerCase())){
-						String subject = msg.getSubject();
-						String content = getEmailContent(msg);
-						EMail email = new EMail(content, subject, mailAddress, sendDate, false);
-						saveMail(email);
-					}
-				}else {
-					break;
 				}
-				
 			}
 		}catch(Exception e) {
 			

@@ -418,7 +418,8 @@ public class EditStudentView extends GridPane {
 			//Bestehenden Studenten ändern und speichern
 			else
 			{
-				changedMailAddresses = eMailAddresses;
+
+				changedMailAddresses = new ArrayList<String>(eMailAddresses);
 				changedMailAddresses.removeAll(student.geteMailAddresses());
 				
 				if(student.getMtrNr() != mtrNr)
@@ -442,6 +443,7 @@ public class EditStudentView extends GridPane {
 				student.setGender(gender);
 
 				presenter.saveEditedStudent(student);
+
 			}
 
 			presenter.openStudenTab(student, changedMailAddresses);

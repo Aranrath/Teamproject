@@ -32,13 +32,14 @@ public class Student {
 		mtrNrString = mtrToString();
 	}
 
-	public Student(int mtrNr, String name, String firstName, ArrayList<String> eMailAddresses, int semester,
+	public Student(int mtrNr, String name, String firstName, ArrayList<String> eMailAddresses, int semester, PO po,
 			String notes, ObservableList<Subject> passedSubjects, Image image, ObservableList<Long> concernIds, String gender, Date lastContact) {
 		this.mtrNr = mtrNr;
 		this.name = name;
 		this.firstName = firstName;
 		this.eMailAddresses = eMailAddresses;
 		this.semester = semester;
+		this.po = po;
 		this.notes = notes;
 		this.passedSubjects = passedSubjects;
 		this.image = image;

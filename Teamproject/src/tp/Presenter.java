@@ -162,7 +162,7 @@ public class Presenter {
 	}
 
 	public ArrayList<EMail> getEMails(Student student) {
-		return model.getEMails(student);
+		return model.getEMails(student.geteMailAddresses());
 	}
 
 	public Date[] getWorkWeekOfDate(Date date) {
@@ -426,7 +426,7 @@ public class Presenter {
 	}
 
 	public EMail getLastEmail(Student student) {
-		return model.getLastEmail(student);
+		return model.getLastStudentEmail(student);
 	}
 
 	public void saveEditedForm(Form selectedForm) {

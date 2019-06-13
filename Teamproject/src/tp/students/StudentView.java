@@ -514,7 +514,7 @@ public class StudentView extends GridPane {
 	
 	public void addMailToMailExchangeBox(EMail mail) {
 		if (mail != null) {
-			Label date = new Label(mail.getDate().toString());
+			Label date = new Label(mail.getMailAddress() + " - " + mail.getDate().toString());
 			Label subject = new Label(mail.getSubject());
 			Label content = new Label(mail.getContent());
 			
