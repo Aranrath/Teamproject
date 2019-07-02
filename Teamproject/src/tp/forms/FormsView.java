@@ -106,7 +106,7 @@ public class FormsView extends GridPane
 		this.shownForms = FXCollections.observableArrayList(allForms);
 
 		addFormButton = new Button("Neues Formular");
-		deleteFormButton = new Button("Ausgewählte Formulare entfernen");
+		deleteFormButton = new Button("Formular löschen");
 		searchTextField = new TextField();
 		searchTextField.setPromptText("Suche Formular");
 		searchTextField.setStyle("-fx-focus-color: transparent;");

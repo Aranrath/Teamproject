@@ -52,7 +52,7 @@ public class Model {
 
 	private ArrayList<String> sessionTabsIds;
 	private Options options;
-	//TODO Filepath bei Installation anpassen ... test
+	//TODO Filepath bei Installation anpassen
 	private final String standardDirectory = "..\\..\\Desktop\\";
 	
 	public Model() {
@@ -524,7 +524,7 @@ public class Model {
 
 	public Form getForm(int id) {
 		//TODO Teest
-		Form result = new Form(null, null);
+		Form result = new Form(null, null, null);
 		String sql = "SELECT * FROM form WHERE id = " + id;
 		try 	(Connection conn = this.connect();
 				Statement stmt = conn.createStatement();
@@ -533,8 +533,8 @@ public class Model {
 			if (rs.next()) {
 		
 				String title = rs.getString("title");
-			
-				File file = File.createTempFile(title, ".tmp");
+				String extension = rs.getString("extension");
+				File file = File.createTempFile(title, extension);
 				try(FileOutputStream out = new FileOutputStream(file);
 						InputStream in = rs.getBinaryStream("file")){
 					byte[] buffer = new byte[1024];
@@ -544,7 +544,7 @@ public class Model {
 				}catch(Exception e) {
 					e.printStackTrace();
 				}
-				result = new Form(title, file);
+				result = new Form(title, file, extension);
 				result.setId(id);
 				file.deleteOnExit();
 			}
@@ -1255,13 +1255,25 @@ public class Model {
 
 	public void saveNewForm(Form form) 
 	{
-		String sql = "INSERT INTO form (title, file) VALUES (?, ?)";
+		String sql = "INSERT INTO form (title, file, extension) VALUES (?, ?, ?)";
 		try (Connection conn = this.connect();
 			PreparedStatement pstmt = conn.prepareStatement(sql))
 		{	
 			File file = form.getFile();
 			pstmt.setString(1, form.getName());
 			pstmt.setBytes(2, readFile(file.getAbsolutePath()));
+			
+			String extension = "";
+	        try {
+	            if (file != null && file.exists()) {
+	                String name = file.getName();
+	                extension = name.substring(name.lastIndexOf("."));
+	            }
+	        } catch (Exception e) {
+	            extension = "";
+	        }
+	        pstmt.setString(3,  extension);
+			
 			pstmt.executeUpdate();
 		}
 		catch (Exception e)
@@ -1288,13 +1300,25 @@ public class Model {
 
 
 	public void saveEditedForm(Form selectedForm) {
-		String sql = "UPDATE form SET title = ?, file = ? WHERE id = " + selectedForm.getId();
+		String sql = "UPDATE form SET title = ?, file = ?, extension = ? WHERE id = " + selectedForm.getId();
 		try (Connection conn = this.connect();
 			PreparedStatement pstmt = conn.prepareStatement(sql))
 		{	
 			File file = selectedForm.getFile();
 			pstmt.setString(1, selectedForm.getName());
 			pstmt.setBytes(2, readFile(file.getAbsolutePath()));
+			
+			String extension = "";
+	        try {
+	            if (file != null && file.exists()) {
+	                String name = file.getName();
+	                extension = name.substring(name.lastIndexOf("."));
+	            }
+	        } catch (Exception e) {
+	            extension = "";
+	        }
+	        pstmt.setString(3,  extension);
+			
 			pstmt.executeUpdate();
 		}
 		catch (Exception e)
@@ -1306,7 +1330,7 @@ public class Model {
 
 	public void deleteForm(Form f) 
 	{
-		String sql = "DELETE FROM form WHERE name = "+ f.getId();
+		String sql = "DELETE FROM form WHERE title = "+ f.getId();
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement())
 		{

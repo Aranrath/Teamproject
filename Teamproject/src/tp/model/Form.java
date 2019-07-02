@@ -9,33 +9,23 @@ public class Form {
 	private long id;
 	private String name;
 	private File file;
+	private String fileExtension;
 	
+	//------- for new Forms, extension not needed
 	public Form (String name, File file)
 	{
 		this.file = file;
+		this.name = name;		
+	}  
+	
+	//------- for previews of Files extension needed to identify wich type
+	public Form (String name, File file, String fileExtension)
+	{
+		this.file = file;
 		this.name = name;
+		this.fileExtension = fileExtension;
 		
-	}
-	
-	//================================================private Methods
-	
-	
-    private String getFileExtension(File file) {
-        String extension = "";
- 
-        try {
-            if (file != null && file.exists()) {
-                String name = file.getName();
-                extension = name.substring(name.lastIndexOf("."));
-            }
-        } catch (Exception e) {
-            extension = "";
-        }
- 
-        return extension;
- 
-    }
-    
+	}    
     
   //================================================public Methods
 	//Generic Getter/Setter
@@ -88,15 +78,26 @@ public class Form {
 	
 	public boolean formIsImage()
 	{
-		String fileExtension = getFileExtension(file);
 		fileExtension.toLowerCase();
 		
-		if(fileExtension.equals("bmp") || fileExtension.equals("gif") || fileExtension.equals("png")|| fileExtension.equals("jpeg")|| fileExtension.equals("jpg"))
+		if(fileExtension.equals(".bmp") || fileExtension.equals(".gif") || fileExtension.equals(".png")|| fileExtension.equals(".jpeg")|| fileExtension.equals(".jpg"))
 		{
 			return true;
 		}
 		else
 		{
+			return false;
+		}
+	}
+	
+	public boolean formIsPdf()
+	{
+		fileExtension.toLowerCase();
+		if(fileExtension.equals(".pdf"))
+		{
+			return true;
+		}
+		else {
 			return false;
 		}
 	}
