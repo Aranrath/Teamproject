@@ -11,6 +11,7 @@ import tp.model.Options;
 
 public class Main extends Application {
 
+	//MVP-Pattern Komponenten
 	private Model model;
 	private Presenter presenter;
 	private MainView mainView;
