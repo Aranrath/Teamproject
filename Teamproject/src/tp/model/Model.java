@@ -52,7 +52,7 @@ public class Model {
 
 	private ArrayList<String> sessionTabsIds;
 	private Options options;
-	//TODO Filepath bei Installation anpassen
+	//TODO Filepath bei Installation anpassen ... test
 	private final String standardDirectory = "..\\..\\Desktop\\";
 	
 	public Model() {
