@@ -92,7 +92,7 @@ public class NewFormView extends GridPane {
 				filePathError.setVisible(true);
 			} 
 			else {
-				// ob Pfad bereits vergeben
+				// ob Pfad bereits vergeben.
 				Form samePathForm = fileAlreadyUsed(choosenFile);
 				if (samePathForm != null) {
 					filePathError.setText("Datei ist bereits im Formular \"" + samePathForm.getName() + "\" gespeichert");

@@ -11,14 +11,14 @@ public class Form {
 	private File file;
 	private String fileExtension;
 	
-	//------- for new Forms, extension not needed
+	//-------- for new Forms, extension not needed
 	public Form (String name, File file)
 	{
 		this.file = file;
 		this.name = name;		
 	}  
 	
-	//------- for previews of Files extension needed to identify wich type
+	//-------- for previews of Files extension needed to identify wich type
 	public Form (String name, File file, String fileExtension)
 	{
 		this.file = file;

@@ -60,7 +60,7 @@ public class Model {
 	}
 	
 	
-	//------------------establish Database connection-----------------------------------------------
+	//------------------establish Database connection---------------------------------------------
 	private Connection connect() 
 	{
 		Connection conn = null; 
