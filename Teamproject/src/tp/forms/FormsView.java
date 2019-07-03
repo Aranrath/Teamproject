@@ -1,5 +1,19 @@
 package tp.forms;
 
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+
+import javax.imageio.ImageIO;
+
+import com.sun.pdfview.PDFFile;
+import com.sun.pdfview.PDFPage;
+
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -245,6 +259,8 @@ public class FormsView extends GridPane
 	{
 		imageView = new ImageView();
 		imageView.setVisible(false);
+		imageView.preserveRatioProperty().set(true);
+    	imageView.fitHeightProperty().bind(formListView.heightProperty());
 		noShowableFileFormatLabel = new Label("Kein Formular mit anzeigbarem Datei-Format ausgewählt");
 		noShowableFileFormatLabel.setVisible(false);
 		
@@ -288,7 +304,7 @@ public class FormsView extends GridPane
 		//=========================================================================
 		
 		formListView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Form>() {
-		    @Override
+		    //@Override
 		    public void changed(ObservableValue<? extends Form> observable, Form oldValue, Form newValue) {  	
 		       if(newValue!= null && newValue.formIsImage())
 		       {
@@ -296,7 +312,40 @@ public class FormsView extends GridPane
 		    	   imageView.setVisible(true);
 		    	   noShowableFileFormatLabel.setVisible(false);
 		       }
-//		       else if() TODO wenn PDF 
+		       else if(newValue != null && newValue.formIsPdf()) {
+		    	   //if PDF, convert first page of PDF to image
+				try (RandomAccessFile raf = new RandomAccessFile(newValue.getFile(), "r");){
+					FileChannel channel = raf.getChannel();
+					ByteBuffer buf = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
+					PDFFile pdf = new PDFFile(buf);
+					PDFPage page = pdf.getPage(0);
+					
+					// create the image
+//					table.prefHeightProperty().bind(stage.heightProperty());
+//			        table.prefWidthProperty().bind(stage.widthProperty());
+					
+					Rectangle rect = new Rectangle(0, 0, (int) page.getBBox().getWidth(),
+					                                 (int) page.getBBox().getHeight());
+					BufferedImage bufferedImage = new BufferedImage(rect.width, rect.height,
+					                                  BufferedImage.TYPE_INT_RGB);
+
+					Image image = page.getImage(rect.width, rect.height, rect, null, true, true);
+					File file = File.createTempFile("tempImage", ".bmp");
+					Graphics2D bufImageGraphics = bufferedImage.createGraphics();
+					bufImageGraphics.drawImage(image, 0, 0, null);
+					ImageIO.write(bufferedImage, "bmp", file);
+					javafx.scene.image.Image img = new javafx.scene.image.Image(file.toURI().toString());
+					
+					
+					imageView.setImage(img);
+			    	imageView.setVisible(true);
+			    	noShowableFileFormatLabel.setVisible(false);
+//					
+					
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+		       }
 		       else
 		       {
 		    	   imageView.setVisible(false);
@@ -306,6 +355,29 @@ public class FormsView extends GridPane
 		    }
 		});
 		
+		
+//		File pdfFile = new File("/path/to/pdf.pdf");
+//		RandomAccessFile raf = new RandomAccessFile(pdfFile, "r");
+//		FileChannel channel = raf.getChannel();
+//		ByteBuffer buf = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
+//		PDFFile pdf = new PDFFile(buf);
+//		PDFPage page = pdf.getPage(0);
+//
+//		// create the image
+//		Rectangle rect = new Rectangle(0, 0, (int) page.getBBox().getWidth(),
+//		                                 (int) page.getBBox().getHeight());
+//		BufferedImage bufferedImage = new BufferedImage(rect.width, rect.height,
+//		                                  BufferedImage.TYPE_INT_RGB);
+//
+//		Image image = page.getImage(rect.width, rect.height,    // width & height
+//		                            rect,                       // clip rect
+//		                            null,                       // null for the ImageObserver
+//		                            true,                       // fill background with white
+//		                            true                        // block until drawing is done
+//		);
+//		Graphics2D bufImageGraphics = bufferedImage.createGraphics();
+//		bufImageGraphics.drawImage(image, 0, 0, null);
+//		ImageIO.write(bufferedImage, format, new File( "/path/to/image.jpg" ));
 		
 	}
 	
