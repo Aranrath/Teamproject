@@ -289,7 +289,7 @@ public class Presenter {
 			if (alert.getResult() == ButtonType.YES) {
 				
 				//speichere die Tabs der aktuellen Session über deren ID
-				model.setSessionTabsIds(mainView.getCurrentTabs());
+				model.setSessionTabsIds(mainView.getCurrentTabsIds());
 				
 				Platform.exit();
 			}
@@ -297,7 +297,7 @@ public class Presenter {
 		else
 		{
 			//speichere die Tabs der aktuellen Session über deren ID
-			model.setSessionTabsIds(mainView.getCurrentTabs());
+			model.setSessionTabsIds(mainView.getCurrentTabsIds());
 			
 			Platform.exit();
 		}
@@ -460,6 +460,18 @@ public class Presenter {
 	public ObservableList<Statistic> getStatistics() {
 		return model.getStatistics();
 	}
+	
+	
+	public void closeRelatedTabs(Student student)
+	{
+		mainView.closeRelatedTabs(student);
+	}
+	
+	public void closeRelatedTabs(Concern concern)
+	{
+		mainView.closeRelatedTabs(concern);
+	}
+	
 
 	/*TODO Bei den delete Methoden gucken ob entsprechende Objekte noch offen sind.
 		-> wenn: Tabs schließen

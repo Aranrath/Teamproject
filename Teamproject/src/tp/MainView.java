@@ -28,6 +28,7 @@ import tp.concern.ConcernView;
 import tp.forms.FormsView;
 import tp.model.Appointment;
 import tp.model.Concern;
+import tp.model.DraggingTabPaneSupport;
 import tp.model.MyTab;
 import tp.model.Options;
 import tp.model.Reminder;
@@ -210,7 +211,10 @@ public class MainView extends BorderPane {
 
 		tabPane = new TabPane();
 		setCenter(tabPane);
-
+		
+		DraggingTabPaneSupport support = new DraggingTabPaneSupport();
+		support.addSupport(tabPane);
+		
 		openSessionTabs();
 
 	}
@@ -240,7 +244,7 @@ public class MainView extends BorderPane {
 	}
 
 	/**
-	 * naming convention: s<mtrNr> = student, c<id> = concern, o = options, t<id> =
+	 * naming convention: b<mtrNr> = student, s<mtrNr> = editStudent, c<id> = concern, o = options, t<id> =
 	 * statistic, i = all statistics, a = all students, l = all concerns, f = forms,
 	 * w = weekly, r = all reminders, n<ew> = new(unsaved)ObjectViews //diese Tabs werden nicht gespeichert
 	 */
@@ -254,7 +258,7 @@ public class MainView extends BorderPane {
 			for (String s : sessionTabsIds) {
 				char firstLetter = s.charAt(0);
 
-				if (firstLetter == 's') {
+				if (firstLetter == 's' || firstLetter == 'b') {
 					openStudentTab(presenter.getStudent(Integer.parseInt(s.substring(1))));
 				}
 				else if (firstLetter == 'c') {
@@ -334,9 +338,16 @@ public class MainView extends BorderPane {
 	}
 
 	public void openStudentTab(Student student) {
-		MyTab newTab = tabAlreadyOpen("a" + student.getMtrNr());
+		//StudentView bereits offen?
+		MyTab newTab = tabAlreadyOpen("b" + student.getMtrNr());
+		//Student als EditStudentView offen?
+		if (newTab == null)
+		{
+			newTab = tabAlreadyOpen("s" + student.getMtrNr());
+		}
+		//wenn nicht:
 		if (newTab == null) {
-			newTab = new MyTab("a" + student.getMtrNr());
+			newTab = new MyTab("b" + student.getMtrNr());
 
 			newTab.setText(student.getName() + ", " + student.getFirstName());
 
@@ -361,9 +372,9 @@ public class MainView extends BorderPane {
 	}
 	
 	public void openStudentTabFromEditStudentView(Student student, ArrayList<String> changedMailAddresses) {
-		MyTab newTab = tabAlreadyOpen("a" + student.getMtrNr());
+		MyTab newTab = tabAlreadyOpen("b" + student.getMtrNr());
 		if (newTab == null) {
-			newTab = new MyTab("a" + student.getMtrNr());
+			newTab = new MyTab("b" + student.getMtrNr());
 
 			newTab.setText(student.getName() + ", " + student.getFirstName());
 
@@ -667,7 +678,7 @@ public class MainView extends BorderPane {
 	public void openEditStudentTab(Student student) {
 		MyTab newTab = new MyTab("s" + student.getMtrNr());
 
-		newTab.setText(student.getFirstName().charAt(0) + "" + student.getName());
+		newTab.setText(student.getName() + ", " + student.getFirstName());
 
 		newTab.setContent(new EditStudentView(presenter, student, newTab));
 
@@ -767,10 +778,43 @@ public class MainView extends BorderPane {
 	public void closeThisTab(MyTab tab) {
 		tabPane.getTabs().remove(tab);
 	}
-	
-	public ArrayList<String> getCurrentTabs()
+
+
+
+	public void closeRelatedTabs(Student student)
 	{
-		ArrayList<String> currentTabs = new ArrayList<>();
+		for(Tab tab : tabPane.getTabs())
+		{
+			MyTab myTab = (MyTab) tab;
+			
+			if(myTab.getTabId().equals("b" + student.getMtrNr()) ||  myTab.getTabId().equals("s" + student.getMtrNr())   )
+			{
+				closeThisTab(myTab);
+			}
+		}	
+
+	}
+	
+	public void closeRelatedTabs(Concern concern)
+	{
+		for(Tab tab : tabPane.getTabs())
+		{
+			MyTab myTab = (MyTab) tab;
+			
+			if(myTab.getTabId().equals("c" + concern.getId()))
+			{
+				closeThisTab(myTab);
+			}
+		}	
+
+	}
+	
+	
+	
+	
+	public ArrayList<String> getCurrentTabsIds()
+	{
+		ArrayList<String> currentTabsIds = new ArrayList<>();
 		
 		for(Tab tab : tabPane.getTabs())
 		{
@@ -778,12 +822,13 @@ public class MainView extends BorderPane {
 			
 			if(!myTab.getTabId().equals("new"))
 			{
-				currentTabs.add(myTab.getTabId());
+				currentTabsIds.add(myTab.getTabId());
 			}
 		}
 		
-		return currentTabs;
+		return currentTabsIds;
 	}
+	
 
 
 	

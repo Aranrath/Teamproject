@@ -1,6 +1,8 @@
 package tp.concern;
 
 import java.sql.Date;
+import java.util.Calendar;
+import java.util.Optional;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -34,7 +36,7 @@ public class AllConcernsView extends GridPane
 	private TableView<Concern> allConcernsTable;
 	private TextField searchTextField;
 	private Button newConcernButton;
-	private Button deleteConcernButton;
+	private Button closeConcernButton;
 	private CheckBox showClosedConcernsCheckBox;
 	
 	public AllConcernsView(Presenter presenter)
@@ -58,7 +60,7 @@ public class AllConcernsView extends GridPane
 		searchTextField = new TextField();
 		searchTextField.setPromptText("Suche Anliegen");
 		newConcernButton = new Button("Neues Anliegen hinzufügen");
-		deleteConcernButton = new Button("Anliegen löschen");
+		closeConcernButton = new Button("Anliegen schließen");
 		showClosedConcernsCheckBox = new CheckBox("Zeige abgeschlossene Anliegen");
 		
 		// =====================================================================
@@ -74,8 +76,8 @@ public class AllConcernsView extends GridPane
 		add(newConcernButton, 1, 2);
 		GridPane.setHalignment(newConcernButton, HPos.RIGHT);
 
-		add(deleteConcernButton, 0, 2);
-		GridPane.setHalignment(deleteConcernButton, HPos.LEFT);
+		add(closeConcernButton, 0, 2);
+		GridPane.setHalignment(closeConcernButton, HPos.LEFT);
 
 
 		//===================================================================
@@ -119,20 +121,53 @@ public class AllConcernsView extends GridPane
 			presenter.openNewConcernTab();
 		});
 
-		deleteConcernButton.setOnAction((event) -> {
-			Concern concernToDelete = allConcernsTable.getSelectionModel().getSelectedItem();
-			if (concernToDelete != null)
+		closeConcernButton.setOnAction((event) -> {
+			Concern concernToClose = allConcernsTable.getSelectionModel().getSelectedItem();
+			if (concernToClose != null)
 			{
-				Alert alert = new Alert(AlertType.WARNING, "Anliegen \"" + concernToDelete.getTitle() + "\" wirklich aus der Datenbank löschen?",
-						ButtonType.YES, ButtonType.CANCEL);
-				alert.showAndWait();
 
-				if (alert.getResult() == ButtonType.YES) {
-					
-					presenter.deleteConcern(concernToDelete);
-					allConcernsTable.getItems().remove(concernToDelete);
-					
-				}
+				Alert alert = new Alert(AlertType.CONFIRMATION);
+		        alert.setTitle("Anliegen " +  concernToClose.getTitle() + " abschließen");
+		        alert.setHeaderText("Bitte wählen sie den korrekten Abschluss-Status des Anliegen"
+		        						+"\n" + "INFO: Abgeschlossene Anliegen sind (mit Ausnahme des Fehleintrages) weiterhin einsehbar."
+		        						+"\n" + "ACHTUNG: Das Schließen eines Anliegens ist nicht umkehrbar");
+		 
+		        ButtonType completed = new ButtonType("Schließen mit Status \"Erledigt\"");
+		        ButtonType uncompleted = new ButtonType("Schließen mit Status \"Abgebrochen\"");
+		        ButtonType deletable = new ButtonType("Löschen als Fehleintrag");
+		        ButtonType abortMission = new ButtonType("Abbrechen");
+		 
+		        // Standard ButtonTypes entfernen
+		        alert.getButtonTypes().clear();
+		 
+		        //Eigene ButtonTypes hinzufügen
+		        alert.getButtonTypes().addAll(completed, uncompleted, deletable,abortMission);
+		 
+		        //Alert anzeigen
+		        Optional<ButtonType> option = alert.showAndWait();
+		 
+		        //Resultat verarbeiten
+		        if (option.get() == completed)
+		        {
+		        	concernToClose.setCompleted(true);
+		        	concernToClose.setClosingDate(new java.sql.Date(Calendar.getInstance().getTime().getTime()));
+		            presenter.saveEditedConcern(concernToClose);
+		            
+		        }
+		        else if (option.get() == uncompleted)
+		        {
+		        	concernToClose.setClosingDate(new java.sql.Date(Calendar.getInstance().getTime().getTime()));
+		        	presenter.saveEditedConcern(concernToClose);
+		        } 
+		        else if (option.get() == deletable)
+		        {
+		        	presenter.deleteConcern(concernToClose);
+		        	presenter.closeRelatedTabs(concernToClose);
+		        }
+		        else if (option.get() == abortMission)
+		        {
+		        	
+		        }
 			}
 
 		});

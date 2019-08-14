@@ -153,7 +153,7 @@ public class ConcernView extends GridPane {
 		}
 
 		
-		closeButton = new Button("Aniegen schließen");
+		closeButton = new Button("Anliegen schließen");
 		closeStatusLabel = new Label();
 		closeStatusLabel.setVisible(false);
 		
@@ -515,15 +515,16 @@ public class ConcernView extends GridPane {
 	        						+"\n" + "INFO: Abgeschlossene Anliegen sind (mit Ausnahme des Fehleintrages) weiterhin einsehbar."
 	        						+"\n" + "ACHTUNG: Das Schließen eines Anliegens ist nicht umkehrbar");
 	 
-	        ButtonType completed = new ButtonType("Erledigt");
-	        ButtonType uncompleted = new ButtonType("Abgebrochen");
-	        ButtonType deletable = new ButtonType("Fehleintrag (Löschen)");
+	        ButtonType completed = new ButtonType("Schließen mit Status \"Erledigt\"");
+	        ButtonType uncompleted = new ButtonType("Schließen mit Status \"Abgebrochen\"");
+	        ButtonType deletable = new ButtonType("Löschen als Fehleintrag");
+	        ButtonType abortMission = new ButtonType("Abbrechen");
 	 
 	        // Standard ButtonTypes entfernen
 	        alert.getButtonTypes().clear();
 	 
 	        //Eigene ButtonTypes hinzufügen
-	        alert.getButtonTypes().addAll(completed, uncompleted, deletable);
+	        alert.getButtonTypes().addAll(completed, uncompleted, deletable,abortMission);
 	 
 	        //Alert anzeigen
 	        Optional<ButtonType> option = alert.showAndWait();
@@ -547,7 +548,11 @@ public class ConcernView extends GridPane {
 	        {
 	        	presenter.deleteConcern(concern);
 	        	presenter.closeThisTab(tab);
-	        } 
+	        }
+	        else if (option.get() == abortMission)
+	        {
+	        	
+	        }
 		});
 		
 

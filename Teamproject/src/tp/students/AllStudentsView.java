@@ -196,6 +196,7 @@ public class AllStudentsView extends GridPane {
 			if (alert.getResult() == ButtonType.YES) {
 				for (Student s : selectedStudents) {
 					presenter.deleteStudent(s);
+					presenter.closeRelatedTabs(s);
 				}
 				selectedStudents.clear();
 			}
