@@ -560,7 +560,9 @@ public class StudentView extends GridPane {
 	}
 
 	public void updateView() {
-		// TODO Auto-generated method stub
+		student = presenter.getStudent(student.getMtrNr());		
+		fillView();
+		fillMailView();
 	}
 
 }

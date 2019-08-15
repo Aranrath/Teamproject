@@ -455,12 +455,12 @@ public class Model {
 		String sql = null;
 		if(mailAddress.size()==3) {
 			sql = "SELECT * FROM eMail WHERE eMailAddress = '"+ mailAddress.get(0) + "' OR eMailAddress = '" 
-					+ mailAddress.get(1) + "' OR eMailAddress = '"+ mailAddress.get(2) + "' ORDER BY date DESC";
+					+ mailAddress.get(1) + "' OR eMailAddress = '"+ mailAddress.get(2) + "' ORDER BY date ASC";
 		}else if(mailAddress.size()==2) {
 			sql = "SELECT * FROM eMail WHERE eMailAddress = '"+ mailAddress.get(0) + "' OR eMailAddress = '" 
-					+mailAddress.get(1) + "' ORDER BY date DESC";
+					+mailAddress.get(1) + "' ORDER BY date ASC";
 		}else if (mailAddress.size()==1) {
-			sql = "SELECT * FROM eMail WHERE eMailAddress = '"+ mailAddress.get(0) +"' ORDER BY date DESC";
+			sql = "SELECT * FROM eMail WHERE eMailAddress = '"+ mailAddress.get(0) +"' ORDER BY date ASC";
 		}else {
 			return mail;
 		}
@@ -2217,7 +2217,7 @@ public class Model {
 			{
 			for (Subject subject: passedSubjects){
 				sql="INSERT INTO passed_subjects (student, subject) VALUES (" + mtrNr + ", " + subject.getId() + ")";
-				stmt.executeQuery(sql);
+				stmt.executeUpdate(sql);
 			}
 			}catch (Exception e) {
 				e.printStackTrace();

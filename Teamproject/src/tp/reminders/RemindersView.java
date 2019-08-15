@@ -55,8 +55,7 @@ public class RemindersView extends GridPane{
 	}
 
 	public void updateView() {
-		// TODO Auto-generated method stub
-		
+		remindersList.setItems(presenter.getDueReminders());
 	}
 	
 	

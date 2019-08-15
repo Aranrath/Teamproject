@@ -530,8 +530,9 @@ public class EditStudentView extends GridPane {
 	}
 
 	public void updateView() {
-		// TODO Auto-generated method stub
-		
+		student = presenter.getStudent(student.getMtrNr());	
+		studentPO.setItems(presenter.getPOs());
+		//TODO fillView(); needed? with evt concerns added..
 	}
 	
 	

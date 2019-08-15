@@ -687,8 +687,19 @@ public class ConcernView extends GridPane {
 	}
 
 	public void updateView() {
-		// TODO Auto-generated method stub
+		concern = presenter.getConcern(concern.getId());
 		
+		if(concern.getStudents() != null) {
+			localStudents = concern.getStudents();
+		}
+		else
+		{
+			localStudents = FXCollections.observableArrayList();
+		}
+		filteredStudents =  FXCollections.observableArrayList(localStudents);
+		filterStudents(searchTextField.getText());
+		
+		fillView();
 	}
 
 }

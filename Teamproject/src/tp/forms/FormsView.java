@@ -320,10 +320,6 @@ public class FormsView extends GridPane
 					PDFFile pdf = new PDFFile(buf);
 					PDFPage page = pdf.getPage(0);
 					
-					// create the image
-//					table.prefHeightProperty().bind(stage.heightProperty());
-//			        table.prefWidthProperty().bind(stage.widthProperty());
-					
 					Rectangle rect = new Rectangle(0, 0, (int) page.getBBox().getWidth(),
 					                                 (int) page.getBBox().getHeight());
 					BufferedImage bufferedImage = new BufferedImage(rect.width, rect.height,
@@ -508,8 +504,9 @@ public class FormsView extends GridPane
 
 
 	public void updateView() {
-		// TODO Auto-generated method stub
-		
+		this.allForms = presenter.getTopicForms();
+		this.shownForms = FXCollections.observableArrayList(allForms);
+		filterForms(searchTextField.getText());
 	}
 
 
