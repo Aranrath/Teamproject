@@ -342,7 +342,7 @@ public class Model {
 
 	private ObservableList<Appointment> getAppointments(long concernId) {
 		ObservableList<Appointment>  result = FXCollections.observableArrayList();
-		String sql = "SELECT id FROM appointment WHERE concern = " + concernId;
+		String sql = "SELECT id FROM appointment WHERE concern = " + concernId + " ORDER BY date DESC";
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql))
@@ -498,7 +498,7 @@ public class Model {
 	public EMail getLastStudentEmail(Student student) {
 		ArrayList<EMail> mails = getEMails(student.geteMailAddresses());
 		if(!mails.isEmpty()) {
-			return mails.get(0);
+			return mails.get(mails.size()-1);
 		}
 		return null;
 	}
@@ -652,7 +652,7 @@ public class Model {
 
 	private ObservableList<Reminder> getReminders(long concernId) {
 		ObservableList<Reminder>  result = FXCollections.observableArrayList();
-		String sql = "SELECT id FROM reminder WHERE concern = " + concernId;
+		String sql = "SELECT id FROM reminder WHERE concern = " + concernId + " ORDER BY date DESC";
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql))

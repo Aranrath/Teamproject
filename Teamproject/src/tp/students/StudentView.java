@@ -423,6 +423,7 @@ public class StudentView extends GridPane {
 	
 		studentSemester.setText("" + student.getSemester());
 		if (student.getConcernIds()!=null) {
+			concerns.clear();
 			for (long id : student.getConcernIds()){
 				concerns.add(presenter.getConcern(id));
 			}
@@ -484,7 +485,7 @@ public class StudentView extends GridPane {
 					for (EMail mail : mails)
 					{
 							addMailToMailExchangeBox(mail);
-							getChildren().remove(placeholderPane);
+							placeholderPane.setVisible(false);
 							mailGridPane.setVisible(true);
 					}
 				});
@@ -562,7 +563,12 @@ public class StudentView extends GridPane {
 	public void updateView() {
 		student = presenter.getStudent(student.getMtrNr());		
 		fillView();
-		fillMailView();
+		mailExchangeVBox.getChildren().clear();
+		mailGridPane.setVisible(false);
+		placeholderPane.setVisible(true);
+		//TODO loading label
+		Thread t = new Thread(() -> fillMailView());
+		t.start();
 	}
 
 }

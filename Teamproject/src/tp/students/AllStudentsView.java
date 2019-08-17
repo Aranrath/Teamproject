@@ -125,7 +125,7 @@ public class AllStudentsView extends GridPane {
 		lastContactCol.setCellValueFactory(new PropertyValueFactory<>("lastContact"));
 		
 		TableColumn<Student, Date> poCol = new TableColumn<Student, Date>("Studiengang");
-		lastContactCol.setCellValueFactory(new PropertyValueFactory<>("po"));
+		poCol.setCellValueFactory(new PropertyValueFactory<>("po"));
 		
 		allStudentsTable.getColumns().addAll(mtrNrCol, lastNameCol,firstNameCol,poCol, lastContactCol);
 		
