@@ -154,7 +154,10 @@ public class AllStatisticsView extends GridPane{
 
 	public void updateView() {
 		allStatistics = presenter.getStatistics();
-		shownStatistics = FXCollections.observableArrayList(allStatistics);
+		shownStatistics.clear();
+		for (Statistic statistic: allStatistics) {
+			shownStatistics.add(statistic);
+		}
 		filterStatistics(searchTextField.getText());	
 	}
 

@@ -504,8 +504,11 @@ public class FormsView extends GridPane
 
 
 	public void updateView() {
-		this.allForms = presenter.getTopicForms();
-		this.shownForms = FXCollections.observableArrayList(allForms);
+		allForms = presenter.getTopicForms();
+		shownForms.clear();
+		for (Form form: allForms) {
+			shownForms.add(form);
+		}
 		filterForms(searchTextField.getText());
 	}
 

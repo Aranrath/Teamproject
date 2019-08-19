@@ -258,7 +258,10 @@ public class AllConcernsView extends GridPane
 
 	public void updateView() {
 		allConcerns = presenter.getConcerns();
-		shownConcerns = FXCollections.observableArrayList(allConcerns);
+		shownConcerns.clear();
+		for (Concern concern: allConcerns) {
+			shownConcerns.add(concern);
+		}
 		filterConcerns(searchTextField.getText());
 		
 	}

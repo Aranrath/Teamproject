@@ -166,11 +166,9 @@ public class Student {
 		{
 			studentString += " " + firstName;
 		}
-		for ( String mail : eMailAddresses )
-		{
-			studentString += " " + mail;
-		}
-		
+		if(po != null) {
+			studentString += " " + po.getName();
+		}		
 		return studentString;
 	}
 	

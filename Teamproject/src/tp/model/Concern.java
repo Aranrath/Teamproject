@@ -151,7 +151,15 @@ public class Concern {
 
 	@Override
 	public String toString() {
-		return title;
+		String concernString = title;
+		
+		if(topic != null) {
+			concernString += " " + topic.getTitle();
+		}
+		for(Student student: students) {
+			concernString += " " + student.getFirstName() + " " + student.getName();
+		}
+		return concernString;
 	}
 
 	

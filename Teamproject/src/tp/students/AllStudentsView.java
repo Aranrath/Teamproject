@@ -242,7 +242,7 @@ public class AllStudentsView extends GridPane {
 	}
 	
 	//============================================================
-	//(private) Hilfs-Methode
+	//(private) Hilfs-Methoden
 
 	
 	private void filterStudents(String searchTerm)
@@ -269,12 +269,15 @@ public class AllStudentsView extends GridPane {
 	}
 	
 	//============================================================
-		//(private) Hilfs-Methode
+	//(public) Hilfs-Methoden
 
 	public void updateView()
 	{
 		allStudents = presenter.getStudents();
-		shownStudents = FXCollections.observableArrayList(allStudents);
+		shownStudents.clear();
+		for (Student student: allStudents) {
+			shownStudents.add(student);
+		}
 		filterStudents(searchTextField.getText());	
 	}
 

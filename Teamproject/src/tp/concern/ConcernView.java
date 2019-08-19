@@ -385,7 +385,7 @@ public class ConcernView extends GridPane {
 				presenter.saveEditedConcern(concern);
 
 				// Tabbeschriftung anpassen
-				System.out.println(tab.getText());
+				//TODO doube shit..System.out.println(tab.getText());
 				tab.setText(newTitle);
 			}
 			
