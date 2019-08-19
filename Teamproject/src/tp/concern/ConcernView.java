@@ -362,10 +362,10 @@ public class ConcernView extends GridPane {
 				saveButton.setText("Änderungen speichern");
 				closeButton.setVisible(true);
 
-				// Tabbeschriftung anpassen
+				// Tabbeschriftung anpassen..
 				tab.setText(newTitle);
 				tab.setTabId("c" + newConcernId);
-			} 
+			}
 			else
 			{
 				// Attribute speichern
