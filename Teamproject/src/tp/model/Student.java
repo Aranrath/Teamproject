@@ -19,6 +19,7 @@ public class Student {
 	private ObservableList<Long> concernIds;
 	private PO po;
 	private String gender;
+	private Date exmatr;
 	// For TableView
 	private Date lastContact;
 	
@@ -33,7 +34,7 @@ public class Student {
 	}
 
 	public Student(int mtrNr, String name, String firstName, ArrayList<String> eMailAddresses, int semester, PO po,
-			String notes, ObservableList<Subject> passedSubjects, Image image, ObservableList<Long> concernIds, String gender, Date lastContact) {
+			String notes, ObservableList<Subject> passedSubjects, Image image, ObservableList<Long> concernIds, String gender, Date lastContact, Date exmatr) {
 		this.mtrNr = mtrNr;
 		this.name = name;
 		this.firstName = firstName;
@@ -46,6 +47,7 @@ public class Student {
 		this.concernIds = concernIds;
 		this.gender = gender;
 		this.lastContact = lastContact;
+		this.exmatr = exmatr;
 		
 		mtrNrString = mtrToString();
 	}
@@ -131,6 +133,14 @@ public class Student {
 
 	public void setGender(String gender) {
 		this.gender = gender;
+	}
+	
+	public Date getExmatr() {
+		return exmatr;
+	}
+
+	public void setExmatr(Date exmatr) {
+		this.exmatr = exmatr;
 	}
 
 	// For TableView

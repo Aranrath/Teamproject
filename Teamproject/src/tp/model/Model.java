@@ -582,10 +582,10 @@ public class Model {
 				if(rs.next())
 				{
 					int id = rs.getInt("id");
-					String name = rs.getString("name");
+					String title = rs.getString("title");
 					ObservableList<Subject> optional = getSubjects(id, 1);
 					ObservableList<Subject> mandatory = getSubjects(id, 0);
-					PO po = new PO(name);
+					PO po = new PO(title);
 					po.setId(id);
 					po.setOptionalSubjects(optional);
 					po.setMandatorySubjects(mandatory);
@@ -610,10 +610,10 @@ public class Model {
 			while(rs.next())
 			{
 				int id = rs.getInt("id");
-				String name = rs.getString("name");
+				String title = rs.getString("title");
 				ObservableList<Subject> optional = getSubjects(id, 1);
 				ObservableList<Subject> mandatory = getSubjects(id, 0);
-				PO po = new PO(name);
+				PO po = new PO(title);
 				po.setId(id);
 				po.setOptionalSubjects(optional);
 				po.setMandatorySubjects(mandatory);
@@ -630,7 +630,7 @@ public class Model {
 
 
 	public Reminder getReminder(long id) {
-		Reminder result = new Reminder(null, null);
+		Reminder result = new Reminder(null, null, null);
 		String sql = "SELECT * FROM reminder WHERE id = " + id;
 		try 	(Connection conn = this.connect();
 				Statement stmt = conn.createStatement();
@@ -640,7 +640,8 @@ public class Model {
 		
 				String message = rs.getString("message");
 				Date date = rs.getDate("date");
-				result = new Reminder(message, date);
+				Long concernId = rs.getLong("concern");
+				result = new Reminder(message, date, concernId);
 				result.setId(id);
 			}
 		}catch(Exception e) {
@@ -787,7 +788,7 @@ public class Model {
 
 	public Student getStudent(int mtrNr) 
 	{
-	Student result = new Student(0, null, null, null, 0, null, null, null, null, null, null, null);
+	Student result = new Student(0, null, null, null, 0, null, null, null, null, null, null, null, null);
 	String sql1 = "SELECT * FROM student WHERE matrNr = " + mtrNr;
 	String sql2 = "SELECT concern FROM concern_student WHERE student = " + mtrNr;
 	try (Connection conn = this.connect();
@@ -812,8 +813,9 @@ public class Model {
 					e.printStackTrace();
 				}
 				String gender = rs1.getString("gender");
+				Date exmatr =  rs1.getDate("exmatr");
 				
-				result = new Student(mtrNr, name, firstname, eMailAddressess, semester, po, notes, passedSubjects, img, null, gender, null);
+				result = new Student(mtrNr, name, firstname, eMailAddressess, semester, po, notes, passedSubjects, img, null, gender, null, exmatr);
 				if(getLastStudentEmail(result)!=null) {
 					Date lastContact = getLastStudentEmail(result).getDate();
 					result.setLastContact(lastContact);
@@ -1364,7 +1366,7 @@ public class Model {
 
 
 	public PO saveNewPO(PO po) {
-		String sql = "INSERT INTO po(name) VALUES ('"+ po.getName() +"')";
+		String sql = "INSERT INTO po(title) VALUES ('"+ po.getName() +"')";
 		String sql2 = "SELECT last_insert_rowid()";
 		try (Connection conn = this.connect();
 				Statement stmt = conn.createStatement())
@@ -1392,7 +1394,7 @@ public class Model {
 	public void saveEditedPO(String newPOName, ObservableList<Subject> selectedMandatorySubjects,
 			ObservableList<Subject> selectedOptionalSubjects, PO po) 
 	{
-		String sql1 = "UPDATE po SET name = '"+ newPOName +"' WHERE id = " + po.getId();
+		String sql1 = "UPDATE po SET title = '"+ newPOName +"' WHERE id = " + po.getId();
 		String sql2 = "DELETE FROM po_subject WHERE po = " + po.getId();
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement())
@@ -1695,7 +1697,7 @@ public class Model {
 				//create sql query
 				String select = "SELECT matrNr";
 				String from = " FROM student";
-				String where = " WHERE created < " + startDate.getTime() + " AND (invisible IS NULL OR invisible > " + endDate.getTime() + ")";
+				String where = " WHERE created < " + startDate.getTime() + " AND (exmatr IS NULL OR exmatr > " + endDate.getTime() + ")";
 				
 				if (filterMap.containsKey("Geschlecht")){
 					where += " AND gender = '" + filterMap.get("Geschlecht")[0] + "'";
@@ -2168,8 +2170,8 @@ public class Model {
 	}
 
 
-	public void setStudentInvisible(Student s) {
-		String sql = "UPDATE student SET invisible = true WHERE matrNr = " + s.getMtrNr();
+	public void setStudentExmatr(Student s, Date d) {
+		String sql = "UPDATE student SET exmatr = " + d + " WHERE matrNr = " + s.getMtrNr();
 		try (Connection conn = this.connect();
 				Statement stmt = conn.createStatement())
 			{

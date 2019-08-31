@@ -431,7 +431,7 @@ public class ConcernView extends GridPane {
 			stage.initModality(Modality.APPLICATION_MODAL);
 			stage.setTitle("Neue Erinnerung hinzufügen");
 			stage.setResizable(false);
-			stage.setScene(new Scene(new NewReminderView(stage, reminderTableView.getItems()), getWidth()*(0.6), getHeight()*(0.7)));
+			stage.setScene(new Scene(new NewReminderView(stage, reminderTableView.getItems(), concern.getId()), getWidth()*(0.6), getHeight()*(0.7)));
 			stage.show();
 		});
 

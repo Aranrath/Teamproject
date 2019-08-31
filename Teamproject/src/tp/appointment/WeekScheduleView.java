@@ -184,7 +184,10 @@ public class WeekScheduleView extends GridPane
 					Date date = presenter.getStartOfNextWeek(shownWorkWeek[4]);
 					fillView(date);
 				});
-				showCurrentWeekButton.setOnAction((event)->{});
+				showCurrentWeekButton.setOnAction((event)->{
+					Date date = new Date(System.currentTimeMillis());
+					fillView(date);
+				});
 				datePicker.setOnAction((event)->{
 					fillView(Date.valueOf(datePicker.getValue()));
 				});

@@ -7,11 +7,16 @@ public class Reminder {
 	private long id;
 	private String message;
 	private Date date;
+	//Id nicht Concern wg Endlosschleife getConcern/getReminder
+	private long concernId;
 	
-	public Reminder(String message, Date date)
+	public Reminder(String message, Date date, Long concernId)
 	{
 		this.message = message;
 		this.date = date;
+		if (concernId != null) {
+			this.concernId = concernId;
+		}
 	}
 
 	public long getId() {
@@ -26,6 +31,10 @@ public class Reminder {
 		return date;
 	}
 
+	public Long getConcernId() {
+		return concernId;
+	}
+
 	public void setId(long id) {
 		this.id = id;
 	}
@@ -36,6 +45,10 @@ public class Reminder {
 
 	public void setDate(Date date) {
 		this.date = date;
+	}
+
+	public void setConcernId(Long concernId) {
+		this.concernId = concernId;
 	}
 
 	@Override

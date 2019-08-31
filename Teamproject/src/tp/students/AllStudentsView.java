@@ -13,6 +13,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -44,11 +46,16 @@ public class AllStudentsView extends GridPane {
 	private Button toLeftButton;
 	private Button allToLeftButton;
 	private Button deleteStudentButton;
+	private Button exmatrStudentButton;
 	private Button studentToNewConcernButton;
+	private DatePicker datePicker;
+	private CheckBox showExmatrStudentsCheckBox;
 
 	public AllStudentsView(Presenter presenter) {
 		this.presenter = presenter;
 		buildView();
+		// to filter out all exmatrikulated Students
+		filterStudents("");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -67,6 +74,7 @@ public class AllStudentsView extends GridPane {
 		
 		searchTextField = new TextField();
 		searchTextField.setPromptText("Suche Student");
+		showExmatrStudentsCheckBox = new CheckBox("Zeige exmatrikulierte Studenten");
 		
 		selectionLabel = new Label("Auswahl");
 		newStudentButton = new Button("Neuen Studenten hinzufügen");
@@ -74,7 +82,9 @@ public class AllStudentsView extends GridPane {
 		toLeftButton = new Button("<");
 		allToLeftButton = new Button("<<");
 		deleteStudentButton = new Button("Ausgewählte Studenten löschen");
+		exmatrStudentButton = new Button("Ausgewählte Studenten exmatrikulieren");
 		studentToNewConcernButton = new Button("Zu neuem Anliegen hinzufügen");
+		datePicker = new DatePicker();
 
 		// =====================================================================
 
@@ -83,11 +93,19 @@ public class AllStudentsView extends GridPane {
 
 		add(newStudentButton, 1, 0);
 		GridPane.setHalignment(newStudentButton, HPos.RIGHT);
+		
+		add(showExmatrStudentsCheckBox, 1, 1);
+		GridPane.setHalignment(showExmatrStudentsCheckBox, HPos.RIGHT);
 
 		add(selectionLabel, 3, 0);
 
 		add(deleteStudentButton, 4, 0);
 		GridPane.setHalignment(deleteStudentButton, HPos.RIGHT);
+		
+		add(datePicker, 3, 1);
+		
+		add(exmatrStudentButton, 4, 1);
+		GridPane.setHalignment(exmatrStudentButton, HPos.RIGHT);
 		
 		VBox leftRightButtonBox = new VBox();
 		leftRightButtonBox.getChildren().addAll(toLeftButton, toRightButton, allToLeftButton);
@@ -99,13 +117,13 @@ public class AllStudentsView extends GridPane {
 		toLeftButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
 		allToLeftButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
 		
-		add(leftRightButtonBox, 2, 1);
+		add(leftRightButtonBox, 2, 2);
 		leftRightButtonBox.setAlignment(Pos.CENTER);
 
-		add(allStudentsTable, 0, 1, 2, 3);
-		add(selectedStudentsTable, 3, 1, 2, 1);
+		add(allStudentsTable, 0, 2, 2, 3);
+		add(selectedStudentsTable, 3, 2, 2, 1);
 
-		add(studentToNewConcernButton, 3, 2, 2, 1);
+		add(studentToNewConcernButton, 3, 3, 2, 1);
 		GridPane.setHalignment(studentToNewConcernButton, HPos.RIGHT);
 
 		// ======================================================================
@@ -121,13 +139,16 @@ public class AllStudentsView extends GridPane {
 		TableColumn<Student, String> mtrNrCol = new TableColumn<Student, String>("Matrikelnr.");
 		mtrNrCol.setCellValueFactory(new PropertyValueFactory<Student, String>("mtrNrString"));
 		
-		TableColumn<Student, Date> lastContactCol = new TableColumn<Student, Date>("Letzter Kontakt");
-		lastContactCol.setCellValueFactory(new PropertyValueFactory<>("lastContact"));
-		
 		TableColumn<Student, Date> poCol = new TableColumn<Student, Date>("Studiengang");
 		poCol.setCellValueFactory(new PropertyValueFactory<>("po"));
 		
-		allStudentsTable.getColumns().addAll(mtrNrCol, lastNameCol,firstNameCol,poCol, lastContactCol);
+		TableColumn<Student, Date> lastContactCol = new TableColumn<Student, Date>("Letzter Kontakt");
+		lastContactCol.setCellValueFactory(new PropertyValueFactory<>("lastContact"));
+		
+		TableColumn<Student, Date> exmatrCol = new TableColumn<Student, Date>("Exmatrikuliert");
+		exmatrCol.setCellValueFactory(new PropertyValueFactory<>("exmatr"));
+		
+		allStudentsTable.getColumns().addAll(mtrNrCol, lastNameCol,firstNameCol,poCol, lastContactCol, exmatrCol);
 		
 		TableColumn<Student, String> lastNameCol2 = new TableColumn<Student, String>("Nachname");
 		lastNameCol2.setCellValueFactory(new PropertyValueFactory<Student, String>("name"));
@@ -157,12 +178,15 @@ public class AllStudentsView extends GridPane {
 		//-------------------------------------------------
 		
 		RowConstraints buttonRow = new RowConstraints();
-		buttonRow.setPercentHeight(20 / 3);
+		buttonRow.setPercentHeight(28 / 3);
+
+		RowConstraints checkboxRow = new RowConstraints();
+		checkboxRow.setPercentHeight(2);
 		
 		RowConstraints tableRow = new RowConstraints();
 		tableRow.setPercentHeight(80);
 				     
-		getRowConstraints().addAll(buttonRow, tableRow, buttonRow, buttonRow);
+		getRowConstraints().addAll(buttonRow, checkboxRow, tableRow, buttonRow, buttonRow);
 		
 		// =====================================================================
 
@@ -189,7 +213,7 @@ public class AllStudentsView extends GridPane {
 		});
 		
 		deleteStudentButton.setOnAction((event) -> {
-			Alert alert = new Alert(AlertType.WARNING, "Ausgewählte Studenten aus der Datenbank löschen?",
+			Alert alert = new Alert(AlertType.WARNING, "Ausgewählte Studenten aus der Datenbank löschen? \n Dieser ist damit für zukünftige Statistiken nicht mehr verfügbar.",
 					ButtonType.YES, ButtonType.CANCEL);
 			alert.showAndWait();
 
@@ -202,6 +226,20 @@ public class AllStudentsView extends GridPane {
 			}
 
 		});
+		
+		exmatrStudentButton.setOnAction((event)-> {
+			if(datePicker.getValue() == null) {
+				Alert alert = new Alert(AlertType.ERROR);
+				alert.setTitle("Fehlendes Datum");
+				alert.setHeaderText("Bitte wählen sie ein Datum aus.");
+				alert.showAndWait();
+			}else {
+				for(Student student: selectedStudents) {
+					presenter.setStudentExmatr(student, Date.valueOf(datePicker.getValue()));
+				}
+			}
+		});
+		
 		studentToNewConcernButton.setOnAction((event) -> {
 			presenter.openNewConcernTab(selectedStudentsTable.getItems());
 		});
@@ -235,6 +273,10 @@ public class AllStudentsView extends GridPane {
 		    }
 		});
 		
+		showExmatrStudentsCheckBox.setOnAction(event -> {
+			filterStudents(searchTextField.getText());
+		});
+		
 		searchTextField.textProperty().addListener((obs, oldText, newText) -> {
 			filterStudents(newText);
 		});
@@ -251,18 +293,36 @@ public class AllStudentsView extends GridPane {
 		
 		if(searchTerm.isEmpty())
 		{
+			if(showExmatrStudentsCheckBox.isSelected()) {
 				shownStudents.addAll(allStudents);
+			}else {
+				for(Student student: allStudents) {
+					if(student.getExmatr() == null) {
+						shownStudents.add(student);
+					}
+				}
+			}
 		}
 		else
 		{
-			
 			String [] searchTerms = searchTerm.toLowerCase().split(" ");
-			for (Student student : allStudents)
-			{
-				if(Presenter.containsAll(student.toString().toLowerCase(), searchTerms))
+			
+			if(showExmatrStudentsCheckBox.isSelected()) {
+				for (Student student : allStudents)
 				{
-					shownStudents.add(student);
-				}	
+					if(Presenter.containsAll(student.toString().toLowerCase(), searchTerms))
+					{
+						shownStudents.add(student);
+					}	
+				}
+			}else {
+				for (Student student : allStudents)
+				{
+					if(student.getExmatr() == null && Presenter.containsAll(student.toString().toLowerCase(), searchTerms))
+					{
+						shownStudents.add(student);
+					}	
+				}
 			}
 		}
 		shownStudents.removeAll(selectedStudents);

@@ -19,6 +19,7 @@ public class NewReminderView extends GridPane{
 	
 	private Stage stage;
 	private ObservableList<Reminder> reminders;
+	private Long concernId;
 	
 	//=======================================
 	
@@ -29,10 +30,11 @@ public class NewReminderView extends GridPane{
 	private Button saveButton;
 	
 
-	public NewReminderView(Stage stage, ObservableList<Reminder> reminders) {
+	public NewReminderView(Stage stage, ObservableList<Reminder> reminders, Long concernId) {
 
 		this.stage = stage;
 		this.reminders = reminders;
+		this.concernId = concernId;
 		buildView();
 	}
 
@@ -73,7 +75,7 @@ public class NewReminderView extends GridPane{
 			}
 			else
 			{
-				reminders.add(new Reminder(message,date));
+				reminders.add(new Reminder(message, date, concernId));
 				stage.close();
 				
 			}

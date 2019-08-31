@@ -354,6 +354,10 @@ public class Presenter {
 		model.saveNewStudent(student);
 		
 	}
+	
+	public void setStudentExmatr(Student s, Date d) {
+		model.setStudentExmatr(s, d);
+	}
 
 	public void openStudenTab(Student student) {
 		mainView.openStudentTab(student);

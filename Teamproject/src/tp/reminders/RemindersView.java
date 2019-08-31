@@ -52,6 +52,26 @@ public class RemindersView extends GridPane{
 		add(deleteReminderButton,1,2);
 		GridPane.setHalignment(toConcernButton, HPos.RIGHT);
 		
+		
+		toConcernButton.setOnAction((event) -> {
+			
+			Reminder selectedReminder = remindersList.getSelectionModel().getSelectedItem();
+			if(selectedReminder != null)
+        	{
+				Long concernId = selectedReminder.getConcernId();
+        		presenter.openConcernTab(presenter.getConcern(concernId));
+        	}
+
+		});
+		
+		deleteReminderButton.setOnAction((event) -> {
+			Reminder selectedReminder = remindersList.getSelectionModel().getSelectedItem();
+			if(selectedReminder != null) {
+				presenter.deleteReminder(selectedReminder);
+				remindersList.getItems().remove(selectedReminder);
+			}
+		});
+		
 	}
 
 	public void updateView() {
