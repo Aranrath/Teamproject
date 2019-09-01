@@ -148,9 +148,8 @@ public class Concern {
 		}
 		return studentsString;
 	}
-
-	@Override
-	public String toString() {
+	
+	public String getFilters() {
 		String concernString = title;
 		
 		if(topic != null) {
@@ -162,6 +161,12 @@ public class Concern {
 		return concernString;
 	}
 
+	@Override
+	public String toString() {
+		return title;
+	}
+
+	
 	
 
 }

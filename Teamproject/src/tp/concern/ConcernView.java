@@ -69,7 +69,6 @@ public class ConcernView extends GridPane {
 
 	private Label studentLabel;
 	private TextField searchTextField;
-	private HBox studentHBox;
 	private Button addStudentButton;
 	private Button removeStudentButton;
 	private TableView<Student> studentTableView;
@@ -145,15 +144,15 @@ public class ConcernView extends GridPane {
 		errorLabel = new Label("");
 		if (concern == null)
 		{
-			saveButton = new Button("Anliegen erstellen");
+			saveButton = new Button("Erstellen");
 		}
 		else
 		{
-			saveButton = new Button("Änderungen speichern");
+			saveButton = new Button("Speichern");
 		}
 
 		
-		closeButton = new Button("Anliegen schließen");
+		closeButton = new Button("Abschließen");
 		closeStatusLabel = new Label();
 		closeStatusLabel.setVisible(false);
 		
@@ -194,7 +193,6 @@ public class ConcernView extends GridPane {
 
 		addStudentButton = new Button("Hinzufügen");
 		removeStudentButton = new Button("Entfernen");
-		studentHBox = new HBox(addStudentButton, removeStudentButton);
 		filteredStudents =  FXCollections.observableArrayList(localStudents);
 		studentTableView = new TableView<Student>(filteredStudents);
 	
@@ -238,13 +236,7 @@ public class ConcernView extends GridPane {
 
 		TableColumn<Reminder, String> messageCol = new TableColumn<Reminder, String>("Nachricht");
 		messageCol.setCellValueFactory(new PropertyValueFactory<>("message"));
-
-		dateCol.setResizable(false);
-		messageCol.setResizable(false);
-
-		double width = dateCol.widthProperty().get();
-		messageCol.prefWidthProperty().bind(reminderTableView.widthProperty().subtract(width));
-
+		
 		reminderTableView.getColumns().addAll(dateCol, messageCol);
 		
 		
@@ -273,8 +265,10 @@ public class ConcernView extends GridPane {
 		add(titleTextField, 1, 0, 3, 1);
 		add(errorLabel, 4, 1, 2, 1);
 		GridPane.setHalignment(errorLabel, HPos.LEFT);
+		saveButton.setMaxWidth(Double.MAX_VALUE);
 		add(saveButton, 4, 0);
 		GridPane.setHalignment(saveButton, HPos.LEFT);
+		closeButton.setMaxWidth(Double.MAX_VALUE);
 		add(closeButton, 5, 0);
 		GridPane.setHalignment(closeButton, HPos.LEFT);
 		
@@ -284,9 +278,12 @@ public class ConcernView extends GridPane {
 
 		add(studentLabel, 0, 2);
 		add(searchTextField, 1, 2, 3, 1);
-		add(studentHBox, 4, 2, 2, 1);
-		studentHBox.setSpacing(5);
-		studentHBox.setAlignment(Pos.CENTER_RIGHT);
+		addStudentButton.setMaxWidth(Double.MAX_VALUE);
+		add(addStudentButton, 4, 2);
+		GridPane.setHalignment(addStudentButton, HPos.LEFT);
+		removeStudentButton.setMaxWidth(Double.MAX_VALUE);
+		add(removeStudentButton, 5, 2);
+		GridPane.setHalignment(removeStudentButton, HPos.LEFT);
 		add(studentTableView, 0, 3, 6, 1);
 
 		add(notesLabel, 6, 0);
@@ -359,7 +356,7 @@ public class ConcernView extends GridPane {
 				
 
 				int newConcernId = presenter.saveNewConcern(concern);
-				saveButton.setText("Änderungen speichern");
+				saveButton.setText("Speichern");
 				closeButton.setVisible(true);
 
 				// Tabbeschriftung anpassen..
@@ -495,7 +492,7 @@ public class ConcernView extends GridPane {
 			stage.initModality(Modality.APPLICATION_MODAL);
 			stage.setTitle("Neuen Termin hinzufügen");
 			stage.setResizable(false);
-			stage.setScene(new Scene(new NewAppointmentView(stage, presenter, this), getWidth()*(0.6), getHeight()*(0.7)));
+			stage.setScene(new Scene(new NewAppointmentView(stage, presenter, this), 400, 220));
 			stage.show();
 		});
 

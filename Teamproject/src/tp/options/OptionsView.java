@@ -142,7 +142,7 @@ public class OptionsView extends GridPane {
 			stage.initModality(Modality.APPLICATION_MODAL);
             stage.setTitle("Neues Thema");
             stage.setResizable(false);
-            stage.setScene(new Scene(new EditTopicView(stage, presenter, (OptionsView) topicsList.getParent()), getWidth()*(0.6), getHeight()*(0.7)));
+            stage.setScene(new Scene(new EditTopicView(stage, presenter, (OptionsView) topicsList.getParent()), 300, 600));
             stage.show();
 		});
 		addPOButton.setOnAction((event)-> {
@@ -151,7 +151,7 @@ public class OptionsView extends GridPane {
 			stage.initModality(Modality.APPLICATION_MODAL);
             stage.setTitle("Neue PO");
             stage.setResizable(false);
-            stage.setScene(new Scene(new EditPOView(stage, presenter, (OptionsView) posList.getParent()), getWidth()*(0.6), getHeight()*(0.7)));
+            stage.setScene(new Scene(new EditPOView(stage, presenter, (OptionsView) posList.getParent()), 300, 600));
             stage.show();
 		});
 		addSubjectButton.setOnAction((event)-> {
@@ -160,7 +160,7 @@ public class OptionsView extends GridPane {
 			stage.initModality(Modality.APPLICATION_MODAL);
             stage.setTitle("Neues Modul");
             stage.setResizable(false);
-            stage.setScene(new Scene(new EditSubjectView(stage, presenter, (OptionsView) posList.getParent()), getWidth()*(0.25), getHeight()*(0.3)));
+            stage.setScene(new Scene(new EditSubjectView(stage, presenter, (OptionsView) posList.getParent()), 300, 200));
             stage.show();
 		});
 		

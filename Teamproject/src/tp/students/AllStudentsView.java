@@ -178,10 +178,10 @@ public class AllStudentsView extends GridPane {
 		//-------------------------------------------------
 		
 		RowConstraints buttonRow = new RowConstraints();
-		buttonRow.setPercentHeight(28 / 3);
+		buttonRow.setPercentHeight(27 / 3);
 
 		RowConstraints checkboxRow = new RowConstraints();
-		checkboxRow.setPercentHeight(2);
+		checkboxRow.setPercentHeight(3);
 		
 		RowConstraints tableRow = new RowConstraints();
 		tableRow.setPercentHeight(80);

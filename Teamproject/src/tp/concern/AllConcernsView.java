@@ -171,6 +171,7 @@ public class AllConcernsView extends GridPane
 		        	
 		        }
 			}
+			updateView();
 
 		});
 		
@@ -234,7 +235,7 @@ public class AllConcernsView extends GridPane
 			{
 				for (Concern concern : allConcerns)
 				{
-					if(Presenter.containsAll(concern.toString().toLowerCase(), searchTerms))
+					if(Presenter.containsAll(concern.getFilters().toLowerCase(), searchTerms))
 					{
 						shownConcerns.add(concern);
 					}
@@ -245,7 +246,7 @@ public class AllConcernsView extends GridPane
 			{
 				for (Concern concern : allConcerns)
 				{
-					if(!concern.isCompleted() && Presenter.containsAll(concern.toString().toLowerCase(), searchTerms))
+					if(!concern.isCompleted() && Presenter.containsAll(concern.getFilters().toLowerCase(), searchTerms))
 					{
 						shownConcerns.add(concern);
 					}

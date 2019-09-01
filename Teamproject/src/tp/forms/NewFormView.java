@@ -52,7 +52,7 @@ public class NewFormView extends GridPane {
 		nameErrorLabel.setVisible(false);
 		filePathError = new Label("Formular Dateipfad muss gesetzt sein");
 		filePathError.setVisible(false);
-		changeFilePath = new Button("ändern");
+		changeFilePath = new Button("Ändern");
 		saveButton = new Button("Speichern");
 
 		add(new Label("Formular Name"), 0, 0);

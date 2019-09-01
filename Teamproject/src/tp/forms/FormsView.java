@@ -119,8 +119,8 @@ public class FormsView extends GridPane
 		this.allForms = presenter.getTopicForms();
 		this.shownForms = FXCollections.observableArrayList(allForms);
 
-		addFormButton = new Button("Neues Formular");
-		deleteFormButton = new Button("Formular löschen");
+		addFormButton = new Button("Neu");
+		deleteFormButton = new Button("Löschen");
 		searchTextField = new TextField();
 		searchTextField.setPromptText("Suche Formular");
 		searchTextField.setStyle("-fx-focus-color: transparent;");
@@ -167,7 +167,7 @@ public class FormsView extends GridPane
 			stage.initModality(Modality.APPLICATION_MODAL);
 			stage.setTitle("Neues Formular hinzufügen");
 			stage.setResizable(false);
-			stage.setScene(new Scene(new NewFormView(stage, presenter, this, allForms), getWidth()*(0.6), getHeight()*(0.7)));
+			stage.setScene(new Scene(new NewFormView(stage, presenter, this, allForms), 400, 200));
 			stage.show();
 		});
 		deleteFormButton.setOnAction((event) -> {
@@ -383,7 +383,7 @@ public class FormsView extends GridPane
 		selectedFormsListView = new ListView<Form>();
 		toRightButton = new Button(">");
 		toLeftButton = new Button("<");
-		selectedFormsToConcernButton = new Button("Ausgewählte Dateien zum Concern hinzufügen");
+		selectedFormsToConcernButton = new Button("Dateien zum Concern hinzufügen");
 		
 		
 		//Funktioniert so nicht, Dateien in den jeweiligen nicht die gleichen Objekte sind -> Vergleich über id!

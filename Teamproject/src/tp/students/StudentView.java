@@ -159,11 +159,11 @@ public class StudentView extends GridPane {
 		studentSemester = new Label();
 		concernsLabel = new Label("Anliegen");
 		newConcernButton = new Button("Neues Anliegen");
-		deleteConcernButton = new Button("Student aus Anliegen entfernen");
+		deleteConcernButton = new Button("Anliegen entfernen");
 
 		concerns = FXCollections.observableArrayList();
 		connectedConcernsListView = new ListView<Concern>(concerns);
-		errorLabel = new Label("Ich bin ein Error-Label, bitch");
+		errorLabel = new Label("Ich bin ein Error-Label");
 		errorLabel.setVisible(false);
 		editStudentButton = new Button("Profil bearbeiten");
 		notesLabel = new Label("Notizen");
@@ -394,25 +394,15 @@ public class StudentView extends GridPane {
 			studentImage.setImage(student.getImage());
 		}
 		studentName.setText(student.getFirstName() + " " + student.getName());
-
-		
-		ArrayList<String> mail = student.geteMailAddresses();
-		
-		if(mail.size()==1)
-		{
+		if (student.geteMailAddresses().size() >= 1) {
 			studentMail_1.setText(student.geteMailAddresses().get(0));
 		}
-		else if(mail.size()==2)
-		{
-			studentMail_1.setText(student.geteMailAddresses().get(0));
+		if (student.geteMailAddresses().size() >= 2) {
 			studentMail_2.setText(student.geteMailAddresses().get(1));
 		}
-		else if(mail.size()==3)
-		{
-			studentMail_1.setText(student.geteMailAddresses().get(0));
-			studentMail_2.setText(student.geteMailAddresses().get(1));
+		if (student.geteMailAddresses().size() == 3) {
 			studentMail_3.setText(student.geteMailAddresses().get(2));
-		}	
+		}
 
 		studentMtrNr.setText(student.getMtrNrString());
 		
@@ -561,7 +551,7 @@ public class StudentView extends GridPane {
 	}
 
 	public void updateView() {
-		student = presenter.getStudent(student.getMtrNr());		
+		student = presenter.getStudent(student.getMtrNr());
 		fillView();
 		mailExchangeVBox.getChildren().clear();
 		mailGridPane.setVisible(false);

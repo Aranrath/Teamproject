@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -18,6 +19,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.ColumnConstraints;
@@ -42,6 +44,7 @@ public class EditStudentView extends GridPane {
 	private Presenter presenter;
 	private Student student;
 	private MyTab tab;
+	ObservableList<Concern> concerns;
 	
 	private ObservableList<Subject> localPassedSubjects;
 
@@ -69,13 +72,13 @@ public class EditStudentView extends GridPane {
 	private Button passedSubjectsButton;
 	
 	private Label concernsLabel;
+	private Button newConcernButton;
+	private Button deleteConcernButton;
 	private ListView<Concern> concernsListView;
 	private Label errorLabel;
 	private Button saveButton;
 	private Label notesLabel;
 	private TextArea studentNotes;
-	private Label mailExchangeLabel;
-	private VBox mailExchangeBox;
 
 	private Label genderLabel;
 	private ComboBox<String> genderComboBox;
@@ -107,8 +110,9 @@ public class EditStudentView extends GridPane {
 		studentImage = new ImageView();
 		studentImage.setFitWidth(300);
 		studentImage.setPreserveRatio(true);
-		studentImage.setSmooth(true);
-		studentImage.setCache(true);
+		studentImage.fitHeightProperty().bind(heightProperty().divide(3));
+		
+		GridPane.setHalignment(studentImage, HPos.CENTER);
 
 		takePictureButton = new Button("Bild aufnehmen");
 		searchPictureButton = new Button("Bild laden");
@@ -145,7 +149,11 @@ public class EditStudentView extends GridPane {
 		studentSemester.setPromptText("0");
 		concernsLabel = new Label("Anliegen");
 		concernsLabel.setVisible(false);
-		concernsListView = new ListView<Concern>();
+		concerns = FXCollections.observableArrayList();
+		newConcernButton = new Button("Neues Anliegen");
+		deleteConcernButton = new Button("Anliegen entfernen");
+		
+		concernsListView = new ListView<Concern>(concerns);
 		concernsListView.setVisible(false);
 		errorLabel = new Label("MatrikelNr und Name müssen gesetzt sein");
 		errorLabel.setTextFill(Color.RED);
@@ -154,11 +162,6 @@ public class EditStudentView extends GridPane {
 		notesLabel = new Label("Notizen");
 		studentNotes = new TextArea();
 		studentNotes.setPromptText("Ein Student.");
-		mailExchangeLabel = new Label("E-Mail Austausch");
-		mailExchangeLabel.setVisible(false);
-		mailExchangeBox = new VBox();
-		mailExchangeBox.setVisible(false);
-		mailExchangeBox.setBackground(new Background(new BackgroundFill(Color.CORNFLOWERBLUE, null, null)));
 		genderLabel = new Label("Geschlecht");
 		ObservableList<String> genderOptions = FXCollections.observableArrayList("unbekannt", "männlich", "weiblich",
 				"divers");
@@ -169,12 +172,10 @@ public class EditStudentView extends GridPane {
 		
 		// =====================================
 		add(studentImage, 0, 0, 1, 8);
-		GridPane.setValignment(studentImage, VPos.TOP);
 		
 		HBox pictureButtonHBox = new HBox(searchPictureButton, takePictureButton);
 		add(pictureButtonHBox, 0, 8);
 		pictureButtonHBox.setAlignment(Pos.CENTER);
-		studentImage.setPreserveRatio(true);
 		if (student == null) {
 			studentImage.setImage(presenter.getDefaultStudentImage());
 		}
@@ -204,6 +205,11 @@ public class EditStudentView extends GridPane {
 		add(genderComboBox, 2, 8);
 
 		add(concernsLabel, 4, 2, 2, 1);
+		GridPane.setHalignment(concernsLabel, HPos.LEFT);
+		add(newConcernButton, 5, 8);
+		GridPane.setHalignment(newConcernButton, HPos.RIGHT);
+		add(deleteConcernButton,4,8);
+		
 		add(concernsListView, 4, 3, 2, 5);
 
 		add(errorLabel, 3, 1, 3, 1);
@@ -214,10 +220,6 @@ public class EditStudentView extends GridPane {
 		add(notesLabel, 0, 9);
 		GridPane.setHalignment(notesLabel, HPos.LEFT);
 		add(studentNotes, 0, 10);
-
-		add(mailExchangeLabel, 1, 9);
-		GridPane.setHalignment(mailExchangeLabel, HPos.LEFT);
-		add(mailExchangeBox, 1, 10, 5, 1);
 
 		// ===================================================================
 
@@ -265,11 +267,11 @@ public class EditStudentView extends GridPane {
                 
                 if(localPassedSubjects == null)
                 {
-                	stage.setScene(new Scene(new SelectPassedSubjectsView(stage, presenter, this, studentPO.getSelectionModel().getSelectedItem()), getWidth()*(0.6), getHeight()*(0.7)));
+                	stage.setScene(new Scene(new SelectPassedSubjectsView(stage, presenter, this, studentPO.getSelectionModel().getSelectedItem()), 300, 600));
                 }
                 else
                 {
-                	stage.setScene(new Scene(new SelectPassedSubjectsView(stage, presenter, this, studentPO.getSelectionModel().getSelectedItem(), localPassedSubjects),getWidth()*(0.6), getHeight()*(0.7)));
+                	stage.setScene(new Scene(new SelectPassedSubjectsView(stage, presenter, this, studentPO.getSelectionModel().getSelectedItem(), localPassedSubjects), 300, 600));
                 }
                 
                 stage.setResizable(false);
@@ -297,6 +299,37 @@ public class EditStudentView extends GridPane {
             }
 
 		
+		});
+
+
+		newConcernButton.setOnAction((event) -> {
+			ObservableList<Student> list = FXCollections.observableArrayList();
+			list.add(student);
+			presenter.openNewConcernTab(list);
+
+		});
+		
+		deleteConcernButton.setOnAction((event) -> {
+			Concern selectedConcern = concernsListView.getSelectionModel().getSelectedItem();
+			if(selectedConcern!= null)
+			{
+				selectedConcern.getStudents().remove(student);
+				concernsListView.getItems().remove(selectedConcern);
+			}
+		});
+		
+		concernsListView.setOnMousePressed(new EventHandler<MouseEvent>() {
+		    @Override 
+		    public void handle(MouseEvent event) {
+		        if (event.isPrimaryButtonDown() && event.getClickCount() > 1) {
+		        	Concern selectedConcern = concernsListView.getSelectionModel().getSelectedItem();
+		        	if(selectedConcern != null)
+		        	{
+		        		presenter.openConcernTab(selectedConcern);
+		        	}
+		                               
+		        }
+		    }
 		});
 
 		saveButton.setOnAction((event) -> {
@@ -470,8 +503,6 @@ public class EditStudentView extends GridPane {
 	}
 
 	private void fillView() {
-		mailExchangeBox.setVisible(true);
-		mailExchangeBox.setVisible(true);
 		concernsLabel.setVisible(true);
 		concernsListView.setVisible(true);
 
@@ -497,11 +528,12 @@ public class EditStudentView extends GridPane {
 		studentPO.getSelectionModel().select(student.getPo());
 		studentECTS.setText("" + presenter.calculateEcts(student.getPassedSubjects(), student.getPo()));
 		studentSemester.setText("" + student.getSemester());
-		ObservableList<Concern> concerns = FXCollections.observableArrayList();
-		for (long id : student.getConcernIds()){
-			concerns.add(presenter.getConcern(id));
+		if (student.getConcernIds()!=null) {
+			concerns.clear();
+			for (long id : student.getConcernIds()){
+				concerns.add(presenter.getConcern(id));
+			}
 		}
-		concernsListView = new ListView<Concern>(concerns);
 		studentNotes.setText(student.getNotes());
 		genderComboBox.setValue(student.getGender());
 	}
