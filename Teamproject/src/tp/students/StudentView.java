@@ -123,8 +123,7 @@ public class StudentView extends GridPane {
 		
 		//Student Image------------------------------------
 		studentImage = new ImageView();
-		
-		//TODO
+
 		studentImage.setFitWidth(300);
 		
 		studentImage.setPreserveRatio(true);

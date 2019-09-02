@@ -94,7 +94,7 @@ public class Model {
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
         Long time = Time.valueOf(sdf.format(utilDate)).getTime();
         
-		String sql = "SELECT * FROM appointment WHERE (date = "+ now.getTime() + " AND endTime >= " + time + ") OR (date = " + nextDay.getTime() + " AND startTime <= " + time + ")";		
+		String sql = "SELECT * FROM appointment WHERE (date = "+ now.getTime() + " AND endTime >= " + time + ") OR (date = " + nextDay.getTime() + " AND startTime <= " + time + ") ORDER BY startTime ASC";		
 		ArrayList<Appointment> result = new ArrayList<Appointment>();
 		try 	(Connection conn = this.connect();
 				Statement stmt = conn.createStatement();
@@ -215,14 +215,19 @@ public class Model {
 	{
 		int ects = 0;
 		
-		for(Subject sub : passedSubjects)
+		for(Subject passedSub : passedSubjects)
 		{
-			if(po.getMandatorySubjects().contains(sub) || po.getOptionalSubjects().contains(sub))
-			{
-				ects += sub.getEcts();
+			for (Subject manSub: po.getMandatorySubjects()) {
+				if(passedSub.getId() == manSub.getId()) {
+					ects += passedSub.getEcts();
+				}
 			}
-		}  
-		
+			for(Subject optSub: po.getOptionalSubjects()) {
+				if(passedSub.getId() == optSub.getId()) {
+					ects += passedSub.getEcts();
+				}
+			}
+		}
 		return ects;
 	}
 
@@ -1104,7 +1109,9 @@ public class Model {
 
 
 	public Appointment checkAppointmentAvailability(Date date, long startTime, long endTime) {
-		String sql = "SELECT id FROM appointment WHERE date = " + date.getTime() + " AND (startTime < " + endTime + " OR endTime > " + startTime + ")";
+		String sql = "SELECT id FROM appointment WHERE date = " + date.getTime() + " AND ((startTime < " + endTime + " AND endTime > " + endTime + ") OR " + 
+																						 "(endTime > " + startTime + " AND startTime < " + endTime + ") OR " + 
+																						 "(startTime <= " + startTime + " AND endTime >= " + endTime + "))";
 		try (Connection conn = this.connect();
 				Statement stmt = conn.createStatement();
 				ResultSet rs = stmt.executeQuery(sql))
@@ -1123,7 +1130,7 @@ public class Model {
 
 	public int saveNewConcern(Concern concern) {
 		int id = 0; 
-		String sql1 = "INSERT INTO concern (title, topic, notes, created) values (?, ?, ?, DATE('now'))";
+		String sql1 = "INSERT INTO concern (title, topic, notes, created) values (?, ?, ?, ?)";
 		String sql2 = "SELECT last_insert_rowid()";
 		try (Connection conn = this.connect();
 			PreparedStatement pstmt = conn.prepareStatement(sql1);
@@ -1133,6 +1140,7 @@ public class Model {
 			pstmt.setString(1, concern.getTitle());
 			pstmt.setLong(2, concern.getTopic().getId());
 			pstmt.setString(3, concern.getNotes());
+			pstmt.setDate(4, new Date(System.currentTimeMillis()));
 			pstmt.executeUpdate();
 			try (ResultSet rs = stmt.executeQuery(sql2)){
 				if (rs.next()) {
@@ -1141,10 +1149,10 @@ public class Model {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			addConcernForms(concern.getId(), concern.getFiles());
-			addConcernStudents(concern.getId(), concern.getStudents());
-			addAppointments(concern.getId(), concern.getAppointments());
-			addReminders(concern.getId(), concern.getReminders());
+			addConcernForms(id, concern.getFiles());
+			addConcernStudents(id, concern.getStudents());
+			addAppointments(id, concern.getAppointments());
+			addReminders(id , concern.getReminders());
 		}
 		catch(Exception e)
 		{

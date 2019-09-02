@@ -365,6 +365,7 @@ public class ConcernView extends GridPane {
 			}
 			else
 			{
+				errorLabel.setText("");
 				// Attribute speichern
 				concern.setTitle(newTitle);
 				concern.setTopic(newTopic);

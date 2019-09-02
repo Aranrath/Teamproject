@@ -9,7 +9,6 @@ import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.geometry.VPos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -20,13 +19,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
@@ -267,11 +263,11 @@ public class EditStudentView extends GridPane {
                 
                 if(localPassedSubjects == null)
                 {
-                	stage.setScene(new Scene(new SelectPassedSubjectsView(stage, presenter, this, studentPO.getSelectionModel().getSelectedItem()), 300, 600));
+                	stage.setScene(new Scene(new SelectPassedSubjectsView(stage, presenter, this, studentPO.getSelectionModel().getSelectedItem()), 800, 500));
                 }
                 else
                 {
-                	stage.setScene(new Scene(new SelectPassedSubjectsView(stage, presenter, this, studentPO.getSelectionModel().getSelectedItem(), localPassedSubjects), 300, 600));
+                	stage.setScene(new Scene(new SelectPassedSubjectsView(stage, presenter, this, studentPO.getSelectionModel().getSelectedItem(), localPassedSubjects), 800, 500));
                 }
                 
                 stage.setResizable(false);

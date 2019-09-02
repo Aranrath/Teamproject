@@ -71,6 +71,7 @@ public class SelectPassedSubjectsView extends GridPane
 
 		List<Subject> subjectsToRemoveFromOther = new ArrayList<>();
 		
+		//doppelte Schleife, da sonst der index mit verschoben wird
 		for(int i = 0; i < otherSubjects.size(); i++)
 		{
 			
@@ -89,10 +90,6 @@ public class SelectPassedSubjectsView extends GridPane
 		otherSubjectsListView = new CheckListView<Subject>(otherSubjects);
 
 		saveButton = new Button("Speichern");
-		
-		//====================================
-		
-		//TODO Maﬂe
 		
 		//====================================
 		
@@ -146,10 +143,7 @@ public class SelectPassedSubjectsView extends GridPane
 		return false;
 	}
 
-	private void fillView(ObservableList<Subject> passedSubjects) {
-		
-		//TODO Noch gehen bestandene F‰cher nach Wechsel der PO verloren.... :(
-		
+	private void fillView(ObservableList<Subject> passedSubjects) {		
 		
 		for(Subject passedSubject : passedSubjects)
 		{
@@ -164,7 +158,7 @@ public class SelectPassedSubjectsView extends GridPane
 		{
 			if(mandatorySubject.getId() == passedSubject.getId())
 			{
-				mandatorySubjectsListView.getCheckModel().check(passedSubject);
+				mandatorySubjectsListView.getCheckModel().check(mandatorySubject);
 				return;
 			}
 		}
@@ -172,7 +166,7 @@ public class SelectPassedSubjectsView extends GridPane
 		{
 			if(optionalSubject.getId() == passedSubject.getId())
 			{
-				optionalSubjectsListView.getCheckModel().check(passedSubject);
+				optionalSubjectsListView.getCheckModel().check(optionalSubject);
 				return;
 			}
 		}
@@ -180,7 +174,7 @@ public class SelectPassedSubjectsView extends GridPane
 		{
 			if(otherSubject.getId() == passedSubject.getId())
 			{
-				otherSubjectsListView.getCheckModel().check(passedSubject);
+				otherSubjectsListView.getCheckModel().check(otherSubject);
 				return;
 			}
 		}
