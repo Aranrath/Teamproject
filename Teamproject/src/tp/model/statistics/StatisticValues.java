@@ -8,9 +8,9 @@ import javafx.util.Pair;
 public class StatisticValues {
 	
 	private String name;
-	private List<Pair<Date, Integer>> values;
+	private List<Pair<Integer, Integer>> values;
 	
-	public StatisticValues(String name, List<Pair<Date, Integer>> values) {
+	public StatisticValues(String name, List<Pair<Integer, Integer>> values) {
 		super();
 		this.name = name;
 		this.values = values;
@@ -24,11 +24,11 @@ public class StatisticValues {
 		this.name = name;
 	}
 
-	public List<Pair<Date, Integer>> getValues() {
+	public List<Pair<Integer, Integer>> getValues() {
 		return values;
 	}
 
-	public void setValues(List<Pair<Date, Integer>> values) {
+	public void setValues(List<Pair<Integer, Integer>> values) {
 		this.values = values;
 	}
 

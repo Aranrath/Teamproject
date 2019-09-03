@@ -101,6 +101,7 @@ public class AllStatisticsView extends GridPane{
 				
 				presenter.deleteStatistic(statisticToDelete);
 			}
+			updateView();
 		});
 		
 		searchTextField.textProperty().addListener((obs, oldText, newText) -> {

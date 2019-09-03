@@ -763,7 +763,7 @@ public class Model {
 			while(rs.next()) {
 				long id = rs.getLong("id");
 				String name = rs.getString("name");
-				List<Pair<Date, Integer>> values = getStatisticValues(id);
+				List<Pair<Integer, Integer>> values = getStatisticValues(id);
 				StatisticValues statVal = new StatisticValues(name, values);
 				result.add(statVal);
 			}
@@ -774,15 +774,15 @@ public class Model {
 	}
 
 
-	private List<Pair<Date, Integer>> getStatisticValues(long statCompId) {
-		List<Pair<Date, Integer>> result = new ArrayList<Pair<Date, Integer>>();
-		String sql = "SELECT * FROM statistic_values WHERE statCompId = " + statCompId + " ORDER BY valueDate ASC";
+	private List<Pair<Integer, Integer>> getStatisticValues(long statCompId) {
+		List<Pair<Integer, Integer>> result = new ArrayList<Pair<Integer, Integer>>();
+		String sql = "SELECT * FROM statistic_values WHERE statCompId = " + statCompId + " ORDER BY valueNumber ASC";
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql))
 		{
 			while(rs.next()) {
-				result.add(new Pair<Date, Integer>(rs.getDate("valueDate"), rs.getInt("value")));
+				result.add(new Pair<Integer, Integer>(rs.getInt("valueNumber"), rs.getInt("value")));
 			}
 		}catch(Exception e) {
 			e.printStackTrace();
@@ -1568,12 +1568,16 @@ public class Model {
 
 
 	private StatisticValues calculateRatioStatisticValue(StatisticComponent comp, Date date) {
-		List<Pair<Date, Integer>> values = new ArrayList<Pair<Date, Integer>>();
+		List<Pair<Integer, Integer>> values = new ArrayList<Pair<Integer, Integer>>();
 		int value = 0;
 		for(Filter f: comp.getSelectedFilter()) {
 			value += calculateFilterValue(comp.getSource(), f, date);
 		}
-		values.add(new Pair<Date, Integer>(date, value));
+		if(comp.getSelectedFilter().isEmpty()) {
+			Filter f = new Filter();
+			value = calculateFilterValue(comp.getSource(), f, date);
+		}
+		values.add(new Pair<Integer, Integer>(0, value));
 		return new StatisticValues(comp.getName(), values);
 	}
 
@@ -1614,16 +1618,25 @@ public class Model {
 
 
 	private StatisticValues calculateContinuousStatisticValue(StatisticComponent comp, Date startDate, Date endDate) {
-		List<Pair<Date, Integer>> values = new ArrayList<Pair<Date, Integer>>();
-		for(Date date = startDate; date.before(endDate);) {	
+		List<Pair<Integer, Integer>> values = new ArrayList<Pair<Integer, Integer>>();
+		Calendar c = Calendar.getInstance();
+        c.setTime(endDate);
+        c.add(Calendar.DATE, 1);
+        Date nextEndDay = new Date(c.getTimeInMillis());
+        int count = 0;
+		for(Date date = startDate; date.before(nextEndDay);) {	
 			int value = 0;
 			for(Filter f: comp.getSelectedFilter()) {
 				value += calculateFilterValue(comp.getSource(), f, date);
 			}
-			values.add(new Pair<Date, Integer>(date, value));
+			if(comp.getSelectedFilter().isEmpty()) {
+				Filter f = new Filter();
+				value = calculateFilterValue(comp.getSource(), f, date);
+			}
+			values.add(new Pair<Integer, Integer>(count, value));
+			count++;
 			
 			//increment the date
-			Calendar c = Calendar.getInstance();
 	        c.setTime(date);
 	        c.add(Calendar.DATE, 1);
 	        date = new Date(c.getTimeInMillis());
@@ -1668,7 +1681,8 @@ public class Model {
 
 
 	private StatisticValues calculateIntervalStatisticValue(StatisticComponent comp, Date startDate, Date endDate, int step) {
-		List<Pair<Date, Integer>> values = new ArrayList<Pair<Date, Integer>>();
+		List<Pair<Integer, Integer>> values = new ArrayList<Pair<Integer, Integer>>();
+		int count = 0;
 		for(Date intervStartDate = startDate; intervStartDate.before(endDate) || intervStartDate.equals(endDate);) {	
 			//get End date of interval
 			Calendar c = Calendar.getInstance();
@@ -1679,7 +1693,12 @@ public class Model {
 			for(Filter f: comp.getSelectedFilter()) {
 				value += calculateFilterValue(comp.getSource(), f, intervStartDate, intervEndDate);
 			}
-			values.add(new Pair<Date, Integer>(intervStartDate, value));
+			if(comp.getSelectedFilter().isEmpty()) {
+				Filter f = new Filter();
+				value = calculateFilterValue(comp.getSource(), f, intervStartDate, intervEndDate);
+			}
+			values.add(new Pair<Integer, Integer>(count, value));
+			count++;
 			//increment the date
 	        c.setTime(intervStartDate);
 	        c.add(Calendar.DATE, step);
@@ -1692,8 +1711,6 @@ public class Model {
 	private int calculateFilterValue(String source, Filter f, Date date) {
 		return calculateFilterValue(source, f, date, date);
 	}
-	
-	//TODO extensive Tests....
 	private int calculateFilterValue(String source, Filter f, Date startDate, Date endDate) {
 		int result = 0;
 		Map<String, Object[]> filterMap = f.getFilters();
@@ -2007,8 +2024,8 @@ public class Model {
 					e.printStackTrace();
 				}
 				String sql3;
-				for (Pair<Date, Integer> value: statValue.getValues()) {
-					sql3 = "INSERT INTO statistic_values(statCompId, value, valueDate) VALUES("+ statCompId + ", " + value.getValue() + ", " + value.getKey().getTime() + ")";
+				for (Pair<Integer, Integer> value: statValue.getValues()) {
+					sql3 = "INSERT INTO statistic_values(statCompId, value, valueNumber) VALUES("+ statCompId + ", " + value.getValue() + ", " + value.getKey() + ")";
 					stmt.executeUpdate(sql3);
 				}				
 			}

@@ -2,6 +2,7 @@ package tp.statistics;
 
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -63,14 +64,19 @@ public class StatisticView extends VBox{
 			
 		}else if (statistic instanceof ContinuousStatistic) {
 			//TODO überarbeiten
-			long start = ((ContinuousStatistic) statistic).getStartDate().getTime()/100000000;
-			long end = ((ContinuousStatistic) statistic).getEndDate().getTime()/100000000;
-			NumberAxis xAxis = new NumberAxis(start, end, 10);
+			Date startDate = ((ContinuousStatistic) statistic).getStartDate();
+			Date endDate = ((ContinuousStatistic) statistic).getEndDate();
+			long difference = endDate.getTime() - startDate.getTime();
+		    long daysBetween = (difference / (1000*60*60*24));
+			NumberAxis xAxis = new NumberAxis(0, daysBetween, 10);
 			xAxis.setLabel("Datum"); 
 			StringConverter<Number> converter = new StringConverter<Number>() {
 				@Override
 				public String toString(Number object) {
-					Date date = new Date(object.longValue()*100000000);
+					Calendar c = Calendar.getInstance();
+					c.setTime(startDate);
+			        c.add(Calendar.DATE, object.intValue());
+			        Date date = new Date(c.getTimeInMillis());
 					return date.toString();
 				}
 				@Override
@@ -83,7 +89,7 @@ public class StatisticView extends VBox{
 
 			int yMax = 0;
 			for (StatisticValues statVal: statistic.getValues()){
-				for(Pair<Date, Integer> value: statVal.getValues()) {
+				for(Pair<Integer, Integer> value: statVal.getValues()) {
 					if (value.getValue() > yMax) {
 						yMax = value.getValue();
 					}
@@ -99,8 +105,8 @@ public class StatisticView extends VBox{
 			for (StatisticValues statVal: statistic.getValues()){
 				XYChart.Series<Number, Number> series = new XYChart.Series<Number, Number>(); 
 				series.setName(statVal.getName()); 
-				for(Pair<Date, Integer> value: statVal.getValues()) {
-					series.getData().add(new XYChart.Data<Number, Number>(value.getKey().getTime()/100000000, value.getValue()));
+				for(Pair<Integer, Integer> value: statVal.getValues()) {
+					series.getData().add(new XYChart.Data<Number, Number>(value.getKey(), value.getValue()));
 				}
 				lineChart.getData().add(series);
 			}
@@ -115,8 +121,10 @@ public class StatisticView extends VBox{
 			StatisticValues statValue = statistic.getValues().get(0);
 			
 			for (int i = 1; i < statValue.getValues().size(); i++) {
-				Pair<Date, Integer> value =  statValue.getValues().get(i);
-				Date newDate = value.getKey();
+				Calendar c = Calendar.getInstance();
+				c.setTime(startDate);
+		        c.add(Calendar.DATE, ((IntervalStatistic) statistic).getStep());
+		        Date newDate = new Date(c.getTimeInMillis());
 				barChartCategories.add(startDate.toString() + " - " + newDate.toString());
 		        startDate = newDate;
 			}
@@ -128,7 +136,7 @@ public class StatisticView extends VBox{
 			//get max of y Axis
 			int yMax = 0;
 			for (StatisticValues statVal: statistic.getValues()){
-				for(Pair<Date, Integer> value: statVal.getValues()) {
+				for(Pair<Integer, Integer> value: statVal.getValues()) {
 					if (value.getValue() > yMax) {
 						yMax = value.getValue();
 					}
@@ -202,9 +210,10 @@ public class StatisticView extends VBox{
 			chartTable.getColumns().add(legendCol);
 			
 			final ObservableList<XYChart.Data<Number, Number>> firstSeriesData = chart.getData().get(0).getData();
+			Date date = ((ContinuousStatistic) statistic).getStartDate();
 		    for (final XYChart.Data<Number, Number> item: firstSeriesData) {
-		    	Date itemDate = new Date(item.getXValue().longValue()*100000000);
-		    	TableColumn<Series<Number, Number>, Number> col = new TableColumn<Series<Number, Number>, Number>(itemDate.toString());
+//		    	Date itemDate = new Date(item.getXValue().longValue()*100000000);
+		    	TableColumn<Series<Number, Number>, Number> col = new TableColumn<Series<Number, Number>, Number>(date.toString());
 		    	col.setSortable(false);
 		    	col.setCellValueFactory(new Callback<CellDataFeatures<XYChart.Series<Number,Number>, Number>, ObservableValue<Number>>() {
 		    		public ObservableValue<Number> call(CellDataFeatures<XYChart.Series<Number,Number>, Number> param) {
@@ -216,7 +225,12 @@ public class StatisticView extends VBox{
 		    			return null;
 		    		}
 		    	 });
-		    	 chartTable.getColumns().add(col);
+		    	// increase date by 1
+		    	chartTable.getColumns().add(col);
+		    	Calendar c = Calendar.getInstance();
+				c.setTime(date);
+			    c.add(Calendar.DATE,1);
+			    date = new Date(c.getTimeInMillis());
 		      }
 		}
 		for (XYChart.Series<Number,Number> series: chart.getData()) {
