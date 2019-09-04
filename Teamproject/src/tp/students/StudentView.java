@@ -68,6 +68,8 @@ public class StudentView extends GridPane {
 	private Label studentPO;
 	private Label semesterLabel;
 	private Label studentSemester;
+	private Label genderLabel;
+	private Label studentGender;
 	
 	private Label ectsLabel;
 	private Label studentECTS;
@@ -156,6 +158,8 @@ public class StudentView extends GridPane {
 		
 		semesterLabel = new Label("Semester");
 		studentSemester = new Label();
+		genderLabel = new Label("Geschlecht");
+		studentGender = new Label();
 		concernsLabel = new Label("Anliegen");
 		newConcernButton = new Button("Neues Anliegen");
 		deleteConcernButton = new Button("Anliegen entfernen");
@@ -236,6 +240,9 @@ public class StudentView extends GridPane {
 		
 		add(semesterLabel, 1, 7);
 		add(studentSemester, 2, 7);
+		add(genderLabel, 1, 8);
+		add(studentGender, 2, 8);
+		
 		add(concernsLabel, 4, 2,2,1);
 		GridPane.setHalignment(concernsLabel, HPos.LEFT);
 		add(newConcernButton, 5, 8);
@@ -417,6 +424,7 @@ public class StudentView extends GridPane {
 				concerns.add(presenter.getConcern(id));
 			}
 		}
+		studentGender.setText(student.getGender());
 		studentNotes.setText(student.getNotes());
 
 		studentECTS.setText("" + presenter.calculateEcts(student.getPassedSubjects(),student.getPo()));

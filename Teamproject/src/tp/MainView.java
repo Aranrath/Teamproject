@@ -3,7 +3,11 @@ package tp;
 import java.sql.Date;
 import java.util.ArrayList;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
@@ -22,6 +26,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.util.Duration;
 import tp.appointment.WeekScheduleView;
 import tp.concern.AllConcernsView;
 import tp.concern.ConcernView;
@@ -57,6 +62,7 @@ public class MainView extends BorderPane {
 	
 	private ToolBar leftToolBar;
 	private ToolBar rightToolBar;
+	private Timeline rightToolBarUpdater;
 	private TabPane tabPane;
 	
 	//======================================
@@ -208,6 +214,15 @@ public class MainView extends BorderPane {
 
 		setLeft(leftToolBar);
 		setRight(rightToolBar);
+		
+		rightToolBarUpdater = new Timeline(new KeyFrame(Duration.minutes(1), new EventHandler<ActionEvent>() {
+		    @Override
+		    public void handle(ActionEvent event) {
+		        updateRightToolBar();
+		    }
+		}));
+		rightToolBarUpdater.setCycleCount(Timeline.INDEFINITE);
+		rightToolBarUpdater.play();
 
 		tabPane = new TabPane();
 		setCenter(tabPane);

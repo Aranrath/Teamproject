@@ -454,7 +454,6 @@ public class ConcernView extends GridPane {
 			Topic selectedTopic = topicComboBox.getSelectionModel().getSelectedItem();
 			if(selectedTopic != null)
 			{
-				//TODO fehler... selectedTopic.getForms = filesAlreadyInConcern
 				topicRelatedFiles = FXCollections.observableArrayList(selectedTopic.getForms());
 			}
 			else
@@ -465,7 +464,7 @@ public class ConcernView extends GridPane {
 			ObservableList<Form> filesAlreadyInConcern =FXCollections.observableArrayList(fileTableView.getItems());
 
 			stage.setResizable(false);
-			stage.setScene(new Scene(new FormsView(presenter, stage, this, filesAlreadyInConcern, topicRelatedFiles), getWidth()*(0.6), getHeight()*(0.7)));
+			stage.setScene(new Scene(new FormsView(presenter, stage, this, filesAlreadyInConcern, topicRelatedFiles), 600, 500));
 			stage.show();
 		});
 
@@ -660,12 +659,10 @@ public class ConcernView extends GridPane {
 	
 	public void addFilesToConcern(ObservableList<Form> files)
 	{
-		
-		//TODO Epischer, gelber Error-Fail mit dem Topic dem Forms geadded werden irgendwoher
 		Topic selectedTopic = topicComboBox.getSelectionModel().getSelectedItem();
 		if(selectedTopic !=  null)
 		{
-			fileTableView.setItems(selectedTopic.getForms());
+			fileTableView.setItems(FXCollections.observableArrayList(selectedTopic.getForms()));
 		}
 		else
 		{

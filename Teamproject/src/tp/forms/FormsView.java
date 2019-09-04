@@ -351,30 +351,6 @@ public class FormsView extends GridPane
 		    }
 		});
 		
-		
-//		File pdfFile = new File("/path/to/pdf.pdf");
-//		RandomAccessFile raf = new RandomAccessFile(pdfFile, "r");
-//		FileChannel channel = raf.getChannel();
-//		ByteBuffer buf = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
-//		PDFFile pdf = new PDFFile(buf);
-//		PDFPage page = pdf.getPage(0);
-//
-//		// create the image
-//		Rectangle rect = new Rectangle(0, 0, (int) page.getBBox().getWidth(),
-//		                                 (int) page.getBBox().getHeight());
-//		BufferedImage bufferedImage = new BufferedImage(rect.width, rect.height,
-//		                                  BufferedImage.TYPE_INT_RGB);
-//
-//		Image image = page.getImage(rect.width, rect.height,    // width & height
-//		                            rect,                       // clip rect
-//		                            null,                       // null for the ImageObserver
-//		                            true,                       // fill background with white
-//		                            true                        // block until drawing is done
-//		);
-//		Graphics2D bufImageGraphics = bufferedImage.createGraphics();
-//		bufImageGraphics.drawImage(image, 0, 0, null);
-//		ImageIO.write(bufferedImage, format, new File( "/path/to/image.jpg" ));
-		
 	}
 	
 	private void buildVersion2GUI(ObservableList<Form> filesAlreadyInConcern, ObservableList<Form> topicRelatedFiles)
@@ -433,9 +409,6 @@ public class FormsView extends GridPane
 		toLeftButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
 		add(leftRightButtonBox, 2, 1);
 		leftRightButtonBox.setAlignment(Pos.CENTER);
-		
-		//===================================================================================
-		//TODO Constraints für diese Version => Fenster hat noch feste Größe...
 		
 		//===================================================================================
 		

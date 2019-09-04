@@ -1099,7 +1099,7 @@ public class Model {
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement())
 		{
-			stmt.executeQuery(sql);
+			stmt.executeUpdate(sql);
 		}
 		catch(Exception e)
 		{
@@ -1194,7 +1194,7 @@ public class Model {
 		try (Connection conn = this.connect();
 				Statement stmt = conn.createStatement())
 			{
-				stmt.executeQuery(sql);
+				stmt.executeUpdate(sql);
 			}
 			catch(Exception e)
 			{
@@ -1224,7 +1224,7 @@ public class Model {
 			{
 			for (Form form: data){
 				sql="INSERT INTO concern_forms (concern, form) VALUES (" + id + ", " + form.getId() + ")";
-				stmt.executeQuery(sql);
+				stmt.executeUpdate(sql);
 			}
 			}catch (Exception e) {
 				e.printStackTrace();
@@ -1344,7 +1344,7 @@ public class Model {
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement())
 		{
-			stmt.executeQuery(sql);
+			stmt.executeUpdate(sql);
 		}
 		catch(Exception e)
 		{
@@ -1512,7 +1512,7 @@ public class Model {
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement())
 		{
-			stmt.executeQuery(sql);
+			stmt.executeUpdate(sql);
 		}
 		catch (Exception e)
 		{
@@ -2200,7 +2200,7 @@ public class Model {
 		try (Connection conn = this.connect();
 				Statement stmt = conn.createStatement())
 			{
-				stmt.executeQuery(sql);
+				stmt.executeUpdate(sql);
 			}
 			catch(Exception e)
 			{
