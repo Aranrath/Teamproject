@@ -40,7 +40,7 @@ public class EditStudentView extends GridPane {
 	private Presenter presenter;
 	private Student student;
 	private MyTab tab;
-	ObservableList<Concern> concerns;
+	private ObservableList<Concern> concerns;
 	
 	private ObservableList<Subject> localPassedSubjects;
 
@@ -147,7 +147,9 @@ public class EditStudentView extends GridPane {
 		concernsLabel.setVisible(false);
 		concerns = FXCollections.observableArrayList();
 		newConcernButton = new Button("Neues Anliegen");
+		newConcernButton.setVisible(false);
 		deleteConcernButton = new Button("Anliegen entfernen");
+		deleteConcernButton.setVisible(false);
 		
 		concernsListView = new ListView<Concern>(concerns);
 		concernsListView.setVisible(false);
@@ -501,6 +503,8 @@ public class EditStudentView extends GridPane {
 	private void fillView() {
 		concernsLabel.setVisible(true);
 		concernsListView.setVisible(true);
+		newConcernButton.setVisible(true);
+		deleteConcernButton.setVisible(true);
 
 		if (student.getImage() != null) {
 			studentImage.setImage(student.getImage());
@@ -541,8 +545,14 @@ public class EditStudentView extends GridPane {
 	}
 
 	public void updateEctsDisplay() {
-		
-		studentECTS.setText("" + presenter.calculateEcts(localPassedSubjects, studentPO.getSelectionModel().getSelectedItem()));
+		if (studentPO.getSelectionModel().getSelectedItem() != null)
+		{
+			studentECTS.setText("" + presenter.calculateEcts(localPassedSubjects, studentPO.getSelectionModel().getSelectedItem()));
+		}
+		else
+		{
+			studentECTS.setText("");
+		}
 	}
 	
 	public void updatePassedSubjects(ObservableList<Subject> updatedPassedSubjects)
@@ -558,9 +568,33 @@ public class EditStudentView extends GridPane {
 	}
 
 	public void updateView() {
-		student = presenter.getStudent(student.getMtrNr());	
+		
+		PO selectedPO = studentPO.getSelectionModel().getSelectedItem();
 		studentPO.setItems(presenter.getPOs());
-		//TODO fillView(); needed? with evt concerns added..
+		
+		//PO Auswahl wiederherstellen
+		if(selectedPO!= null)
+		{
+			for (PO po :studentPO.getItems())
+			{
+				if(po.getId() == selectedPO.getId())
+				{
+					studentPO.getSelectionModel().select(po);
+					break;
+				}
+			}
+			
+		}
+		updateEctsDisplay();
+
+		//Anliegen neu laden
+		if (student!= null && student.getConcernIds()!=null) {
+			concerns.clear();
+			for (long id : student.getConcernIds()){
+				concerns.add(presenter.getConcern(id));
+			}
+		}
+		
 	}
 	
 	

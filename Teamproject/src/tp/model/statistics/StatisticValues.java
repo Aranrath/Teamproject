@@ -1,6 +1,5 @@
 package tp.model.statistics;
 
-import java.sql.Date;
 import java.util.List;
 
 import javafx.util.Pair;
