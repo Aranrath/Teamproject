@@ -579,6 +579,7 @@ public class MainView extends BorderPane {
 		
 		//updateView wenn zum Tab gewechselt wird
 		final MyTab innerTab = newTab;
+		
 		newTab.setOnSelectionChanged((event) -> {
 			if(innerTab.isSelected())
 			{

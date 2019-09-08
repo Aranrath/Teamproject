@@ -4,7 +4,7 @@ import javafx.scene.control.Tab;
 
 public class MyTab extends Tab{
 	
-	String tabId;
+	private String tabId;
 	
 	public MyTab(String tabId)
 	{
@@ -19,6 +19,5 @@ public class MyTab extends Tab{
 	public void setTabId(String viewId) {
 		this.tabId = viewId;
 	}
-	
 
 }

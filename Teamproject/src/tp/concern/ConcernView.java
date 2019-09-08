@@ -156,12 +156,13 @@ public class ConcernView extends GridPane {
 		closeStatusLabel = new Label();
 		closeStatusLabel.setVisible(false);
 		
+		//Im Falle eines neuen (ungespeicherten) Anliegen
 		if(concern == null)
 		{
 			closeButton.setVisible(false);
 		}
 		
-		//Anliegen abgeschlossen
+		//Wenn Anliegen abgeschlossen ist
 		else if(concern != null && concern.getClosingDate() != null)
 		{
 			closeButton.setVisible(false);
@@ -359,8 +360,8 @@ public class ConcernView extends GridPane {
 				saveButton.setText("Speichern");
 				closeButton.setVisible(true);
 
-				// Tabbeschriftung anpassen..
-				tab.setText(newTitle);
+				// Tabbeschriftung anpassen.. (siehe TODO unten)
+				// tab.setText(newTitle);
 				tab.setTabId("c" + newConcernId);
 			}
 			else
@@ -382,9 +383,12 @@ public class ConcernView extends GridPane {
 
 				presenter.saveEditedConcern(concern);
 
-				// Tabbeschriftung anpassen
-				//TODO doube shit..System.out.println(tab.getText());
-				tab.setText(newTitle);
+				/* 	TODO Doppelte Tabbeschriftung anpassen
+					Problem: Neue Tabbeschriftung wird lediglich an alte drangehängt.
+					System.out.println("Tabtext: " + tab.getText()); // null
+					tab.setText(newTitle);
+				*/
+				
 			}
 			
 			presenter.updateRightToolbar();
@@ -676,6 +680,7 @@ public class ConcernView extends GridPane {
 		appointmentTableView.getItems().add(appointment);
 	}
 	
+	//genutzt, wenn über das entsprechende Pop-Up Fenster Themen neu erstellt werden
 	public void addNewTopic(Topic topic)
 	{
 		topicComboBox.getItems().add(topic);
@@ -683,19 +688,64 @@ public class ConcernView extends GridPane {
 	}
 
 	public void updateView() {
-		concern = presenter.getConcern(concern.getId());
 		
-		if(concern.getStudents() != null) {
-			localStudents = concern.getStudents();
-		}
-		else
+		if(concern!= null)
 		{
-			localStudents = FXCollections.observableArrayList();
+			//Concern aktualisieren (erkennen falls dieser zB. über die AllConcernsView geschlossen wurde)
+			concern = presenter.getConcern(concern.getId());
+			
+			//Oberfkäche in diesem Fall entsprechend anpassen
+			if(concern.getClosingDate() != null)
+			{
+				closeButton.setVisible(false);
+				if(concern.isCompleted() == true)
+				{
+					closeStatusLabel.setText("Status: Erledigt (" + concern.getClosingDate() + ")");
+				}
+				else
+				{
+					closeStatusLabel.setText("Status: Abgebrochen (" + concern.getClosingDate() + ")");
+				}
+				closeStatusLabel.setVisible(true);
+			}
+			
+			if(concern.getStudents() != null) {
+				localStudents = concern.getStudents();
+			}
+			else
+			{
+				localStudents = FXCollections.observableArrayList();
+			}
+			filteredStudents =  FXCollections.observableArrayList(localStudents);
+			filterStudents(searchTextField.getText());
+			
+			fillView();
 		}
-		filteredStudents =  FXCollections.observableArrayList(localStudents);
-		filterStudents(searchTextField.getText());
 		
-		fillView();
+		//Evtl. geänderte Themen (über Options) aktualisieren
+		Topic selectedTopic = topicComboBox.getSelectionModel().getSelectedItem();
+		topicComboBox.setItems(presenter.getTopics());
+		
+		//Topic Auswahl wiederherstellen
+		if(selectedTopic!= null)
+		{
+			for (Topic topic :topicComboBox.getItems())
+			{
+				if(topic.getId() == selectedTopic.getId())
+				{
+					topicComboBox.getSelectionModel().select(topic);
+					
+					break;
+				}
+				
+				
+			}
+			
+		}
+		
+		
+		
+		
 	}
 
 }

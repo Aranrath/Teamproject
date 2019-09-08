@@ -81,8 +81,8 @@ public class AllStudentsView extends GridPane {
 		toRightButton = new Button(">");
 		toLeftButton = new Button("<");
 		allToLeftButton = new Button("<<");
-		deleteStudentButton = new Button("Ausgewählte Studenten löschen");
-		exmatrStudentButton = new Button("Ausgewählte Studenten exmatrikulieren");
+		deleteStudentButton = new Button("Ausgewählte löschen");
+		exmatrStudentButton = new Button("Ausgewählte exmatrikulieren");
 		studentToNewConcernButton = new Button("Zu neuem Anliegen hinzufügen");
 		datePicker = new DatePicker();
 
@@ -128,7 +128,6 @@ public class AllStudentsView extends GridPane {
 
 		// ======================================================================
 		
-		
 
 		TableColumn<Student, String> lastNameCol = new TableColumn<Student, String>("Nachname");
 		lastNameCol.setCellValueFactory(new PropertyValueFactory<Student, String>("name"));
@@ -163,8 +162,7 @@ public class AllStudentsView extends GridPane {
 
 		
 		//===================================================================
-		//constraints
-		//TODO
+		//Constraints
 				
 		ColumnConstraints leftTableCol = new ColumnConstraints();
 		leftTableCol.setPercentWidth(55 / 2);
@@ -178,15 +176,12 @@ public class AllStudentsView extends GridPane {
 		//-------------------------------------------------
 		
 		RowConstraints buttonRow = new RowConstraints();
-		buttonRow.setPercentHeight(27 / 3);
-
-		RowConstraints checkboxRow = new RowConstraints();
-		checkboxRow.setPercentHeight(3);
+		buttonRow.setPercentHeight(20 / 4);
 		
 		RowConstraints tableRow = new RowConstraints();
 		tableRow.setPercentHeight(80);
 				     
-		getRowConstraints().addAll(buttonRow, checkboxRow, tableRow, buttonRow, buttonRow);
+		getRowConstraints().addAll(buttonRow, buttonRow, tableRow, buttonRow, buttonRow);
 		
 		// =====================================================================
 
@@ -224,6 +219,7 @@ public class AllStudentsView extends GridPane {
 				}
 				selectedStudents.clear();
 			}
+
 
 		});
 		
