@@ -15,7 +15,6 @@ public class Options implements Serializable{
 	private String userName; //Name of the User, send together with E-Mail.
 	private String userID; //Hochschulkennung
 	private String password;
-	private String lastUsedIP;
 	private Date lastReminderCheck;
 	
 	public Options(String userName, String userID, String password)
@@ -56,14 +55,6 @@ public class Options implements Serializable{
 
 	public void setPassword(String password) {
 		this.password = password;
-	}
-
-	public String getLastUsedIP() {
-		return lastUsedIP;
-	}
-
-	public void setLastUsedIP(String lastUsedIP) {
-		this.lastUsedIP = lastUsedIP;
 	}
 	
 	
