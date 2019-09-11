@@ -131,6 +131,7 @@ public class TakeImageView extends GridPane {
 
 				while (!serverSocket.isClosed()) {
 					try (Socket socket = serverSocket.accept()) {
+						System.out.println("I'm here");
 						// Get The Picture from InputStream
 						InputStream istream = new BufferedInputStream(socket.getInputStream());
 						image = new Image(istream);
