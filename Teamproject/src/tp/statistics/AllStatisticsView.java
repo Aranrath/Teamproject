@@ -98,7 +98,7 @@ public class AllStatisticsView extends GridPane{
 			alert.showAndWait();
 
 			if (alert.getResult() == ButtonType.YES) {
-				
+				presenter.closeRelatedTabs(statisticToDelete);
 				presenter.deleteStatistic(statisticToDelete);
 			}
 			updateView();

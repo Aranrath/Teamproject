@@ -476,10 +476,9 @@ public class Presenter {
 		mainView.closeRelatedTabs(concern);
 	}
 	
-
-	/*TODO Bei den delete Methoden gucken ob entsprechende Objekte noch offen sind.
-		-> wenn: Tabs schlieﬂen
-	*/
-
+	public void closeRelatedTabs(Statistic statistic)
+	{
+		mainView.closeRelatedTabs(statistic);
+	}
 
 }

@@ -799,30 +799,70 @@ public class MainView extends BorderPane {
 
 	public void closeRelatedTabs(Student student)
 	{
+		//Tab kann nicht in der Iteration geschlossen werden
+		MyTab tabToClose = null;
+		
 		for(Tab tab : tabPane.getTabs())
 		{
 			MyTab myTab = (MyTab) tab;
 			
+			//Student kann als StudentView oder EditStudentView geöffnet sein
 			if(myTab.getTabId().equals("b" + student.getMtrNr()) ||  myTab.getTabId().equals("s" + student.getMtrNr())   )
 			{
-				closeThisTab(myTab);
+				tabToClose = myTab;
+				break;
 			}
-		}	
-
+		}
+		
+		if(tabToClose!= null)
+		{
+			closeThisTab(tabToClose);
+		}
+	
 	}
 	
 	public void closeRelatedTabs(Concern concern)
 	{
+		MyTab tabToClose = null;
+		
 		for(Tab tab : tabPane.getTabs())
 		{
 			MyTab myTab = (MyTab) tab;
 			
 			if(myTab.getTabId().equals("c" + concern.getId()))
 			{
-				closeThisTab(myTab);
+				tabToClose = myTab;
+				break;
 			}
-		}	
+		}
+		
+		if(tabToClose!= null)
+		{
+			closeThisTab(tabToClose);
+		}
 
+	}
+	
+	public void closeRelatedTabs(Statistic statistic) {
+		
+		MyTab tabToClose = null;
+		
+		for(Tab tab : tabPane.getTabs())
+		{
+			MyTab myTab = (MyTab) tab;
+			
+			if(myTab.getTabId().equals("t" + statistic.getId()))
+			{
+				tabToClose = myTab;
+				break;
+			}
+		}
+		
+		if(tabToClose!= null)
+		{
+			closeThisTab(tabToClose);
+		}
+		
 	}
 	
 	
@@ -844,9 +884,6 @@ public class MainView extends BorderPane {
 		
 		return currentTabsIds;
 	}
-	
-
-
 	
 	
 
