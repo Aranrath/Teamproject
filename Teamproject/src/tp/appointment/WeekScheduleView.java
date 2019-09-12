@@ -73,8 +73,6 @@ public class WeekScheduleView extends GridPane
 		setPadding(new Insets(10,10,10,10));
 		setHgap(10);
 		setVgap(10);
-		setBackground(
-				new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
 		
 		kwLabel = new Label("<Some strange>. KW von <whenever> bis <forever>");
 		leftButton = new Button("<");
