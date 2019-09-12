@@ -80,6 +80,7 @@ public class StatisticComponentView extends HBox
 		errorLabel.setVisible(false);
 		errorLabel.setTextFill(Color.RED);
 		addFilterButton = new Button("+");
+		addFilterButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
 			
 		basicOptionsGridPane.add(nameLabel, 0, 0);
 		basicOptionsGridPane.add(nameTextField, 1, 0);
@@ -195,12 +196,14 @@ public class StatisticComponentView extends HBox
 		{
 			filterMethodsVBox = new VBox();
 			deleteFilterViewButton = new Button("Filter löschen");
+			deleteFilterViewButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
 			GridPane.setHalignment(deleteFilterViewButton, HPos.RIGHT);
 			ObservableList<String> studentFilters = FXCollections.observableArrayList(StatisticComponent.STUDENT_FILTER_METHODS);
 			ObservableList<String> concernFilters = FXCollections.observableArrayList(StatisticComponent.CONCERN_FILTER_METHODS);
 			ObservableList<String> appointmentLengthFilters = FXCollections.observableArrayList(StatisticComponent.APPOINTMENT_LENGTH_FILTER_METHODS);
 			
-			deleteFilterMethodButton = new Button("-");
+			deleteFilterMethodButton = new Button("x");
+			deleteFilterMethodButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
 			deleteFilterMethodButton.setVisible(false);
 			
 			if(sourceComboBox.getSelectionModel().getSelectedItem().equals("Studenten"))
@@ -217,22 +220,26 @@ public class StatisticComponentView extends HBox
 			}
 			
 			filterMethodsComboBox.setMaxWidth(Double.MAX_VALUE);
+			filterMethodsComboBox.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
 			GridPane.setHgrow(filterMethodsComboBox, Priority.ALWAYS);
 			
 			filterMethodParamHBox = new HBox();
 			filterMethodParamHBox.setVisible(false);
-			errorLabel = new Label("ERROR");
+			filterMethodParamHBox.setMaxWidth(Double.MAX_VALUE);
+			errorLabel = new Label("Filter unvollständig");
 			errorLabel.setTextFill(Color.RED);
 			errorLabel.setVisible(false);
+			errorLabel.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
 			addFilterMethodButton = new Button("+");
 			addFilterMethodButton.setVisible(false);
+			addFilterMethodButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
 			
 			//=====================================
 			
-			add(deleteFilterMethodButton,1,0);
+			add(deleteFilterMethodButton,2,0);
 			GridPane.setHalignment(deleteFilterMethodButton, HPos.RIGHT);
 			GridPane.setValignment(deleteFilterMethodButton, VPos.BOTTOM);
-			add(filterMethodsVBox,0,0);
+			add(filterMethodsVBox,0,0,2,1);
 			add(filterMethodsComboBox,0,1,2,1);
 			add(addFilterMethodButton,2,1);
 			add(filterMethodParamHBox,0,2,3,1);
@@ -262,7 +269,6 @@ public class StatisticComponentView extends HBox
 					filter.addFilter(filterMethodName, filterMethodParamPrefixComboBox.getSelectionModel().getSelectedItem(), filterMethodParamDatePicker.getValue());
 				}else {
 					errorLabel.setVisible(true);
-					errorLabel.setText("Es gibt unvollständige Filter");
 					return;
 				}
 				deleteFilterMethodButton.setVisible(true);
@@ -273,6 +279,7 @@ public class StatisticComponentView extends HBox
 					studentFilters.remove(filterMethodsComboBox.getValue());
 					if(studentFilters.isEmpty()) {
 						filterMethodsComboBox.setVisible(false);
+						addFilterMethodButton.setVisible(false);
 					}
 					filterMethodsComboBox.getSelectionModel().clearSelection();
 					filterMethodParamHBox.setVisible(false);
@@ -281,6 +288,7 @@ public class StatisticComponentView extends HBox
 					concernFilters.remove(filterMethodsComboBox.getValue());
 					if(concernFilters.isEmpty()) {
 						filterMethodsComboBox.setVisible(false);
+						addFilterMethodButton.setVisible(false);
 					}
 					filterMethodsComboBox.getSelectionModel().clearSelection();
 					filterMethodParamHBox.setVisible(false);
@@ -289,6 +297,7 @@ public class StatisticComponentView extends HBox
 					appointmentLengthFilters.remove(filterMethodsComboBox.getValue());
 					if(appointmentLengthFilters.isEmpty()) {
 						filterMethodsComboBox.setVisible(false);
+						addFilterMethodButton.setVisible(false);
 					}
 					filterMethodsComboBox.getSelectionModel().clearSelection();
 					filterMethodParamHBox.setVisible(false);
@@ -361,6 +370,7 @@ public class StatisticComponentView extends HBox
 			
 			
 			deleteFilterMethodButton.setOnAction(event -> {
+				
 				//Methode wieder der ComboBox hinzufügen und letzte FilterMethod löschen
 				int filterMethodSize = filterMethods.size();
 				if (sourceComboBox.getValue().equals("Studenten")) {
@@ -370,9 +380,13 @@ public class StatisticComponentView extends HBox
 				}else if (sourceComboBox.getValue().equals("Terminlängen")) {
 					appointmentLengthFilters.add(filterMethods.get(filterMethodSize-1));
 				}
+				
 				filter.deleteFilter(filterMethods.get(filterMethodSize-1));
 				filterMethods.remove(filterMethodSize-1);
 				filterMethodsVBox.getChildren().remove(filterMethodSize-1);
+				
+				filterMethodsComboBox.setVisible(true);
+				addFilterMethodButton.setVisible(true);
 				
 				//wenn keine Filtermethoden mehr da, deleteButton ausblenden
 				if (filterMethodSize == 1) {

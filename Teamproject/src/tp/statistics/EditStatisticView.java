@@ -147,12 +147,12 @@ public class EditStatisticView extends GridPane
 		ratioStatisticOptionsGridPane.setVisible(false);
 		
 		//für Zeiträume
-		ratioStatisticOptionsTimePeriodLabel = new Label("Zeitraum");
-		ratioStatisticOptionsDateLabel = new Label("zum Datum");
+		ratioStatisticOptionsTimePeriodLabel = new Label("Zeitpunkt:");
+		ratioStatisticOptionsDateLabel = new Label("An dem Datum");
 		ratioStatisticOptionsDatePicker = new DatePicker();
 		
 		//Zusammenfügen
-		ratioStatisticOptionsGridPane.add(new Label("Optionen Verhältnis-Statistik:"), 0, 0);
+		ratioStatisticOptionsGridPane.add(new Label("Optionen Verhältnis-Statistik:"), 0, 0,2,1);
 		ratioStatisticOptionsGridPane.add(ratioStatisticOptionsTimePeriodLabel, 0, 1);
 		ratioStatisticOptionsGridPane.add(ratioStatisticOptionsDateLabel, 0, 2);
 		ratioStatisticOptionsGridPane.add(ratioStatisticOptionsDatePicker, 1, 2);	
@@ -164,14 +164,14 @@ public class EditStatisticView extends GridPane
 		continuousStatisticOptionsGridPane.setVisible(false);
 		
 		//für Zeiträume
-		continuousStatisticOptionsTimePeriodLabel = new Label("Zeitraum");
-		continuousStatisticOptionsStartDateLabel = new Label("Start-Datum");
+		continuousStatisticOptionsTimePeriodLabel = new Label("Zeitraum:");
+		continuousStatisticOptionsStartDateLabel = new Label("Vom Start-Datum");
 		continuousStatisticOptionsStartDateDatePicker = new DatePicker();
-		continuousStatisticOptionsEndDateLabel = new Label("End-Datum");
+		continuousStatisticOptionsEndDateLabel = new Label("Bis zum End-Datum");
 		continuousStatisticOptionsEndDateDatePicker = new DatePicker();
 		
 		//Zusammenfügen
-		continuousStatisticOptionsGridPane.add(new Label("Optionen Verlaufs-Statistik:"), 0	, 0);
+		continuousStatisticOptionsGridPane.add(new Label("Optionen Verlaufs-Statistik:"), 0	, 0, 2, 1);
 		continuousStatisticOptionsGridPane.add(continuousStatisticOptionsTimePeriodLabel, 0, 1);
 		continuousStatisticOptionsGridPane.add(continuousStatisticOptionsStartDateLabel, 0, 2);
 		continuousStatisticOptionsGridPane.add(continuousStatisticOptionsStartDateDatePicker, 1, 2);
@@ -186,15 +186,15 @@ public class EditStatisticView extends GridPane
 		intervalStatisticOptionsGridPane.setVisible(false);
 		
 		//für Zeiträume
-		intervalStatisticOptionsTimePeriodLabel = new Label("Zeitraum");
-		intervalStatisticOptionsStartDateLabel = new Label("Start-Datum");
+		intervalStatisticOptionsTimePeriodLabel = new Label("Zeitraum:");
+		intervalStatisticOptionsStartDateLabel = new Label("Vom Start-Datum");
 		intervalStatisticOptionsStartDateDatePicker = new DatePicker();
-		intervalStatisticOptionsEndDateLabel = new Label("End-Datum");
+		intervalStatisticOptionsEndDateLabel = new Label("Bis zum End-Datum");
 		intervalStatisticOptionsEndDateDatePicker = new DatePicker();
 		
 		//für Zeitabstände
-		intervalStatistictOptionsTimeIntervalsInDaysLabel1 = new Label("Zusammengefasstes");
-		intervalStatistictOptionsTimeIntervalsInDaysLabel2 = new Label(" Intervall (In Tagen)");
+		intervalStatistictOptionsTimeIntervalsInDaysLabel1 = new Label("Zeitspanne der Sammelwerte:");
+		intervalStatistictOptionsTimeIntervalsInDaysLabel2 = new Label("Intevalllänge (In Tagen)");
 		intervalStatistictOptionsTimeIntervalsInDaysTextField = new TextField();
 		// force the field to be numeric only
 		intervalStatistictOptionsTimeIntervalsInDaysTextField.textProperty().addListener(new ChangeListener<String>() {
@@ -208,14 +208,14 @@ public class EditStatisticView extends GridPane
 		});
 		
 		//Zusammenfügen
-		intervalStatisticOptionsGridPane.add(new Label("Optionen Intervall-Statistik:"), 0, 0);
+		intervalStatisticOptionsGridPane.add(new Label("Optionen Intervall-Statistik:"), 0, 0, 2, 1);
 		intervalStatisticOptionsGridPane.add(intervalStatisticOptionsTimePeriodLabel, 0, 1);
 		intervalStatisticOptionsGridPane.add(intervalStatisticOptionsStartDateLabel, 0, 2);
 		intervalStatisticOptionsGridPane.add(intervalStatisticOptionsStartDateDatePicker, 1, 2);
 		intervalStatisticOptionsGridPane.add(intervalStatisticOptionsEndDateLabel, 0, 3);
 		intervalStatisticOptionsGridPane.add(intervalStatisticOptionsEndDateDatePicker, 1, 3);
 		intervalStatisticOptionsGridPane.add(new Label(""), 0, 4);
-		intervalStatisticOptionsGridPane.add(intervalStatistictOptionsTimeIntervalsInDaysLabel1, 0, 5);
+		intervalStatisticOptionsGridPane.add(intervalStatistictOptionsTimeIntervalsInDaysLabel1, 0, 5,2,1);
 		intervalStatisticOptionsGridPane.add(intervalStatistictOptionsTimeIntervalsInDaysLabel2, 0, 6);
 		intervalStatisticOptionsGridPane.add(intervalStatistictOptionsTimeIntervalsInDaysTextField, 1, 6);
 		
