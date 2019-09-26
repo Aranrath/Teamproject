@@ -10,21 +10,18 @@ public class Options implements Serializable{
 	//öffentliche statische Attribute
 	//--------------------------------------------------
 	
+	public static final int EARLIEST_CALENDAR_TIME = 6;
+	public static final int LATEST_CALENDAR_TIME = 20;
+	
 	public static final int usualNumberOfMtrNrDigits = 6;
 	public static final boolean saveWarningAtClose = true;
 	public static final boolean spaceToolbarButtons = false;
 	
 	//Farben
 	public static final String BUTTON_COLOR = "#98AFBC";
-	public static final String TEMPORARY_OBJECT_COLOR = "#CDE6F5"; //AZUREISH WHITE; hellblau
+	public static final String TEMPORARY_OBJECT_COLOR = "#CDE6F5";
 	public static final String SIGNAL_COLOR = "#C17564";
 	public static final String TOOLBAR_COLOR = "#63514A";
-	public static final String TAB_BACKGROUND_COLOR = "FFFFFF";
-	
-	//"#A7C0CE"; //PASTEL BLUE; Mittelblau
-	//"#87919E"; //ROMANSILVER; Dunkelblau
-	//"#707078"; //NICKEL; dunkles Grau-Blau
-	
 	
 	//Button-Farbe setzen:
 	//myButton.setStyle("-fx-base: "+ BUTTON_COLOR);

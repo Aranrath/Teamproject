@@ -236,7 +236,7 @@ public class MainView extends BorderPane {
 		rightToolBarUpdater.play();
 
 		tabPane = new TabPane();
-		tabPane.setBackground(new Background(new BackgroundFill(Color.valueOf(Options.TAB_BACKGROUND_COLOR), CornerRadii.EMPTY, Insets.EMPTY)));
+
 		
 		setCenter(tabPane);
 		
@@ -741,16 +741,6 @@ public class MainView extends BorderPane {
 		SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
 		selectionModel.select(newTab);
 		
-		//updateView wenn zum Tab gewechselt wird
-		final MyTab innerTab = newTab;
-		newTab.setOnSelectionChanged((event) -> {
-			if(innerTab.isSelected())
-			{
-				EditStatisticView view = (EditStatisticView) innerTab.getContent();
-				view.updateView();
-				
-			}
-		});
 	}
 
 	//ENDE: open_Tab Methoden

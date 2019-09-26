@@ -28,11 +28,11 @@ import javafx.scene.paint.Color;
 import tp.Presenter;
 import tp.model.Appointment;
 import tp.model.Concern;
+import tp.model.Options;
 
 public class WeekScheduleView extends GridPane
 {
-	public static final int EARLIEST_TIME = 6;
-	public static final int LATEST_TIME = 20;
+
 	
 	public static final int MILLI_PER_HOUR = 3600000;
 	
@@ -219,7 +219,7 @@ public class WeekScheduleView extends GridPane
 				LocalTime appointmentEndTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(a.getEndTime()), ZoneId.systemDefault()).toLocalTime();
 				
 				//Wenn Termin zwischen 6 und 20 Uhr ist:
-				if(appointmentStartTime.isAfter(LocalTime.of(EARLIEST_TIME,0).minusMinutes(1)) && appointmentEndTime.isBefore(LocalTime.of(LATEST_TIME,0).plusMinutes(1)))
+				if(appointmentStartTime.isAfter(LocalTime.of(Options.EARLIEST_CALENDAR_TIME,0).minusMinutes(1)) && appointmentEndTime.isBefore(LocalTime.of(Options.LATEST_CALENDAR_TIME,0).plusMinutes(1)))
 				{
 					Concern concernOfAppointment = presenter.getConcern(a.getConcernId());
 					
@@ -235,7 +235,6 @@ public class WeekScheduleView extends GridPane
 					
 					appointmentButton.setTooltip(new Tooltip(appointmentButton.getText()));
 					
-					
 					appointmentButton.setStyle("-fx-base: #C5EFF7");
 					
 					appointmentButton.setOnAction(event -> {
@@ -247,11 +246,11 @@ public class WeekScheduleView extends GridPane
 
 					appointmentButton.prefWidthProperty().bind(appointmentButtonsPanes[i].widthProperty());
 					
-					int paneHeightInMillis = (LATEST_TIME - EARLIEST_TIME) *  MILLI_PER_HOUR;
+					int paneHeightInMillis = (Options.LATEST_CALENDAR_TIME - Options.EARLIEST_CALENDAR_TIME) *  MILLI_PER_HOUR;
 					
 					appointmentButton.prefHeightProperty().bind(appointmentButtonsPanes[i].heightProperty().divide(paneHeightInMillis).multiply(a.getDuration().intValue()));
 					
-					int yTranslationInMilli =  ((appointmentStartTime.getHour() +  appointmentStartTime.getMinute()/60) - EARLIEST_TIME) * MILLI_PER_HOUR;
+					int yTranslationInMilli =  ((appointmentStartTime.getHour() +  appointmentStartTime.getMinute()/60) - Options.EARLIEST_CALENDAR_TIME) * MILLI_PER_HOUR;
 					
 					appointmentButton.translateYProperty().bind(appointmentButtonsPanes[i].heightProperty().divide(paneHeightInMillis).multiply(yTranslationInMilli));
 					
@@ -269,6 +268,13 @@ public class WeekScheduleView extends GridPane
 	}
 
 	public void updateView() {
+		
+		for(int i = 0; i < appointmentButtonsPanes.length; i++)
+		{
+			appointmentButtonsPanes[i].getChildren().clear();
+		}
+		
+		
 		LocalDate pickerDate = datePicker.getValue();
 		if(pickerDate != null)
 		{

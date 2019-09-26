@@ -10,7 +10,6 @@ public class MyTab extends Tab{
 	{
 		super();
 		this.tabId = tabId;
-		setStyle("-fx-background-color: " + Options.TAB_BACKGROUND_COLOR + ";");
 	}
 
 	public String getTabId() {

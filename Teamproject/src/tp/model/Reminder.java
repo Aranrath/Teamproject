@@ -7,7 +7,7 @@ public class Reminder {
 	private long id;
 	private String message;
 	private Date date;
-	//Id nicht Concern wg Endlosschleife getConcern/getReminder
+	//concernId statt Concern, da sonst im Model eine Endlosschleife aus getConcern/getReminder entsteht
 	private long concernId;
 	
 	public Reminder(String message, Date date, Long concernId)

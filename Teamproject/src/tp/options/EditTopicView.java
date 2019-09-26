@@ -144,7 +144,6 @@ public class EditTopicView extends GridPane {
 	private void fillView(Topic topic) {
 		
 		// =================================================================
-		//TODO Test ob Kästchen richtig angekreuzt werden
 		System.out.println("Zugehörige Forms von: " + topic.getTitle());
 		for(Form form : topic.getForms())
 		{

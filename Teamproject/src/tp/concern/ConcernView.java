@@ -360,8 +360,9 @@ public class ConcernView extends GridPane {
 				saveButton.setText("Speichern");
 				closeButton.setVisible(true);
 
-				// Tabbeschriftung anpassen.. (siehe TODO unten)
+				// Tabbeschriftungs-Bug
 				// tab.setText(newTitle);
+				
 				tab.setTabId("c" + newConcernId);
 			}
 			else
@@ -383,7 +384,7 @@ public class ConcernView extends GridPane {
 
 				presenter.saveEditedConcern(concern);
 
-				/* 	TODO Doppelte Tabbeschriftung anpassen
+				/* 	Bug: Doppelte Tabbeschriftung anpassen
 					Problem: Neue Tabbeschriftung wird lediglich an alte drangehängt.
 					System.out.println("Tabtext: " + tab.getText()); // null
 					tab.setText(newTitle);

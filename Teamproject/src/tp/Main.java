@@ -1,5 +1,9 @@
 package tp;
 
+import java.io.File;
+import java.io.RandomAccessFile;
+import java.nio.channels.FileLock;
+
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Rectangle2D;
@@ -38,6 +42,9 @@ public class Main extends Application {
 			primaryStage.setScene(scene);
 			primaryStage.show();
 			Options options = presenter.getOptions();
+			
+			
+			
 			if(options.getUserName() == null || options.getUserID() == null || options.getPassword()== null)
 			{  
 				presenter.showEditUserDataView(options);
@@ -65,7 +72,45 @@ private void generateMVP()
 
 
 	public static void main(String[] args) {
+		
+		//check if application is already running
+		if(isApplicationAlreadyRunning()){
+	        return;
+	    } 
+		
 		launch(args);
 	}
 
+	
+	
+	private static boolean isApplicationAlreadyRunning() {
+	    try {
+	        final File file = new File(Model.standardDirectory + "InstanceLock.txt");
+	        final RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw");
+	        final FileLock fileLock = randomAccessFile.getChannel().tryLock();
+	        if (fileLock != null) {
+	            Runtime.getRuntime().addShutdownHook(new Thread() {
+	                public void run() {
+	                    try {
+	                        fileLock.release();
+	                        randomAccessFile.close();
+	                        file.delete();
+	                    } catch (Exception e) {
+	                        //log.error("Unable to remove lock file: " + lockFile, e);
+	                    }
+	                }
+	            });
+	            return false;
+	        }
+	    } catch (Exception e) {
+	       // log.error("Unable to create and/or lock file: " + lockFile, e);
+	    }
+	    return true;
+	}
+	
+	
 }
+
+
+
+

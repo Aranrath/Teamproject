@@ -563,7 +563,6 @@ public class StudentView extends GridPane {
 		mailExchangeVBox.getChildren().clear();
 		mailGridPane.setVisible(false);
 		placeholderPane.setVisible(true);
-		//TODO loading label
 		Thread t = new Thread(() -> fillMailView());
 		t.start();
 	}

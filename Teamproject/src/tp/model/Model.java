@@ -52,8 +52,10 @@ public class Model {
 
 	private ArrayList<String> sessionTabsIds;
 	private Options options;
-	//TODO Filepath bei Installation anpassen
-	private final String standardDirectory = "..\\..\\Desktop\\";
+	
+	//TODO Filepaths bei Installation anpassen
+	public static final String standardDirectory = "..\\..\\Desktop\\";
+	
 	
 	public Model() {
 		loadSessionTabsIds();
@@ -528,7 +530,6 @@ public class Model {
 
 
 	public Form getForm(int id) {
-		//TODO Teest
 		Form result = new Form(null, null, null);
 		String sql = "SELECT * FROM form WHERE id = " + id;
 		try 	(Connection conn = this.connect();
@@ -2328,7 +2329,6 @@ public class Model {
 	
 	
 	// ------------EMail--------------------------------------------------------------------
-	//TODO kommt das überhaupt ins Model? SendMail is ja auch im Presenter....
 	
 	public void checkMail(Student student) {
 		//get Date of the last EMail Check, for filtering the eMails. If first Check, Date = minValue

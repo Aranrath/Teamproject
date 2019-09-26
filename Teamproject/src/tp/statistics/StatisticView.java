@@ -63,7 +63,6 @@ public class StatisticView extends VBox{
 			getChildren().addAll(pieChart, createPieChartTableView(pieChart));
 			
 		}else if (statistic instanceof ContinuousStatistic) {
-			//TODO überarbeiten
 			Date startDate = ((ContinuousStatistic) statistic).getStartDate();
 			Date endDate = ((ContinuousStatistic) statistic).getEndDate();
 			long difference = endDate.getTime() - startDate.getTime();

@@ -278,7 +278,7 @@ public class Presenter {
 	}
 
 	public void handleUnsavedTabs() {
-		//TODO Möglicher Zusatz: Tabs durchgehen nach ungespeicherten Tabs und dann nacheinander mit Alerts abfragen -> boolean unsafed bei Views einfügen?
+		
 		
 		if(Options.saveWarningAtClose)
 		{
