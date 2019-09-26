@@ -5,7 +5,9 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.RowConstraints;
 import tp.Presenter;
 import tp.model.Reminder;
 
@@ -40,18 +42,33 @@ public class RemindersView extends GridPane{
 		
 		//==============================================
 		
-		
-		
-		//==============================================
-		
 		add(remindersLabel,0,0);
 		GridPane.setHalignment(remindersLabel, HPos.LEFT);
 		add(remindersList,0,1,2,1);
 		add(toConcernButton,0,2);
 		GridPane.setHalignment(toConcernButton, HPos.LEFT);
 		add(deleteReminderButton,1,2);
-		GridPane.setHalignment(toConcernButton, HPos.RIGHT);
+		GridPane.setHalignment(deleteReminderButton, HPos.RIGHT);
 		
+		//===================================================================
+		//Constraints
+								
+		ColumnConstraints col = new ColumnConstraints();
+		col.setPercentWidth(100 / 2);
+						
+		getColumnConstraints().addAll(col, col);
+				
+		//-------------------------------------------------
+				
+		RowConstraints buttonRow = new RowConstraints();
+		buttonRow.setPercentHeight(20/2);
+				
+		RowConstraints listViewRow = new RowConstraints();
+		listViewRow.setPercentHeight(80);
+				
+		getRowConstraints().addAll(buttonRow,listViewRow ,buttonRow);
+		
+		//===================================================================
 		
 		toConcernButton.setOnAction((event) -> {
 			

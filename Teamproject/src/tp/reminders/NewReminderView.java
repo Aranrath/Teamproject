@@ -10,7 +10,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.RowConstraints;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import tp.model.Reminder;
@@ -61,6 +63,24 @@ public class NewReminderView extends GridPane{
 		GridPane.setHalignment(errorLabel, HPos.RIGHT);
 		add(saveButton,0,3,2,1);
 		GridPane.setHalignment(saveButton, HPos.RIGHT);
+		
+		//===================================================================
+		//Constraints
+						
+		ColumnConstraints col = new ColumnConstraints();
+		col.setPercentWidth(100 / 2);
+				
+		getColumnConstraints().addAll(col, col);
+		
+		//-------------------------------------------------
+		
+		RowConstraints buttonRow = new RowConstraints();
+		buttonRow.setPercentHeight(40/3);
+		
+		RowConstraints messageRow = new RowConstraints();
+		messageRow.setPercentHeight(60);
+		
+		getRowConstraints().addAll(buttonRow,messageRow, buttonRow,buttonRow);
 		
 		//=======================================
 		

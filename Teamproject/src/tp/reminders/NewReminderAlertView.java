@@ -6,7 +6,9 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.RowConstraints;
 import javafx.stage.Stage;
 import tp.Presenter;
 import tp.model.Reminder;
@@ -50,10 +52,31 @@ public class NewReminderAlertView extends GridPane
 		add(newRemindersLabel,0,0);
 		add(remindersListView,0,1);
 		add(addedToRemindersViewLabel,0,2);
+		GridPane.setHalignment(addedToRemindersViewLabel, HPos.RIGHT);
 		add(showRemindersViewButton,0,3);
 		GridPane.setHalignment(showRemindersViewButton, HPos.RIGHT);
 		
+		//===================================================================
+		//Constraints
+						
+		ColumnConstraints col = new ColumnConstraints();
+		col.setPercentWidth(100);
+				
+		getColumnConstraints().addAll(col);
+		
+		//-------------------------------------------------
+		
+		RowConstraints buttonRow = new RowConstraints();
+		buttonRow.setPercentHeight(25/3);
+		
+		RowConstraints listViewRow = new RowConstraints();
+		listViewRow.setPercentHeight(75);
+		
+		getRowConstraints().addAll(buttonRow, listViewRow,buttonRow, buttonRow);
+		
+		
 		//==============================
+		
 		
 		showRemindersViewButton.setOnAction(event -> {
 			stage.close();
