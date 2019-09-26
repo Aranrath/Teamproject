@@ -1509,7 +1509,7 @@ public class Model {
 
 	public void saveEditedSubject(Subject subject)
 	{
-		String sql = "UPDATE subject SET title = "+subject.getTitle()+", ects = "+subject.getEcts() + " WHERE id = " + subject.getId();
+		String sql = "UPDATE subject SET title = '" + subject.getTitle() + "' , ects = "+subject.getEcts() + " WHERE id = " + subject.getId();
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement())
 		{
