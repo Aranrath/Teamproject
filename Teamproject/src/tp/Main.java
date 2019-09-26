@@ -85,7 +85,7 @@ private void generateMVP()
 	
 	private static boolean isApplicationAlreadyRunning() {
 	    try {
-	        final File file = new File(Model.standardDirectory + "InstanceLock.txt");
+	        final File file = new File(Model.getStandardDirectory() + "InstanceLock.txt");
 	        final RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw");
 	        final FileLock fileLock = randomAccessFile.getChannel().tryLock();
 	        if (fileLock != null) {

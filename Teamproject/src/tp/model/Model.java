@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
@@ -40,6 +42,7 @@ import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import javafx.util.Pair;
+import tp.Main;
 import tp.model.statistics.ContinuousStatistic;
 import tp.model.statistics.IntervalStatistic;
 import tp.model.statistics.RatioStatistic;
@@ -53,14 +56,23 @@ public class Model {
 	private ArrayList<String> sessionTabsIds;
 	private Options options;
 	
-	//TODO Filepaths bei Installation anpassen
-	public static final String standardDirectory = "..\\..\\Desktop\\";
+	private static String standardDirectory;
 	
 	
 	public Model() {
 		loadSessionTabsIds();
 	}
 	
+	public static String getStandardDirectory(){
+		final Class<?> referenceClass = Main.class;
+		final URL url =	    referenceClass.getProtectionDomain().getCodeSource().getLocation();
+		try{
+		    final File jarPath = new File(url.toURI()).getParentFile();
+		    standardDirectory = jarPath + "\\";
+		} catch(final URISyntaxException e){
+		}
+		return standardDirectory;
+	}
 	
 	//------------------establish Database connection---------------------------------------------
 	private Connection connect() 
