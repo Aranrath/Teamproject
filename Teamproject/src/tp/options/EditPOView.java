@@ -13,7 +13,9 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.RowConstraints;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Callback;
@@ -33,7 +35,6 @@ public class EditPOView extends GridPane {
 	
 
 	private Button saveButton;
-	private Label subjectErrorLabel;
 	private Label poNameErrorLabel;
 	private TextField poNameTextField;
 	private TableView<Subject> selectSubjectsTable;
@@ -83,7 +84,6 @@ public class EditPOView extends GridPane {
 
 		poNameTextField = new TextField();
 		saveButton = new Button("Speichern");
-		subjectErrorLabel = new Label("");
 		poNameErrorLabel = new Label("");
 		selectSubjectsTable = new TableView<Subject>(allSubjects);
 
@@ -95,9 +95,26 @@ public class EditPOView extends GridPane {
 
 		add(selectSubjectsTable, 0, 2, 2, 1);
 
-		add(subjectErrorLabel, 0, 3, 2, 1);
-		add(saveButton, 0, 4, 2, 1);
+		add(saveButton, 0, 3, 2, 1);
 		GridPane.setHalignment(saveButton, HPos.RIGHT);
+		
+		//===================================================================
+		//Constraints
+						
+		ColumnConstraints col = new ColumnConstraints();
+		col.setPercentWidth(100 / 2);
+				
+		getColumnConstraints().addAll(col,col);
+		
+		//-------------------------------------------------
+		
+		RowConstraints buttonRow = new RowConstraints();
+		buttonRow.setPercentHeight(22.5 / 3);
+		
+		RowConstraints listViewRow = new RowConstraints();
+		listViewRow.setPercentHeight(77.5);
+		
+		getRowConstraints().addAll(buttonRow,buttonRow,listViewRow,buttonRow);
 
 		// ==================================================================
 		selectSubjectsTable.setEditable(true);

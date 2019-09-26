@@ -19,6 +19,7 @@ import javafx.scene.control.SingleSelectionModel;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.ToolBar;
+import javafx.scene.image.Image;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
@@ -785,6 +786,7 @@ public class MainView extends BorderPane {
 			Stage stage = new Stage();
 			stage.initModality(Modality.APPLICATION_MODAL);
 			stage.setAlwaysOnTop(true);
+			stage.getIcons().add(new Image("\\Icon.png"));
 	        stage.setTitle("Neue Erinnerungen");
 	        stage.setResizable(false);
 	        stage.setScene(new Scene(new NewReminderAlertView(presenter,stage, newReminders), getWidth()*(0.6), getHeight()*(0.7)));

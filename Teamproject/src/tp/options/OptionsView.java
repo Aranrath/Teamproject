@@ -8,12 +8,14 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.RowConstraints;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -108,6 +110,29 @@ public class OptionsView extends GridPane {
 		add(subjectsList, 4, 1 , 2, 1);
 		subjectButtonBox.setAlignment(Pos.CENTER_RIGHT);
 		
+		add(userDataGridPane,0,2,2,1);
+		
+		//===================================================================
+		//Constraints
+						
+		ColumnConstraints col = new ColumnConstraints();
+		col.setPercentWidth(100 / 6);
+				
+		getColumnConstraints().addAll(col,col,col,col,col,col);
+		
+		//-------------------------------------------------
+		
+		RowConstraints buttonRow = new RowConstraints();
+		buttonRow.setPercentHeight(5);
+		
+		RowConstraints listViewRow = new RowConstraints();
+		listViewRow.setPercentHeight(75);
+		
+		RowConstraints userDataGridRow = new RowConstraints();
+		userDataGridRow.setPercentHeight(20);
+		
+		getRowConstraints().addAll(buttonRow, listViewRow,userDataGridRow);
+		
 		
 		//------------------------------------
 		
@@ -132,7 +157,6 @@ public class OptionsView extends GridPane {
 		userDataGridPane.getColumnConstraints().add(column);
 		
 		userDataGridPane.setBackground(new Background(new BackgroundFill(Color.BISQUE, null, null)));
-		add(userDataGridPane,0,2,2,1);
 		
 		//============================================
 
@@ -142,16 +166,21 @@ public class OptionsView extends GridPane {
 			stage.initModality(Modality.APPLICATION_MODAL);
             stage.setTitle("Neues Thema");
             stage.setResizable(false);
-            stage.setScene(new Scene(new EditTopicView(stage, presenter, (OptionsView) topicsList.getParent()), 300, 600));
+            stage.getIcons().add(new Image("\\Icon.png"));
+            stage.setScene(new Scene(new EditTopicView(stage, presenter, (OptionsView) topicsList.getParent()), getWidth()*(0.3), getHeight()*(0.7)));
             stage.show();
 		});
+		
+		
+		
 		addPOButton.setOnAction((event)-> {
 			Stage stage = new Stage();
 			stage.setAlwaysOnTop(true);
 			stage.initModality(Modality.APPLICATION_MODAL);
             stage.setTitle("Neue PO");
             stage.setResizable(false);
-            stage.setScene(new Scene(new EditPOView(stage, presenter, (OptionsView) posList.getParent()), 300, 600));
+            stage.getIcons().add(new Image("\\Icon.png"));
+            stage.setScene(new Scene(new EditPOView(stage, presenter, (OptionsView) posList.getParent()), getWidth()*(0.3), getHeight()*(0.7)));
             stage.show();
 		});
 		addSubjectButton.setOnAction((event)-> {
@@ -160,6 +189,7 @@ public class OptionsView extends GridPane {
 			stage.initModality(Modality.APPLICATION_MODAL);
             stage.setTitle("Neues Modul");
             stage.setResizable(false);
+            stage.getIcons().add(new Image("\\Icon.png"));
             stage.setScene(new Scene(new EditSubjectView(stage, presenter, (OptionsView) posList.getParent()), 300, 200));
             stage.show();
 		});
@@ -170,6 +200,7 @@ public class OptionsView extends GridPane {
 			stage.setAlwaysOnTop(true);
             stage.setTitle("Nutzerdaten ändern");
             stage.setResizable(false);
+            stage.getIcons().add(new Image("\\Icon.png"));
             stage.setScene(new Scene(new EditUserDataView(presenter, stage, options), getWidth()*(0.6), getHeight()*(0.7)));
             stage.show();
 		});
@@ -213,7 +244,8 @@ public class OptionsView extends GridPane {
 		    			stage.initModality(Modality.APPLICATION_MODAL);
 		                stage.setTitle("Thema \"" + selectedTopic.getTitle() + "\" bearbeiten");
 		                stage.setResizable(false);
-		                stage.setScene(new Scene(new EditTopicView(stage, presenter, selectedTopic), getWidth()*(0.6), getHeight()*(0.7)));
+		                stage.getIcons().add(new Image("\\Icon.png"));
+		                stage.setScene(new Scene(new EditTopicView(stage, presenter, selectedTopic), getWidth()*(0.3), getHeight()*(0.7)));
 		                stage.show();
 		        	}
 		                               
@@ -234,7 +266,8 @@ public class OptionsView extends GridPane {
 		    			stage.initModality(Modality.APPLICATION_MODAL);
 		                stage.setTitle("PO \"" + selectedPO.getName() + "\" bearbeiten");
 		                stage.setResizable(false);
-		                stage.setScene(new Scene(new EditPOView(stage, presenter, selectedPO), getWidth()*(0.6), getHeight()*(0.7)));
+		                stage.getIcons().add(new Image("\\Icon.png"));
+		                stage.setScene(new Scene(new EditPOView(stage, presenter, selectedPO), getWidth()*(0.3), getHeight()*(0.7)));
 		                stage.show();
 		        	}
 		                               
@@ -255,6 +288,7 @@ public class OptionsView extends GridPane {
 		    			stage.initModality(Modality.APPLICATION_MODAL);
 		                stage.setTitle("Modul \"" + selectedSubject.getTitle() + "\" bearbeiten");
 		                stage.setResizable(false);
+		                stage.getIcons().add(new Image("\\Icon.png"));
 		                stage.setScene(new Scene(new EditSubjectView(stage, presenter, selectedSubject), getWidth()*(0.3), getHeight()*(0.3)));
 		                stage.show();
 		        	}

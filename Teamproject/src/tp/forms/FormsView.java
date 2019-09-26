@@ -167,6 +167,7 @@ public class FormsView extends GridPane
 			stage.initModality(Modality.APPLICATION_MODAL);
 			stage.setTitle("Neues Formular hinzufügen");
 			stage.setResizable(false);
+			stage.getIcons().add(new javafx.scene.image.Image ("\\Icon.png"));
 			stage.setScene(new Scene(new NewFormView(stage, presenter, this, allForms), 400, 200));
 			stage.show();
 		});

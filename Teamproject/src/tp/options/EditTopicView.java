@@ -8,7 +8,9 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.RowConstraints;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import tp.Presenter;
@@ -99,6 +101,24 @@ public class EditTopicView extends GridPane {
 		add(allFormsListView,0,3,2,1);
 		add(saveButton,1,4);
 		GridPane.setHalignment(saveButton, HPos.RIGHT);
+		
+		//===================================================================
+		//Constraints
+						
+		ColumnConstraints col = new ColumnConstraints();
+		col.setPercentWidth(100 / 2);
+				
+		getColumnConstraints().addAll(col,col);
+		
+		//-------------------------------------------------
+		
+		RowConstraints buttonRow = new RowConstraints();
+		buttonRow.setPercentHeight(30 / 4);
+		
+		RowConstraints listViewRow = new RowConstraints();
+		listViewRow.setPercentHeight(70);
+		
+		getRowConstraints().addAll(buttonRow,buttonRow,buttonRow,listViewRow,buttonRow);
 
 	}
 
