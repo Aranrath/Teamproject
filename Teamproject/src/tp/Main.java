@@ -8,6 +8,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import tp.model.Model;
@@ -28,6 +29,8 @@ public class Main extends Application {
 			generateMVP();
 			
 			primaryStage.setMaximized(true);
+			
+			primaryStage.getIcons().add(new Image("\\Icon.png"));
 			
 			Platform.setImplicitExit(false);
 

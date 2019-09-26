@@ -2202,9 +2202,15 @@ public class Model {
 	}
 
 	public Image getDefaultStudentImage() {
-		// TODO Bild ändern...?
-		return new Image("https://i.pinimg.com/originals/e2/69/8e/e2698e465dbf3f13844e896e00f0ea30.jpg");
-		//	return null;
+		try
+		{
+			return new Image("\\PicturePlaceholder.png");
+		}
+		catch(Exception e)
+		{
+			return null;
+		}
+
 	}
 
 
