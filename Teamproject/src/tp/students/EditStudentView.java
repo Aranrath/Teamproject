@@ -245,7 +245,7 @@ public class EditStudentView extends GridPane {
 			stage.setTitle("Foto aufnehmen");
 			stage.setResizable(false);
 			stage.getIcons().add(new Image("\\Icon.png"));
-			stage.setScene(new Scene(new TakeImageView(stage, presenter, this), getWidth()*(0.6), getHeight()*(0.7)));
+			stage.setScene(new Scene(new TakeImageView(stage, presenter, this), 315, 420));
 			stage.show();
 		});
 		

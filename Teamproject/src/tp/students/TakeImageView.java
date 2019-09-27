@@ -8,43 +8,44 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.VPos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import tp.Presenter;
+import tp.model.Options;
 
 public class TakeImageView extends GridPane {
 
 	private Presenter presenter;
 	private Stage stage;
+	private Options options;
 	private Image image;
 	private EditStudentView editStudentParentView;
 	private StudentView studentParentView;
-	private boolean serverOpen;
 	private ServerSocket serverSocket;
 
 	// ======================
 
 	private ImageView fotoImageView;
-	private Button ServerButton;
+	private Button connectionButton;
 	private Label ipLabel;
-	private Label currentIpLabel;
+	private TextField ipTextField;
 	private Button saveImageButton;
 
 	public TakeImageView(Stage stage, Presenter presenter, EditStudentView parentView) {
 		this.presenter = presenter;
 		this.stage = stage;
 		this.editStudentParentView = parentView;
-		serverOpen = false;
 		buildView();
-
 	}
 
 	public TakeImageView(Stage stage, Presenter presenter, StudentView parentView) {
@@ -67,9 +68,14 @@ public class TakeImageView extends GridPane {
 		fotoImageView.setSmooth(true);
 		fotoImageView.setCache(true);
 
-		ipLabel = new Label("IP des Gerätes: ");
-		ServerButton = new Button("Verbindung öffnen.");
-		currentIpLabel = new Label();
+		ipLabel = new Label("IP des Mobilgerätes");
+		connectionButton = new Button ("Mit wartendem " + "\n" + "Mobilgerät verbinden");
+		ipTextField = new TextField();
+		options = presenter.getOptions();
+		if(options!=null && options.getLastUsedIP()!= null)
+		{
+			ipTextField.setText(options.getLastUsedIP());
+		}
 		saveImageButton = new Button("Bild speichern");
 
 		// ======================================
@@ -77,15 +83,15 @@ public class TakeImageView extends GridPane {
 		add(fotoImageView, 0, 0, 2, 1);
 		add(ipLabel, 0, 1);
 		GridPane.setHalignment(ipLabel, HPos.LEFT);
-		add(currentIpLabel, 1, 1);
-		GridPane.setHalignment(currentIpLabel, HPos.LEFT);
-		add(ServerButton, 1, 2, 1, 2);
-		GridPane.setValignment(ServerButton, VPos.BOTTOM);
-		add(saveImageButton, 0, 4, 2, 1);
+		add(ipTextField,0,2);
+		GridPane.setHalignment(ipTextField, HPos.LEFT);
+		add(connectionButton, 1,1,1,2);
+		GridPane.setValignment(connectionButton, VPos.BOTTOM);
+		add(saveImageButton,0,3,2,1);
 		GridPane.setHalignment(saveImageButton, HPos.CENTER);
 
-		ServerButton.setOnAction((event) -> {
-			startServer();
+		connectionButton.setOnAction((event)-> {
+			connectToApp();
 		});
 
 		saveImageButton.setOnAction((event) -> {
@@ -98,54 +104,42 @@ public class TakeImageView extends GridPane {
 			stage.close();
 		});
 
+		stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+		      public void handle(WindowEvent we) {
+		          if(serverSocket!= null) {
+						try {
+							serverSocket.close();
+						} catch (IOException e) {}
+					}
+		      }
+		  });
 	}
 
-	// connect to the App, get the Picture and load it into the Image View
-	private void startServer() {
-		// String serverIp = currentIpLabel.getText();
-		if (serverOpen) {
+	//connect to the App, get the Picture and load it into the Image View
+		private void connectToApp() {
+			String serverIp = ipTextField.getText();
+			int serverPort = 8080;
 			try {
-				serverSocket.close();
-			} catch (IOException e) {}
-			serverOpen = false;
-			ServerButton.setText("Verbindung öffnen");
-			currentIpLabel.setText("");
-		} else {
-			serverOpen = true;
-			ServerButton.setText("Verbindung schließen");
-			Thread serverThread = new Thread(new ServerThread());
-			serverThread.start();
-		}
-	}
+				InetAddress serverAddress = InetAddress.getByName(serverIp);
+				try (Socket socket = new Socket(serverAddress, serverPort)) {
 
-	private class ServerThread implements Runnable {
+					//Get The Picture from InputStream
+					InputStream istream = new BufferedInputStream(socket.getInputStream());
+					image = new Image(istream);				
+					//show image in ImageView
+					fotoImageView.setImage(image);
 
-		public void run() {
-			try {
-				serverSocket = new ServerSocket(8080);
-				 try {
-				        InetAddress iAddress = InetAddress.getLocalHost();
-				        String server_IP = iAddress.getHostAddress();
-						Platform.runLater(() -> currentIpLabel.setText(server_IP));
-				 } catch (UnknownHostException e) {}
+					//save last used IP in options 
+					options.setLastUsedIP(serverIp);
 
-				while (!serverSocket.isClosed()) {
-					try (Socket socket = serverSocket.accept()) {
-						// Get The Picture from InputStream
-						InputStream istream = new BufferedInputStream(socket.getInputStream());
-						image = new Image(istream);
-						// show image in ImageView
-						fotoImageView.setImage(image);
-					} catch (IOException e) {}
-				}
-			} catch (IOException e1) {
-			} finally {
-				if(serverSocket!= null) {
-					try {
-						serverSocket.close();
-					} catch (IOException e) {}
-				}
+
+				} catch (Exception e) {
+					ipTextField.setText("Ip Addresse inkorrekt");
+					return;
 			}
+			} catch (UnknownHostException e1) {
+				ipTextField.setText("Ip Addresse ungültig");
+				return;
 		}
 	}
 
