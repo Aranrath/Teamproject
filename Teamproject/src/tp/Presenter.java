@@ -279,7 +279,6 @@ public class Presenter {
 
 	public void handleUnsavedTabs() {
 		
-		
 		if(Options.saveWarningAtClose)
 		{
 			Alert alert = new Alert(AlertType.WARNING, "Ungespeicherte Änderungen gehen verloren." + "\n" + "\n" + "Sind Sie sicher, dass alle Änderungen gespeichert wurden?",

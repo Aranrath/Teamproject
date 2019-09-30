@@ -2,7 +2,6 @@ package tp.appointment;
 
 import java.sql.Date;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -32,7 +31,6 @@ import tp.model.Options;
 
 public class WeekScheduleView extends GridPane
 {
-
 	
 	public static final int MILLI_PER_HOUR = 3600000;
 	
@@ -275,16 +273,8 @@ public class WeekScheduleView extends GridPane
 		}
 		
 		
-		LocalDate pickerDate = datePicker.getValue();
-		if(pickerDate != null)
-		{
-			fillView(Date.valueOf(pickerDate));
-		}
-		else
-		{
-			fillView(shownWorkWeek[0]);
-		}
-		
+		fillView(shownWorkWeek[0]);
+
 		
 	}
 

@@ -1,9 +1,3 @@
-/*
- * Stack-Overflow Input (nicht als Library verfügbar)
- * Quelle: https://stackoverflow.com/questions/41473987/how-to-drag-and-drop-tabs-of-the-same-tabpane
- * */
-
-
 package tp.model;
 
 import java.util.concurrent.atomic.AtomicLong;
@@ -17,6 +11,11 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 
+
+/**
+ * Stack-Overflow Input (nicht als Library verfügbar)
+ * Quelle: https://stackoverflow.com/questions/41473987/how-to-drag-and-drop-tabs-of-the-same-tabpane
+ * */
 public class DraggingTabPaneSupport {
 
     private Tab currentDraggingTab ;

@@ -496,7 +496,6 @@ public class StudentView extends GridPane {
 					mailGridPane.setVisible(true);
 					placeholderLabel.setText("Keine E-Mails gefunden");
 					mailExchangeScrollPane.setContent(placeholderPane);
-					
 				});
 			}
 			

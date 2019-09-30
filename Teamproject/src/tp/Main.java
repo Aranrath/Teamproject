@@ -85,7 +85,10 @@ private void generateMVP()
 	}
 
 	
-	
+	/**
+	 * Source:
+	 * https://stackoverflow.com/questions/177189/how-to-implement-a-single-instance-java-application/36789247
+	 */
 	private static boolean isApplicationAlreadyRunning() {
 	    try {
 	        final File file = new File(Model.getStandardDirectory() + "InstanceLock.txt");

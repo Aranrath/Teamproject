@@ -70,8 +70,7 @@ public class ConcernView extends GridPane {
 
 	private Label studentLabel;
 	private TextField searchTextField;
-	private Button addStudentButton;
-	private Button removeStudentButton;
+	private Button changeStudentSelectionButton;
 	private TableView<Student> studentTableView;
 
 	private Label notesLabel;
@@ -193,8 +192,7 @@ public class ConcernView extends GridPane {
 		searchTextField.setPromptText("Durchsuche Studenten");
 		HBox.setHgrow(searchTextField, Priority.ALWAYS);
 
-		addStudentButton = new Button("Hinzufügen");
-		removeStudentButton = new Button("Entfernen");
+		changeStudentSelectionButton = new Button("Auswahl ändern");
 		filteredStudents =  FXCollections.observableArrayList(localStudents);
 		studentTableView = new TableView<Student>(filteredStudents);
 	
@@ -280,12 +278,9 @@ public class ConcernView extends GridPane {
 
 		add(studentLabel, 0, 2);
 		add(searchTextField, 1, 2, 3, 1);
-		addStudentButton.setMaxWidth(Double.MAX_VALUE);
-		add(addStudentButton, 4, 2);
-		GridPane.setHalignment(addStudentButton, HPos.LEFT);
-		removeStudentButton.setMaxWidth(Double.MAX_VALUE);
-		add(removeStudentButton, 5, 2);
-		GridPane.setHalignment(removeStudentButton, HPos.LEFT);
+		changeStudentSelectionButton.setMaxWidth(Double.MAX_VALUE);
+		add(changeStudentSelectionButton, 4, 2);
+		GridPane.setHalignment(changeStudentSelectionButton, HPos.LEFT);
 		add(studentTableView, 0, 3, 6, 1);
 
 		add(notesLabel, 6, 0);
@@ -413,7 +408,7 @@ public class ConcernView extends GridPane {
 			filterStudents(newText);
 		});
 
-		addStudentButton.setOnAction((event) -> {
+		changeStudentSelectionButton.setOnAction((event) -> {
 			Stage stage = new Stage();
 			stage.setAlwaysOnTop(true);
 			stage.initModality(Modality.APPLICATION_MODAL);
@@ -423,12 +418,6 @@ public class ConcernView extends GridPane {
 			stage.setScene(new Scene(new AddStudentToConcernView(presenter, stage, this, studentTableView.getItems()),
 					getWidth()*(0.6), getHeight()*(0.7)));
 			stage.show();
-		});
-
-		removeStudentButton.setOnAction((event) -> {
-			Student studentToRemove = studentTableView.getSelectionModel().getSelectedItem();
-			localStudents.remove(studentToRemove);
-			filteredStudents.remove(studentToRemove);
 		});
 
 		newReminderButton.setOnAction((event) -> {
