@@ -577,6 +577,21 @@ public class ConcernView extends GridPane {
 		        }
 		    }
 		});
+		
+		fileTableView.setOnMousePressed(new EventHandler<MouseEvent>() {
+		    @Override 
+		    public void handle(MouseEvent event) {
+		        if (event.isPrimaryButtonDown() && event.getClickCount() > 1) {
+		        	Form selectedForm = fileTableView.getSelectionModel().getSelectedItem();
+		        	if(selectedForm != null)
+		        	{
+		        	 presenter.handleExportForm(selectedForm);
+		        	 
+		        	}
+		                               
+		        }
+		    }
+		});
 
 	}
 

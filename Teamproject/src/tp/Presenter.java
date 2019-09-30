@@ -1,5 +1,9 @@
 package tp;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Properties;
@@ -10,6 +14,8 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
@@ -478,6 +484,69 @@ public class Presenter {
 	public void closeRelatedTabs(Statistic statistic)
 	{
 		mainView.closeRelatedTabs(statistic);
+	}
+
+	public void handleExportForm(Form selectedForm) {
+
+		 JFileChooser chooser = new JFileChooser();
+		 chooser.setSelectedFile(new File(Model.getStandardDirectory() + "/" + selectedForm.getName() ));
+		 chooser.setDialogType(JFileChooser.SAVE_DIALOG);
+		 chooser.setDialogTitle("Speichern unter...");
+	     chooser.setVisible(true);
+	     
+	     String extension = selectedForm.getFileExtension().substring(1);
+	     
+	     chooser.removeChoosableFileFilter(chooser.getAcceptAllFileFilter());
+	     
+
+	    FileNameExtensionFilter filter = new FileNameExtensionFilter(extension + " (Original)", extension);
+	    	 
+	    chooser.setFileFilter(filter);	       
+
+	    
+	     int result = chooser.showSaveDialog(null);
+	     
+	     if (result == JFileChooser.APPROVE_OPTION) {
+
+	            String choosenPath = chooser.getSelectedFile().toString();
+	            
+	            chooser.setVisible(false);
+	            
+	            String outputPath;
+	            
+	            if(choosenPath.endsWith("." + extension))
+	            {
+	            	outputPath = choosenPath;
+	            }
+	            else
+	            {
+	            	outputPath = choosenPath + "." + extension;
+	            }
+	            
+	            //Schreiben
+	    		try(FileOutputStream os = new FileOutputStream(outputPath))
+	    		{
+	    			try(FileInputStream is = new FileInputStream(selectedForm.getFile().getAbsoluteFile()))
+	    			{
+	    				
+	    				final byte[] buffer = new byte[1024];
+	    	            int n;
+	    	            while ((n = is.read(buffer)) != -1)
+	    	                os.write(buffer, 0, n);
+	    				
+	    			}
+   	    		catch (IOException e) 
+   	    		{
+   	    		}
+	    			
+	    		} 
+	    		catch (IOException e) 
+	    		{
+	    		}
+	        
+	            
+	        }
+		
 	}
 
 }

@@ -58,6 +58,11 @@ public class Form {
 	public String toString() {
 		return name;
 	}
+	
+	public String getFileExtension()
+	{
+		return fileExtension;
+	}
 
 	
 	//---------------------------------------

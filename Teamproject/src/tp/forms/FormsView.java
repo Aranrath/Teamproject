@@ -18,6 +18,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -28,6 +29,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -104,6 +106,7 @@ public class FormsView extends GridPane
 		buildView();
 		buildVersion2GUI(filesAlreadyInConcern, topicRelatedFiles);
 	}
+	
 	
 	//===============================================================
 	//private Methoden
@@ -247,10 +250,24 @@ public class FormsView extends GridPane
 			
 		});
 		
-
-		
 		searchTextField.textProperty().addListener((obs, oldText, newText) -> {
 			filterForms(newText);
+		});
+		
+		
+		formListView.setOnMousePressed(new EventHandler<MouseEvent>() {
+		    @Override 
+		    public void handle(MouseEvent event) {
+		        if (event.isPrimaryButtonDown() && event.getClickCount() > 1) {
+		        	Form selectedForm = formListView.getSelectionModel().getSelectedItem();
+		        	if(selectedForm != null)
+		        	{
+		        	 presenter.handleExportForm(selectedForm);
+		        	 
+		        	}
+		                               
+		        }
+		    }
 		});
 		
 
@@ -435,6 +452,7 @@ public class FormsView extends GridPane
 			stage.close();
 		});
 	}
+
 	
 	
 	private void filterForms(String searchTerm) {
