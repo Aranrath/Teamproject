@@ -279,8 +279,8 @@ public class Presenter {
 
 	}
 
-	public void saveEditedOptions(Options changedOptions) {
-		model.saveEditedOptions(changedOptions);
+	public void saveOptions() {
+		model.saveOptions();
 	}
 
 	public void handleUnsavedTabs() {
@@ -295,6 +295,8 @@ public class Presenter {
 				
 				//speichere die Tabs der aktuellen Session über deren ID
 				model.setSessionTabsIds(mainView.getCurrentTabsIds());
+				
+				saveOptions();
 				
 				Platform.exit();
 			}
@@ -489,7 +491,16 @@ public class Presenter {
 	public void handleExportForm(Form selectedForm) {
 
 		 JFileChooser chooser = new JFileChooser();
-		 chooser.setSelectedFile(new File(Model.getStandardDirectory() + "/" + selectedForm.getName() ));
+		 
+		 if(getOptions().getLastUsedSavePath()!= null)
+		 {
+			 chooser.setSelectedFile(new File(getOptions().getLastUsedSavePath() + "/" + selectedForm.getName() ));
+		 }
+		 else
+		 {
+			 chooser.setSelectedFile(new File(Model.getStandardDirectory() + "/" + selectedForm.getName() ));
+		 }
+		 
 		 chooser.setDialogType(JFileChooser.SAVE_DIALOG);
 		 chooser.setDialogTitle("Speichern unter...");
 	     chooser.setVisible(true);
@@ -497,7 +508,6 @@ public class Presenter {
 	     String extension = selectedForm.getFileExtension().substring(1);
 	     
 	     chooser.removeChoosableFileFilter(chooser.getAcceptAllFileFilter());
-	     
 
 	    FileNameExtensionFilter filter = new FileNameExtensionFilter(extension + " (Original)", extension);
 	    	 
@@ -511,6 +521,8 @@ public class Presenter {
 	            String choosenPath = chooser.getSelectedFile().toString();
 	            
 	            chooser.setVisible(false);
+	            
+	            getOptions().setLastUsedSavePath(choosenPath.substring(0, choosenPath.lastIndexOf("\\")));
 	            
 	            String outputPath;
 	            
@@ -535,9 +547,7 @@ public class Presenter {
 	    	                os.write(buffer, 0, n);
 	    				
 	    			}
-   	    		catch (IOException e) 
-   	    		{
-   	    		}
+
 	    			
 	    		} 
 	    		catch (IOException e) 
@@ -548,5 +558,7 @@ public class Presenter {
 	        }
 		
 	}
+	
+	
 
 }

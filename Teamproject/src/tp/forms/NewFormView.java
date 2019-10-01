@@ -26,10 +26,10 @@ public class NewFormView extends GridPane {
 	// =============== GUI =================
 
 	private TextField nameTextField;
-	private Label choosenFilePath;
+	private Label choosenFilePathLabel;
 	private Label nameErrorLabel;
 	private Label filePathError;
-	private Button changeFilePath;
+	private Button changeFilePathButton;
 	private Button saveButton;
 
 	public NewFormView(Stage stage, Presenter presenter, FormsView formsView, ObservableList<Form> forms) {
@@ -47,21 +47,27 @@ public class NewFormView extends GridPane {
 		setVgap(10);
 
 		nameTextField = new TextField("");
-		choosenFilePath = new Label("");
+		choosenFilePathLabel = new Label("");
 		nameErrorLabel = new Label("Formular Name muss ausgefüllt sein");
 		nameErrorLabel.setVisible(false);
 		filePathError = new Label("Formular Dateipfad muss gesetzt sein");
 		filePathError.setVisible(false);
-		changeFilePath = new Button("Ändern");
+		changeFilePathButton = new Button("Ändern");
+		changeFilePathButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
 		saveButton = new Button("Speichern");
+		saveButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
 
-		add(new Label("Formular Name"), 0, 0);
+		Label nameLabel = new Label("Formular Name");
+		nameLabel.setMinSize(Label.USE_PREF_SIZE, Label.USE_PREF_SIZE);
+		add(nameLabel, 0, 0);
 		add(nameTextField, 1, 0, 2, 1);
 		add(nameErrorLabel, 1, 1, 2, 1);
-		add(new Label("Dateipfad"), 0, 2);
-		add(choosenFilePath, 1, 2);
-		add(changeFilePath, 2, 2);
-		GridPane.setHalignment(changeFilePath, HPos.RIGHT);
+		Label pathLabel = new Label("Dateipfad");
+		pathLabel.setMinSize(Label.USE_PREF_SIZE, Label.USE_PREF_SIZE);
+		add(pathLabel, 0, 2);
+		add(choosenFilePathLabel, 1, 2);
+		add(changeFilePathButton, 2, 2);
+		GridPane.setHalignment(changeFilePathButton, HPos.RIGHT);
 
 		add(filePathError, 1, 3, 2, 1);
 		add(saveButton, 2, 4);
@@ -86,7 +92,7 @@ public class NewFormView extends GridPane {
 			}
 
 			// Path check
-			if (choosenFilePath.getText().equals("")) {
+			if (choosenFilePathLabel.getText().equals("")) {
 				filePathError.setText("Formular Dateipfad muss gesetzt sein");
 				filePathError.setTextFill(Color.RED);
 				filePathError.setVisible(true);
@@ -116,18 +122,16 @@ public class NewFormView extends GridPane {
 
 		});
 
-		changeFilePath.setOnAction((event) -> {
+		changeFilePathButton.setOnAction((event) -> {
 			FileChooser fileChooser = new FileChooser();
-			fileChooser.setTitle("Open Resource File");
+			fileChooser.setTitle("Datei auswählen");
 			choosenFile = fileChooser.showOpenDialog(stage);
 			try
 			{
-			choosenFilePath.setText(choosenFile.getAbsolutePath());
+			choosenFilePathLabel.setText(choosenFile.getAbsolutePath());
 			}
 			catch(Exception e)
 			{
-				//TODO sollte nur zum testen benutzt werden -> später raus wenn Ordner Pfad funkt
-				System.out.println("Dateipfad konnte nicht notiert werden");
 			}
 
 		});

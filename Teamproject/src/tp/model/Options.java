@@ -41,6 +41,7 @@ public class Options implements Serializable{
 	private String password;
 	private String lastUsedIP;
 	private Date lastReminderCheck;
+	private String lastUsedSavePath;
 	
 	public Options(String userName, String userID, String password)
 	{
@@ -90,4 +91,14 @@ public class Options implements Serializable{
 		this.lastUsedIP = lastUsedIP;
 	}
 
+	public String getLastUsedSavePath() {
+		return lastUsedSavePath;
+	}
+
+	public void setLastUsedSavePath(String lastUsedSavePath) {
+		this.lastUsedSavePath = lastUsedSavePath;
+	}
+	
+
+	
 }

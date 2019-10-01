@@ -43,7 +43,7 @@ public class AllConcernsView extends GridPane
 	{
 		this.presenter = presenter;
 		buildView();
-		// to filter out all finished concerns
+		// to initially filter out all finished concerns
 		filterConcerns("");
 	}
 

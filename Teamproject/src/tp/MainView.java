@@ -793,7 +793,6 @@ public class MainView extends BorderPane {
 	        stage.show();
 		}
 		options.setLastReminderCheck(new Date(System.currentTimeMillis()));
-		presenter.saveEditedOptions(options);
 	}
 
 	public void closeThisTab(MyTab tab) {

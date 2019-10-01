@@ -283,10 +283,6 @@ public class Model {
 		}
 	}
 	
-	public void saveEditedOptions(Options changedOptions) {
-		options = changedOptions;
-		saveOptions();
-	}
 
 	@SuppressWarnings("unchecked")
 	public void loadSessionTabsIds() 

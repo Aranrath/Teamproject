@@ -78,8 +78,6 @@ public class EditUserDataView extends GridPane
 			// =====================================================================
 			
 			saveButton.setOnAction(e -> {
-				boolean changed = false;
-				
 				String newUserName = userNameTextField.getText();
 				String newUserID = userIDTextField.getText();
 				String newPassword = passwordPasswordField.getText();
@@ -90,29 +88,9 @@ public class EditUserDataView extends GridPane
 					return;
 				}
 				
-				if(options.getUserName()!= newUserName)
-				{
-					options.setUserName(newUserName);
-					changed = true;
-					
-				}
-				if(options.getUserID()!= newUserID)
-				{
-					options.setUserID(newUserID);
-					changed = true;
-					
-				}
-				if(options.getPassword()!= newPassword)
-				{
-					options.setPassword(newPassword);
-					changed = true;
-					
-				}
 				
-				if(changed)
-				{
-					presenter.saveEditedOptions(options);
-				}
+				presenter.saveOptions();
+				
 				stage.close();
 				
 				presenter.showNewReminderView(options);

@@ -83,9 +83,7 @@ public class ConcernView extends GridPane {
 	private TableView<Reminder> reminderTableView;
 
 	private Label fileLabel;
-	private HBox fileHBox;
-	private Button addFileButton;
-	private Button deleteFileButton;
+	private Button changeFileSelectionButton;
 	private TableView<Form> fileTableView;
 
 	private Label appointmentLabel;
@@ -206,9 +204,7 @@ public class ConcernView extends GridPane {
 		reminderHBox = new HBox(newReminderButton, deleteReminderButton);
 
 		fileLabel = new Label("Dateien");
-		addFileButton = new Button("Hinzufügen");
-		deleteFileButton = new Button("Löschen");
-		fileHBox = new HBox(addFileButton, deleteFileButton);
+		changeFileSelectionButton = new Button("Auswahl ändern");
 		fileTableView = new TableView<Form>();
 
 		appointmentLabel = new Label("Termine");
@@ -293,9 +289,8 @@ public class ConcernView extends GridPane {
 		reminderHBox.setAlignment(Pos.CENTER_RIGHT);
 
 		add(fileLabel, 3, 4);
-		add(fileHBox, 4, 4, 2, 1);
-		fileHBox.setSpacing(5);
-		fileHBox.setAlignment(Pos.CENTER_RIGHT);
+		add(changeFileSelectionButton, 4, 4, 2, 1);
+		GridPane.setHalignment(changeFileSelectionButton, HPos.RIGHT);
 		add(fileTableView, 3, 5, 3, 1);
 
 		add(appointmentLabel, 6, 4);
@@ -329,6 +324,7 @@ public class ConcernView extends GridPane {
 				errorLabel.setTextFill(Color.RED);
 				return;
 			}
+			
 			else if (concern == null)
 			{
 				if (concernTitleAlreadyExists(newTitle))
@@ -353,6 +349,7 @@ public class ConcernView extends GridPane {
 				
 
 				int newConcernId = presenter.saveNewConcern(concern);
+				errorLabel.setText("");
 				saveButton.setText("Speichern");
 				closeButton.setVisible(true);
 
@@ -442,7 +439,7 @@ public class ConcernView extends GridPane {
 			
 		});
 
-		addFileButton.setOnAction((event) -> {
+		changeFileSelectionButton.setOnAction((event) -> {
 			Stage stage = new Stage();
 			stage.setAlwaysOnTop(true);
 			stage.initModality(Modality.APPLICATION_MODAL);
@@ -467,23 +464,6 @@ public class ConcernView extends GridPane {
 			stage.show();
 		});
 
-		
-		deleteFileButton.setOnAction((event) -> {
-			Form fileToDelete = fileTableView.getSelectionModel().getSelectedItem();
-			
-			if(fileToDelete!= null)
-			{
-				//Wenn die Datei nicht zum ausgewählten Topic gehört
-				if(topicComboBox.getSelectionModel().getSelectedItem()!= null && !topicComboBox.getSelectionModel().getSelectedItem().getForms().contains(fileToDelete))
-				{
-					presenter.deleteForm(fileToDelete);
-				}	
-				
-				fileTableView.getItems().remove(fileToDelete);
-			}
-
-
-		});
 
 		newAppointmentButton.setOnAction((event) -> {
 			Stage stage = new Stage();
@@ -705,7 +685,7 @@ public class ConcernView extends GridPane {
 			//Concern aktualisieren (erkennen falls dieser zB. über die AllConcernsView geschlossen wurde)
 			concern = presenter.getConcern(concern.getId());
 			
-			//Oberfkäche in diesem Fall entsprechend anpassen
+			//Oberfläche in diesem Fall entsprechend anpassen
 			if(concern.getClosingDate() != null)
 			{
 				closeButton.setVisible(false);

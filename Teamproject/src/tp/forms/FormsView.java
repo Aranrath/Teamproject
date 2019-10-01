@@ -123,7 +123,9 @@ public class FormsView extends GridPane
 		this.shownForms = FXCollections.observableArrayList(allForms);
 
 		addFormButton = new Button("Neu");
+		addFormButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
 		deleteFormButton = new Button("Löschen");
+		deleteFormButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
 		searchTextField = new TextField();
 		searchTextField.setPromptText("Suche Formular");
 		searchTextField.setStyle("-fx-focus-color: transparent;");
@@ -373,11 +375,13 @@ public class FormsView extends GridPane
 	
 	private void buildVersion2GUI(ObservableList<Form> filesAlreadyInConcern, ObservableList<Form> topicRelatedFiles)
 	{
+		addFormButton.setText("Neu (Nur für dieses Anliegen)");
 		selectedFormsLabel = new Label("Ausgewählte Dateien");
 		selectedFormsListView = new ListView<Form>();
 		toRightButton = new Button(">");
 		toLeftButton = new Button("<");
-		selectedFormsToConcernButton = new Button("Dateien zum Concern hinzufügen");
+		selectedFormsToConcernButton = new Button("Dateiauswahl im Anliegen übernehmen");
+		selectedFormsToConcernButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
 		
 		
 		//Funktioniert so nicht, Dateien in den jeweiligen nicht die gleichen Objekte sind -> Vergleich über id!
