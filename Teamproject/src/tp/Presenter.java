@@ -6,22 +6,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Date;
 import java.util.ArrayList;
-import java.util.Properties;
 
-import javax.mail.Message;
-import javax.mail.SendFailedException;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
 import tp.model.Appointment;
 import tp.model.Concern;
@@ -65,50 +58,6 @@ public class Presenter {
 
 	public void updateRightToolbar() {
 		mainView.updateRightToolBar();
-	}
-
-	// =====================Mail==========================
-
-	public EMail sendMail(String userID, String userName, String recipientName, String mailAddress, String subject, String content) {
-		try {
-			// Create a properties file containing
-			// the host address of the SMTP server
-			Properties mailProps = new Properties();
-			mailProps.put("mail.smtp.host", "mail.fh-trier.de");
-			
-			// Create a session with the Java Mail API
-			Session mailSession = Session.getInstance(mailProps);
-			// Create a new mail message
-			MimeMessage message = new MimeMessage(mailSession);
-			// Set the From and the Recipient
-			message.setFrom(new InternetAddress(userID + "@fh-trier.de", userName));
-			message.setRecipient(Message.RecipientType.TO,
-					new InternetAddress(mailAddress, recipientName));
-			// Set the subject
-			message.setSubject(subject);
-			// Set the message text
-			message.setText(content);
-			// Save all the changes made to the message
-			message.saveChanges();
-			// Send the message
-			Transport.send(message);
-
-			// save E-mail to Database
-			EMail email = new EMail(content, subject, mailAddress, new Date(System.currentTimeMillis()), false);
-			model.saveMail(email);
-
-			return email;
-		}catch (SendFailedException e){
-			Alert alert = new Alert(AlertType.INFORMATION);
-	        alert.setTitle("Warnung");
-	        alert.setHeaderText("VPN!");
-	        alert.setContentText("Zum senden von E-Mails wird eine VPN-Verbindung zur Hochschule benötigt.");
-	        alert.showAndWait();
-			return null;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
 	}
 
 	// ===============Getter&Setter========================
@@ -222,8 +171,8 @@ public class Presenter {
 
 	}
 
-	public ObservableList<Form> getTopicForms() {
-		return model.getTopicForms();
+	public ObservableList<Form> getUniversalForms() {
+		return model.getUniversalForms();
 	}
 
 	public Topic saveNewTopic(Topic newTopic) {
@@ -251,8 +200,8 @@ public class Presenter {
 
 	}
 
-	public void saveNewForm(Form form) {
-		model.saveNewForm(form);
+	public Form saveNewForm(Form form) {
+		return model.saveNewForm(form);
 
 	}
 
@@ -385,6 +334,11 @@ public class Presenter {
 		model.deleteAppointment(appointmentToDelete);
 		
 	}
+	
+	public void deleteNonUniversalForms() {
+		model.deleteNonUniversalForms();
+		
+	}
 
 	public void pullAllEMails(Student student, String address) {
 		model.checkMail(student, address);
@@ -392,6 +346,10 @@ public class Presenter {
 
 	public void pullNewEMails(Student student) {
 		model.checkMail(student);
+	}
+
+	public EMail sendMail(String userID, String userName, String recipientName, String mailAddress, String subject, String content) {
+		return model.sendMail(userID, userName, recipientName, mailAddress, subject, content);
 	}
 
 	public Image getDefaultStudentImage() {

@@ -28,12 +28,13 @@ public class AddStudentToConcernView extends GridPane{
 	private Stage stage;
 	private ConcernView concernView;
 	private ObservableList<Student> selectedStudents;
-	private ObservableList<Student> allStudents;
+	private ObservableList<Student> addableStudents;
 	private ObservableList<Student> shownStudents;
+	private ObservableList<Student> allStudents;
 	
 	//-------------------------GUI
 	
-	private TableView<Student> allStudentsTable;
+	private TableView<Student> addableStudentsTable;
 	private TableView<Student> selectedStudentsTable;
 	private Label selectionLabel;
 	private Button toRightButton;
@@ -47,7 +48,16 @@ public class AddStudentToConcernView extends GridPane{
 		this.stage = stage;
 		this.concernView = concernView;
 		
+		//get nur nich exmatrikulierte Studenten
 		this.allStudents = presenter.getStudents();
+		this.addableStudents = FXCollections.observableArrayList();
+		for (Student student : allStudents)
+		{
+			if(student.getExmatr() == null)
+			{
+				addableStudents.add(student);
+			}	
+		}
 		this.selectedStudents = FXCollections.observableArrayList(alreadyInConcernStudents);
 		/*
 		 * Remove all funktioniert an dieser Stelle nicht.
@@ -55,14 +65,14 @@ public class AddStudentToConcernView extends GridPane{
 		 * -> manuelles Vergleichen der Student-id und löschen
 		*/
 		for (Student inStu: selectedStudents) {
-			for (Student allStu: allStudents) {
+			for (Student allStu: addableStudents) {
 				if(inStu.getMtrNr() == allStu.getMtrNr()) {
-					allStudents.remove(allStu);
+					addableStudents.remove(allStu);
 					break;
 				}
 			}
 		}
-		this.shownStudents = FXCollections.observableArrayList(allStudents);
+		this.shownStudents = FXCollections.observableArrayList(addableStudents);
 		
 		buildView();
 	}
@@ -73,7 +83,7 @@ public class AddStudentToConcernView extends GridPane{
 		setHgap(10);
 		setVgap(10);
 		
-		allStudentsTable = new TableView<Student>(shownStudents);
+		addableStudentsTable = new TableView<Student>(shownStudents);
 		selectedStudentsTable = new TableView<Student>(selectedStudents);
 		searchTextField = new TextField();
 		searchTextField.setPromptText("Suche Studenten");
@@ -88,7 +98,7 @@ public class AddStudentToConcernView extends GridPane{
 				add(searchTextField, 0, 0);
 				GridPane.setHalignment(searchTextField, HPos.LEFT);
 				
-				add(allStudentsTable, 0, 1, 1, 2);
+				add(addableStudentsTable, 0, 1, 1, 2);
 
 				VBox leftRightButtonBox = new VBox();
 				leftRightButtonBox.getChildren().addAll(toLeftButton, toRightButton, allToLeftButton);
@@ -125,7 +135,7 @@ public class AddStudentToConcernView extends GridPane{
 				TableColumn<Student, Date> lastContactCol = new TableColumn<Student, Date>("Letzter Kontakt");
 				lastContactCol.setCellValueFactory(new PropertyValueFactory<>("lastContact"));
 				
-				allStudentsTable.getColumns().addAll(mtrNrCol, lastNameCol,firstNameCol,lastContactCol);
+				addableStudentsTable.getColumns().addAll(mtrNrCol, lastNameCol,firstNameCol,lastContactCol);
 				
 				
 				TableColumn<Student, String> lastNameCol2 = new TableColumn<Student, String>("Nachname");
@@ -159,7 +169,7 @@ public class AddStudentToConcernView extends GridPane{
 				// ======================================================================
 				
 				toRightButton.setOnAction((event) -> {
-					List<Student> studentsToMove = allStudentsTable.getSelectionModel().getSelectedItems();
+					List<Student> studentsToMove = addableStudentsTable.getSelectionModel().getSelectedItems();
 					// First addAll, because studentsToMove will be empty after they have been deleted from allStudents
 					selectedStudents.addAll(studentsToMove);
 					shownStudents.removeAll(studentsToMove);
@@ -192,13 +202,13 @@ public class AddStudentToConcernView extends GridPane{
 		
 		if(searchTerm.isEmpty())
 		{
-				shownStudents.addAll(allStudents);
+				shownStudents.addAll(addableStudents);
 		}
 		else
 		{
 			
 			String [] searchTerms = searchTerm.toLowerCase().split(" ");
-			for (Student student : allStudents)
+			for (Student student : addableStudents)
 			{
 				if(Presenter.containsAll(student.toString().toLowerCase(), searchTerms))
 				{

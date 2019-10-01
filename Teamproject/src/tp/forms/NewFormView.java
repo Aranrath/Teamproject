@@ -22,6 +22,7 @@ public class NewFormView extends GridPane {
 	private FormsView formsView;
 	private ObservableList<Form> forms;
 	private File choosenFile;
+	private Boolean universal;
 
 	// =============== GUI =================
 
@@ -32,11 +33,12 @@ public class NewFormView extends GridPane {
 	private Button changeFilePathButton;
 	private Button saveButton;
 
-	public NewFormView(Stage stage, Presenter presenter, FormsView formsView, ObservableList<Form> forms) {
+	public NewFormView(Stage stage, Presenter presenter, FormsView formsView, ObservableList<Form> forms, Boolean universal) {
 		this.presenter = presenter;
 		this.stage = stage;
 		this.forms = forms;
 		this.formsView = formsView;
+		this.universal = universal;
 
 		buildView();
 	}
@@ -113,10 +115,10 @@ public class NewFormView extends GridPane {
 
 			if (!nameErrorLabel.isVisible() && !filePathError.isVisible()) {
 				
-				Form newForm = new Form(nameTextField.getText(), choosenFile);
+				Form newForm = new Form(nameTextField.getText(), choosenFile, universal);
 				
-				presenter.saveNewForm(newForm);
-				formsView.addNewForm(newForm);
+				Form form = presenter.saveNewForm(newForm);
+				formsView.addNewForm(form);
 				stage.close();
 			}
 

@@ -10,20 +10,22 @@ public class Form {
 	private String name;
 	private File file;
 	private String fileExtension;
-	
+	private Boolean universal;
 	//-------- for new Forms, extension not needed
-	public Form (String name, File file)
+	public Form (String name, File file, Boolean universal)
 	{
 		this.file = file;
 		this.name = name;		
+		this.universal = universal;
 	}  
 	
 	//-------- for previews of Files extension needed to identify wich type
-	public Form (String name, File file, String fileExtension)
+	public Form (String name, File file, String fileExtension, Boolean universal)
 	{
 		this.file = file;
 		this.name = name;
 		this.fileExtension = fileExtension;
+		this.universal = universal;
 		
 	}    
     
@@ -46,6 +48,14 @@ public class Form {
 		return file;
 	}
 
+	public Boolean isUniversal() {
+		return universal;
+	}
+
+	public void setUniversal(Boolean universal) {
+		this.universal = universal;
+	}
+	
 	public void setName(String name) {
 		this.name = name;
 	}

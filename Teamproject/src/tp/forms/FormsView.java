@@ -51,6 +51,9 @@ public class FormsView extends GridPane
 	
 	private ConcernView concernView;
 	private Stage stage;
+	
+	// zum unterscheiden, ob zu erstellende Views Concernspezifisch sind oder nicht
+	private Boolean universal;
 
 	// =============================================GUI Elemente
 
@@ -88,6 +91,7 @@ public class FormsView extends GridPane
 	public FormsView(Presenter presenter)
 	{
 		this.presenter = presenter;
+		universal = true;
 		
 		buildView();
 		buildVersion1GUI();
@@ -101,6 +105,7 @@ public class FormsView extends GridPane
 		this.presenter = presenter;
 		this.stage = stage;
 		this.concernView = concernView;
+		universal = false;
 		
 		
 		buildView();
@@ -119,7 +124,7 @@ public class FormsView extends GridPane
 		setVgap(20);
 		
 		
-		this.allForms = presenter.getTopicForms();
+		this.allForms = presenter.getUniversalForms();
 		this.shownForms = FXCollections.observableArrayList(allForms);
 
 		addFormButton = new Button("Neu");
@@ -173,7 +178,7 @@ public class FormsView extends GridPane
 			stage.setTitle("Neues Formular hinzufügen");
 			stage.setResizable(false);
 			stage.getIcons().add(new javafx.scene.image.Image ("\\Icon.png"));
-			stage.setScene(new Scene(new NewFormView(stage, presenter, this, allForms), 400, 200));
+			stage.setScene(new Scene(new NewFormView(stage, presenter, this, allForms, universal), 400, 200));
 			stage.show();
 		});
 		deleteFormButton.setOnAction((event) -> {
@@ -494,13 +499,17 @@ public class FormsView extends GridPane
 	
 	public void addNewForm(Form newForm)
 	{
-		formListView.getItems().add(newForm);
+		if(universal) {
+			formListView.getItems().add(newForm);
+		}else {
+			selectedFormsListView.getItems().add(newForm);
+		}
 		
 	}
 
 
 	public void updateView() {
-		allForms = presenter.getTopicForms();
+		allForms = presenter.getUniversalForms();
 		shownForms.clear();
 		for (Form form: allForms) {
 			shownForms.add(form);

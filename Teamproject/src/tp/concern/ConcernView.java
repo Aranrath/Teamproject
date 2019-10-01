@@ -707,7 +707,6 @@ public class ConcernView extends GridPane {
 			{
 				localStudents = FXCollections.observableArrayList();
 			}
-			filteredStudents =  FXCollections.observableArrayList(localStudents);
 			filterStudents(searchTextField.getText());
 			
 			fillView();

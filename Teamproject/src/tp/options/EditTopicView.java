@@ -81,7 +81,7 @@ public class EditTopicView extends GridPane {
 		formLabel = new Label("Zugehörige Formulare:");
 		saveButton = new Button("Speichern");
 		
-		ObservableList<Form> allForms = presenter.getTopicForms();
+		ObservableList<Form> allForms = presenter.getUniversalForms();
 		if(allForms != null)
 		{
 			allFormsListView = new CheckListView<Form>(allForms);

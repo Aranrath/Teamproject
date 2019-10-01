@@ -33,13 +33,18 @@ import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.Multipart;
 import javax.mail.Part;
+import javax.mail.SendFailedException;
 import javax.mail.Session;
 import javax.mail.Store;
+import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.util.Pair;
 import tp.Main;
@@ -537,6 +542,29 @@ public class Model {
 	}
 
 
+	public ObservableList<Form> getUniversalForms() 
+	{
+		ObservableList<Form> result = FXCollections.observableArrayList();
+		String sql = "SELECT * FROM form where universal = 1";
+		try (Connection conn = this.connect();
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(sql))
+		{
+			while(rs.next())
+			{
+				int id = rs.getInt("id");
+				Form form = getForm(id);
+				result.add(form);
+			}
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+
 	public Form getForm(int id) {
 		Form result = new Form(null, null, null);
 		String sql = "SELECT * FROM form WHERE id = " + id;
@@ -548,6 +576,7 @@ public class Model {
 		
 				String title = rs.getString("title");
 				String extension = rs.getString("extension");
+				Boolean universal = rs.getBoolean("universal");
 				File file = File.createTempFile(title, extension);
 				try(FileOutputStream out = new FileOutputStream(file);
 						InputStream in = rs.getBinaryStream("file")){
@@ -558,7 +587,7 @@ public class Model {
 				}catch(Exception e) {
 					e.printStackTrace();
 				}
-				result = new Form(title, file, extension);
+				result = new Form(title, file, extension, universal);
 				result.setId(id);
 				file.deleteOnExit();
 			}
@@ -1034,29 +1063,6 @@ public class Model {
 	}
 
 
-	public ObservableList<Form> getTopicForms() 
-	{
-		ObservableList<Form> result = FXCollections.observableArrayList();
-		String sql = "SELECT * FROM form";
-		try (Connection conn = this.connect();
-			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery(sql))
-		{
-			while(rs.next())
-			{
-				int id = rs.getInt("id");
-				Form form = getForm(id);
-				result.add(form);
-			}
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		return result;
-	}
-
-
 	private ObservableList<Form> getTopicForms(long topicId) {
 		ObservableList<Form>  result = FXCollections.observableArrayList();
 		String sql = "SELECT form FROM topic_forms WHERE topic = " + topicId;
@@ -1167,6 +1173,8 @@ public class Model {
 		{
 			e.printStackTrace();
 		}
+		//lösche alle Concern_Forms, sie keinem Concern mehr zugeordnet sind
+		deleteNonUniversalForms();
 		return id;
 	}
 
@@ -1196,6 +1204,8 @@ public class Model {
 		{
 			e.printStackTrace();
 		}
+		//lösche alle Concern_Forms, sie keinem Concern mehr zugeordnet sind
+		deleteNonUniversalForms();
 	}
 
 	public void setConcernCosed(Concern c) {
@@ -1271,35 +1281,6 @@ public class Model {
 			}
 	}
 
-
-	public void saveNewForm(Form form) 
-	{
-		String sql = "INSERT INTO form (title, file, extension) VALUES (?, ?, ?)";
-		try (Connection conn = this.connect();
-			PreparedStatement pstmt = conn.prepareStatement(sql))
-		{	
-			File file = form.getFile();
-			pstmt.setString(1, form.getName());
-			pstmt.setBytes(2, readFile(file.getAbsolutePath()));
-			
-			String extension = "";
-	        try {
-	            if (file != null && file.exists()) {
-	                String name = file.getName();
-	                extension = name.substring(name.lastIndexOf("."));
-	            }
-	        } catch (Exception e) {
-	            extension = "";
-	        }
-	        pstmt.setString(3,  extension);
-			
-			pstmt.executeUpdate();
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-	}
 	
 	private byte[] readFile(String file) {
         ByteArrayOutputStream bos = null;
@@ -1316,6 +1297,49 @@ public class Model {
 
         return bos != null ? bos.toByteArray() : null;
     }
+	
+	
+	public Form saveNewForm(Form form) 
+	{
+		String sql = "INSERT INTO form (title, file, extension, universal) VALUES (?, ?, ?, ?)";
+		String sql2 = "SELECT last_insert_rowid()";
+		try (Connection conn = this.connect();
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+			Statement stmt = conn.createStatement())
+		{	
+			File file = form.getFile();
+			pstmt.setString(1, form.getName());
+			pstmt.setBytes(2, readFile(file.getAbsolutePath()));
+			
+			String extension = "";
+	        try {
+	            if (file != null && file.exists()) {
+	                String name = file.getName();
+	                extension = name.substring(name.lastIndexOf("."));
+	            }
+	        } catch (Exception e) {
+	            extension = "";
+	        }
+	        pstmt.setString(3,  extension);
+	        pstmt.setBoolean(4, form.isUniversal());
+			
+			pstmt.executeUpdate();
+			int formId = 0;
+			try (ResultSet rs = stmt.executeQuery(sql2)){
+				if (rs.next()) {
+					formId = rs.getInt(1);
+					form.setId(formId);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		return form;
+	}
 
 
 	public void saveEditedForm(Form selectedForm) {
@@ -1354,6 +1378,41 @@ public class Model {
 			Statement stmt = conn.createStatement())
 		{
 			stmt.executeUpdate(sql);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	public void deleteNonUniversalForms() {
+		String sql1 = "SELECT id FROM form, concern_forms WHERE NOT(form.id = concern_forms.form)";
+		String sql2 = "SELECT id FROM form WHERE universal = 0";
+		String sql3 = "DELETE FROM form WHERE id = ";
+		try (Connection conn = this.connect();
+			Statement stmt1 = conn.createStatement();
+			Statement stmt2 = conn.createStatement();
+			Statement stmt3 = conn.createStatement();
+			ResultSet rs1 = stmt1.executeQuery(sql1);
+			ResultSet rs2 = stmt2.executeQuery(sql2))
+		{
+			ArrayList<Long> formIds1 = new ArrayList<Long>();
+			ArrayList<Long> formIds2 = new ArrayList<Long>();
+			while(rs1.next())
+			{
+				formIds1.add(rs1.getLong("id"));
+			}
+			while(rs2.next())
+			{
+				formIds2.add(rs2.getLong("id"));
+			}
+			System.out.println(formIds1);
+			System.out.println(formIds2);
+			formIds1.retainAll(formIds2);
+			System.out.println(formIds1);
+			for(Long formId: formIds1) {
+				stmt3.executeUpdate(sql3  + formId);
+			}
 		}
 		catch(Exception e)
 		{
@@ -1578,13 +1637,28 @@ public class Model {
 
 	private StatisticValues calculateRatioStatisticValue(StatisticComponent comp, Date date) {
 		List<Pair<Integer, Integer>> values = new ArrayList<Pair<Integer, Integer>>();
-		int value = 0;
+		ArrayList<Long> result = new ArrayList<Long>();
 		for(Filter f: comp.getSelectedFilter()) {
-			value += calculateFilterValue(comp.getSource(), f, date);
+			ArrayList<Long> partialResult = calculateFilterValue(comp.getSource(), f, date);
+			partialResult.removeAll(result);
+			result.addAll(partialResult);
 		}
 		if(comp.getSelectedFilter().isEmpty()) {
 			Filter f = new Filter();
-			value = calculateFilterValue(comp.getSource(), f, date);
+			result = calculateFilterValue(comp.getSource(), f, date);
+		}
+		int value;
+		if (comp.getSource().equals("Terminlängen")) {
+			long duration = 0;
+			for (Long appointmentId: result) {
+				Appointment app = getAppointment(appointmentId);
+				long startTime = app.getStartTime();
+				long endTime = app.getEndTime();
+				duration += (endTime - startTime);
+			}
+			value = (int)(duration/1000/60);
+		}else {
+			value = result.size();
 		}
 		values.add(new Pair<Integer, Integer>(0, value));
 		return new StatisticValues(comp.getName(), values);
@@ -1634,13 +1708,28 @@ public class Model {
         Date nextEndDay = new Date(c.getTimeInMillis());
         int count = 0;
 		for(Date date = startDate; date.before(nextEndDay);) {	
-			int value = 0;
+			ArrayList<Long> result = new ArrayList<Long>();
 			for(Filter f: comp.getSelectedFilter()) {
-				value += calculateFilterValue(comp.getSource(), f, date);
+				ArrayList<Long> partialResult = calculateFilterValue(comp.getSource(), f, date);
+				partialResult.removeAll(result);
+				result.addAll(partialResult);
 			}
 			if(comp.getSelectedFilter().isEmpty()) {
 				Filter f = new Filter();
-				value = calculateFilterValue(comp.getSource(), f, date);
+				result = calculateFilterValue(comp.getSource(), f, date);
+			}
+			int value;
+			if (comp.getSource().equals("Terminlängen")) {
+				long duration = 0;
+				for (Long appointmentId: result) {
+					Appointment app = getAppointment(appointmentId);
+					long startTime = app.getStartTime();
+					long endTime = app.getEndTime();
+					duration += (endTime - startTime);
+				}
+				value = (int)(duration/1000/60);
+			}else {
+				value = result.size();
 			}
 			values.add(new Pair<Integer, Integer>(count, value));
 			count++;
@@ -1698,13 +1787,30 @@ public class Model {
 	        c.setTime(intervStartDate);
 	        c.add(Calendar.DATE, -1);
 	        Date intervEndDate = new Date(c.getTimeInMillis());
-			int value = 0;
+			ArrayList<Long> result = new ArrayList<Long>();
 			for(Filter f: comp.getSelectedFilter()) {
-				value += calculateFilterValue(comp.getSource(), f, intervStartDate, intervEndDate);
+				//get result for one Filter
+				ArrayList<Long> partialResult = calculateFilterValue(comp.getSource(), f, intervStartDate, intervEndDate);
+				//remove all that are already in the result, than add the new ones to the result
+				partialResult.removeAll(result);
+				result.addAll(partialResult);
 			}
 			if(comp.getSelectedFilter().isEmpty()) {
 				Filter f = new Filter();
-				value = calculateFilterValue(comp.getSource(), f, intervStartDate, intervEndDate);
+				result = calculateFilterValue(comp.getSource(), f, intervStartDate, intervEndDate);
+			}
+			int value;
+			if (comp.getSource().equals("Terminlängen")) {
+				long duration = 0;
+				for (Long appointmentId: result) {
+					Appointment app = getAppointment(appointmentId);
+					long startTime = app.getStartTime();
+					long endTime = app.getEndTime();
+					duration += (endTime - startTime);
+				}
+				value = (int)(duration/1000/60);
+			}else {
+				value = result.size();
 			}
 			values.add(new Pair<Integer, Integer>(count, value));
 			count++;
@@ -1717,11 +1823,11 @@ public class Model {
 	}
 
 	
-	private int calculateFilterValue(String source, Filter f, Date date) {
+	private ArrayList<Long> calculateFilterValue(String source, Filter f, Date date) {
 		return calculateFilterValue(source, f, date, date);
 	}
-	private int calculateFilterValue(String source, Filter f, Date startDate, Date endDate) {
-		int result = 0;
+	private ArrayList<Long> calculateFilterValue(String source, Filter f, Date startDate, Date endDate) {
+		ArrayList<Long> result = new ArrayList<Long>();
 		Map<String, Object[]> filterMap = f.getFilters();
 		try (Connection conn = this.connect();
 				Statement stmt = conn.createStatement())
@@ -1754,10 +1860,10 @@ public class Model {
 
 				//Sql query
 				String sql = select + from + where;
-				ArrayList<Integer> students = new ArrayList<Integer>();
+				ArrayList<Long> students = new ArrayList<Long>();
 				try (ResultSet rs = stmt.executeQuery(sql)){
 					while (rs.next()) {
-						int matrNr = rs.getInt("matrNr");	
+						long matrNr = rs.getInt("matrNr");	
 						students.add(matrNr);
 					}
 				} catch (Exception e) {
@@ -1766,8 +1872,8 @@ public class Model {
 
 				//other filters
 				if (filterMap.containsKey("ECTS")) {
-					for (Integer matrNr: students) {
-						Student stu = getStudent(matrNr);
+					for (Long matrNr: students) {
+						Student stu = getStudent(matrNr.intValue());
 						int ECTS = calculateEcts(stu.getPassedSubjects(), stu.getPo());
 						String op = (String)filterMap.get("ECTS")[0];
 						if (op.equals(">")) {
@@ -1786,8 +1892,8 @@ public class Model {
 					}
 				}
 				if (filterMap.containsKey("Betreuungszeit in h")) {
-					for (Integer matrNr: students) {
-						Student stu = getStudent(matrNr);
+					for (Long matrNr: students) {
+						Student stu = getStudent(matrNr.intValue());
 						//time in milliseconds
 						long betrZeit = 0;
 						for (Long conId: stu.getConcernIds()) {
@@ -1815,8 +1921,8 @@ public class Model {
 					}
 				}
 				if (filterMap.containsKey("Anzahl zugehöriger Anliegen")) {
-					for (Integer matrNr: students) {
-						Student stu = getStudent(matrNr);
+					for (Long matrNr: students) {
+						Student stu = getStudent(matrNr.intValue());
 						int anzAnl = stu.getConcernIds().size();
 						String op = (String)filterMap.get("Anzahl zugehöriger Anliegen")[0];
 						if (op.equals(">")) {
@@ -1835,8 +1941,8 @@ public class Model {
 					}
 				}
 				if (filterMap.containsKey("Letzter Kontakt")) {
-					for (Integer matrNr: students) {
-						Student stu = getStudent(matrNr);
+					for (Long matrNr: students) {
+						Student stu = getStudent(matrNr.intValue());
 						Date lastCon = getLastStudentEmail(stu).getDate();
 						String op = (String)filterMap.get("Letzter Kontakt")[0];
 						if (op.equals(">")) {
@@ -1855,7 +1961,7 @@ public class Model {
 					}
 				}
 				
-				result = students.size();
+				result = students;
 				
 				
 				
@@ -1970,8 +2076,8 @@ public class Model {
 					}
 				}
 				
-				result = concerns.size();
-			//-----------------------concern----------------------
+				result = concerns;
+			//-----------------------Appointment length----------------------
 			}else if(source.equals("Terminlängen")){
 				String select = "SELECT startTime, endTime";
 				String from = " FROM appointment";
@@ -1993,18 +2099,17 @@ public class Model {
 				
 				//Sql query
 				String sql = select + from + where;
-				long duration = 0;
+				ArrayList<Long> appointments = new ArrayList<Long>();
 				try (ResultSet rs = stmt.executeQuery(sql)){
 					while (rs.next()) {
-						long startTime = rs.getLong("startTime");	
-						long endTime = rs.getLong("endTime");
-						duration += (endTime - startTime);
+						long id = rs.getLong("id");	
+						appointments.add(id);
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 				
-				result = (int) (duration/1000/60);
+				result = appointments;
 			}
 		}
 		catch (Exception e)
@@ -2534,4 +2639,46 @@ public class Model {
 	      return result;
 
 	   }
+	
+	public EMail sendMail(String userID, String userName, String recipientName, String mailAddress, String subject, String content) {
+		try {
+			// Create a properties file containing
+			// the host address of the SMTP server
+			Properties mailProps = new Properties();
+			mailProps.put("mail.smtp.host", "mail.fh-trier.de");
+			
+			// Create a session with the Java Mail API
+			Session mailSession = Session.getInstance(mailProps);
+			// Create a new mail message
+			MimeMessage message = new MimeMessage(mailSession);
+			// Set the From and the Recipient
+			message.setFrom(new InternetAddress(userID + "@fh-trier.de", userName));
+			message.setRecipient(Message.RecipientType.TO,
+					new InternetAddress(mailAddress, recipientName));
+			// Set the subject
+			message.setSubject(subject);
+			// Set the message text
+			message.setText(content);
+			// Save all the changes made to the message
+			message.saveChanges();
+			// Send the message
+			Transport.send(message);
+
+			// save E-mail to Database
+			EMail email = new EMail(content, subject, mailAddress, new Date(System.currentTimeMillis()), false);
+			saveMail(email);
+
+			return email;
+		}catch (SendFailedException e){
+			Alert alert = new Alert(AlertType.INFORMATION);
+	        alert.setTitle("Warnung");
+	        alert.setHeaderText("VPN!");
+	        alert.setContentText("Zum senden von E-Mails wird eine VPN-Verbindung zur Hochschule benötigt.");
+	        alert.showAndWait();
+			return null;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 }
