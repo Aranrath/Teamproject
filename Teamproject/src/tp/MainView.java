@@ -595,11 +595,16 @@ public class MainView extends BorderPane {
 		final MyTab innerTab = newTab;
 		
 		newTab.setOnSelectionChanged((event) -> {
+			ConcernView view = (ConcernView) innerTab.getContent();
+			
 			if(innerTab.isSelected())
 			{
-				ConcernView view = (ConcernView) innerTab.getContent();
 				view.updateView();
 				
+			}
+			else
+			{
+				view.save(false);
 			}
 		});
 	}

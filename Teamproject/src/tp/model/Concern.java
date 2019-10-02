@@ -23,10 +23,9 @@ public class Concern {
 	private boolean isCompleted;
 	private Date closingDate;
 
-	public Concern(String title, Topic topic)
+	public Concern(String title)
 	{
 		this.title = title;
-		this.topic = topic;
 	}
 
 	public Concern(long id, String title, ObservableList<Form> files, Topic topic, ObservableList<Appointment> appointments,

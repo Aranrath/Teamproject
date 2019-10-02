@@ -129,8 +129,7 @@ public class FormsView extends GridPane
 
 		addFormButton = new Button("Neu");
 		addFormButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
-		deleteFormButton = new Button("Löschen");
-		deleteFormButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
+		
 		searchTextField = new TextField();
 		searchTextField.setPromptText("Suche Formular");
 		searchTextField.setStyle("-fx-focus-color: transparent;");
@@ -163,11 +162,6 @@ public class FormsView extends GridPane
 		
 		add(formListView, 0, 1, 2, 2);
 
-		add(addFormButton, 1, 3);
-		GridPane.setHalignment(addFormButton, HPos.RIGHT);
-
-		add(deleteFormButton, 0, 3);
-		GridPane.setHalignment(deleteFormButton, HPos.LEFT);
 	
 		//========================================================================
 		
@@ -181,12 +175,7 @@ public class FormsView extends GridPane
 			stage.setScene(new Scene(new NewFormView(stage, presenter, this, allForms, universal), 400, 200));
 			stage.show();
 		});
-		deleteFormButton.setOnAction((event) -> {
-			for(Form f: formListView.getSelectionModel().getSelectedItems())
-			{
-				presenter.deleteForm(f);
-			}
-		});
+
 		
 		renameFormButton.setOnAction((event) -> {
 
@@ -282,11 +271,15 @@ public class FormsView extends GridPane
 
 	private void buildVersion1GUI()
 	{
+		deleteFormButton = new Button("Löschen");
+		deleteFormButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
+		
 		imageView = new ImageView();
 		imageView.setVisible(false);
 		imageView.preserveRatioProperty().set(true);
     	imageView.fitHeightProperty().bind(formListView.heightProperty());
 		noShowableFileFormatLabel = new Label("Kein Formular mit anzeigbarem Datei-Format ausgewählt");
+
 		noShowableFileFormatLabel.setVisible(false);
 		
 		//------------------------------------------------------------------------------------
@@ -297,6 +290,10 @@ public class FormsView extends GridPane
 		add(noShowableFileFormatLabel, 2,0,2,4);
 		GridPane.setHalignment(noShowableFileFormatLabel, HPos.CENTER);
 		GridPane.setValignment(noShowableFileFormatLabel, VPos.CENTER);
+		add(deleteFormButton, 0, 3);
+		GridPane.setHalignment(deleteFormButton, HPos.LEFT);
+		add(addFormButton, 1, 3);
+		GridPane.setHalignment(addFormButton, HPos.RIGHT);
 		
 		//========================================================================
 		//Column Constraints
@@ -376,6 +373,13 @@ public class FormsView extends GridPane
 		    }
 		});
 		
+		deleteFormButton.setOnAction((event) -> {
+			Form selectedForm = formListView.getSelectionModel().getSelectedItem();
+			presenter.deleteForm(selectedForm);
+			updateView();
+		});
+		
+		
 	}
 	
 	private void buildVersion2GUI(ObservableList<Form> filesAlreadyInConcern, ObservableList<Form> topicRelatedFiles)
@@ -428,6 +432,9 @@ public class FormsView extends GridPane
 
 		add(selectedFormsToConcernButton,3,2);
 		GridPane.setHalignment(selectedFormsToConcernButton, HPos.RIGHT);
+		
+		add(addFormButton, 0, 3,2,1);
+		GridPane.setHalignment(addFormButton, HPos.RIGHT);
 
 		VBox leftRightButtonBox = new VBox();
 		leftRightButtonBox.getChildren().addAll(toLeftButton, toRightButton);

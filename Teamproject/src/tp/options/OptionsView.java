@@ -1,5 +1,6 @@
 package tp.options;
 
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -304,8 +305,22 @@ public class OptionsView extends GridPane {
 	private void fillView() {
 
 		posList.setItems(presenter.getPOs());
-		topicsList.setItems(presenter.getTopics());
+		
 		subjectsList.setItems(presenter.getSubjects());
+		
+		//Topics setzen, aber Standardtopic("Sonstige") mit id=1 ausblenden, damit nicht editierbar
+		ObservableList<Topic> topics = presenter.getTopics();
+		for(int i = 0; i < topics.size(); i++)
+		{
+			if(topics.get(i).getId() == 1)
+			{
+				topics.remove(topics.get(i));
+				break;
+			}
+			
+		}
+		topicsList.setItems(topics);
+		
 	}
 
 	public void addNewTopic(Topic newTopic) {

@@ -380,7 +380,7 @@ public class Model {
 
 	public Concern getConcern(long concernId) 
 	{
-		Concern result = new Concern(null, null);
+		Concern result = new Concern(null);
 		String sql = "SELECT * FROM concern WHERE id = " + concernId;
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement();
@@ -1373,7 +1373,7 @@ public class Model {
 
 	public void deleteForm(Form f) 
 	{
-		String sql = "DELETE FROM form WHERE title = "+ f.getId();
+		String sql = "DELETE FROM form WHERE id = "+ f.getId();
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement())
 		{

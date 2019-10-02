@@ -51,7 +51,8 @@ public class ConcernView extends GridPane {
 	private Presenter presenter;
 	private Concern concern;
 	private MyTab tab;
-	//lokal hinterlegte Studenten, nicht unbedingt gespeichert. Nutzen: Basis für Suchanfragen
+	// lokal hinterlegte Studenten, nicht unbedingt gespeichert. Nutzen: Basis für
+	// Suchanfragen
 	private ObservableList<Student> localStudents;
 	private ObservableList<Student> filteredStudents;
 
@@ -92,14 +93,18 @@ public class ConcernView extends GridPane {
 	private Button deleteAppointmentButton;
 	private TableView<Appointment> appointmentTableView;
 
+	// =========================================================================
+	// Konstruktoren
+	// =========================================================================
+
 	// neue ConcernView
 	public ConcernView(Presenter presenter, MyTab tab) {
 		this.presenter = presenter;
 		this.tab = tab;
 		localStudents = FXCollections.observableArrayList();
-		
+
 		buildView();
-		titleTextField.setText(new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime()));
+
 	}
 
 	// neue Concern View mit bereits gewählten Studenten
@@ -107,29 +112,28 @@ public class ConcernView extends GridPane {
 		this.presenter = presenter;
 		this.tab = tab;
 		localStudents = FXCollections.observableArrayList(students);
-		
 		buildView();
-		titleTextField.setText(new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime()));
 
-		
 	}
-	
-	//bei bestehendem Concern
+
+	// bei bestehendem Concern
 	public ConcernView(Presenter presenter, MyTab tab, Concern concern) {
 		this.presenter = presenter;
 		this.tab = tab;
 		this.concern = concern;
-		if(concern.getStudents() != null) {
+		if (concern.getStudents() != null) {
 			localStudents = concern.getStudents();
-		}
-		else
-		{
+		} else {
 			localStudents = FXCollections.observableArrayList();
 		}
-		
+
 		buildView();
 		fillView();
 	}
+
+	// =========================================================================
+	// private Methoden
+	// =========================================================================
 
 	@SuppressWarnings("unchecked")
 	private void buildView() {
@@ -138,52 +142,48 @@ public class ConcernView extends GridPane {
 		setVgap(20);
 
 		titleLabel = new Label("Titel:");
-		titleTextField = new TextField("");
+		titleTextField = new TextField(
+				new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime()));
 		errorLabel = new Label("");
-		if (concern == null)
-		{
+		errorLabel.setTextFill(Color.RED);
+		if (concern == null) {
 			saveButton = new Button("Erstellen");
-		}
-		else
-		{
+		} else {
 			saveButton = new Button("Speichern");
 		}
 
-		
+		// ---------------------------------------------------
+
 		closeButton = new Button("Abschließen");
 		closeStatusLabel = new Label();
 		closeStatusLabel.setVisible(false);
-		
-		//Im Falle eines neuen (ungespeicherten) Anliegen
-		if(concern == null)
-		{
+
+		// Im Falle eines neuen (ungespeicherten) Anliegen
+		if (concern == null) {
 			closeButton.setVisible(false);
 		}
-		
-		//Wenn Anliegen abgeschlossen ist
-		else if(concern != null && concern.getClosingDate() != null)
-		{
-			closeButton.setVisible(false);
-			if(concern.isCompleted() == true)
-			{
-				closeStatusLabel.setText("Status: Erledigt (" + concern.getClosingDate() + ")");
-			}
-			else
-			{
-				closeStatusLabel.setText("Status: Abgebrochen (" + concern.getClosingDate() + ")");
-			}
-			
-			closeStatusLabel.setVisible(true);
-		}
-		
-		
+
+		// ---------------------------------------------------
+
 		topicLabel = new Label("Thema:");
-		topicComboBox = new ComboBox<Topic>(FXCollections.observableArrayList(presenter.getTopics()));   
+		ObservableList<Topic> topics = presenter.getTopics();
+		topicComboBox = new ComboBox<Topic>(FXCollections.observableArrayList(topics));
+		// Standard-Thema ("Sonstige" auswählen), id == 1
+		for (int i = 0; i < topics.size(); i++) {
+			if (topics.get(i).getId() == 1) {
+				topicComboBox.getSelectionModel().select(topics.get(i));
+				break;
+			}
+
+		}
+
 		newTopicButton = new Button("+");
 		topicHBox = new HBox(topicComboBox, newTopicButton);
 		newTopicButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
 		topicComboBox.setMaxWidth(Double.MAX_VALUE);
 		HBox.setHgrow(topicComboBox, Priority.ALWAYS);
+
+		// ---------------------------------------------------
 
 		studentLabel = new Label("Studenten:");
 		searchTextField = new TextField("");
@@ -191,9 +191,9 @@ public class ConcernView extends GridPane {
 		HBox.setHgrow(searchTextField, Priority.ALWAYS);
 
 		changeStudentSelectionButton = new Button("Auswahl ändern");
-		filteredStudents =  FXCollections.observableArrayList(localStudents);
+		filteredStudents = FXCollections.observableArrayList(localStudents);
 		studentTableView = new TableView<Student>(filteredStudents);
-	
+
 		notesLabel = new Label("Notizen");
 		notesTextArea = new TextArea();
 
@@ -212,47 +212,44 @@ public class ConcernView extends GridPane {
 		deleteAppointmentButton = new Button("Löschen");
 		appointmentHBox = new HBox(newAppointmentButton, deleteAppointmentButton);
 		appointmentTableView = new TableView<Appointment>();
-		
+
 		// ======================================================================
-		
+
 		TableColumn<Student, Integer> mtrNrCol = new TableColumn<Student, Integer>("Matrikelnr.");
 		mtrNrCol.setCellValueFactory(new PropertyValueFactory<>("mtrNr"));
-		
+
 		TableColumn<Student, String> nameCol = new TableColumn<Student, String>("Nachname");
 		nameCol.setCellValueFactory(new PropertyValueFactory<Student, String>("name"));
-		
+
 		TableColumn<Student, String> firstNameCol = new TableColumn<Student, String>("Vorname");
 		firstNameCol.setCellValueFactory(new PropertyValueFactory<Student, String>("firstName"));
 
 		studentTableView.getColumns().addAll(mtrNrCol, nameCol, firstNameCol);
-
 
 		TableColumn<Reminder, Date> dateCol = new TableColumn<Reminder, Date>("Datum");
 		dateCol.setCellValueFactory(new PropertyValueFactory<>("date"));
 
 		TableColumn<Reminder, String> messageCol = new TableColumn<Reminder, String>("Nachricht");
 		messageCol.setCellValueFactory(new PropertyValueFactory<>("message"));
-		
+
 		reminderTableView.getColumns().addAll(dateCol, messageCol);
-		
-		
+
 		TableColumn<Form, String> fileNameCol = new TableColumn<Form, String>("Dateiname");
 		fileNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
 		fileTableView.getColumns().add(fileNameCol);
-		
-		
+
 		TableColumn<Appointment, Date> appDateCol = new TableColumn<Appointment, Date>("Datum");
 		appDateCol.setCellValueFactory(new PropertyValueFactory<>("date"));
-		
+
 		TableColumn<Appointment, Long> startTimeCol = new TableColumn<Appointment, Long>("Von");
 		startTimeCol.setCellValueFactory(new PropertyValueFactory<>("startTimeString"));
-		
+
 		TableColumn<Appointment, Long> endTimeCol = new TableColumn<Appointment, Long>("Bis");
 		endTimeCol.setCellValueFactory(new PropertyValueFactory<>("endTimeString"));
-		
+
 		TableColumn<Appointment, String> roomNmbCol = new TableColumn<Appointment, String>("Raum");
 		roomNmbCol.setCellValueFactory(new PropertyValueFactory<>("roomNmb"));
-		
+
 		appointmentTableView.getColumns().addAll(appDateCol, startTimeCol, endTimeCol, roomNmbCol);
 
 		// ======================================================================
@@ -267,7 +264,7 @@ public class ConcernView extends GridPane {
 		closeButton.setMaxWidth(Double.MAX_VALUE);
 		add(closeButton, 5, 0);
 		GridPane.setHalignment(closeButton, HPos.LEFT);
-		
+
 		GridPane.setHalignment(saveButton, HPos.LEFT);
 		add(topicLabel, 0, 1);
 		add(topicHBox, 1, 1, 3, 1);
@@ -315,77 +312,7 @@ public class ConcernView extends GridPane {
 
 		// ==================================================
 		saveButton.setOnAction((event) -> {
-
-			String newTitle = titleTextField.getText();
-			Topic newTopic = topicComboBox.getSelectionModel().getSelectedItem();
-			if (newTitle.equals("") || newTopic == null)
-			{
-				errorLabel.setText("Titel und Thema müssen gesetzt sein");
-				errorLabel.setTextFill(Color.RED);
-				return;
-			}
-			
-			else if (concern == null)
-			{
-				if (concernTitleAlreadyExists(newTitle))
-				{
-					errorLabel.setText("Titel bereits vergeben");
-					errorLabel.setTextFill(Color.RED);
-					return;
-				}
-				// Concern mit angegebenen Titel erstellen
-				concern = new Concern(newTitle, newTopic);
-				
-				//übrige Attribute auslesen uns setzen
-				concern.setStudents(localStudents);
-				concern.setNotes(notesTextArea.getText());
-				concern.setReminders(reminderTableView.getItems());
-				concern.setAppointments(appointmentTableView.getItems());
-				
-				//Speicher nur Files die nicht zum Topic gehören
-				ObservableList<Form> newFiles = FXCollections.observableArrayList(fileTableView.getItems());
-				newFiles.removeAll(newTopic.getForms());
-				concern.setFiles(newFiles);
-				
-
-				int newConcernId = presenter.saveNewConcern(concern);
-				errorLabel.setText("");
-				saveButton.setText("Speichern");
-				closeButton.setVisible(true);
-
-				// Tabbeschriftungs-Bug
-				// tab.setText(newTitle);
-				
-				tab.setTabId("c" + newConcernId);
-			}
-			else
-			{
-				errorLabel.setText("");
-				// Attribute speichern
-				concern.setTitle(newTitle);
-				concern.setTopic(newTopic);
-				
-				concern.setStudents(localStudents);
-				concern.setNotes(notesTextArea.getText());
-				concern.setReminders(reminderTableView.getItems());
-				concern.setAppointments(appointmentTableView.getItems());
-				
-				//Speicher nur Files die nicht zum Topic gehören
-				ObservableList<Form> newFiles = FXCollections.observableArrayList(fileTableView.getItems());
-				newFiles.removeAll(newTopic.getForms());
-				concern.setFiles(newFiles);
-
-				presenter.saveEditedConcern(concern);
-
-				/* 	Bug: Doppelte Tabbeschriftung anpassen
-					Problem: Neue Tabbeschriftung wird lediglich an alte drangehängt.
-					System.out.println("Tabtext: " + tab.getText()); // null
-					tab.setText(newTitle);
-				*/
-				
-			}
-			
-			presenter.updateRightToolbar();
+			save(true);
 
 		});
 
@@ -396,11 +323,11 @@ public class ConcernView extends GridPane {
 			stage.setTitle("Neues Thema");
 			stage.getIcons().add(new Image("\\Icon.png"));
 			stage.setResizable(false);
-			stage.setScene(new Scene(new EditTopicView(stage, presenter, this), getWidth()*(0.6), getHeight()*(0.7)));
+			stage.setScene(
+					new Scene(new EditTopicView(stage, presenter, this), getWidth() * (0.6), getHeight() * (0.7)));
 			stage.show();
 		});
-		
-		
+
 		searchTextField.textProperty().addListener((obs, oldText, newText) -> {
 			filterStudents(newText);
 		});
@@ -413,7 +340,7 @@ public class ConcernView extends GridPane {
 			stage.setResizable(false);
 			stage.getIcons().add(new Image("\\Icon.png"));
 			stage.setScene(new Scene(new AddStudentToConcernView(presenter, stage, this, studentTableView.getItems()),
-					getWidth()*(0.6), getHeight()*(0.7)));
+					getWidth() * (0.6), getHeight() * (0.7)));
 			stage.show();
 		});
 
@@ -424,19 +351,19 @@ public class ConcernView extends GridPane {
 			stage.setTitle("Neue Erinnerung hinzufügen");
 			stage.getIcons().add(new Image("\\Icon.png"));
 			stage.setResizable(false);
-			stage.setScene(new Scene(new NewReminderView(stage, reminderTableView.getItems(), concern.getId()), getWidth()*(0.6), getHeight()*(0.7)));
+			stage.setScene(new Scene(new NewReminderView(stage, reminderTableView.getItems(), concern.getId()),
+					getWidth() * (0.6), getHeight() * (0.7)));
 			stage.show();
 		});
 
 		deleteReminderButton.setOnAction((event) -> {
 			Reminder reminderToDelete = reminderTableView.getSelectionModel().getSelectedItem();
-			
-			if(reminderToDelete!= null)
-			{
+
+			if (reminderToDelete != null) {
 				reminderTableView.getItems().remove(reminderToDelete);
 				presenter.deleteReminder(reminderToDelete);
-			}		
-			
+			}
+
 		});
 
 		changeFileSelectionButton.setOnAction((event) -> {
@@ -444,26 +371,23 @@ public class ConcernView extends GridPane {
 			stage.setAlwaysOnTop(true);
 			stage.initModality(Modality.APPLICATION_MODAL);
 			stage.setTitle("Datei zum Anliegen hinzufügen");
-			
+
 			ObservableList<Form> topicRelatedFiles;
 			Topic selectedTopic = topicComboBox.getSelectionModel().getSelectedItem();
-			if(selectedTopic != null)
-			{
+			if (selectedTopic != null) {
 				topicRelatedFiles = FXCollections.observableArrayList(selectedTopic.getForms());
-			}
-			else
-			{
+			} else {
 				topicRelatedFiles = FXCollections.observableArrayList();
 			}
 
-			ObservableList<Form> filesAlreadyInConcern =FXCollections.observableArrayList(fileTableView.getItems());
+			ObservableList<Form> filesAlreadyInConcern = FXCollections.observableArrayList(fileTableView.getItems());
 
 			stage.setResizable(false);
 			stage.getIcons().add(new Image("\\Icon.png"));
-			stage.setScene(new Scene(new FormsView(presenter, stage, this, filesAlreadyInConcern, topicRelatedFiles), 600, 500));
+			stage.setScene(new Scene(new FormsView(presenter, stage, this, filesAlreadyInConcern, topicRelatedFiles),
+					600, 500));
 			stage.show();
 		});
-
 
 		newAppointmentButton.setOnAction((event) -> {
 			Stage stage = new Stage();
@@ -478,111 +402,109 @@ public class ConcernView extends GridPane {
 
 		deleteAppointmentButton.setOnAction((event) -> {
 			Appointment appointmentToDelete = appointmentTableView.getSelectionModel().getSelectedItem();
-			if(appointmentToDelete != null)
-			{
+			if (appointmentToDelete != null) {
 				appointmentTableView.getItems().remove(appointmentToDelete);
 				presenter.deleteAppointment(appointmentToDelete);
 			}
-			
-		});
-		
-		closeButton.setOnAction(event ->{
-			Alert alert = new Alert(AlertType.CONFIRMATION);
-	        alert.setTitle("Anliegen " +  concern.getTitle() + " abschließen");
-	        alert.setHeaderText("Bitte wählen sie den korrekten Abschluss-Status des Anliegen"
-	        						+"\n" + "INFO: Abgeschlossene Anliegen sind (mit Ausnahme des Fehleintrages) weiterhin einsehbar."
-	        						+"\n" + "ACHTUNG: Das Schließen eines Anliegens ist nicht umkehrbar");
-	 
-	        ButtonType completed = new ButtonType("Schließen mit Status \"Erledigt\"");
-	        ButtonType uncompleted = new ButtonType("Schließen mit Status \"Abgebrochen\"");
-	        ButtonType deletable = new ButtonType("Löschen als Fehleintrag");
-	        ButtonType abortMission = new ButtonType("Abbrechen");
-	 
-	        // Standard ButtonTypes entfernen
-	        alert.getButtonTypes().clear();
-	 
-	        //Eigene ButtonTypes hinzufügen
-	        alert.getButtonTypes().addAll(completed, uncompleted, deletable,abortMission);
-	 
-	        //Alert anzeigen
-	        Optional<ButtonType> option = alert.showAndWait();
-	 
-	        //Resultat verarbeiten
-	        if (option.get() == completed)
-	        {
-	            concern.setCompleted(true);
-	            concern.setClosingDate(new java.sql.Date(Calendar.getInstance().getTime().getTime()));
-	            presenter.saveEditedConcern(concern);
-	            closeButton.setVisible(false);
-	            
-	        }
-	        else if (option.get() == uncompleted)
-	        {
-	        	concern.setClosingDate(new java.sql.Date(Calendar.getInstance().getTime().getTime()));
-	        	presenter.saveEditedConcern(concern);
-	        	closeButton.setVisible(false);
-	        } 
-	        else if (option.get() == deletable)
-	        {
-	        	presenter.deleteConcern(concern);
-	        	presenter.closeThisTab(tab);
-	        }
-	        else if (option.get() == abortMission)
-	        {
-	        	
-	        }
-		});
-		
 
-		topicComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal)->{
-			if(oldVal != null && oldVal.getForms() != null) {
+		});
+
+		closeButton.setOnAction(event -> {
+			Alert alert = new Alert(AlertType.CONFIRMATION);
+			alert.setTitle("Anliegen " + concern.getTitle() + " abschließen");
+			alert.setHeaderText("Bitte wählen sie den korrekten Abschluss-Status des Anliegen" + "\n"
+					+ "INFO: Abgeschlossene Anliegen sind (mit Ausnahme des Fehleintrages) weiterhin einsehbar." + "\n"
+					+ "ACHTUNG: Das Schließen eines Anliegens ist nicht umkehrbar");
+
+			ButtonType completed = new ButtonType("Schließen mit Status \"Erledigt\"");
+			ButtonType uncompleted = new ButtonType("Schließen mit Status \"Abgebrochen\"");
+			ButtonType deletable = new ButtonType("Löschen als Fehleintrag");
+			ButtonType abortMission = new ButtonType("Abbrechen");
+
+			// Standard ButtonTypes entfernen
+			alert.getButtonTypes().clear();
+
+			// Eigene ButtonTypes hinzufügen
+			alert.getButtonTypes().addAll(completed, uncompleted, deletable, abortMission);
+
+			// Alert anzeigen
+			Optional<ButtonType> option = alert.showAndWait();
+
+			// Resultat verarbeiten
+			if (option.get() == completed) {
+				concern.setCompleted(true);
+				concern.setClosingDate(new java.sql.Date(Calendar.getInstance().getTime().getTime()));
+				presenter.saveEditedConcern(concern);
+				closeButton.setVisible(false);
+
+			} else if (option.get() == uncompleted) {
+				concern.setClosingDate(new java.sql.Date(Calendar.getInstance().getTime().getTime()));
+				presenter.saveEditedConcern(concern);
+				closeButton.setVisible(false);
+			} else if (option.get() == deletable) {
+				presenter.deleteConcern(concern);
+				presenter.closeThisTab(tab);
+			} else if (option.get() == abortMission) {
+
+			}
+		});
+
+		topicComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+			if (oldVal != null && oldVal.getForms() != null) {
 				fileTableView.getItems().removeAll(oldVal.getForms());
 			}
-			if(newVal != null && newVal.getForms() != null) {
+			if (newVal != null && newVal.getForms() != null) {
 				fileTableView.getItems().addAll(newVal.getForms());
 			}
 		});
-		
-		
+
 		studentTableView.setOnMousePressed(new EventHandler<MouseEvent>() {
-		    @Override 
-		    public void handle(MouseEvent event) {
-		        if (event.isPrimaryButtonDown() && event.getClickCount() > 1) {
-		        	Student selectedStudent = studentTableView.getSelectionModel().getSelectedItem();
-		        	if(selectedStudent != null)
-		        	{
-		        		presenter.openStudenTab(selectedStudent);;
-		        	}
-		                               
-		        }
-		    }
+			@Override
+			public void handle(MouseEvent event) {
+				if (event.isPrimaryButtonDown() && event.getClickCount() > 1) {
+					Student selectedStudent = studentTableView.getSelectionModel().getSelectedItem();
+					if (selectedStudent != null) {
+						presenter.openStudenTab(selectedStudent);
+						;
+					}
+
+				}
+			}
 		});
-		
+
 		fileTableView.setOnMousePressed(new EventHandler<MouseEvent>() {
-		    @Override 
-		    public void handle(MouseEvent event) {
-		        if (event.isPrimaryButtonDown() && event.getClickCount() > 1) {
-		        	Form selectedForm = fileTableView.getSelectionModel().getSelectedItem();
-		        	if(selectedForm != null)
-		        	{
-		        	 presenter.handleExportForm(selectedForm);
-		        	 
-		        	}
-		                               
-		        }
-		    }
+			@Override
+			public void handle(MouseEvent event) {
+				if (event.isPrimaryButtonDown() && event.getClickCount() > 1) {
+					Form selectedForm = fileTableView.getSelectionModel().getSelectedItem();
+					if (selectedForm != null) {
+						presenter.handleExportForm(selectedForm);
+
+					}
+
+				}
+			}
 		});
 
 	}
 
 	private boolean concernTitleAlreadyExists(String newTitle) {
 		ArrayList<Concern> allConcerns = new ArrayList<>(presenter.getConcerns());
-		
-		if(concern != null)
+
+		if (concern != null)
 		{
-			allConcerns.remove(concern);
+			for(int i = 0; i < allConcerns.size(); i++)
+			{
+				if(concern.getId() == allConcerns.get(i).getId())
+				{
+					allConcerns.remove(i);
+					break;
+				}
+				
+			}
+			
 		}
-		
+
 		for (Concern c : allConcerns) {
 			if (c.getTitle().equals(newTitle)) {
 				return true;
@@ -592,35 +514,26 @@ public class ConcernView extends GridPane {
 
 		return false;
 	}
-	
+
 	private void filterStudents(String searchTerm) {
 
-		if(searchTerm.isEmpty())
-		{
+		if (searchTerm.isEmpty()) {
 			filteredStudents.clear();
 			filteredStudents.addAll(localStudents);
-		}
-		else
-		{
-			
+		} else {
+
 			filteredStudents.clear();
-			String [] searchTerms = searchTerm.toLowerCase().split(" ");
-			
-			
-			for (Student student : localStudents)
-			{
-				if(Presenter.containsAll(student.toString().toLowerCase(), searchTerms))
-				{
+			String[] searchTerms = searchTerm.toLowerCase().split(" ");
+
+			for (Student student : localStudents) {
+				if (Presenter.containsAll(student.toString().toLowerCase(), searchTerms)) {
 					filteredStudents.add(student);
 				}
-				
+
 			}
-			
+
 		}
 	}
-	
-
-
 
 	private void fillView() {
 		titleTextField.setText(concern.getTitle());
@@ -639,103 +552,186 @@ public class ConcernView extends GridPane {
 			appointmentTableView.setItems(concern.getAppointments());
 		}
 		
-	}
-	
-	
-	//==============================================================
-
-	public void addStudentsToConcern(ObservableList<Student> students) {
-		localStudents.clear();
-		localStudents.addAll(students);
-		
-		filterStudents(searchTextField.getText());
-		
-	}
-	
-	public void addFilesToConcern(ObservableList<Form> files)
-	{
-		Topic selectedTopic = topicComboBox.getSelectionModel().getSelectedItem();
-		if(selectedTopic !=  null)
+		// Wenn Anliegen abgeschlossen ist closeStatus setzen
+		if (concern.getClosingDate() != null)
 		{
-			fileTableView.setItems(FXCollections.observableArrayList(selectedTopic.getForms()));
+			closeButton.setVisible(false);
+			if (concern.isCompleted() == true)
+			{
+				closeStatusLabel.setText("Status: Erledigt (" + concern.getClosingDate() + ")");
+			} else {
+				closeStatusLabel.setText("Status: Abgebrochen (" + concern.getClosingDate() + ")");
+			}
+
+			closeStatusLabel.setVisible(true);
+		}
+		
+		if (concern.getStudents() != null)
+		{
+			localStudents = concern.getStudents();
 		}
 		else
 		{
+			localStudents = FXCollections.observableArrayList();
+		}
+		filterStudents(searchTextField.getText());
+
+	}
+
+	// =========================================================================
+	// öffentliche Methoden
+	// =========================================================================
+
+	public void save(boolean blockedByErrors) {
+		// -------------------------------------------------------------------
+		// Abfangen von Fehlern eines unausreichend ausgefülltem Profil
+		// -------------------------------------------------------------------
+
+		String newTitle = titleTextField.getText();
+
+		if (blockedByErrors) {
+			if (newTitle.equals("")) {
+				errorLabel.setText("Titel nicht gesetzt");
+				return;
+			}
+			if (concernTitleAlreadyExists(newTitle)) {
+				errorLabel.setText("Titel bereits vergeben");
+				return;
+			}
+
+		} else if (!blockedByErrors) {
+			if (newTitle.equals("")) {
+				newTitle = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
+				titleTextField.setText(newTitle);
+			}
+			if (concernTitleAlreadyExists(newTitle)) {
+				int i = 2;
+				String changedNewTitle;
+				do {
+					changedNewTitle = newTitle + "_" + i;
+					i++;
+				} while (concernTitleAlreadyExists(changedNewTitle));
+
+				newTitle = changedNewTitle;
+
+			}
+
+		}
+
+		// -------------------------------------------------------------------
+		// Speichern
+		// -------------------------------------------------------------------
+
+		Topic newTopic = topicComboBox.getSelectionModel().getSelectedItem();
+
+		// Nur Files die nicht zum Topic gehören
+		ObservableList<Form> newFiles = FXCollections.observableArrayList(fileTableView.getItems());
+		newFiles.removeAll(newTopic.getForms());
+
+		// Kein Anliegen hinterlegt -> Neu erstellen
+		if (concern == null) {
+			// Concern erstellen
+			concern = new Concern(newTitle);
+
+			// Attribute setzen
+			concern.setTopic(newTopic);
+			concern.setStudents(localStudents);
+			concern.setNotes(notesTextArea.getText());
+			concern.setReminders(reminderTableView.getItems());
+			concern.setAppointments(appointmentTableView.getItems());
+			concern.setFiles(newFiles);
+
+			// Speichern + Anpassen
+			int newConcernId = presenter.saveNewConcern(concern);
+			concern.setId(newConcernId);
+			tab.setTabId("c" + newConcernId);
+			saveButton.setText("Speichern");
+			closeButton.setVisible(true);
+
+		}
+		// Bestehendes Anliegen -> Änderungen speichern
+		else {
+			// Attribute setzen
+			concern.setTitle(newTitle);
+			concern.setTopic(newTopic);
+			concern.setStudents(localStudents);
+			concern.setNotes(notesTextArea.getText());
+			concern.setReminders(reminderTableView.getItems());
+			concern.setAppointments(appointmentTableView.getItems());
+			concern.setFiles(newFiles);
+
+			// Speichern
+			presenter.saveEditedConcern(concern);
+
+		}
+
+		// -------------------------------------------------------------------
+		// Oberfläche anpassen
+		// -------------------------------------------------------------------
+
+		errorLabel.setText("");
+		presenter.updateRightToolbar();
+
+		// Tabbeschriftungs-Bug (Doppelte Tabbeschriftung)
+		// tab.setText(newTitle);
+
+	}
+	
+	
+	public void addStudentsToConcern(ObservableList<Student> students) {
+		localStudents.clear();
+		localStudents.addAll(students);
+
+		filterStudents(searchTextField.getText());
+
+	}
+
+	public void addFilesToConcern(ObservableList<Form> files) {
+		Topic selectedTopic = topicComboBox.getSelectionModel().getSelectedItem();
+		if (selectedTopic != null) {
+			fileTableView.setItems(FXCollections.observableArrayList(selectedTopic.getForms()));
+		} else {
 			fileTableView.getItems().clear();
 		}
 		fileTableView.getItems().addAll(files);
 	}
-	
-	public void addAppointment(Appointment appointment)
-	{
+
+	public void addAppointment(Appointment appointment) {
 		appointmentTableView.getItems().add(appointment);
 	}
-	
-	//genutzt, wenn über das entsprechende Pop-Up Fenster Themen neu erstellt werden
-	public void addNewTopic(Topic topic)
-	{
+
+	/**
+	 * genutzt, wenn über das entsprechende Pop-Up Fenster Themen neu erstellt
+	 * werden
+	 */
+	public void addNewTopic(Topic topic) {
 		topicComboBox.getItems().add(topic);
 		topicComboBox.getSelectionModel().select(topic);
 	}
 
 	public void updateView() {
-		
-		if(concern!= null)
-		{
-			//Concern aktualisieren (erkennen falls dieser zB. über die AllConcernsView geschlossen wurde)
-			concern = presenter.getConcern(concern.getId());
-			
-			//Oberfläche in diesem Fall entsprechend anpassen
-			if(concern.getClosingDate() != null)
-			{
-				closeButton.setVisible(false);
-				if(concern.isCompleted() == true)
-				{
-					closeStatusLabel.setText("Status: Erledigt (" + concern.getClosingDate() + ")");
-				}
-				else
-				{
-					closeStatusLabel.setText("Status: Abgebrochen (" + concern.getClosingDate() + ")");
-				}
-				closeStatusLabel.setVisible(true);
-			}
-			
-			if(concern.getStudents() != null) {
-				localStudents = concern.getStudents();
-			}
-			else
-			{
-				localStudents = FXCollections.observableArrayList();
-			}
-			filterStudents(searchTextField.getText());
-			
-			fillView();
-		}
-		
-		//Evtl. geänderte Themen (über Options) aktualisieren
+
+		//Concern neu holen
+		concern = presenter.getConcern(concern.getId());
+
+		fillView();
+
+		// Evtl. geänderte Themen (über Options) aktualisieren
 		Topic selectedTopic = topicComboBox.getSelectionModel().getSelectedItem();
 		topicComboBox.setItems(presenter.getTopics());
-		
-		//Topic Auswahl wiederherstellen
-		if(selectedTopic!= null)
-		{
-			for (Topic topic :topicComboBox.getItems())
-			{
-				if(topic.getId() == selectedTopic.getId())
-				{
+
+		// Topic Auswahl wiederherstellen
+		if (selectedTopic != null) {
+			for (Topic topic : topicComboBox.getItems()) {
+				if (topic.getId() == selectedTopic.getId()) {
 					topicComboBox.getSelectionModel().select(topic);
-					
 					break;
 				}
-				
-				
+
 			}
-			
+
 		}
-		
-		
-		
-		
+
 	}
 
 }
