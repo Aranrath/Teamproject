@@ -8,7 +8,8 @@ import javafx.scene.image.Image;
 
 public class Student {
 
-	private int mtrNr;
+	private long id;
+	private int matrNr;
 	private String name;
 	private String firstName;
 	private ArrayList<String> eMailAddresses;
@@ -27,15 +28,15 @@ public class Student {
 	
 	private String mtrNrString;
 
-	public Student(int mtrNr, String name) {
-		this.mtrNr = mtrNr;
+	public Student(String name) {
 		this.name = name;
 		mtrNrString = mtrToString();
 	}
 
-	public Student(int mtrNr, String name, String firstName, ArrayList<String> eMailAddresses, int semester, PO po,
+	public Student(long id, int mtrNr, String name, String firstName, ArrayList<String> eMailAddresses, int semester, PO po,
 			String notes, ObservableList<Subject> passedSubjects, Image image, ObservableList<Long> concernIds, String gender, Date lastContact, Date exmatr) {
-		this.mtrNr = mtrNr;
+		this.id = id;
+		this.matrNr = mtrNr;
 		this.name = name;
 		this.firstName = firstName;
 		this.eMailAddresses = eMailAddresses;
@@ -54,8 +55,12 @@ public class Student {
 
 	// ------------------------------------GetterSetter
 
+	public long getId() {
+		return id;
+	}
+	
 	public int getMtrNr() {
-		return mtrNr;
+		return matrNr;
 	}
 
 	public String getName() {
@@ -90,8 +95,12 @@ public class Student {
 		return po;
 	}
 
+	public void setId(long id) {
+		this.id = id;
+	}
+
 	public void setMtrNr(int mtrNr) {
-		this.mtrNr = mtrNr;
+		this.matrNr = mtrNr;
 		mtrNrString = mtrToString();
 	}
 
@@ -170,7 +179,7 @@ public class Student {
 	//für die Suche
 	public String toString()
 	{
-		String studentString = mtrNr + " " + name;
+		String studentString = matrNr + " " + name;
 		
 		if(firstName != null)
 		{

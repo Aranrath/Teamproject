@@ -352,31 +352,33 @@ public class EditStudentView extends GridPane {
 			ArrayList<String> changedMailAddresses;
 
 			//Pflichtfelder auslesen:
-			if (studentMtrNr.getText().isEmpty() || studentLastName.getText().isEmpty())
+			if (studentLastName.getText().isEmpty())
 			{
-				errorLabel.setText("MatrikelNr und Name müssen gesetzt sein");
+				errorLabel.setText("Name muss gesetzt sein");
 				errorLabel.setVisible(true);
 				return;
 				
 			}
-			else
+			mtrNr = 0;
+			if(!studentMtrNr.getText().isEmpty())
 			{
+				
 				try
 				{
 					mtrNr = Integer.parseInt(studentMtrNr.getText());
-					name = studentLastName.getText();
 				}
 				catch (Exception e) {
 					errorLabel.setText("MatrikelNr nicht zulässig");
 					errorLabel.setVisible(true);
 					return;
 				}
-			}
 			
-			if((student == null && presenter.mtrAlreadyExists(mtrNr)) || (student != null && student.getMtrNr() != mtrNr && presenter.mtrAlreadyExists(mtrNr)) )
-			{
-				errorLabel.setText("Matrikelnummer bereits vergeben");
-				errorLabel.setVisible(true);
+			
+				if((student == null && presenter.mtrAlreadyExists(mtrNr)) || (student != null && student.getMtrNr() != mtrNr && presenter.mtrAlreadyExists(mtrNr)) )
+				{
+					errorLabel.setText("Matrikelnummer bereits vergeben");
+					errorLabel.setVisible(true);
+				}
 			}
 			
 			//EMail Adressen auslesen
@@ -420,6 +422,7 @@ public class EditStudentView extends GridPane {
 				semester = 0;
 			}
 
+			name = studentLastName.getText();
 			concerns = concernsListView.getItems();
 			notes = studentNotes.getText();
 			gender = genderComboBox.getValue();
@@ -432,7 +435,8 @@ public class EditStudentView extends GridPane {
 			{
 				changedMailAddresses = new ArrayList<String>();
 				
-				student = new Student(mtrNr, name);
+				student = new Student( name);
+				student.setMtrNr(mtrNr);
 				student.seteMailAddresses(eMailAddresses);
 				student.setFirstName(firstName);
 				student.setImage(image);
@@ -452,11 +456,7 @@ public class EditStudentView extends GridPane {
 				changedMailAddresses = new ArrayList<String>(eMailAddresses);
 				changedMailAddresses.removeAll(student.geteMailAddresses());
 				
-				if(student.getMtrNr() != mtrNr)
-				{
-					presenter.changeStudentMtrNr(student.getMtrNr(), mtrNr);
-					student.setMtrNr(mtrNr);
-				}
+				student.setMtrNr(mtrNr);
 				student.setName(name);
 				student.seteMailAddresses(eMailAddresses);
 				student.setFirstName(firstName);

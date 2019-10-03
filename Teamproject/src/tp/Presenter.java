@@ -74,8 +74,8 @@ public class Presenter {
 		return model.getNext24hourAppointments();
 	}
 
-	public Student getStudent(int mtrNr) {
-		return model.getStudent(mtrNr);
+	public Student getStudent(long l) {
+		return model.getStudent(l);
 
 	}
 
@@ -358,11 +358,6 @@ public class Presenter {
 
 	public boolean mtrAlreadyExists(int mtrNr) {
 		return model.mtrAlreadyExists(mtrNr);
-	}
-
-	public void changeStudentMtrNr(int oldMtrNr, int newMtrNr) {
-		model.changeStudentMtrNr( oldMtrNr,  newMtrNr);
-		
 	}
 
 	public void openConcernTab(Concern concern) {

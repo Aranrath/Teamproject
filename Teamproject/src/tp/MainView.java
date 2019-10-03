@@ -368,15 +368,15 @@ public class MainView extends BorderPane {
 
 	public void openStudentTab(Student student) {
 		//StudentView bereits offen?
-		MyTab newTab = tabAlreadyOpen("b" + student.getMtrNr());
+		MyTab newTab = tabAlreadyOpen("b" + student.getId());
 		//Student als EditStudentView offen?
 		if (newTab == null)
 		{
-			newTab = tabAlreadyOpen("s" + student.getMtrNr());
+			newTab = tabAlreadyOpen("s" + student.getId());
 		}
 		//wenn nicht:
 		if (newTab == null) {
-			newTab = new MyTab("b" + student.getMtrNr());
+			newTab = new MyTab("b" + student.getId());
 
 			newTab.setText(student.getName() + ", " + student.getFirstName());
 
@@ -401,9 +401,9 @@ public class MainView extends BorderPane {
 	}
 	
 	public void openStudentTabFromEditStudentView(Student student, ArrayList<String> changedMailAddresses) {
-		MyTab newTab = tabAlreadyOpen("b" + student.getMtrNr());
+		MyTab newTab = tabAlreadyOpen("b" + student.getId());
 		if (newTab == null) {
-			newTab = new MyTab("b" + student.getMtrNr());
+			newTab = new MyTab("b" + student.getId());
 
 			newTab.setText(student.getName() + ", " + student.getFirstName());
 
@@ -711,7 +711,7 @@ public class MainView extends BorderPane {
 	}
 	
 	public void openEditStudentTab(Student student) {
-		MyTab newTab = new MyTab("s" + student.getMtrNr());
+		MyTab newTab = new MyTab("s" + student.getId());
 
 		newTab.setText(student.getName() + ", " + student.getFirstName());
 
@@ -816,7 +816,7 @@ public class MainView extends BorderPane {
 			MyTab myTab = (MyTab) tab;
 			
 			//Student kann als StudentView oder EditStudentView geöffnet sein
-			if(myTab.getTabId().equals("b" + student.getMtrNr()) ||  myTab.getTabId().equals("s" + student.getMtrNr())   )
+			if(myTab.getTabId().equals("b" + student.getId()) ||  myTab.getTabId().equals("s" + student.getId())   )
 			{
 				tabToClose = myTab;
 				break;

@@ -66,7 +66,7 @@ public class AddStudentToConcernView extends GridPane{
 		*/
 		for (Student inStu: selectedStudents) {
 			for (Student allStu: addableStudents) {
-				if(inStu.getMtrNr() == allStu.getMtrNr()) {
+				if(inStu.getId() == allStu.getId()) {
 					addableStudents.remove(allStu);
 					break;
 				}

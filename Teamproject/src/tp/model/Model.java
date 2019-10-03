@@ -524,9 +524,9 @@ public class Model {
 	}
 
 
-	private ArrayList<String> getEMailAddressess(int mtrNr) {
+	private ArrayList<String> getEMailAddressess(long id) {
 		ArrayList<String> result = new ArrayList<String>();
-		String sql ="SELECT emailAddress FROM student_emailAddress WHERE student = " + mtrNr;
+		String sql ="SELECT emailAddress FROM student_emailAddress WHERE student = " + id;
 		
 		try (Connection conn = this.connect();
 				Statement stmt = conn.createStatement();
@@ -597,16 +597,16 @@ public class Model {
 		return result;
 	}
 
-	private ObservableList<Subject> getPassedSubjects(int mtrNr) {
+	private ObservableList<Subject> getPassedSubjects(long id) {
 		ObservableList<Subject>  result = FXCollections.observableArrayList();
-		String sql = "SELECT subject FROM passed_subjects WHERE student = " + mtrNr;
+		String sql = "SELECT subject FROM passed_subjects WHERE student = " + id;
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql))
 		{
 			while(rs.next()) {
-				int id = rs.getInt("subject");
-				result.add(getSubject(id));
+				int SubjectId = rs.getInt("subject");
+				result.add(getSubject(SubjectId));
 			}
 			
 		}catch(Exception e) {
@@ -829,24 +829,25 @@ public class Model {
 	}
 
 
-	public Student getStudent(int mtrNr) 
+	public Student getStudent(long id) 
 	{
-	Student result = new Student(0, null, null, null, 0, null, null, null, null, null, null, null, null);
-	String sql1 = "SELECT * FROM student WHERE matrNr = " + mtrNr;
-	String sql2 = "SELECT concern FROM concern_student WHERE student = " + mtrNr;
+	Student result = new Student(0, 0, null, null, null, 0, null, null, null, null, null, null, null, null);
+	String sql1 = "SELECT * FROM student WHERE id = " + id;
+	String sql2 = "SELECT concern FROM concern_student WHERE student = " + id;
 	try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement();
 			ResultSet rs1 = stmt.executeQuery(sql1))				
 		{
 			if (rs1.next()) {
 			
+				int matrNr = rs1.getInt("matrNr");
 				String name = rs1.getString("name");
 				String firstname = rs1.getString("firstname");
-				ArrayList<String> eMailAddressess = getEMailAddressess(mtrNr);
+				ArrayList<String> eMailAddressess = getEMailAddressess(id);
 				int semester = rs1.getInt("semester");
 				PO po = getPO(rs1.getLong("po"));
 				String notes = rs1.getString("notes");
-				ObservableList<Subject> passedSubjects= getPassedSubjects(mtrNr);
+				ObservableList<Subject> passedSubjects= getPassedSubjects(id);
 				Image img = null;
 				try(InputStream is= rs1.getBinaryStream("image")){
 					if (is!=null) {
@@ -858,7 +859,7 @@ public class Model {
 				String gender = rs1.getString("gender");
 				Date exmatr =  rs1.getDate("exmatr");
 				
-				result = new Student(mtrNr, name, firstname, eMailAddressess, semester, po, notes, passedSubjects, img, null, gender, null, exmatr);
+				result = new Student(id, matrNr, name, firstname, eMailAddressess, semester, po, notes, passedSubjects, img, null, gender, null, exmatr);
 				if(getLastStudentEmail(result)!=null) {
 					Date lastContact = getLastStudentEmail(result).getDate();
 					result.setLastContact(lastContact);
@@ -893,8 +894,8 @@ public class Model {
 		{
 			while(rs.next())
 			{
-				int mtrNr = rs.getInt("matrNr");
-				result.add(getStudent(mtrNr));
+				long id = rs.getLong("id");
+				result.add(getStudent(id));
 			}
 		}
 		catch(Exception e)
@@ -913,7 +914,7 @@ public class Model {
 			ResultSet rs = stmt.executeQuery(sql))
 		{
 			while(rs.next()) {
-				result.add(getStudent(rs.getInt("student")));
+				result.add(getStudent(rs.getLong("student")));
 			}
 			
 		}catch(Exception e) {
@@ -1251,13 +1252,13 @@ public class Model {
 	}
 
 
-	private void addConcernsStudent(ObservableList<Long> concernIds, int mtrNr) {
+	private void addConcernsStudent(ObservableList<Long> concernIds, long id) {
 		String sql;
 		try (Connection conn = this.connect();
 				Statement stmt = conn.createStatement())
 			{
 			for (Long concern: concernIds){
-				sql="INSERT INTO concern_student (concern, student) VALUES (" + concern + ", " + mtrNr + ")";
+				sql="INSERT INTO concern_student (concern, student) VALUES (" + concern + ", " + id + ")";
 				stmt.executeUpdate(sql);
 			}
 			}catch (Exception e) {
@@ -1273,7 +1274,7 @@ public class Model {
 				Statement stmt = conn.createStatement())
 			{
 			for (Student student: students){
-				sql="INSERT INTO concern_student (concern, student) VALUES (" + id + ", " + student.getMtrNr()+ ")";
+				sql="INSERT INTO concern_student (concern, student) VALUES (" + id + ", " + student.getId()+ ")";
 				stmt.executeUpdate(sql);
 			}
 			}catch (Exception e) {
@@ -1324,6 +1325,7 @@ public class Model {
 	        pstmt.setBoolean(4, form.isUniversal());
 			
 			pstmt.executeUpdate();
+			form.setFileExtension(extension);
 			int formId = 0;
 			try (ResultSet rs = stmt.executeQuery(sql2)){
 				if (rs.next()) {
@@ -1406,10 +1408,7 @@ public class Model {
 			{
 				formIds2.add(rs2.getLong("id"));
 			}
-			System.out.println(formIds1);
-			System.out.println(formIds2);
 			formIds1.retainAll(formIds2);
-			System.out.println(formIds1);
 			for(Long formId: formIds1) {
 				stmt3.executeUpdate(sql3  + formId);
 			}
@@ -1863,8 +1862,8 @@ public class Model {
 				ArrayList<Long> students = new ArrayList<Long>();
 				try (ResultSet rs = stmt.executeQuery(sql)){
 					while (rs.next()) {
-						long matrNr = rs.getInt("matrNr");	
-						students.add(matrNr);
+						long id = rs.getLong("id");	
+						students.add(id);
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -1872,28 +1871,28 @@ public class Model {
 
 				//other filters
 				if (filterMap.containsKey("ECTS")) {
-					for (Long matrNr: students) {
-						Student stu = getStudent(matrNr.intValue());
+					for (Long id: students) {
+						Student stu = getStudent(id.intValue());
 						int ECTS = calculateEcts(stu.getPassedSubjects(), stu.getPo());
 						String op = (String)filterMap.get("ECTS")[0];
 						if (op.equals(">")) {
 							if (ECTS <= Integer.parseInt((String)filterMap.get("ECTS")[1])) {
-								students.remove(matrNr);
+								students.remove(id);
 							}
 						}else if (op.equals("=")) {
 							if (ECTS != Integer.parseInt((String)filterMap.get("ECTS")[1])) {
-								students.remove(matrNr);
+								students.remove(id);
 							}
 						}else if (op.equals("<")) {
 							if (ECTS >= Integer.parseInt((String)filterMap.get("ECTS")[1])) {
-								students.remove(matrNr);
+								students.remove(id);
 							}
 						}
 					}
 				}
 				if (filterMap.containsKey("Betreuungszeit in h")) {
-					for (Long matrNr: students) {
-						Student stu = getStudent(matrNr.intValue());
+					for (Long id: students) {
+						Student stu = getStudent(id.intValue());
 						//time in milliseconds
 						long betrZeit = 0;
 						for (Long conId: stu.getConcernIds()) {
@@ -1907,55 +1906,55 @@ public class Model {
 						String op = (String)filterMap.get("Betreuungszeit in h")[0];
 						if (op.equals(">")) {
 							if (betrZeit <= Integer.parseInt((String)filterMap.get("Betreuungszeit in h")[1])) {
-								students.remove(matrNr);
+								students.remove(id);
 							}
 						}else if (op.equals("=")) {
 							if (betrZeit != Integer.parseInt((String)filterMap.get("Betreuungszeit in h")[1])) {
-								students.remove(matrNr);
+								students.remove(id);
 							}
 						}else if (op.equals("<")) {
 							if (betrZeit >= Integer.parseInt((String)filterMap.get("Betreuungszeit in h")[1])) {
-								students.remove(matrNr);
+								students.remove(id);
 							}
 						}
 					}
 				}
 				if (filterMap.containsKey("Anzahl zugehöriger Anliegen")) {
-					for (Long matrNr: students) {
-						Student stu = getStudent(matrNr.intValue());
+					for (Long id: students) {
+						Student stu = getStudent(id.intValue());
 						int anzAnl = stu.getConcernIds().size();
 						String op = (String)filterMap.get("Anzahl zugehöriger Anliegen")[0];
 						if (op.equals(">")) {
 							if (anzAnl <= Integer.parseInt((String)filterMap.get("Anzahl zugehöriger Anliegen")[1])) {
-								students.remove(matrNr);
+								students.remove(id);
 							}
 						}else if (op.equals("=")) {
 							if (anzAnl != Integer.parseInt((String)filterMap.get("Anzahl zugehöriger Anliegen")[1])) {
-								students.remove(matrNr);
+								students.remove(id);
 							}
 						}else if (op.equals("<")) {
 							if (anzAnl >= Integer.parseInt((String)filterMap.get("Anzahl zugehöriger Anliegen")[1])) {
-								students.remove(matrNr);
+								students.remove(id);
 							}
 						}
 					}
 				}
 				if (filterMap.containsKey("Letzter Kontakt")) {
-					for (Long matrNr: students) {
-						Student stu = getStudent(matrNr.intValue());
+					for (Long id: students) {
+						Student stu = getStudent(id.intValue());
 						Date lastCon = getLastStudentEmail(stu).getDate();
 						String op = (String)filterMap.get("Letzter Kontakt")[0];
 						if (op.equals(">")) {
 							if (!lastCon.after((Date)filterMap.get("Letzter Kontakt")[1])) {
-								students.remove(matrNr);
+								students.remove(id);
 							}
 						}else if (op.equals("=")) {
 							if (!lastCon.equals((Date)filterMap.get("Letzter Kontakt")[1])) {
-								students.remove(matrNr);
+								students.remove(id);
 							}
 						}else if (op.equals("<")) {
 							if (!lastCon.before((Date)filterMap.get("Letzter Kontakt")[1])) {
-								students.remove(matrNr);
+								students.remove(id);
 							}
 						}
 					}
@@ -2208,11 +2207,11 @@ public class Model {
 		try(ByteArrayOutputStream os = new ByteArrayOutputStream();
 		   InputStream is = new ByteArrayInputStream(os.toByteArray())){
 			ImageIO.write(SwingFXUtils.fromFXImage(img, null),"png", os);
-			String sql1 = "UPDATE student SET name = ?, firstname = ?, semester = ?, po = ?, image = ?, gender = ? WHERE matrNr = ?";
+			String sql1 = "UPDATE student SET matrNr = ?, name = ?, firstname = ?, semester = ?, po = ?, image = ?, gender = ? WHERE id = ?";
 			String sql2 = "DELETE FROM concern_student WHERE student = " + student.getMtrNr();
 			String sql3 = "DELETE FROM passed_subjects WHERE student = " + student.getMtrNr();
 			
-			Student oldStudent = getStudent(student.getMtrNr());
+			Student oldStudent = getStudent(student.getId());
 			//get MailAddresses to be added
 			ArrayList<String> newMailAddresses = new ArrayList<String>(student.geteMailAddresses());
 			newMailAddresses.removeAll(oldStudent.geteMailAddresses());
@@ -2223,18 +2222,19 @@ public class Model {
 					PreparedStatement pstmt = conn.prepareStatement(sql1);
 					Statement stmt = conn.createStatement())
 			{
-				pstmt.setString(1, student.getName());
-				pstmt.setString(2, student.getFirstName());
-				pstmt.setInt(3, student.getSemester());
+				pstmt.setInt(1, student.getMtrNr());
+				pstmt.setString(2, student.getName());
+				pstmt.setString(3, student.getFirstName());
+				pstmt.setInt(4, student.getSemester());
 				if(student.getPo()!=null) {
-					pstmt.setLong(4, student.getPo().getId());
+					pstmt.setLong(5, student.getPo().getId());
 				}
 				else {
-					pstmt.setInt(4, 0);
+					pstmt.setInt(6, 0);
 				}
-				pstmt.setBytes(5, os.toByteArray());
-				pstmt.setString(6, student.getGender());
-				pstmt.setInt(7, student.getMtrNr());
+				pstmt.setBytes(7, os.toByteArray());
+				pstmt.setString(8, student.getGender());
+				pstmt.setLong(9, student.getId());
 				pstmt.executeUpdate();
 				
 				stmt.executeUpdate(sql2);
@@ -2243,9 +2243,9 @@ public class Model {
 					String sql = "DELETE FROM student_emailAddress WHERE emailAddress = '" + address +"'";
 					stmt.executeUpdate(sql);
 				}
-				addStudentEmail(student.getMtrNr(), newMailAddresses);
-				addPassedSubjects(student.getMtrNr(), student.getPassedSubjects());
-				addConcernsStudent(student.getConcernIds(), student.getMtrNr());
+				addStudentEmail(student.getId(), newMailAddresses);
+				addPassedSubjects(student.getId(), student.getPassedSubjects());
+				addConcernsStudent(student.getConcernIds(), student.getId());
 			}
 			catch(Exception e)
 			{
@@ -2258,22 +2258,8 @@ public class Model {
 	}
 
 
-	public void changeStudentMtrNr(int oldMtrNr, int newMtrNr) {
-		String sql ="UPDATE student SET matrNr = " + newMtrNr + " WHERE matrNr = " + oldMtrNr;
-		try(Connection conn = this.connect();
-				Statement stmt = conn.createStatement())
-		{
-			stmt.executeUpdate(sql);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-	}
-
-
 	public void saveEditedStudentNotes(Student student, String notes) {
-		String sql ="UPDATE student SET notes = '" + notes + "' WHERE matrNr = " + student.getMtrNr();
+		String sql ="UPDATE student SET notes = '" + notes + "' WHERE id = " + student.getId();
 		try(Connection conn = this.connect();
 				Statement stmt = conn.createStatement())
 		{
@@ -2287,7 +2273,7 @@ public class Model {
 
 
 	public boolean mtrAlreadyExists(int mtrNr) {
-		String sql = "SELECT * FROM student WHERE matrNr = " + mtrNr;
+		String sql = "SELECT * FROM student WHERE mtrNr = " + mtrNr;
 		
 		try (Connection conn = this.connect();
 				Statement stmt = conn.createStatement();
@@ -2316,7 +2302,7 @@ public class Model {
 
 
 	public void setStudentExmatr(Student s, Date d) {
-		String sql = "UPDATE student SET exmatr = " + d + " WHERE matrNr = " + s.getMtrNr();
+		String sql = "UPDATE student SET exmatr = " + d + " WHERE id = " + s.getId();
 		try (Connection conn = this.connect();
 				Statement stmt = conn.createStatement())
 			{
@@ -2330,7 +2316,7 @@ public class Model {
 
 	public void deleteStudent(Student s) 
 	{
-		String sql = "DELETE FROM student WHERE matrNr = "+ s.getMtrNr();
+		String sql = "DELETE FROM student WHERE id = "+ s.getId();
 		try (Connection conn = this.connect();
 			Statement stmt = conn.createStatement())
 		{
@@ -2343,13 +2329,13 @@ public class Model {
 	}
 
 
-	private void addStudentEmail(int mtrNr, ArrayList<String> geteMailAddresses) {
+	private void addStudentEmail(long id, ArrayList<String> geteMailAddresses) {
 		String sql;
 		try (Connection conn = this.connect();
 				Statement stmt = conn.createStatement())
 			{
 			for (String mail: geteMailAddresses){
-				sql="INSERT INTO student_emailAddress (student, emailAddress) VALUES (" + mtrNr + ", '" + mail + "')";
+				sql="INSERT INTO student_emailAddress (student, emailAddress) VALUES (" + id + ", '" + mail + "')";
 				stmt.executeUpdate(sql);
 			}
 			}catch (Exception e) {
@@ -2357,13 +2343,13 @@ public class Model {
 			}
 	}
 
-	private void addPassedSubjects(int mtrNr, ObservableList<Subject> passedSubjects) {
+	private void addPassedSubjects(long id, ObservableList<Subject> passedSubjects) {
 		String sql;
 		try (Connection conn = this.connect();
 				Statement stmt = conn.createStatement())
 			{
 			for (Subject subject: passedSubjects){
-				sql="INSERT INTO passed_subjects (student, subject) VALUES (" + mtrNr + ", " + subject.getId() + ")";
+				sql="INSERT INTO passed_subjects (student, subject) VALUES (" + id + ", " + subject.getId() + ")";
 				stmt.executeUpdate(sql);
 			}
 			}catch (Exception e) {

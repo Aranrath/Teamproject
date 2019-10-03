@@ -558,7 +558,7 @@ public class StudentView extends GridPane {
 	}
 
 	public void updateView() {
-		student = presenter.getStudent(student.getMtrNr());
+		student = presenter.getStudent(student.getId());
 		fillView();
 		mailExchangeVBox.getChildren().clear();
 		mailGridPane.setVisible(false);

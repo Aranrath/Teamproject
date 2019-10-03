@@ -69,6 +69,10 @@ public class Form {
 		return name;
 	}
 	
+	public void setFileExtension(String fileExtension) {
+		this.fileExtension = fileExtension;
+	}
+
 	public String getFileExtension()
 	{
 		return fileExtension;
