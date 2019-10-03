@@ -420,12 +420,9 @@ public class EditStudentView extends GridPane {
 				semester = 0;
 			}
 
-
-			
 			concerns = concernsListView.getItems();
 			notes = studentNotes.getText();
 			gender = genderComboBox.getValue();
-			
 			
 			
 			//----------------------------Speichern

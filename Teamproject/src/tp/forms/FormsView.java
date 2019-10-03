@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
@@ -164,17 +165,6 @@ public class FormsView extends GridPane
 
 	
 		//========================================================================
-		
-		addFormButton.setOnAction((event) -> {
-			Stage stage = new Stage();
-			stage.setAlwaysOnTop(true);
-			stage.initModality(Modality.APPLICATION_MODAL);
-			stage.setTitle("Neues Formular hinzufügen");
-			stage.setResizable(false);
-			stage.getIcons().add(new javafx.scene.image.Image ("\\Icon.png"));
-			stage.setScene(new Scene(new NewFormView(stage, presenter, this, allForms, universal), 400, 200));
-			stage.show();
-		});
 
 		
 		renameFormButton.setOnAction((event) -> {
@@ -358,7 +348,7 @@ public class FormsView extends GridPane
 					imageView.setImage(img);
 			    	imageView.setVisible(true);
 			    	noShowableFileFormatLabel.setVisible(false);
-//					
+					
 					
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -377,6 +367,18 @@ public class FormsView extends GridPane
 			Form selectedForm = formListView.getSelectionModel().getSelectedItem();
 			presenter.deleteForm(selectedForm);
 			updateView();
+		});
+		
+		
+		addFormButton.setOnAction((event) -> {
+			Stage stage = new Stage();
+			stage.setAlwaysOnTop(true);
+			stage.initModality(Modality.APPLICATION_MODAL);
+			stage.setTitle("Neues Formular hinzufügen");
+			stage.setResizable(false);
+			stage.getIcons().add(new javafx.scene.image.Image ("\\Icon.png"));
+			stage.setScene(new Scene(new NewFormView(stage, presenter, this, new ArrayList<Form>(allForms), universal), 400, 200));
+			stage.show();
 		});
 		
 		
@@ -466,6 +468,19 @@ public class FormsView extends GridPane
 		selectedFormsToConcernButton.setOnAction(event -> {
 			concernView.addFilesToConcern(selectedFormsListView.getItems());
 			stage.close();
+		});
+		
+		addFormButton.setOnAction((event) -> {
+			Stage stage = new Stage();
+			stage.setAlwaysOnTop(true);
+			stage.initModality(Modality.APPLICATION_MODAL);
+			stage.setTitle("Neues Formular hinzufügen");
+			stage.setResizable(false);
+			stage.getIcons().add(new javafx.scene.image.Image ("\\Icon.png"));
+			ArrayList<Form> combinedForms = new ArrayList<Form>(allForms);
+			combinedForms.addAll(filesAlreadyInConcern);
+			stage.setScene(new Scene(new NewFormView(stage, presenter, this, combinedForms, universal), 400, 200));
+			stage.show();
 		});
 	}
 

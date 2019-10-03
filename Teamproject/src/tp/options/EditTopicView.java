@@ -138,39 +138,28 @@ public class EditTopicView extends GridPane {
 				errorLabel.setTextFill(Color.RED);
 				return;
 			}
-			else
+			
+			ObservableList<Form> selectedForms = allFormsListView.getCheckModel().getCheckedItems();
+			//UNTERSCHIED: speicher als neues Thema + Passe Oberfläche des aufrufenden Tab an
+			Topic newTopic = presenter.saveNewTopic(new Topic (titleTextField.getText(), selectedForms));
+				
+			if(optionsView != null)
 			{
-				
-				ObservableList<Form> selectedForms = allFormsListView.getCheckModel().getCheckedItems();
-				//UNTERSCHIED: speicher als neues Thema + Passe Oberfläche des aufrufenden Tab an
-				Topic newTopic = presenter.saveNewTopic(new Topic (titleTextField.getText(), selectedForms));
-				
-				if(optionsView != null)
-				{
-					optionsView.addNewTopic(newTopic);
-				}
-				else if(concernView != null)
-				{
-					concernView.addNewTopic(newTopic);
-				}
-				
-				stage.close();
+				optionsView.addNewTopic(newTopic);
 			}
+			else if(concernView != null)
+			{
+				concernView.addNewTopic(newTopic);
+			}
+				
+			stage.close();
+			
 		});
 
 	}
 
 	// Bearbeite existierendes Thema -> Trage aktuelle Daten des Themas in der Oberfläche ein
 	private void fillView(Topic topic) {
-		
-		// =================================================================
-		System.out.println("Zugehörige Forms von: " + topic.getTitle());
-		for(Form form : topic.getForms())
-		{
-			System.out.println(form.getName());
-		}
-		
-		// =================================================================
 		
 		titleTextField.setText(topic.getTitle());
 		

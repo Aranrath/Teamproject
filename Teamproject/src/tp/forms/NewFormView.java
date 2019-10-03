@@ -1,8 +1,8 @@
 package tp.forms;
 
 import java.io.File;
+import java.util.ArrayList;
 
-import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
@@ -20,7 +20,7 @@ public class NewFormView extends GridPane {
 	private Presenter presenter;
 	private Stage stage;
 	private FormsView formsView;
-	private ObservableList<Form> forms;
+	private ArrayList<Form> forms;
 	private File choosenFile;
 	private Boolean universal;
 
@@ -33,7 +33,7 @@ public class NewFormView extends GridPane {
 	private Button changeFilePathButton;
 	private Button saveButton;
 
-	public NewFormView(Stage stage, Presenter presenter, FormsView formsView, ObservableList<Form> forms, Boolean universal) {
+	public NewFormView(Stage stage, Presenter presenter, FormsView formsView, ArrayList<Form> forms, Boolean universal) {
 		this.presenter = presenter;
 		this.stage = stage;
 		this.forms = forms;
@@ -82,45 +82,28 @@ public class NewFormView extends GridPane {
 				nameErrorLabel.setText("Formular Name muss ausgefüllt sein");
 				nameErrorLabel.setTextFill(Color.RED);
 				nameErrorLabel.setVisible(true);
-			} else {
-				if (nameAlreadyExists(nameTextField.getText())) {
-					nameErrorLabel.setText("Name bereits vorhanden");
-					nameErrorLabel.setTextFill(Color.RED);
-					nameErrorLabel.setVisible(true);
-				} else {
-					nameErrorLabel.setVisible(false);
-				}
-
+				return;
 			}
-
+			if (nameAlreadyExists(nameTextField.getText()))
+			{
+				nameErrorLabel.setText("Name bereits vorhanden");
+				nameErrorLabel.setTextFill(Color.RED);
+				nameErrorLabel.setVisible(true);
+				return;
+			}
 			// Path check
 			if (choosenFilePathLabel.getText().equals("")) {
 				filePathError.setText("Formular Dateipfad muss gesetzt sein");
 				filePathError.setTextFill(Color.RED);
 				filePathError.setVisible(true);
+				return;
 			} 
-			else {
-				// ob Pfad bereits vergeben.
-				Form samePathForm = fileAlreadyUsed(choosenFile);
-				if (samePathForm != null) {
-					filePathError.setText("Datei ist bereits im Formular \"" + samePathForm.getName() + "\" gespeichert");
-					filePathError.setTextFill(Color.RED);
-					filePathError.setVisible(true);
-				}
 
-				else {
-					filePathError.setVisible(false);
-				}
-			}
-
-			if (!nameErrorLabel.isVisible() && !filePathError.isVisible()) {
+			Form newForm = new Form(nameTextField.getText(), choosenFile, universal);
 				
-				Form newForm = new Form(nameTextField.getText(), choosenFile, universal);
-				
-				Form form = presenter.saveNewForm(newForm);
-				formsView.addNewForm(form);
-				stage.close();
-			}
+			Form form = presenter.saveNewForm(newForm);
+			formsView.addNewForm(form);
+			stage.close();
 
 		});
 
@@ -140,16 +123,6 @@ public class NewFormView extends GridPane {
 
 	}
 
-	private Form fileAlreadyUsed(File choosenFile) {
-		if (forms != null) {
-			for (Form s : forms) {
-				if (s.getFile() == choosenFile) {
-					return s;
-				}
-			}
-		}
-		return null;
-	}
 
 	private boolean nameAlreadyExists(String newFormName) {
 		if (forms != null) {

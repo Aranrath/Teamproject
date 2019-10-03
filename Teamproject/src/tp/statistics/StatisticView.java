@@ -34,7 +34,8 @@ import tp.model.statistics.StatisticValues;
 public class StatisticView extends VBox{
 
 	Statistic statistic;
-	//=====================0
+	
+	//=====================
 	
 	
 	public StatisticView(Statistic statistic)
@@ -42,7 +43,6 @@ public class StatisticView extends VBox{
 		this.statistic = statistic;
 		buildView();
 	}
-	
 	
 	//================================================
 	
