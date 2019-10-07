@@ -37,9 +37,10 @@ public class EditSubjectView extends GridPane {
 		fillView();
 	}
 
-	public EditSubjectView(Stage stage, Presenter presenter, Subject subjectToEdit) {
+	public EditSubjectView(Stage stage, Presenter presenter, OptionsView optionsView, Subject subjectToEdit) {
 		this.stage = stage;
 		this.presenter = presenter;
+		this.optionsView = optionsView;
 
 		buildView();
 		fillView(subjectToEdit);
@@ -119,9 +120,8 @@ public class EditSubjectView extends GridPane {
 			}
 			else
 			{
-
-				Subject newSubject = presenter.saveNewSubject(new Subject (titleTextField.getText(), Integer.parseInt(ectsLabel.getText())));
-				optionsView.addNewSubject(newSubject);
+				presenter.saveNewSubject(new Subject (titleTextField.getText(), Integer.parseInt(ectsLabel.getText())));
+				optionsView.updateView();
 				stage.close();
 			}
 			
@@ -153,12 +153,18 @@ public class EditSubjectView extends GridPane {
 				subjectToEdit.setEcts(Integer.parseInt(ectsLabel.getText()));
 				
 				presenter.saveEditedSubject(subjectToEdit);
+				optionsView.updateView();
 				stage.close();
 				
 			}
 		});
 
 	}
+	
+	
+	
+	//=========================================================================
+	//Hilfsmethoden
 	
 	
 	//Kontrolliere Namen auf Doppelung unter Berücksichtigung des aktuellen Subject-Object

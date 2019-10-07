@@ -246,7 +246,7 @@ public class OptionsView extends GridPane {
 		                stage.setTitle("Thema \"" + selectedTopic.getTitle() + "\" bearbeiten");
 		                stage.setResizable(false);
 		                stage.getIcons().add(new Image("\\Icon.png"));
-		                stage.setScene(new Scene(new EditTopicView(stage, presenter, selectedTopic), getWidth()*(0.3), getHeight()*(0.7)));
+		                stage.setScene(new Scene(new EditTopicView(stage, presenter,(OptionsView) topicsList.getParent(), selectedTopic), getWidth()*(0.3), getHeight()*(0.7)));
 		                stage.show();
 		        	}
 		                               
@@ -268,7 +268,7 @@ public class OptionsView extends GridPane {
 		                stage.setTitle("PO \"" + selectedPO.getName() + "\" bearbeiten");
 		                stage.setResizable(false);
 		                stage.getIcons().add(new Image("\\Icon.png"));
-		                stage.setScene(new Scene(new EditPOView(stage, presenter, selectedPO), getWidth()*(0.3), getHeight()*(0.7)));
+		                stage.setScene(new Scene(new EditPOView(stage, presenter, (OptionsView) posList.getParent(), selectedPO), getWidth()*(0.3), getHeight()*(0.7)));
 		                stage.show();
 		        	}
 		                               
@@ -290,7 +290,7 @@ public class OptionsView extends GridPane {
 		                stage.setTitle("Modul \"" + selectedSubject.getTitle() + "\" bearbeiten");
 		                stage.setResizable(false);
 		                stage.getIcons().add(new Image("\\Icon.png"));
-		                stage.setScene(new Scene(new EditSubjectView(stage, presenter, selectedSubject), getWidth()*(0.3), getHeight()*(0.3)));
+		                stage.setScene(new Scene(new EditSubjectView(stage, presenter, (OptionsView) posList.getParent(), selectedSubject), getWidth()*(0.3), getHeight()*(0.3)));
 		                stage.show();
 		        	}
 		                               
@@ -323,17 +323,6 @@ public class OptionsView extends GridPane {
 		
 	}
 
-	public void addNewTopic(Topic newTopic) {
-		topicsList.getItems().add(newTopic);
-	}
-	
-	public void addNewPO(PO newPO) {
-		posList.getItems().add(newPO);
-	}
-	
-	public void addNewSubject(Subject newSubject) {
-		subjectsList.getItems().add(newSubject);
-	}
 
 	public void updateView() {
 		fillView();

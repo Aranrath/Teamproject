@@ -52,6 +52,18 @@ public class EditPOView extends GridPane {
 		fillView();
 	}
 	
+	//Vorhandene PO bearbeiten
+	public EditPOView(Stage stage, Presenter presenter, OptionsView optionsView, PO po) {
+		allSubjects = presenter.getSubjects(po);
+		this.stage = stage;
+		this.presenter = presenter;
+		this.optionsView = optionsView;
+		
+		buildView();
+		fillView(po);
+	}
+	
+	
 	//Neue PO über die EditStudentView
 	public EditPOView(Stage stage, Presenter presenter, EditStudentView editStudentView) {
 		allSubjects = presenter.getSubjects();
@@ -63,16 +75,7 @@ public class EditPOView extends GridPane {
 		fillView();
 	}
 
-	//Vorhandene PO bearbeiten
-	public EditPOView(Stage stage, Presenter presenter, PO po) {
-		allSubjects = presenter.getSubjects(po);
-		this.stage = stage;
-		this.presenter = presenter;
 
-		buildView();
-		fillView(po);
-	}
-	
 	
 	//===================================================
 
@@ -188,12 +191,13 @@ public class EditPOView extends GridPane {
 					} else if (s.mandatoryProperty().get())
 						selectedMandatorySubjects.add(s);
 				}
-				// UNTERSCHIED: speicher das geänderte Thema
+				// UNTERSCHIED: speicher das neue Thema
 				PO po = presenter.saveNewPo(new PO(poNameTextField.getText(), selectedOptionalSubjects, selectedMandatorySubjects));
+				
 				
 				if(optionsView != null)
 				{
-					optionsView.addNewPO(po);
+					optionsView.updateView();
 				}
 				else if(editStudentView != null)
 				{
@@ -232,6 +236,12 @@ public class EditPOView extends GridPane {
 				// UNTERSCHIED: speicher das geänderte Thema
 				presenter.saveEditedPO(poNameTextField.getText(), selectedMandatorySubjects, selectedOptionalSubjects,
 						po);
+				
+				if(optionsView != null)
+				{
+					optionsView.updateView();
+				}
+				
 				stage.close();
 			}
 		});

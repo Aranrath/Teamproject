@@ -59,7 +59,7 @@ public class EditTopicView extends GridPane {
 	
 
 	//With Topic to edit
-	public EditTopicView( Stage stage, Presenter presenter, Topic toEditTopic) {
+	public EditTopicView( Stage stage, Presenter presenter, OptionsView optionsView, Topic toEditTopic) {
 		this.stage = stage;
 		this.presenter = presenter;
 
@@ -145,7 +145,7 @@ public class EditTopicView extends GridPane {
 				
 			if(optionsView != null)
 			{
-				optionsView.addNewTopic(newTopic);
+				optionsView.updateView();
 			}
 			else if(concernView != null)
 			{
@@ -197,6 +197,10 @@ public class EditTopicView extends GridPane {
 				topic.setTitle(titleTextField.getText());
 				topic.setForms(selectedForms);
 				presenter.saveEditedTopic(topic);
+				if(optionsView != null)
+				{
+					optionsView.updateView();
+				}
 				stage.close();
 			}
 		});
