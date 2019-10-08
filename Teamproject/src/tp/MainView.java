@@ -604,7 +604,12 @@ public class MainView extends BorderPane {
 			}
 			else
 			{
-				view.save(false);
+				Thread thread = new Thread(){
+					public void run(){
+						view.save(false);
+				    }
+				};
+				thread.start();
 			}
 		});
 	}

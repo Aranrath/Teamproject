@@ -310,6 +310,10 @@ public class Presenter {
 		model.saveNewStudent(student);
 		
 	}
+
+	public void deleteConcernStudent(long concernId, long studentId) {
+		model.deleteConcernStudent(concernId, studentId);
+	}
 	
 	public void setStudentExmatr(Student s, Date d) {
 		model.setStudentExmatr(s, d);

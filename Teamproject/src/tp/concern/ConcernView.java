@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Optional;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -582,6 +583,8 @@ public class ConcernView extends GridPane {
 	// öffentliche Methoden
 	// =========================================================================
 
+	//blockedByErrors = false: Save Methode wird auch ausgeführt, wenn bestimmte Felder nicht ausgefüllt sind: Standartwert
+	//blockedByErrors = true: Save Methode wird nicht ausgeführt, wenn bestimmte Felder nicht ausgefüllt sind: error message
 	public void save(boolean blockedByErrors) {
 		// -------------------------------------------------------------------
 		// Abfangen von Fehlern eines unausreichend ausgefülltem Profil
@@ -602,7 +605,6 @@ public class ConcernView extends GridPane {
 		} else if (!blockedByErrors) {
 			if (newTitle.equals("")) {
 				newTitle = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
-				titleTextField.setText(newTitle);
 			}
 			if (concernTitleAlreadyExists(newTitle)) {
 				int i = 2;
@@ -615,6 +617,8 @@ public class ConcernView extends GridPane {
 				newTitle = changedNewTitle;
 
 			}
+			String title = newTitle;
+			Platform.runLater(()->titleTextField.setText(title));
 
 		}
 
@@ -669,8 +673,15 @@ public class ConcernView extends GridPane {
 		// Oberfläche anpassen
 		// -------------------------------------------------------------------
 
-		errorLabel.setText("");
-		presenter.updateRightToolbar();
+		if(blockedByErrors) {
+			errorLabel.setText("");
+			presenter.updateRightToolbar();
+		} else {
+			Platform.runLater(()->{
+				errorLabel.setText("");
+				presenter.updateRightToolbar();
+			});
+		}
 
 		// Tabbeschriftungs-Bug (Doppelte Tabbeschriftung)
 		// tab.setText(newTitle);

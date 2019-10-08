@@ -342,7 +342,7 @@ public class StudentView extends GridPane {
 			Concern selectedConcern = connectedConcernsListView.getSelectionModel().getSelectedItem();
 			if(selectedConcern!= null)
 			{
-				selectedConcern.getStudents().remove(student);
+				presenter.deleteConcernStudent(selectedConcern.getId(), student.getId());
 				connectedConcernsListView.getItems().remove(selectedConcern);
 			}
 		});

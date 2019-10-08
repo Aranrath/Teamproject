@@ -1,7 +1,6 @@
 package tp.model;
 
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -1235,6 +1234,19 @@ public class Model {
 			e.printStackTrace();
 		}
 	}
+	
+	public void deleteConcernStudent(long concernId, long studentId) {
+		String sql = "DELETE FROM concern_student WHERE concern = "+ concernId + " AND student = " + studentId ;
+		try (Connection conn = this.connect();
+			Statement stmt = conn.createStatement())
+		{
+			stmt.executeUpdate(sql);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
 
 
 	private void addConcernForms(long id, ObservableList<Form> data) {
@@ -2162,8 +2174,7 @@ public class Model {
 	
 	public void saveNewStudent(Student student) {
 		Image img = student.getImage();
-		try(ByteArrayOutputStream os = new ByteArrayOutputStream();
-		   InputStream is = new ByteArrayInputStream(os.toByteArray())){
+		try(ByteArrayOutputStream os = new ByteArrayOutputStream()){
 			ImageIO.write(SwingFXUtils.fromFXImage(img, null),"png", os); 
 		
 			String sql = "INSERT INTO student(matrNr, name, firstName, semester, po, image, notes, gender, created) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -2204,8 +2215,7 @@ public class Model {
 	public void saveEditedStudent(Student student) {	
 		
 		Image img = student.getImage();
-		try(ByteArrayOutputStream os = new ByteArrayOutputStream();
-		   InputStream is = new ByteArrayInputStream(os.toByteArray())){
+		try(ByteArrayOutputStream os = new ByteArrayOutputStream()){
 			ImageIO.write(SwingFXUtils.fromFXImage(img, null),"png", os);
 			String sql1 = "UPDATE student SET matrNr = ?, name = ?, firstname = ?, semester = ?, po = ?, image = ?, gender = ? WHERE id = ?";
 			String sql2 = "DELETE FROM concern_student WHERE student = " + student.getMtrNr();
