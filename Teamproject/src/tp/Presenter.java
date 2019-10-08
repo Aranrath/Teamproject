@@ -213,10 +213,11 @@ public class Presenter {
 	public Options getOptions() {
 		return model.getOptions();
 	}
+	
+	
 
 	public void saveEditedStudent(Student student) {
 		model.saveEditedStudent(student);
-
 	}
 
 	public void saveEditedConcern(Concern concern) {

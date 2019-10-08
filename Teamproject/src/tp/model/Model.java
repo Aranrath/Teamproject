@@ -2218,8 +2218,8 @@ public class Model {
 		try(ByteArrayOutputStream os = new ByteArrayOutputStream()){
 			ImageIO.write(SwingFXUtils.fromFXImage(img, null),"png", os);
 			String sql1 = "UPDATE student SET matrNr = ?, name = ?, firstname = ?, semester = ?, po = ?, image = ?, gender = ? WHERE id = ?";
-			String sql2 = "DELETE FROM concern_student WHERE student = " + student.getMtrNr();
-			String sql3 = "DELETE FROM passed_subjects WHERE student = " + student.getMtrNr();
+			String sql2 = "DELETE FROM concern_student WHERE student = " + student.getId();
+			String sql3 = "DELETE FROM passed_subjects WHERE student = " + student.getId();
 			
 			Student oldStudent = getStudent(student.getId());
 			//get MailAddresses to be added
@@ -2240,11 +2240,11 @@ public class Model {
 					pstmt.setLong(5, student.getPo().getId());
 				}
 				else {
-					pstmt.setInt(6, 0);
+					pstmt.setInt(5, 0);
 				}
-				pstmt.setBytes(7, os.toByteArray());
-				pstmt.setString(8, student.getGender());
-				pstmt.setLong(9, student.getId());
+				pstmt.setBytes(6, os.toByteArray());
+				pstmt.setString(7, student.getGender());
+				pstmt.setLong(8, student.getId());
 				pstmt.executeUpdate();
 				
 				stmt.executeUpdate(sql2);

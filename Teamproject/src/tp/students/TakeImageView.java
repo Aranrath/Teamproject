@@ -22,6 +22,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import tp.Presenter;
 import tp.model.Options;
+import tp.model.Student;
 
 public class TakeImageView extends GridPane {
 
@@ -31,6 +32,7 @@ public class TakeImageView extends GridPane {
 	private Image image;
 	private EditStudentView editStudentParentView;
 	private StudentView studentParentView;
+	private Student student;
 	private ServerSocket serverSocket;
 
 	// ======================
@@ -48,10 +50,11 @@ public class TakeImageView extends GridPane {
 		buildView();
 	}
 
-	public TakeImageView(Stage stage, Presenter presenter, StudentView parentView) {
+	public TakeImageView(Stage stage, Presenter presenter, StudentView parentView, Student student) {
 		this.presenter = presenter;
 		this.stage = stage;
 		this.studentParentView = parentView;
+		this.student = student;
 		buildView();
 	}
 
@@ -100,6 +103,8 @@ public class TakeImageView extends GridPane {
 
 			} else if (studentParentView != null) {
 				studentParentView.updateImage(image);
+				student.setImage(image);
+				presenter.saveEditedStudent(student);
 			}
 			stage.close();
 		});
