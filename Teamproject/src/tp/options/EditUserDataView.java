@@ -18,6 +18,7 @@ public class EditUserDataView extends GridPane
 {
 	private Presenter presenter;
 	private Options options;
+	private OptionsView optionsView;
 	private Stage stage;
 	
 	//=======================
@@ -31,8 +32,22 @@ public class EditUserDataView extends GridPane
 	private Button saveButton;
 	private Label errorLabel;
 	
-	public EditUserDataView (Presenter presenter, Stage stage, Options options)
+	public EditUserDataView (OptionsView optionsView, Presenter presenter, Stage stage, Options options)
 	{
+		this.presenter = presenter;
+		this.options = options;
+		this.optionsView = optionsView;
+		this.stage = stage;
+		
+		setBackground(new Background(new BackgroundFill(Color.BISQUE, null, null)));
+		
+		buildView();
+		fillView();
+
+	}
+
+
+	public EditUserDataView(Presenter presenter, Stage stage, Options options) {
 		this.presenter = presenter;
 		this.options = options;
 		this.stage = stage;
@@ -41,7 +56,6 @@ public class EditUserDataView extends GridPane
 		
 		buildView();
 		fillView();
-
 	}
 
 
@@ -88,9 +102,13 @@ public class EditUserDataView extends GridPane
 					return;
 				}
 				
-				
+				options.setUserID(newUserID);
+				options.setUserName(newUserName);
+				options.setPassword(newPassword);
 				presenter.saveOptions();
-				
+				if (optionsView!= null) {
+					optionsView.updateView();
+				}
 				stage.close();
 				
 				presenter.showNewReminderView(options);

@@ -244,7 +244,7 @@ public class EditStudentView extends GridPane {
 			stage.initModality(Modality.APPLICATION_MODAL);
 			stage.setTitle("Foto aufnehmen");
 			stage.setResizable(false);
-			stage.getIcons().add(new Image("\\Icon.png"));
+			stage.getIcons().add(new Image(getClass().getClassLoader().getResourceAsStream("Icon.png")));
 			stage.setScene(new Scene(new TakeImageView(stage, presenter, this), 315, 420));
 			stage.show();
 		});
@@ -263,7 +263,7 @@ public class EditStudentView extends GridPane {
     			stage.setAlwaysOnTop(true);
     			stage.initModality(Modality.APPLICATION_MODAL);
                 stage.setTitle("Bestandene Fächer auswählen");
-                stage.getIcons().add(new Image("\\Icon.png"));
+                stage.getIcons().add(new Image(getClass().getClassLoader().getResourceAsStream("Icon.png")));
                 
                 if(localPassedSubjects == null)
                 {
@@ -486,7 +486,7 @@ public class EditStudentView extends GridPane {
 			stage.setAlwaysOnTop(true);
 			stage.initModality(Modality.APPLICATION_MODAL);
 			stage.setTitle("Neue PO");
-			stage.getIcons().add(new Image("\\Icon.png"));
+			stage.getIcons().add(new Image(getClass().getClassLoader().getResourceAsStream("Icon.png")));
 			stage.setResizable(false);
 			stage.setScene(new Scene(new EditPOView(stage, presenter, (EditStudentView) newPOButton.getParent().getParent()), getWidth()*(0.6), getHeight()*(0.7)));
 			stage.show();

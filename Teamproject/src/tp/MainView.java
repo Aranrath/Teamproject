@@ -796,7 +796,7 @@ public class MainView extends BorderPane {
 			Stage stage = new Stage();
 			stage.initModality(Modality.APPLICATION_MODAL);
 			stage.setAlwaysOnTop(true);
-			stage.getIcons().add(new Image("\\Icon.png"));
+			stage.getIcons().add(new Image(getClass().getClassLoader().getResourceAsStream("Icon.png")));
 	        stage.setTitle("Neue Erinnerungen");
 	        stage.setResizable(false);
 	        stage.setScene(new Scene(new NewReminderAlertView(presenter,stage, newReminders), getWidth()*(0.6), getHeight()*(0.7)));

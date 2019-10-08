@@ -29,8 +29,8 @@ public class Main extends Application {
 			generateMVP();
 			
 			primaryStage.setMaximized(true);
-			
-			primaryStage.getIcons().add(new Image("\\Icon.png"));
+
+			primaryStage.getIcons().add(new Image(getClass().getClassLoader().getResourceAsStream("Icon.png")));
 			
 			Platform.setImplicitExit(false);
 

@@ -322,7 +322,7 @@ public class ConcernView extends GridPane {
 			stage.setAlwaysOnTop(true);
 			stage.initModality(Modality.APPLICATION_MODAL);
 			stage.setTitle("Neues Thema");
-			stage.getIcons().add(new Image("\\Icon.png"));
+			stage.getIcons().add(new Image(getClass().getClassLoader().getResourceAsStream("Icon.png")));
 			stage.setResizable(false);
 			stage.setScene(
 					new Scene(new EditTopicView(stage, presenter, this), getWidth() * (0.6), getHeight() * (0.7)));
@@ -339,7 +339,7 @@ public class ConcernView extends GridPane {
 			stage.initModality(Modality.APPLICATION_MODAL);
 			stage.setTitle("Studenten hinzufügen");
 			stage.setResizable(false);
-			stage.getIcons().add(new Image("\\Icon.png"));
+			stage.getIcons().add(new Image(getClass().getClassLoader().getResourceAsStream("Icon.png")));
 			stage.setScene(new Scene(new AddStudentToConcernView(presenter, stage, this, studentTableView.getItems()),
 					getWidth() * (0.6), getHeight() * (0.7)));
 			stage.show();
@@ -350,7 +350,7 @@ public class ConcernView extends GridPane {
 			stage.setAlwaysOnTop(true);
 			stage.initModality(Modality.APPLICATION_MODAL);
 			stage.setTitle("Neue Erinnerung hinzufügen");
-			stage.getIcons().add(new Image("\\Icon.png"));
+			stage.getIcons().add(new Image(getClass().getClassLoader().getResourceAsStream("Icon.png")));
 			stage.setResizable(false);
 			stage.setScene(new Scene(new NewReminderView(stage, reminderTableView.getItems(), concern.getId()),
 					getWidth() * (0.6), getHeight() * (0.7)));
@@ -384,7 +384,7 @@ public class ConcernView extends GridPane {
 			ObservableList<Form> filesAlreadyInConcern = FXCollections.observableArrayList(fileTableView.getItems());
 
 			stage.setResizable(false);
-			stage.getIcons().add(new Image("\\Icon.png"));
+			stage.getIcons().add(new Image(getClass().getClassLoader().getResourceAsStream("Icon.png")));
 			stage.setScene(new Scene(new FormsView(presenter, stage, this, filesAlreadyInConcern, topicRelatedFiles),
 					600, 500));
 			stage.show();
@@ -396,7 +396,7 @@ public class ConcernView extends GridPane {
 			stage.initModality(Modality.APPLICATION_MODAL);
 			stage.setTitle("Neuen Termin hinzufügen");
 			stage.setResizable(false);
-			stage.getIcons().add(new Image("\\Icon.png"));
+			stage.getIcons().add(new Image(getClass().getClassLoader().getResourceAsStream("Icon.png")));
 			stage.setScene(new Scene(new NewAppointmentView(stage, presenter, this), 400, 220));
 			stage.show();
 		});

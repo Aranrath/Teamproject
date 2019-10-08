@@ -190,7 +190,7 @@ public class OptionsView extends GridPane {
 			stage.initModality(Modality.APPLICATION_MODAL);
             stage.setTitle("Neues Modul");
             stage.setResizable(false);
-            stage.getIcons().add(new Image("\\Icon.png"));
+            stage.getIcons().add(new Image(getClass().getClassLoader().getResourceAsStream("Icon.png")));
             stage.setScene(new Scene(new EditSubjectView(stage, presenter, (OptionsView) posList.getParent()), 300, 200));
             stage.show();
 		});
@@ -201,8 +201,8 @@ public class OptionsView extends GridPane {
 			stage.setAlwaysOnTop(true);
             stage.setTitle("Nutzerdaten ändern");
             stage.setResizable(false);
-            stage.getIcons().add(new Image("\\Icon.png"));
-            stage.setScene(new Scene(new EditUserDataView(presenter, stage, options), getWidth()*(0.6), getHeight()*(0.7)));
+            stage.getIcons().add(new Image(getClass().getClassLoader().getResourceAsStream("Icon.png")));
+            stage.setScene(new Scene(new EditUserDataView(this, presenter, stage, options), getWidth()*(0.6), getHeight()*(0.7)));
             stage.show();
 		});
 		
@@ -326,6 +326,9 @@ public class OptionsView extends GridPane {
 
 	public void updateView() {
 		fillView();
+		options = presenter.getOptions();
+		currentUserNameLabel.setText(options.getUserName());
+		currentUserIDLabel.setText(options.getUserID());
 	}
 
 }

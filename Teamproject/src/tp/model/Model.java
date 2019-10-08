@@ -84,7 +84,7 @@ public class Model {
 		Connection conn = null; 
 		try 
 		{
-			conn = DriverManager.getConnection("jdbc:sqlite:teamprojectDatabase.db");
+			conn = DriverManager.getConnection("jdbc:sqlite::resource:teamprojectDatabase.db");
 		}
 		catch (SQLException e) 
 		{
@@ -2301,7 +2301,7 @@ public class Model {
 	public Image getDefaultStudentImage() {
 		try
 		{
-			return new Image("\\PicturePlaceholder.png");
+			return new Image(getClass().getClassLoader().getResourceAsStream("PicturePlaceholder.png"));
 		}
 		catch(Exception e)
 		{

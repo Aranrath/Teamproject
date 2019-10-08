@@ -376,7 +376,7 @@ public class FormsView extends GridPane
 			stage.initModality(Modality.APPLICATION_MODAL);
 			stage.setTitle("Neues Formular hinzufügen");
 			stage.setResizable(false);
-			stage.getIcons().add(new javafx.scene.image.Image ("\\Icon.png"));
+			stage.getIcons().add(new javafx.scene.image.Image (getClass().getClassLoader().getResourceAsStream("Icon.png")));
 			stage.setScene(new Scene(new NewFormView(stage, presenter, this, new ArrayList<Form>(allForms), universal), 400, 200));
 			stage.show();
 		});
@@ -476,7 +476,7 @@ public class FormsView extends GridPane
 			stage.initModality(Modality.APPLICATION_MODAL);
 			stage.setTitle("Neues Formular hinzufügen");
 			stage.setResizable(false);
-			stage.getIcons().add(new javafx.scene.image.Image ("\\Icon.png"));
+			stage.getIcons().add(new javafx.scene.image.Image (getClass().getClassLoader().getResourceAsStream("Icon.png")));
 			ArrayList<Form> combinedForms = new ArrayList<Form>(allForms);
 			combinedForms.addAll(filesAlreadyInConcern);
 			stage.setScene(new Scene(new NewFormView(stage, presenter, this, combinedForms, universal), 400, 200));
