@@ -62,7 +62,7 @@ public class ConcernView extends GridPane {
 	private Label titleLabel;
 	private TextField titleTextField;
 	private Label errorLabel;
-	private Button saveButton;
+	private Button createButton;
 	private Button closeButton;
 	private Label closeStatusLabel;
 	private HBox topicHBox;
@@ -147,11 +147,13 @@ public class ConcernView extends GridPane {
 				new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime()));
 		errorLabel = new Label("");
 		errorLabel.setTextFill(Color.RED);
-		if (concern == null) {
-			saveButton = new Button("Erstellen");
-		} else {
-			saveButton = new Button("Speichern");
-		}
+		createButton = new Button("Erstellen");
+//		TODO
+		//if (concern == null) {
+//			createButton = new Button("Erstellen");
+//		} else {
+//			saveButton = new Button("Speichern");
+//		}
 
 		// ---------------------------------------------------
 
@@ -259,14 +261,19 @@ public class ConcernView extends GridPane {
 		add(titleTextField, 1, 0, 3, 1);
 		add(errorLabel, 4, 1, 2, 1);
 		GridPane.setHalignment(errorLabel, HPos.LEFT);
-		saveButton.setMaxWidth(Double.MAX_VALUE);
-		add(saveButton, 4, 0);
-		GridPane.setHalignment(saveButton, HPos.LEFT);
+		createButton.setMaxWidth(Double.MAX_VALUE);
+		add(createButton, 4, 0);
+		GridPane.setHalignment(createButton, HPos.LEFT);
 		closeButton.setMaxWidth(Double.MAX_VALUE);
+		//TODO 
+		if (concern != null) {
+			createButton.setVisible(false);
+		} else {
+			createButton.setVisible(true);
+		}
 		add(closeButton, 5, 0);
 		GridPane.setHalignment(closeButton, HPos.LEFT);
 
-		GridPane.setHalignment(saveButton, HPos.LEFT);
 		add(topicLabel, 0, 1);
 		add(topicHBox, 1, 1, 3, 1);
 
@@ -312,7 +319,7 @@ public class ConcernView extends GridPane {
 		getColumnConstraints().add(column);
 
 		// ==================================================
-		saveButton.setOnAction((event) -> {
+		createButton.setOnAction((event) -> {
 			save(true);
 
 		});
@@ -649,7 +656,7 @@ public class ConcernView extends GridPane {
 			int newConcernId = presenter.saveNewConcern(concern);
 			concern.setId(newConcernId);
 			tab.setTabId("c" + newConcernId);
-			saveButton.setText("Speichern");
+			createButton.setVisible(false);
 			closeButton.setVisible(true);
 
 		}
@@ -677,10 +684,8 @@ public class ConcernView extends GridPane {
 			errorLabel.setText("");
 			presenter.updateRightToolbar();
 		} else {
-			Platform.runLater(()->{
-				errorLabel.setText("");
-				presenter.updateRightToolbar();
-			});
+			errorLabel.setText("");
+			presenter.updateRightToolbar();
 		}
 
 		// Tabbeschriftungs-Bug (Doppelte Tabbeschriftung)
@@ -720,6 +725,14 @@ public class ConcernView extends GridPane {
 		topicComboBox.getSelectionModel().select(topic);
 	}
 
+	public boolean isNotSaved() {
+		if(concern==null) {
+			return true;
+		}else {
+			return false;
+		}
+	}
+	
 	public void updateView() {
 
 		//Concern neu holen

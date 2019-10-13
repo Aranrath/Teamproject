@@ -12,7 +12,10 @@ import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.control.SingleSelectionModel;
@@ -600,16 +603,14 @@ public class MainView extends BorderPane {
 			if(innerTab.isSelected())
 			{
 				view.updateView();
-				
 			}
 			else
 			{
-				Thread thread = new Thread(){
-					public void run(){
-						view.save(false);
-				    }
-				};
-				thread.start();
+				Alert alert = new Alert(AlertType.NONE, "Speichert...");
+				alert.show();
+				view.save(false); 
+				alert.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
+				alert.close();
 			}
 		});
 	}
@@ -657,11 +658,23 @@ public class MainView extends BorderPane {
 		//updateView wenn zum Tab gewechselt wird
 		final MyTab innerTab = newTab;
 		newTab.setOnSelectionChanged((event) -> {
+
+			ConcernView view = (ConcernView) innerTab.getContent();
 			if(innerTab.isSelected())
 			{
-				ConcernView view = (ConcernView) innerTab.getContent();
 				view.updateView();
 				
+			}else 
+			{
+				if(view.isNotSaved()) {
+					tabPane.getTabs().remove(innerTab);
+				}else {
+					Alert alert = new Alert(AlertType.NONE, "Speichert...");
+					alert.show();
+					view.save(false); 
+					alert.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
+					alert.close();
+				}
 			}
 		});
 	}
