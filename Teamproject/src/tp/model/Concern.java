@@ -1,6 +1,9 @@
 package tp.model;
 
 import java.sql.Date;
+import java.sql.Time;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 import javafx.collections.ObservableList;
 
@@ -130,15 +133,34 @@ public class Concern {
 	//For TableView
 	public Date getNextAppointment() {
 		Date nextAppointment = null;
+		//Time um zu überprüfen ob startTime des Termins am heutigen Tag nach jetzigem Zeitpunkt liegt
+		java.util.Date utilDate = new java.util.Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+        Long time = Time.valueOf(sdf.format(utilDate)).getTime();
 		for (Appointment a: appointments) {
+			Date currentDate = setTimeToZero(a.getDate());
 			if (nextAppointment == null) {
-				nextAppointment = a.getDate();
-			}else if (a.getDate().after(new Date(System.currentTimeMillis())) && nextAppointment.before(a.getDate())){
-				nextAppointment = a.getDate();
+				nextAppointment = currentDate;
+			}else if(currentDate.equals(setTimeToZero(new Date(System.currentTimeMillis()))) &&
+					a.getStartTime()>=time) {
+				nextAppointment = currentDate;
+			}else if (currentDate.after(new Date(System.currentTimeMillis())) && nextAppointment.before(currentDate)){
+				nextAppointment = currentDate;
 			}
 		}
 		return nextAppointment;
 	}
+	
+	private Date setTimeToZero(Date date) {
+		//To be able to compare the date to the one in the dataBase, set Time to 0.
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);	
+		cal.set(Calendar.HOUR_OF_DAY, 0);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0);
+		cal.set(Calendar.MILLISECOND, 0);
+		return new Date(cal.getTime().getTime());
+		}
 
 	public String getStudentsString() {
 		String studentsString = "";

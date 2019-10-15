@@ -112,15 +112,23 @@ public class Model {
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
         Long time = Time.valueOf(sdf.format(utilDate)).getTime();
         
-		String sql = "SELECT * FROM appointment WHERE (date = "+ now.getTime() + " AND endTime >= " + time + ") OR (date = " + nextDay.getTime() + " AND startTime <= " + time + ") ORDER BY startTime ASC";		
+		String sql = "SELECT * FROM appointment WHERE (date = "+ now.getTime() + " AND endTime >= " + time + ") ORDER BY startTime ASC";		
+		String sql2 = "SELECT * FROM appointment WHERE (date = " + nextDay.getTime() + " AND startTime <= " + time + ") ORDER BY startTime ASC";
 		ArrayList<Appointment> result = new ArrayList<Appointment>();
 		try 	(Connection conn = this.connect();
 				Statement stmt = conn.createStatement();
-				ResultSet rs = stmt.executeQuery(sql))
+				ResultSet rs = stmt.executeQuery(sql);
+				Statement stmt2 = conn.createStatement();
+				ResultSet rs2 = stmt2.executeQuery(sql2))
 		{
 			while(rs.next())
 			{
 				int id = rs.getInt("id");
+				result.add(getAppointment(id));
+			}
+			while(rs2.next())
+			{
+				int id = rs2.getInt("id");
 				result.add(getAppointment(id));
 			}
 		}
@@ -827,10 +835,32 @@ public class Model {
 		return result;
 	}
 
-
+	public Image getStudentImage(long id) {
+		String sql = "SELECT image FROM student WHERE id = " + id;
+		Image img = null;
+		try (Connection conn = this.connect();
+				Statement stmt = conn.createStatement();
+				ResultSet rs = stmt.executeQuery(sql))				
+			{
+				if (rs.next()) {
+					try(InputStream is= rs.getBinaryStream("image")){
+						if (is!=null) {
+							img = new Image(is);		
+						}
+					}catch(Exception e) {
+						e.printStackTrace();
+					}
+				}
+				
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		return img;
+	}
+	
 	public Student getStudent(long id) 
 	{
-	Student result = new Student(0, 0, null, null, null, 0, null, null, null, null, null, null, null, null);
+	Student result = new Student(0, 0, null, null, null, 0, null, null, null, null, null, null, null);
 	String sql1 = "SELECT * FROM student WHERE id = " + id;
 	String sql2 = "SELECT concern FROM concern_student WHERE student = " + id;
 	try (Connection conn = this.connect();
@@ -847,18 +877,10 @@ public class Model {
 				PO po = getPO(rs1.getLong("po"));
 				String notes = rs1.getString("notes");
 				ObservableList<Subject> passedSubjects= getPassedSubjects(id);
-				Image img = null;
-				try(InputStream is= rs1.getBinaryStream("image")){
-					if (is!=null) {
-						img = new Image(is);		
-					}
-				}catch(Exception e) {
-					e.printStackTrace();
-				}
 				String gender = rs1.getString("gender");
 				Date exmatr =  rs1.getDate("exmatr");
 				
-				result = new Student(id, matrNr, name, firstname, eMailAddressess, semester, po, notes, passedSubjects, img, null, gender, null, exmatr);
+				result = new Student(id, matrNr, name, firstname, eMailAddressess, semester, po, notes, passedSubjects, null, gender, null, exmatr);
 				if(getLastStudentEmail(result)!=null) {
 					Date lastContact = getLastStudentEmail(result).getDate();
 					result.setLastContact(lastContact);
@@ -2172,96 +2194,112 @@ public class Model {
 		}
 	}
 	
-	public void saveNewStudent(Student student) {
-		Image img = student.getImage();
+
+
+	public void saveStudentImage(long id, Image img) {
+		String sql = "UPDATE student SET image = ? WHERE id = " + id;
 		try(ByteArrayOutputStream os = new ByteArrayOutputStream()){
 			ImageIO.write(SwingFXUtils.fromFXImage(img, null),"png", os); 
-		
-			String sql = "INSERT INTO student(matrNr, name, firstName, semester, po, image, notes, gender, created) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 			try(Connection conn = this.connect();
-					PreparedStatement pstmt = conn.prepareStatement(sql))
-			{
-				pstmt.setInt(1, student.getMtrNr());
-				pstmt.setString(2, student.getName());
-				pstmt.setString(3, student.getFirstName());
-				pstmt.setInt(4, student.getSemester());
-				if(student.getPo()!=null) {
-					pstmt.setLong(5, student.getPo().getId());
-				}
-				else {
-					pstmt.setInt(5, 0);
-				}
-				pstmt.setBytes(6, os.toByteArray());
-				pstmt.setString(7, student.getNotes());
-				pstmt.setString(8, student.getGender());
-				pstmt.setDate(9, new Date(System.currentTimeMillis()));
+				PreparedStatement pstmt = conn.prepareStatement(sql);
+				Statement stmt = conn.createStatement()){
+				pstmt.setBytes(1, os.toByteArray());
 				pstmt.executeUpdate();
-				addStudentEmail(student.getMtrNr(), student.geteMailAddresses());
-				addPassedSubjects(student.getMtrNr(), student.getPassedSubjects());
-				if (student.getConcernIds()!= null) {
-					addConcernsStudent(student.getConcernIds(), student.getMtrNr());	
-				}
 			}
-			catch(Exception e)
-			{
-				e.printStackTrace();
-			}
-		}catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+	}
+	
+	public long saveNewStudent(Student student) {
+		long studentId = 0;
+		
+		String sql = "INSERT INTO student(matrNr, name, firstName, semester, po, notes, gender, created) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+		String sql2 = "SELECT last_insert_rowid()";
+		try(Connection conn = this.connect();
+				PreparedStatement pstmt = conn.prepareStatement(sql);
+				Statement stmt = conn.createStatement())
+		{
+			pstmt.setInt(1, student.getMtrNr());
+			pstmt.setString(2, student.getName());
+			pstmt.setString(3, student.getFirstName());
+			pstmt.setInt(4, student.getSemester());
+			if(student.getPo()!=null) {
+				pstmt.setLong(5, student.getPo().getId());
+			}
+			else {
+				pstmt.setInt(5, 0);
+			}
+			pstmt.setString(6, student.getNotes());
+			pstmt.setString(7, student.getGender());
+			pstmt.setDate(8, new Date(System.currentTimeMillis()));
+			pstmt.executeUpdate();
+			try (ResultSet rs = stmt.executeQuery(sql2)){
+				if (rs.next()) {
+					studentId = rs.getInt(1);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+				
+			addStudentEmail(student.getMtrNr(), student.geteMailAddresses());
+			addPassedSubjects(student.getMtrNr(), student.getPassedSubjects());
+			if (student.getConcernIds()!= null) {
+				addConcernsStudent(student.getConcernIds(), student.getMtrNr());	
+			}
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		return studentId;
 	}
 
 
 	public void saveEditedStudent(Student student) {	
 		
-		Image img = student.getImage();
-		try(ByteArrayOutputStream os = new ByteArrayOutputStream()){
-			ImageIO.write(SwingFXUtils.fromFXImage(img, null),"png", os);
-			String sql1 = "UPDATE student SET matrNr = ?, name = ?, firstname = ?, semester = ?, po = ?, image = ?, gender = ? WHERE id = ?";
-			String sql2 = "DELETE FROM concern_student WHERE student = " + student.getId();
-			String sql3 = "DELETE FROM passed_subjects WHERE student = " + student.getId();
+		String sql1 = "UPDATE student SET matrNr = ?, name = ?, firstname = ?, semester = ?, po = ?, gender = ? WHERE id = ?";
+		String sql2 = "DELETE FROM concern_student WHERE student = " + student.getId();
+		String sql3 = "DELETE FROM passed_subjects WHERE student = " + student.getId();
+		
+		Student oldStudent = getStudent(student.getId());
+		//get MailAddresses to be added
+		ArrayList<String> newMailAddresses = new ArrayList<String>(student.geteMailAddresses());
+		newMailAddresses.removeAll(oldStudent.geteMailAddresses());
+		//get MailAddresses to be deleted
+		ArrayList<String> oldMailAddresses = oldStudent.geteMailAddresses();
+		oldMailAddresses.removeAll(student.geteMailAddresses());
+		try(Connection conn = this.connect();
+				PreparedStatement pstmt = conn.prepareStatement(sql1);
+				Statement stmt = conn.createStatement())
+		{
+			pstmt.setInt(1, student.getMtrNr());
+			pstmt.setString(2, student.getName());
+			pstmt.setString(3, student.getFirstName());
+			pstmt.setInt(4, student.getSemester());
+			if(student.getPo()!=null) {
+				pstmt.setLong(5, student.getPo().getId());
+			}
+			else {
+				pstmt.setInt(5, 0);
+			}
+			pstmt.setString(6, student.getGender());
+			pstmt.setLong(7, student.getId());
+			pstmt.executeUpdate();
 			
-			Student oldStudent = getStudent(student.getId());
-			//get MailAddresses to be added
-			ArrayList<String> newMailAddresses = new ArrayList<String>(student.geteMailAddresses());
-			newMailAddresses.removeAll(oldStudent.geteMailAddresses());
-			//get MailAddresses to be deleted
-			ArrayList<String> oldMailAddresses = oldStudent.geteMailAddresses();
-			oldMailAddresses.removeAll(student.geteMailAddresses());
-			try(Connection conn = this.connect();
-					PreparedStatement pstmt = conn.prepareStatement(sql1);
-					Statement stmt = conn.createStatement())
-			{
-				pstmt.setInt(1, student.getMtrNr());
-				pstmt.setString(2, student.getName());
-				pstmt.setString(3, student.getFirstName());
-				pstmt.setInt(4, student.getSemester());
-				if(student.getPo()!=null) {
-					pstmt.setLong(5, student.getPo().getId());
-				}
-				else {
-					pstmt.setInt(5, 0);
-				}
-				pstmt.setBytes(6, os.toByteArray());
-				pstmt.setString(7, student.getGender());
-				pstmt.setLong(8, student.getId());
-				pstmt.executeUpdate();
-				
-				stmt.executeUpdate(sql2);
-				stmt.executeUpdate(sql3);
-				for (String address: oldMailAddresses) {
-					String sql = "DELETE FROM student_emailAddress WHERE emailAddress = '" + address +"'";
-					stmt.executeUpdate(sql);
-				}
-				addStudentEmail(student.getId(), newMailAddresses);
-				addPassedSubjects(student.getId(), student.getPassedSubjects());
-				addConcernsStudent(student.getConcernIds(), student.getId());
+			stmt.executeUpdate(sql2);
+			stmt.executeUpdate(sql3);
+			for (String address: oldMailAddresses) {
+				String sql = "DELETE FROM student_emailAddress WHERE emailAddress = '" + address +"'";
+				stmt.executeUpdate(sql);
 			}
-			catch(Exception e)
-			{
-				e.printStackTrace();
-			}
-		}catch (Exception e) {
+			addStudentEmail(student.getId(), newMailAddresses);
+			addPassedSubjects(student.getId(), student.getPassedSubjects());
+			addConcernsStudent(student.getConcernIds(), student.getId());
+		}
+		catch(Exception e)
+		{
 			e.printStackTrace();
 		}
 		

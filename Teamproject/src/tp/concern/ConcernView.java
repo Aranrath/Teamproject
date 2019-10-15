@@ -714,6 +714,11 @@ public class ConcernView extends GridPane {
 
 	public void addAppointment(Appointment appointment) {
 		appointmentTableView.getItems().add(appointment);
+		// Wenn Concern schon existiert, Termin direkt in Datenbank übertragen
+		if (concern != null) {
+			presenter.saveNewAppointment(concern.getId(), appointment);
+			presenter.updateRightToolbar();
+		}
 	}
 
 	/**

@@ -3,6 +3,8 @@ package tp.students;
 import java.io.File;
 import java.util.ArrayList;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -313,7 +315,7 @@ public class EditStudentView extends GridPane {
 			Concern selectedConcern = concernsListView.getSelectionModel().getSelectedItem();
 			if(selectedConcern!= null)
 			{
-				selectedConcern.getStudents().remove(student);
+				presenter.deleteConcernStudent(selectedConcern.getId(), student.getId());
 				concernsListView.getItems().remove(selectedConcern);
 			}
 		});
@@ -435,19 +437,18 @@ public class EditStudentView extends GridPane {
 			{
 				changedMailAddresses = new ArrayList<String>();
 				
-				student = new Student( name);
+				student = new Student(name);
 				student.setMtrNr(mtrNr);
 				student.seteMailAddresses(eMailAddresses);
 				student.setFirstName(firstName);
-				student.setImage(image);
 				student.setPo(po);
 				student.setSemester(semester);
 				student.setPassedSubjects(localPassedSubjects);
 				student.setNotes(notes);
 				student.setGender(gender);
 				
-				presenter.saveNewStudent(student);
-				
+				student.setId(presenter.saveNewStudent(student));
+				presenter.saveStudentImage(student.getId(), image);
 			}
 			//Bestehenden Studenten ändern und speichern
 			else
@@ -460,7 +461,6 @@ public class EditStudentView extends GridPane {
 				student.setName(name);
 				student.seteMailAddresses(eMailAddresses);
 				student.setFirstName(firstName);
-				student.setImage(image);
 				student.setPo(po);
 				student.setSemester(semester);
 				student.setPassedSubjects(localPassedSubjects);
@@ -473,7 +473,7 @@ public class EditStudentView extends GridPane {
 				student.setGender(gender);
 
 				presenter.saveEditedStudent(student);
-
+				presenter.saveStudentImage(student.getId(), image);
 			}
 
 			presenter.openStudenTab(student, changedMailAddresses);
@@ -496,7 +496,17 @@ public class EditStudentView extends GridPane {
 		studentPO.setOnAction((event)-> {
 			updateEctsDisplay();
 		});
-		 
+		
+		studentNotes.textProperty().addListener(new ChangeListener<String>() {
+
+			@Override
+			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+				student.setNotes(newValue);
+				presenter.saveEditedStudentNotes(student, studentNotes.getText());
+				
+			}
+		});
+				 
 		
 	}
 
@@ -506,8 +516,9 @@ public class EditStudentView extends GridPane {
 		newConcernButton.setVisible(true);
 		deleteConcernButton.setVisible(true);
 
-		if (student.getImage() != null) {
-			studentImage.setImage(student.getImage());
+		Image image = presenter.getStudentImage(student.getId());
+		if (image != null) {
+			studentImage.setImage(image);
 		} else {
 			studentImage.setImage(presenter.getDefaultStudentImage());
 		}
@@ -589,6 +600,7 @@ public class EditStudentView extends GridPane {
 
 		//Anliegen neu laden
 		if (student!= null && student.getConcernIds()!=null) {
+			student = presenter.getStudent(student.getId());
 			concerns.clear();
 			for (long id : student.getConcernIds()){
 				concerns.add(presenter.getConcern(id));

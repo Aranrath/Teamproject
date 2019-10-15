@@ -57,7 +57,9 @@ public class Presenter {
 	// ======================Updater======================
 
 	public void updateRightToolbar() {
+		if (mainView!= null) {
 		mainView.updateRightToolBar();
+		}
 	}
 
 	// ===============Getter&Setter========================
@@ -307,10 +309,14 @@ public class Presenter {
 		
 	}
 
-	public void saveNewStudent(Student student) {
-		model.saveNewStudent(student);
+	public long saveNewStudent(Student student) {
+		return model.saveNewStudent(student);
 		
 	}
+
+	public void saveStudentImage(long id, Image image) {
+		model.saveStudentImage(id, image);
+	}	
 
 	public void deleteConcernStudent(long concernId, long studentId) {
 		model.deleteConcernStudent(concernId, studentId);
@@ -323,6 +329,10 @@ public class Presenter {
 	public void openStudenTab(Student student) {
 		mainView.openStudentTab(student);
 		
+	}
+
+	public Image getStudentImage(long id) {
+		return model.getStudentImage(id);
 	}
 
 	public void openStudenTab(Student student, ArrayList<String> changedMailAddresses) {
@@ -387,6 +397,10 @@ public class Presenter {
 	public void deletePO(PO poToDelete) {
 		model.deletePO(poToDelete);
 		
+	}	
+
+	public void saveNewAppointment(long concernId, Appointment appointment) {
+		model.saveNewAppointment(concernId, appointment);
 	}
 
 	public void deleteSubject(Subject subjectToDelete) {
@@ -516,7 +530,6 @@ public class Presenter {
 	        }
 		
 	}
-	
 	
 
 }

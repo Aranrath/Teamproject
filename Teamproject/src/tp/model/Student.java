@@ -4,7 +4,6 @@ import java.sql.Date;
 import java.util.ArrayList;
 
 import javafx.collections.ObservableList;
-import javafx.scene.image.Image;
 
 public class Student {
 
@@ -16,7 +15,6 @@ public class Student {
 	private int semester;
 	private String notes;
 	private ObservableList<Subject> passedSubjects;
-	private Image image;
 	private ObservableList<Long> concernIds;
 	private PO po;
 	private String gender;
@@ -34,7 +32,7 @@ public class Student {
 	}
 
 	public Student(long id, int mtrNr, String name, String firstName, ArrayList<String> eMailAddresses, int semester, PO po,
-			String notes, ObservableList<Subject> passedSubjects, Image image, ObservableList<Long> concernIds, String gender, Date lastContact, Date exmatr) {
+			String notes, ObservableList<Subject> passedSubjects, ObservableList<Long> concernIds, String gender, Date lastContact, Date exmatr) {
 		this.id = id;
 		this.matrNr = mtrNr;
 		this.name = name;
@@ -44,7 +42,6 @@ public class Student {
 		this.po = po;
 		this.notes = notes;
 		this.passedSubjects = passedSubjects;
-		this.image = image;
 		this.concernIds = concernIds;
 		this.gender = gender;
 		this.lastContact = lastContact;
@@ -77,10 +74,6 @@ public class Student {
 
 	public String getNotes() {
 		return notes;
-	}
-
-	public Image getImage() {
-		return image;
 	}
 
 	public ArrayList<String> geteMailAddresses() {
@@ -122,10 +115,6 @@ public class Student {
 
 	public void setNotes(String notes) {
 		this.notes = notes;
-	}
-
-	public void setImage(Image image) {
-		this.image = image;
 	}
 
 	public void setConcernIds(ObservableList<Long> concernIds) {
