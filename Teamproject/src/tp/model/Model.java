@@ -160,7 +160,7 @@ public class Model {
 		return d;
 	}
 	
-	private Date setTimeToZero(Date date) {
+	public Date setTimeToZero(Date date) {
 		//To be able to compare the date to the one in the dataBase, set Time to 0.
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(date);	
@@ -2351,6 +2351,7 @@ public class Model {
 
 	public void setStudentExmatr(Student s, Date d) {
 		String sql = "UPDATE student SET exmatr = " + d + " WHERE id = " + s.getId();
+		System.out.println(sql);
 		try (Connection conn = this.connect();
 				Statement stmt = conn.createStatement())
 			{

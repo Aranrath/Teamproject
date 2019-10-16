@@ -443,6 +443,10 @@ public class Presenter {
 	public ObservableList<Statistic> getStatistics() {
 		return model.getStatistics();
 	}
+
+	public Date setTimeToZero(Date date) {
+		return model.setTimeToZero(date);
+	}
 	
 	
 	public void closeRelatedTabs(Student student)

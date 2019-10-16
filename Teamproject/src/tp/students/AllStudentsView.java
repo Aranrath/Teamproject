@@ -233,6 +233,7 @@ public class AllStudentsView extends GridPane {
 				for(Student student: selectedStudents) {
 					presenter.setStudentExmatr(student, Date.valueOf(datePicker.getValue()));
 				}
+				updateView();
 			}
 		});
 		
@@ -293,7 +294,7 @@ public class AllStudentsView extends GridPane {
 				shownStudents.addAll(allStudents);
 			}else {
 				for(Student student: allStudents) {
-					if(student.getExmatr() == null) {
+					if(student.getExmatr() == null || student.getExmatr().after(new Date(System.currentTimeMillis()))) {
 						shownStudents.add(student);
 					}
 				}
@@ -314,7 +315,8 @@ public class AllStudentsView extends GridPane {
 			}else {
 				for (Student student : allStudents)
 				{
-					if(student.getExmatr() == null && Presenter.containsAll(student.toString().toLowerCase(), searchTerms))
+					if((student.getExmatr() == null || student.getExmatr().after(new Date(System.currentTimeMillis()))) 
+							&& Presenter.containsAll(student.toString().toLowerCase(), searchTerms))
 					{
 						shownStudents.add(student);
 					}	
@@ -331,6 +333,7 @@ public class AllStudentsView extends GridPane {
 	{
 		allStudents = presenter.getStudents();
 		shownStudents.clear();
+		selectedStudents.clear();
 		for (Student student: allStudents) {
 			shownStudents.add(student);
 		}
