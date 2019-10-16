@@ -1,10 +1,12 @@
 package tp.reminders;
 
+import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
@@ -19,7 +21,6 @@ public class RemindersView extends GridPane{
 	
 	private ListView<Reminder> remindersList;
 	private Label remindersLabel;
-	private Button toConcernButton;
 	private Button deleteReminderButton;
 	
 	public RemindersView(Presenter presenter)
@@ -37,7 +38,6 @@ public class RemindersView extends GridPane{
 		remindersList = new ListView<Reminder>();
 		remindersList.setItems(presenter.getDueReminders());
 		remindersLabel = new Label("Zu bearbeitende Erinnerungen");
-		toConcernButton = new Button("Zum zugehörigen Anliegen");
 		deleteReminderButton = new Button("Erinnerung löschen");
 		
 		//==============================================
@@ -45,8 +45,6 @@ public class RemindersView extends GridPane{
 		add(remindersLabel,0,0);
 		GridPane.setHalignment(remindersLabel, HPos.LEFT);
 		add(remindersList,0,1,2,1);
-		add(toConcernButton,0,2);
-		GridPane.setHalignment(toConcernButton, HPos.LEFT);
 		add(deleteReminderButton,1,2);
 		GridPane.setHalignment(deleteReminderButton, HPos.RIGHT);
 		
@@ -70,17 +68,22 @@ public class RemindersView extends GridPane{
 		
 		//===================================================================
 		
-		toConcernButton.setOnAction((event) -> {
-			
-			Reminder selectedReminder = remindersList.getSelectionModel().getSelectedItem();
-			if(selectedReminder != null)
-        	{
-				Long concernId = selectedReminder.getConcernId();
-        		presenter.openConcernTab(presenter.getConcern(concernId));
-        	}
-
+		remindersList.setOnMousePressed(new EventHandler<MouseEvent>() {
+		    @Override 
+		    public void handle(MouseEvent event) {
+		        if (event.isPrimaryButtonDown() && event.getClickCount() > 1) {
+		        	Reminder selectedReminder = remindersList.getSelectionModel().getSelectedItem();
+		        	if(selectedReminder != null)
+		        	{
+						Long concernId = selectedReminder.getConcernId();
+		        		presenter.openConcernTab(presenter.getConcern(concernId));
+		        	}
+		                             
+		        }
+		    }
 		});
 		
+				
 		deleteReminderButton.setOnAction((event) -> {
 			Reminder selectedReminder = remindersList.getSelectionModel().getSelectedItem();
 			if(selectedReminder != null) {

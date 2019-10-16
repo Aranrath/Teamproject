@@ -879,7 +879,6 @@ public class Model {
 				ObservableList<Subject> passedSubjects= getPassedSubjects(id);
 				String gender = rs1.getString("gender");
 				Date exmatr =  rs1.getDate("exmatr");
-				
 				result = new Student(id, matrNr, name, firstname, eMailAddressess, semester, po, notes, passedSubjects, null, gender, null, exmatr);
 				if(getLastStudentEmail(result)!=null) {
 					Date lastContact = getLastStudentEmail(result).getDate();
@@ -2350,12 +2349,14 @@ public class Model {
 
 
 	public void setStudentExmatr(Student s, Date d) {
-		String sql = "UPDATE student SET exmatr = " + d + " WHERE id = " + s.getId();
-		System.out.println(sql);
+		//Date wird ohne Prepared Statement auf 0 (1970-01-01) gesetzt.
+		String sql = "UPDATE student SET exmatr = ? WHERE id = " + s.getId();
 		try (Connection conn = this.connect();
+				PreparedStatement pstmt = conn.prepareStatement(sql);
 				Statement stmt = conn.createStatement())
 			{
-				stmt.executeUpdate(sql);
+				pstmt.setDate(1, d);
+				pstmt.executeUpdate();
 			}
 			catch(Exception e)
 			{
@@ -2707,8 +2708,8 @@ public class Model {
 		}catch (SendFailedException e){
 			Alert alert = new Alert(AlertType.INFORMATION);
 	        alert.setTitle("Warnung");
-	        alert.setHeaderText("VPN!");
-	        alert.setContentText("Zum senden von E-Mails wird eine VPN-Verbindung zur Hochschule benötigt.");
+	        alert.setHeaderText("ERROR!");
+	        alert.setContentText("Kennung / Passwort inkorrekt oder keine VPN zur Hochschule aufgebaut.");
 	        alert.showAndWait();
 			return null;
 		} catch (Exception e) {

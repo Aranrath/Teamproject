@@ -36,6 +36,7 @@ public class Main extends Application {
 
 			primaryStage.setOnCloseRequest(e -> {
 				e.consume();
+				mainView.saveOpenConcern();
 				presenter.handleUnsavedTabs();
 			});
 	

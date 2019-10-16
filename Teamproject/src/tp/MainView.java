@@ -892,6 +892,11 @@ public class MainView extends BorderPane {
 		
 	}
 	
+	public void saveOpenConcern() {
+		//TODO
+		//if(currentTab = concernView)
+		//save(false);
+	}
 	
 	
 	
